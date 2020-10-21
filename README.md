@@ -1,6 +1,6 @@
-<img src="https://github.com/Engineering-Research-and-Development/DYMER/screenshots/Dymer.jpg" title="Dymer" alt="Dymer"> 
 
 # DYMER
+<img src="https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/Dymer.jpg?raw=true" title="Dymer" alt="Dymer"> 
 
 > DYnamic Information ModElling & Rendering
 
@@ -30,7 +30,7 @@ The DYMER consists of two main components:
 **DYMER-Core** is based on a microservice architectural style with an approach to develop a single application as a suite of small services, each running in its own process and communicating with lightweight mechanisms using HTTP/REST protocols alongside JSON.  
 
 The diagram in Figure depicts the building block components: 
-[![](https://github.com/Engineering-Research-and-Development/DYMER/screenshots/DymerArchitecture.png)]
+![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/DymerArchitecture.png?raw=true)
 
 Each microservice is developed with a specific role, however among the main ones we can identify three that have the most impact on DEH:  
 
@@ -45,22 +45,22 @@ These microservice are developed with Express.js framework for Node.js, designed
 The information is stored in NoSQL Database that provides high performance, high availability, and automatic scaling. Service-Entities use Elasticsearch that is a distributed, open-source search and analytics engine for all types of data, including textual, numerical, geospatial, structured, and unstructured that stores data in JSON format.  
 
 Interaction with the **DYMER-Core** takes place through the **DYMER-Viewer** which is a fast, small, and feature-rich JavaScript library. Thanks to it, it is possible to interact with the platform facilitating the user in the use of data by offering a single search point and displaying the results in special graphic templates.  
-[![](https://github.com/Engineering-Research-and-Development/DYMER/screenshots/render-list.png)]
-[![](https://github.com/Engineering-Research-and-Development/DYMER/screenshots/render-list-detail.png)]
-[![](https://github.com/Engineering-Research-and-Development/DYMER/screenshots/html_map.jpg)]
-[![](https://github.com/Engineering-Research-and-Development/DYMER/screenshots/html_map_table.jpg.jpg)]
-[![](https://github.com/Engineering-Research-and-Development/DYMER/screenshots/html_mapdetail.jpg)]
-[![](https://github.com/Engineering-Research-and-Development/DYMER/screenshots/example_formrender.png)]
+![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/render-list.png?raw=true)
+![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/render-list-detail.png?raw=true)
+![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/html_map.jpg?raw=true)
+![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/html_map_table.jpg.jpg?raw=true)
+![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/html_mapdetail.jpg?raw=true)
+![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/example_formrender.png?raw=true)
 The user will also be able to perform a search among the resources in the list, using a special search function. The search will obviously be gradually refined in the implementation, in its technical details and as a web module by adding the necessary filters that will become necessary from time to time. Next Figure shows how a user can access the search filters :  
-[![](https://github.com/Engineering-Research-and-Development/DYMER/screenshots/render-list-filtersnippets.png)]
+![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/render-list-filtersnippets.png?raw=true)
 The DYMER also implements administration functionality represented by a web-based application, to allow a user with Admin role to have complete management of Templates, Models or Forms and Entities. The next Figure shows the administration dashboard of DYMER component:
-[![](https://github.com/Engineering-Research-and-Development/DYMER/screenshots/ws-dashboard.png)]
+![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/ws-dashboard.png?raw=true)
 
 By clicking on the Templates link menu, on the left in the drop-down list, the user can access to the list of the currently registered Templates, in order to view them or create new templates through Manage Template  functionality or modify the existing ones. 
-[![](https://github.com/Engineering-Research-and-Development/DYMER/screenshots/ws-template-editor.png)]
+![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/ws-template-editor.png?raw=true)
 The same management features are available respectively for the models/forms 
-[![](https://github.com/Engineering-Research-and-Development/DYMER/screenshots/ws-model-editor.png)]
-[![](https://github.com/Engineering-Research-and-Development/DYMER/screenshots/ws-manageEntity.png)]
+![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/ws-model-editor.png?raw=true)
+![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/ws-manageEntity.png?raw=true)
 
 
 ## Technologies
