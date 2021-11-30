@@ -1,0 +1,45 @@
+<html>
+
+<head>
+    <title>Single detail</title>
+    <script>
+        var jsonDymerConfig = {
+            query: {
+                "query": {
+                    "query": {
+                        "match": {
+                            "_id": "4vAqT20BY51Cap8LDIX3"
+                        }
+                    }
+                }
+            },
+            endpoint: 'entity.search',
+            viewtype: 'fullcontent',
+            target: {
+                fullcontent: {
+                    id: "#cont-MyList",
+                    action: "html",
+                    reload: false
+                }
+            }
+        };
+
+        function mainDymerView() {
+            console.log('jsonDymerConfig', jsonDymerConfig);
+            drawEntities(jsonDymerConfig);
+        }
+    </script>
+    <script id="dymerurl" src="http://localhost:8080/public/cdn/js/dymer.viewer.js"></script>
+</head>
+
+<body class="container">
+    <div class="row">
+        <div class="col-12  ">
+            <br>
+        </div>
+    </div>
+    <div id="cont-MyList">
+    </div>
+</body>
+
+</html>

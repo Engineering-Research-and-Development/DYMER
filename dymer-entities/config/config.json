@@ -1,0 +1,82 @@
+{
+    "development": {
+        "config_id": "development",
+        "services": {
+            "entity": {
+                "app_name": "entity",
+                "app_desc": "dymer entity",
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 1358,
+                "ip_port": "localhost:1358",
+                "repository": {
+                    "entity": {
+                        "type": "elastichsearch",
+                        "protocol": "http",
+                        "ip": "localhost",
+                        "port": 9200
+                    },
+                    "files": {
+                        "type": "mongodb",
+                        "protocol": "http",
+                        "ip": "127.0.0.1",
+                        "port": 27017,
+                        "index_ref": "entity"
+                    },
+                    "entitiesbridge": {
+                        "type": "mongodb",
+                        "protocol": "http",
+                        "ip": "127.0.0.1",
+                        "port": 27017,
+                        "index_ref": "entity"
+                    }
+                }
+            },
+            "dservice": {
+                "protocol": "http",
+                "ip": "127.0.0.1",
+                "port": 5050
+            }
+        }
+    },
+    "production": {
+        "config_id": "production",
+        "services": {
+            "entity": {
+                "app_name": "entity",
+                "app_desc": "dymer entity",
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 1358,
+                "ip_port": "localhost:1358",
+                "repository": {
+                    "entity": {
+                        "type": "elastichsearch",
+                        "protocol": "http",
+                        "ip": "localhost",
+                        "port": 9200
+                    },
+                    "files": {
+                        "type": "mongodb",
+                        "protocol": "http",
+                        "ip": "127.0.0.1",
+                        "port": 27017,
+                        "index_ref": "entity"
+                    },
+                    "entitiesbridge": {
+                        "type": "mongodb",
+                        "protocol": "http",
+                        "ip": "127.0.0.1",
+                        "port": 27017,
+                        "index_ref": "entity"
+                    }
+                }
+            },
+            "dservice": {
+                "protocol": "http",
+                "ip": "127.0.0.1",
+                "port": 5050
+            }
+        }
+    }
+}

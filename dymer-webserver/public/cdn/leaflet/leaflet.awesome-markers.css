@@ -1,0 +1,1354 @@
+/*
+Author: L. Voogdt
+License: MIT
+Version: 1.0
+*/
+
+
+/* Marker setup */
+
+.awesome-marker {
+    background: url('images/markers-soft.png') no-repeat 0 0;
+    width: 35px;
+    height: 46px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: block;
+    text-align: center;
+}
+
+.awesome-marker-shadow {
+    background: url('images/markers-shadow.png') no-repeat 0 0;
+    width: 36px;
+    height: 16px;
+}
+
+
+/* Retina displays */
+
+@media (min--moz-device-pixel-ratio: 1.5),
+(-o-min-device-pixel-ratio: 3/2),
+(-webkit-min-device-pixel-ratio: 1.5),
+(min-device-pixel-ratio: 1.5),
+(min-resolution: 1.5dppx) {
+    .awesome-marker {
+        background-image: url('images/markers-soft@2x.png');
+        background-size: 720px 46px;
+    }
+    .awesome-marker-shadow {
+        background-image: url('images/markers-shadow@2x.png');
+        background-size: 35px 16px;
+    }
+}
+
+.awesome-marker i {
+    color: #333;
+    margin-top: 10px!important;
+    margin-left: 2px;
+    display: inline-block!important;
+    font-size: 14px;
+}
+
+.awesome-marker .icon-white {
+    color: #fff;
+}
+
+
+/* Colors */
+
+.awesome-marker-icon-red {
+    background-position: 0 0;
+}
+
+.awesome-marker-icon-darkred {
+    background-position: -180px 0;
+}
+
+.awesome-marker-icon-lightred {
+    background-position: -360px 0;
+}
+
+.awesome-marker-icon-orange {
+    background-position: -36px 0;
+}
+
+.awesome-marker-icon-beige {
+    background-position: -396px 0;
+}
+
+.awesome-marker-icon-green {
+    background-position: -72px 0;
+}
+
+.awesome-marker-icon-darkgreen {
+    background-position: -252px 0;
+}
+
+.awesome-marker-icon-lightgreen {
+    background-position: -432px 0;
+}
+
+.awesome-marker-icon-blue {
+    background-position: -108px 0;
+}
+
+.awesome-marker-icon-darkblue {
+    background-position: -216px 0;
+}
+
+.awesome-marker-icon-lightblue {
+    background-position: -468px 0;
+}
+
+.awesome-marker-icon-purple {
+    background-position: -144px 0;
+}
+
+.awesome-marker-icon-darkpurple {
+    background-position: -288px 0;
+}
+
+.awesome-marker-icon-pink {
+    background-position: -504px 0;
+}
+
+.awesome-marker-icon-cadetblue {
+    background-position: -324px 0;
+}
+
+.awesome-marker-icon-white {
+    background-position: -574px 0;
+}
+
+.awesome-marker-icon-gray {
+    background-position: -648px 0;
+}
+
+.awesome-marker-icon-lightgray {
+    background-position: -612px 0;
+}
+
+.awesome-marker-icon-black {
+    background-position: -682px 0;
+}
+
+
+/*added*/
+
+
+/*color-red*/
+
+.awesome-marker-icon-orange-red {
+    background-position: -36px -48px;
+}
+
+.awesome-marker-icon-darkred-red {
+    background-position: -180px -48px;
+}
+
+.awesome-marker-icon-lightred-red {
+    background-position: -360px -48px;
+}
+
+.awesome-marker-icon-beige-red {
+    background-position: -396px -48px;
+}
+
+.awesome-marker-icon-green-red {
+    background-position: -72px -48px;
+}
+
+.awesome-marker-icon-darkgreen-red {
+    background-position: -252px -48px;
+}
+
+.awesome-marker-icon-lightgreen-red {
+    background-position: -432px -48px;
+}
+
+.awesome-marker-icon-blue-red {
+    background-position: -108px -48px;
+}
+
+.awesome-marker-icon-darkblue-red {
+    background-position: -216px -48px;
+}
+
+.awesome-marker-icon-lightblue-red {
+    background-position: -468px -48px;
+}
+
+.awesome-marker-icon-purple-red {
+    background-position: -144px -48px;
+}
+
+.awesome-marker-icon-darkpurple-red {
+    background-position: -288px -48px;
+}
+
+.awesome-marker-icon-pink-red {
+    background-position: -504px -48px;
+}
+
+.awesome-marker-icon-cadetblue-red {
+    background-position: -324px -48px;
+}
+
+.awesome-marker-icon-white-red {
+    background-position: -574px -48px;
+}
+
+.awesome-marker-icon-gray-red {
+    background-position: -648px -48px;
+}
+
+.awesome-marker-icon-lightgray-red {
+    background-position: -612px -48px;
+}
+
+.awesome-marker-icon-black-red {
+    background-position: -682px -48px;
+}
+
+
+/*color-orange*/
+
+.awesome-marker-icon-orange-orange {
+    background-position: -36px -92px;
+}
+
+.awesome-marker-icon-darkred-orange {
+    background-position: -180px -92px;
+}
+
+.awesome-marker-icon-lightred-orange {
+    background-position: -360px -92px;
+}
+
+.awesome-marker-icon-beige-orange {
+    background-position: -396px -92px;
+}
+
+.awesome-marker-icon-green-orange {
+    background-position: -72px -92px;
+}
+
+.awesome-marker-icon-darkgreen-orange {
+    background-position: -252px -92px;
+}
+
+.awesome-marker-icon-lightgreen-orange {
+    background-position: -432px -92px;
+}
+
+.awesome-marker-icon-blue-orange {
+    background-position: -108px -92px;
+}
+
+.awesome-marker-icon-darkblue-orange {
+    background-position: -216px -92px;
+}
+
+.awesome-marker-icon-lightblue-orange {
+    background-position: -468px -92px;
+}
+
+.awesome-marker-icon-purple-orange {
+    background-position: -144px -92px;
+}
+
+.awesome-marker-icon-darkpurple-orange {
+    background-position: -288px -92px;
+}
+
+.awesome-marker-icon-pink-orange {
+    background-position: -504px -92px;
+}
+
+.awesome-marker-icon-cadetblue-orange {
+    background-position: -324px -92px;
+}
+
+.awesome-marker-icon-white-orange {
+    background-position: -574px -92px;
+}
+
+.awesome-marker-icon-gray-orange {
+    background-position: -648px -92px;
+}
+
+.awesome-marker-icon-lightgray-orange {
+    background-position: -612px -92px;
+}
+
+.awesome-marker-icon-black-orange {
+    background-position: -682px -92px;
+}
+
+
+/*color-green*/
+
+.awesome-marker-icon-orange-green {
+    background-position: -36px -137px;
+}
+
+.awesome-marker-icon-darkred-green {
+    background-position: -180px -137px;
+}
+
+.awesome-marker-icon-lightred-green {
+    background-position: -360px -137px;
+}
+
+.awesome-marker-icon-beige-green {
+    background-position: -396px -137px;
+}
+
+.awesome-marker-icon-green-green {
+    background-position: -72px -137px;
+}
+
+.awesome-marker-icon-darkgreen-green {
+    background-position: -252px -137px;
+}
+
+.awesome-marker-icon-lightgreen-green {
+    background-position: -432px -137px;
+}
+
+.awesome-marker-icon-blue-green {
+    background-position: -108px -137px;
+}
+
+.awesome-marker-icon-darkblue-green {
+    background-position: -216px -137px;
+}
+
+.awesome-marker-icon-lightblue-green {
+    background-position: -468px -137px;
+}
+
+.awesome-marker-icon-purple-green {
+    background-position: -144px -137px;
+}
+
+.awesome-marker-icon-darkpurple-green {
+    background-position: -288px -137px;
+}
+
+.awesome-marker-icon-pink-green {
+    background-position: -504px -137px;
+}
+
+.awesome-marker-icon-cadetblue-green {
+    background-position: -324px -137px;
+}
+
+.awesome-marker-icon-white-green {
+    background-position: -574px -137px;
+}
+
+.awesome-marker-icon-gray-green {
+    background-position: -648px -137px;
+}
+
+.awesome-marker-icon-lightgray-green {
+    background-position: -612px -137px;
+}
+
+.awesome-marker-icon-black-green {
+    background-position: -682px -137px;
+}
+
+
+/*color-blue*/
+
+.awesome-marker-icon-orange-blue {
+    background-position: -36px -182px;
+}
+
+.awesome-marker-icon-darkred-blue {
+    background-position: -180px -182px;
+}
+
+.awesome-marker-icon-lightred-blue {
+    background-position: -360px -182px;
+}
+
+.awesome-marker-icon-beige-blue {
+    background-position: -396px -182px;
+}
+
+.awesome-marker-icon-green-blue {
+    background-position: -72px -182px;
+}
+
+.awesome-marker-icon-darkgreen-blue {
+    background-position: -252px -182px;
+}
+
+.awesome-marker-icon-lightgreen-blue {
+    background-position: -432px -182px;
+}
+
+.awesome-marker-icon-blue-blue {
+    background-position: -108px -182px;
+}
+
+.awesome-marker-icon-darkblue-blue {
+    background-position: -216px -182px;
+}
+
+.awesome-marker-icon-lightblue-blue {
+    background-position: -468px -182px;
+}
+
+.awesome-marker-icon-purple-blue {
+    background-position: -144px -182px;
+}
+
+.awesome-marker-icon-darkpurple-blue {
+    background-position: -288px -182px;
+}
+
+.awesome-marker-icon-pink-blue {
+    background-position: -504px -182px;
+}
+
+.awesome-marker-icon-cadetblue-blue {
+    background-position: -324px -182px;
+}
+
+.awesome-marker-icon-white-blue {
+    background-position: -574px -182px;
+}
+
+.awesome-marker-icon-gray-blue {
+    background-position: -648px -182px;
+}
+
+.awesome-marker-icon-lightgray-blue {
+    background-position: -612px -182px;
+}
+
+.awesome-marker-icon-black-blue {
+    background-position: -682px -182px;
+}
+
+
+/*color-purple*/
+
+.awesome-marker-icon-orange-purple {
+    background-position: -36px -225px;
+}
+
+.awesome-marker-icon-darkpurple-purple {
+    background-position: -180px -225px;
+}
+
+.awesome-marker-icon-lightpurple-purple {
+    background-position: -360px -225px;
+}
+
+.awesome-marker-icon-beige-purple {
+    background-position: -396px -225px;
+}
+
+.awesome-marker-icon-green-purple {
+    background-position: -72px -225px;
+}
+
+.awesome-marker-icon-darkgreen-purple {
+    background-position: -252px -225px;
+}
+
+.awesome-marker-icon-lightgreen-purple {
+    background-position: -432px -225px;
+}
+
+.awesome-marker-icon-blue-purple {
+    background-position: -108px -225px;
+}
+
+.awesome-marker-icon-darkblue-purple {
+    background-position: -216px -225px;
+}
+
+.awesome-marker-icon-lightblue-purple {
+    background-position: -468px -225px;
+}
+
+.awesome-marker-icon-purple-purple {
+    background-position: -144px -225px;
+}
+
+.awesome-marker-icon-darkpurple-purple {
+    background-position: -288px -225px;
+}
+
+.awesome-marker-icon-pink-purple {
+    background-position: -504px -225px;
+}
+
+.awesome-marker-icon-cadetblue-purple {
+    background-position: -324px -225px;
+}
+
+.awesome-marker-icon-white-purple {
+    background-position: -574px -225px;
+}
+
+.awesome-marker-icon-gray-purple {
+    background-position: -648px -225px;
+}
+
+.awesome-marker-icon-lightgray-purple {
+    background-position: -612px -225px;
+}
+
+.awesome-marker-icon-black-purple {
+    background-position: -682px -225px;
+}
+
+
+/*color-darkred*/
+
+.awesome-marker-icon-orange-darkred {
+    background-position: -36px -271px;
+}
+
+.awesome-marker-icon-darkred-darkred {
+    background-position: -180px -271px;
+}
+
+.awesome-marker-icon-lightred-darkred {
+    background-position: -360px -271px;
+}
+
+.awesome-marker-icon-beige-darkred {
+    background-position: -396px -271px;
+}
+
+.awesome-marker-icon-green-darkred {
+    background-position: -72px -271px;
+}
+
+.awesome-marker-icon-darkgreen-darkred {
+    background-position: -252px -271px;
+}
+
+.awesome-marker-icon-lightgreen-darkred {
+    background-position: -432px -271px;
+}
+
+.awesome-marker-icon-blue-darkred {
+    background-position: -108px -271px;
+}
+
+.awesome-marker-icon-darkblue-darkred {
+    background-position: -216px -271px;
+}
+
+.awesome-marker-icon-lightblue-darkred {
+    background-position: -468px -271px;
+}
+
+.awesome-marker-icon-purple-darkred {
+    background-position: -144px -271px;
+}
+
+.awesome-marker-icon-darkpurple-darkred {
+    background-position: -288px -271px;
+}
+
+.awesome-marker-icon-pink-darkred {
+    background-position: -504px -271px;
+}
+
+.awesome-marker-icon-cadetblue-darkred {
+    background-position: -324px -271px;
+}
+
+.awesome-marker-icon-white-darkred {
+    background-position: -574px -271px;
+}
+
+.awesome-marker-icon-gray-darkred {
+    background-position: -648px -271px;
+}
+
+.awesome-marker-icon-lightgray-darkred {
+    background-position: -612px -271px;
+}
+
+.awesome-marker-icon-black-darkred {
+    background-position: -682px -271px;
+}
+
+
+/*darkblue*/
+
+.awesome-marker-icon-orange-darkblue {
+    background-position: -36px -316px;
+}
+
+.awesome-marker-icon-darkred-darkblue {
+    background-position: -180px -316px;
+}
+
+.awesome-marker-icon-lightred-darkblue {
+    background-position: -360px -316px;
+}
+
+.awesome-marker-icon-beige-darkblue {
+    background-position: -396px -316px;
+}
+
+.awesome-marker-icon-green-darkblue {
+    background-position: -72px -316px;
+}
+
+.awesome-marker-icon-darkgreen-darkblue {
+    background-position: -252px -316px;
+}
+
+.awesome-marker-icon-lightgreen-darkblue {
+    background-position: -432px -316px;
+}
+
+.awesome-marker-icon-blue-darkblue {
+    background-position: -108px -316px;
+}
+
+.awesome-marker-icon-darkblue-darkblue {
+    background-position: -216px -316px;
+}
+
+.awesome-marker-icon-lightblue-darkblue {
+    background-position: -468px -316px;
+}
+
+.awesome-marker-icon-purple-darkblue {
+    background-position: -144px -316px;
+}
+
+.awesome-marker-icon-darkpurple-darkblue {
+    background-position: -288px -316px;
+}
+
+.awesome-marker-icon-pink-darkblue {
+    background-position: -504px -316px;
+}
+
+.awesome-marker-icon-cadetblue-darkblue {
+    background-position: -324px -316px;
+}
+
+.awesome-marker-icon-white-darkblue {
+    background-position: -574px -316px;
+}
+
+.awesome-marker-icon-gray-darkblue {
+    background-position: -648px -316px;
+}
+
+.awesome-marker-icon-lightgray-darkblue {
+    background-position: -612px -316px;
+}
+
+.awesome-marker-icon-black-darkblue {
+    background-position: -682px -316px;
+}
+
+
+/*darkgreen*/
+
+.awesome-marker-icon-orange-darkgreen {
+    background-position: -36px -358px;
+}
+
+.awesome-marker-icon-darkred-darkgreen {
+    background-position: -180px -358px;
+}
+
+.awesome-marker-icon-lightred-darkgreen {
+    background-position: -360px -358px;
+}
+
+.awesome-marker-icon-beige-darkgreen {
+    background-position: -396px -358px;
+}
+
+.awesome-marker-icon-green-darkgreen {
+    background-position: -72px -358px;
+}
+
+.awesome-marker-icon-darkgreen-darkgreen {
+    background-position: -252px -358px;
+}
+
+.awesome-marker-icon-lightgreen-darkgreen {
+    background-position: -432px -358px;
+}
+
+.awesome-marker-icon-blue-darkgreen {
+    background-position: -108px -358px;
+}
+
+.awesome-marker-icon-darkblue-darkgreen {
+    background-position: -216px -358px;
+}
+
+.awesome-marker-icon-lightblue-darkgreen {
+    background-position: -468px -358px;
+}
+
+.awesome-marker-icon-purple-darkgreen {
+    background-position: -144px -358px;
+}
+
+.awesome-marker-icon-darkpurple-darkgreen {
+    background-position: -288px -358px;
+}
+
+.awesome-marker-icon-pink-darkgreen {
+    background-position: -504px -358px;
+}
+
+.awesome-marker-icon-cadetblue-darkgreen {
+    background-position: -324px -358px;
+}
+
+.awesome-marker-icon-white-darkgreen {
+    background-position: -574px -358px;
+}
+
+.awesome-marker-icon-gray-darkgreen {
+    background-position: -648px -358px;
+}
+
+.awesome-marker-icon-lightgray-darkgreen {
+    background-position: -612px -358px;
+}
+
+.awesome-marker-icon-black-darkgreen {
+    background-position: -682px -358px;
+}
+
+
+/*cadetblue*/
+
+.awesome-marker-icon-orange-cadetblue {
+    background-position: -36px -401px;
+}
+
+.awesome-marker-icon-darkred-cadetblue {
+    background-position: -180px -401px;
+}
+
+.awesome-marker-icon-lightred-cadetblue {
+    background-position: -360px -401px;
+}
+
+.awesome-marker-icon-beige-cadetblue {
+    background-position: -396px -401px;
+}
+
+.awesome-marker-icon-green-cadetblue {
+    background-position: -72px -401px;
+}
+
+.awesome-marker-icon-darkgreen-cadetblue {
+    background-position: -252px -401px;
+}
+
+.awesome-marker-icon-lightgreen-cadetblue {
+    background-position: -432px -401px;
+}
+
+.awesome-marker-icon-blue-cadetblue {
+    background-position: -108px -401px;
+}
+
+.awesome-marker-icon-darkblue-cadetblue {
+    background-position: -216px -401px;
+}
+
+.awesome-marker-icon-lightblue-cadetblue {
+    background-position: -468px -401px;
+}
+
+.awesome-marker-icon-purple-cadetblue {
+    background-position: -144px -401px;
+}
+
+.awesome-marker-icon-darkpurple-cadetblue {
+    background-position: -288px -401px;
+}
+
+.awesome-marker-icon-pink-cadetblue {
+    background-position: -504px -401px;
+}
+
+.awesome-marker-icon-cadetblue-cadetblue {
+    background-position: -324px -401px;
+}
+
+.awesome-marker-icon-white-cadetblue {
+    background-position: -574px -401px;
+}
+
+.awesome-marker-icon-gray-cadetblue {
+    background-position: -648px -401px;
+}
+
+.awesome-marker-icon-lightgray-cadetblue {
+    background-position: -612px -401px;
+}
+
+.awesome-marker-icon-black-cadetblue {
+    background-position: -682px -401px;
+}
+
+
+/*tre*/
+
+.awesome-marker-icon-orange-green-red {
+    background-position: -71px -444px;
+}
+
+.awesome-marker-icon-green-blue-red {
+    background-position: -108px -444px;
+}
+
+.awesome-marker-icon-blue-purple-red {
+    background-position: -144px -444px;
+}
+
+.awesome-marker-icon-purple-darkred-red {
+    background-position: -180px -444px;
+}
+
+.awesome-marker-icon-darkred-darkblue-red {
+    background-position: -216px -444px;
+}
+
+.awesome-marker-icon-darkblue-darkgreen-red {
+    background-position: -252px -444px;
+}
+
+.awesome-marker-icon-darkgreen-darkpurple-red {
+    background-position: -288px -444px;
+}
+
+.awesome-marker-icon-darkpurple-cadetblue-red {
+    background-position: -324px -444px;
+}
+
+.awesome-marker-icon-cadetblue-lightred-red {
+    background-position: -360px -444px;
+}
+
+.awesome-marker-icon-lightred-beige-red {
+    background-position: -396px -444px;
+}
+
+.awesome-marker-icon-beige-lightgreen-red {
+    background-position: -432px -444px;
+}
+
+.awesome-marker-icon-lightgreen-lightblue-red {
+    background-position: -468px -444px;
+}
+
+.awesome-marker-icon-lightblue-pink-red {
+    background-position: -504px -444px;
+}
+
+.awesome-marker-icon-pink-white-red {
+    background-position: -574px -444px;
+}
+
+.awesome-marker-icon-white-lightgray-red {
+    background-position: -612px -444px;
+}
+
+.awesome-marker-icon-lightgray-gray-red {
+    background-position: -648px -444px;
+}
+
+.awesome-marker-icon-gray-black-red {
+    background-position: -682px -444px;
+}
+
+.awesome-marker-icon-green-blue-orange {
+    background-position: -108px -490px;
+}
+
+.awesome-marker-icon-blue-purple-orange {
+    background-position: -144px -490px;
+}
+
+.awesome-marker-icon-purple-darkred-orange {
+    background-position: -180px -490px;
+}
+
+.awesome-marker-icon-darkred-darkblue-orange {
+    background-position: -216px -490px;
+}
+
+.awesome-marker-icon-darkblue-darkgreen-orange {
+    background-position: -252px -490px;
+}
+
+.awesome-marker-icon-darkgreen-darkpurple-orange {
+    background-position: -288px -490px;
+}
+
+.awesome-marker-icon-darkpurple-cadetblue-orange {
+    background-position: -324px -490px;
+}
+
+.awesome-marker-icon-cadetblue-lightred-orange {
+    background-position: -360px -490px;
+}
+
+.awesome-marker-icon-lightred-beige-orange {
+    background-position: -396px -490px;
+}
+
+.awesome-marker-icon-beige-lightgreen-orange {
+    background-position: -432px -490px;
+}
+
+.awesome-marker-icon-lightgreen-lightblue-orange {
+    background-position: -468px -490px;
+}
+
+.awesome-marker-icon-lightblue-pink-orange {
+    background-position: -504px -490px;
+}
+
+.awesome-marker-icon-pink-white-orange {
+    background-position: -574px -490px;
+}
+
+.awesome-marker-icon-white-lightgray-orange {
+    background-position: -612px -490px;
+}
+
+.awesome-marker-icon-lightgray-gray-orange {
+    background-position: -648px -490px;
+}
+
+.awesome-marker-icon-gray-black-orange {
+    background-position: -682px -490px;
+}
+
+.awesome-marker-icon-green-blue-green {
+    background-position: -108px -535px;
+}
+
+.awesome-marker-icon-blue-purple-green {
+    background-position: -144px -535px;
+}
+
+.awesome-marker-icon-purple-darkred-green {
+    background-position: -180px -535px;
+}
+
+.awesome-marker-icon-darkred-darkblue-green {
+    background-position: -216px -535px;
+}
+
+.awesome-marker-icon-darkblue-darkgreen-green {
+    background-position: -252px -535px;
+}
+
+.awesome-marker-icon-darkgreen-darkpurple-green {
+    background-position: -288px -535px;
+}
+
+.awesome-marker-icon-darkpurple-cadetblue-green {
+    background-position: -324px -535px;
+}
+
+.awesome-marker-icon-cadetblue-lightred-green {
+    background-position: -360px -535px;
+}
+
+.awesome-marker-icon-lightred-beige-green {
+    background-position: -396px -535px;
+}
+
+.awesome-marker-icon-beige-lightgreen-green {
+    background-position: -432px -535px;
+}
+
+.awesome-marker-icon-lightgreen-lightblue-green {
+    background-position: -468px -535px;
+}
+
+.awesome-marker-icon-lightblue-pink-green {
+    background-position: -504px -535px;
+}
+
+.awesome-marker-icon-pink-white-green {
+    background-position: -574px -535px;
+}
+
+.awesome-marker-icon-white-lightgray-green {
+    background-position: -612px -535px;
+}
+
+.awesome-marker-icon-lightgray-gray-green {
+    background-position: -648px -535px;
+}
+
+.awesome-marker-icon-gray-black-green {
+    background-position: -682px -535px;
+}
+
+.awesome-marker-icon-green-blue-blue {
+    background-position: -108px -580px;
+}
+
+.awesome-marker-icon-blue-purple-blue {
+    background-position: -144px -580px;
+}
+
+.awesome-marker-icon-purple-darkred-blue {
+    background-position: -180px -580px;
+}
+
+.awesome-marker-icon-darkred-darkblue-blue {
+    background-position: -216px -580px;
+}
+
+.awesome-marker-icon-darkblue-darkgreen-blue {
+    background-position: -252px -580px;
+}
+
+.awesome-marker-icon-darkgreen-darkpurple-blue {
+    background-position: -288px -580px;
+}
+
+.awesome-marker-icon-darkpurple-cadetblue-blue {
+    background-position: -324px -580px;
+}
+
+.awesome-marker-icon-cadetblue-lightred-blue {
+    background-position: -360px -580px;
+}
+
+.awesome-marker-icon-lightred-beige-blue {
+    background-position: -396px -580px;
+}
+
+.awesome-marker-icon-beige-lightgreen-blue {
+    background-position: -432px -580px;
+}
+
+.awesome-marker-icon-lightgreen-lightblue-blue {
+    background-position: -468px -580px;
+}
+
+.awesome-marker-icon-lightblue-pink-blue {
+    background-position: -504px -580px;
+}
+
+.awesome-marker-icon-pink-white-blue {
+    background-position: -574px -580px;
+}
+
+.awesome-marker-icon-white-lightgray-blue {
+    background-position: -612px -580px;
+}
+
+.awesome-marker-icon-lightgray-gray-blue {
+    background-position: -648px -580px;
+}
+
+.awesome-marker-icon-gray-black-blue {
+    background-position: -682px -580px;
+}
+
+.awesome-marker-icon-green-blue-purple {
+    background-position: -108px -624px;
+}
+
+.awesome-marker-icon-blue-purple-purple {
+    background-position: -144px -624px;
+}
+
+.awesome-marker-icon-purple-darkred-purple {
+    background-position: -180px -624px;
+}
+
+.awesome-marker-icon-darkred-darkblue-purple {
+    background-position: -216px -624px;
+}
+
+.awesome-marker-icon-darkblue-darkgreen-purple {
+    background-position: -252px -624px;
+}
+
+.awesome-marker-icon-darkgreen-darkpurple-purple {
+    background-position: -288px -624px;
+}
+
+.awesome-marker-icon-darkpurple-cadetblue-purple {
+    background-position: -324px -624px;
+}
+
+.awesome-marker-icon-cadetblue-lightred-purple {
+    background-position: -360px -624px;
+}
+
+.awesome-marker-icon-lightred-beige-purple {
+    background-position: -396px -624px;
+}
+
+.awesome-marker-icon-beige-lightgreen-purple {
+    background-position: -432px -624px;
+}
+
+.awesome-marker-icon-lightgreen-lightblue-purple {
+    background-position: -468px -624px;
+}
+
+.awesome-marker-icon-lightblue-pink-purple {
+    background-position: -504px -624px;
+}
+
+.awesome-marker-icon-pink-white-purple {
+    background-position: -574px -624px;
+}
+
+.awesome-marker-icon-white-lightgray-purple {
+    background-position: -612px -624px;
+}
+
+.awesome-marker-icon-lightgray-gray-purple {
+    background-position: -648px -624px;
+}
+
+.awesome-marker-icon-gray-black-purple {
+    background-position: -682px -624px;
+}
+
+.awesome-marker-icon-green-blue-darkred {
+    background-position: -108px -668px;
+}
+
+.awesome-marker-icon-blue-purple-darkred {
+    background-position: -144px -668px;
+}
+
+.awesome-marker-icon-purple-darkred-darkred {
+    background-position: -180px -668px;
+}
+
+.awesome-marker-icon-darkred-darkblue-darkred {
+    background-position: -216px -668px;
+}
+
+.awesome-marker-icon-darkblue-darkgreen-darkred {
+    background-position: -252px -668px;
+}
+
+.awesome-marker-icon-darkgreen-darkpurple-darkred {
+    background-position: -288px -668px;
+}
+
+.awesome-marker-icon-darkpurple-cadetblue-darkred {
+    background-position: -324px -668px;
+}
+
+.awesome-marker-icon-cadetblue-lightred-darkred {
+    background-position: -360px -668px;
+}
+
+.awesome-marker-icon-lightred-beige-darkred {
+    background-position: -396px -668px;
+}
+
+.awesome-marker-icon-beige-lightgreen-darkred {
+    background-position: -432px -668px;
+}
+
+.awesome-marker-icon-lightgreen-lightblue-darkred {
+    background-position: -468px -668px;
+}
+
+.awesome-marker-icon-lightblue-pink-darkred {
+    background-position: -504px -668px;
+}
+
+.awesome-marker-icon-pink-white-darkred {
+    background-position: -574px -668px;
+}
+
+.awesome-marker-icon-white-lightgray-darkred {
+    background-position: -612px -668px;
+}
+
+.awesome-marker-icon-lightgray-gray-darkred {
+    background-position: -648px -668px;
+}
+
+.awesome-marker-icon-gray-black-darkred {
+    background-position: -682px -668px;
+}
+
+.awesome-marker-icon-green-blue-darkblue {
+    background-position: -108px -711px;
+}
+
+.awesome-marker-icon-blue-purple-darkblue {
+    background-position: -144px -711px;
+}
+
+.awesome-marker-icon-purple-darkred-darkblue {
+    background-position: -180px -711px;
+}
+
+.awesome-marker-icon-darkred-darkblue-darkblue {
+    background-position: -216px -711px;
+}
+
+.awesome-marker-icon-darkblue-darkgreen-darkblue {
+    background-position: -252px -711px;
+}
+
+.awesome-marker-icon-darkgreen-darkpurple-darkblue {
+    background-position: -288px -711px;
+}
+
+.awesome-marker-icon-darkpurple-cadetblue-darkblue {
+    background-position: -324px -711px;
+}
+
+.awesome-marker-icon-cadetblue-lightred-darkblue {
+    background-position: -360px -711px;
+}
+
+.awesome-marker-icon-lightred-beige-darkblue {
+    background-position: -396px -711px;
+}
+
+.awesome-marker-icon-beige-lightgreen-darkblue {
+    background-position: -432px -711px;
+}
+
+.awesome-marker-icon-lightgreen-lightblue-darkblue {
+    background-position: -468px -711px;
+}
+
+.awesome-marker-icon-lightblue-pink-darkblue {
+    background-position: -504px -711px;
+}
+
+.awesome-marker-icon-pink-white-darkblue {
+    background-position: -574px -711px;
+}
+
+.awesome-marker-icon-white-lightgray-darkblue {
+    background-position: -612px -711px;
+}
+
+.awesome-marker-icon-lightgray-gray-darkblue {
+    background-position: -648px -711px;
+}
+
+.awesome-marker-icon-gray-black-darkblue {
+    background-position: -682px -711px;
+}
+
+
+/*quadrupla*/
+
+.awesome-marker-icon-purple-red-green-blue {
+    background-position: -108px -933px;
+}
+
+.awesome-marker-icon-darkred-red-green-purple {
+    background-position: -143px -933px;
+}
+
+.awesome-marker-icon-darkblue-red-green-darkred {
+    background-position: -179px -933px;
+}
+
+.awesome-marker-icon-darkgreen-red-green-darkblue {
+    background-position: -179px -933px;
+}
+
+.awesome-marker-icon-darkpurple-darkred-green-darkgreen {
+    background-position: -251px -933px;
+}
+
+.awesome-marker-icon-cadetblue-darkred-darkgreen-darkpurple {
+    background-position: -288px -933px;
+}
+
+.awesome-marker-icon-darkred-orange-blue-purple {
+    background-position: -144px -977px;
+}
+
+.awesome-marker-icon-darkblue-orange-blue-darkred {
+    background-position: -180px -977px;
+}
+
+.awesome-marker-icon-darkgreen-orange-blue-darkblue {
+    background-position: -216px -977px;
+}
+
+.awesome-marker-icon-darkpurple-orange-blue-darkgreen {
+    background-position: -252px -977px;
+}
+
+.awesome-marker-icon-cadetblue-orange-blue-darkpurple {
+    background-position: -288px -977px;
+}
+
+.awesome-marker-icon-darkblue-green-purple-darkred {
+    background-position: -180px -1022px;
+}
+
+.awesome-marker-icon-green-darkgreen-purple-darkblue {
+    background-position: -216px -1022px;
+}
+
+.awesome-marker-icon-darkpurple-green-purple-darkgreen {
+    background-position: -252px -1022px;
+}
+
+.awesome-marker-icon-cadetblue-green-purple-darkpurple {
+    background-position: -288px -1022px;
+}
+
+.awesome-marker-icon-green-blue-darkred-darkblue {
+    background-position: -216px -1067px;
+}
+
+.awesome-marker-icon-darkpurple-blue-darkred-darkgreen {
+    background-position: -252px -1067px;
+}
+
+.awesome-marker-icon-cadetblue-blue-darkred-darkpurple {
+    background-position: -288px -1067px;
+}
+
+.awesome-marker-icon-darkpurple-purple-darkblue-darkgreen {
+    background-position: -252px -1111px;
+}
+
+.awesome-marker-icon-cadetblue-purple-darkblue-darkpurple {
+    background-position: -288px -1111px;
+}
+
+.awesome-marker-icon-cadetblue-darkred-darkgreen-darkpurple {
+    background-position: -288px -1155px;
+}

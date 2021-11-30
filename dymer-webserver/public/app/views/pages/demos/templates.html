@@ -1,0 +1,174 @@
+<a id="back-to-top" href="#" class="btn btn-sm back-to-top ng-scope" role="button" onclick="$('.main-panel').scrollTop(0)"><i class="fa fa-chevron-up"></i></a>
+<div class="col-md-12">
+    <div class="card ">
+        <div class="card-header ">
+            <h5 class="card-title">Templates</h5>
+            <div class="card-category">
+                <div>
+                    <a href="#lnktemplatelist" class="text-warning">
+                        <h7> &nbsp;&nbsp;# List Template
+                        </h7>
+                    </a>
+                    <a href="#lnktemplatesetvariable" class="text-warning">
+                        <h7> &nbsp;&nbsp;# Set Vabriable
+                        </h7>
+                    </a>
+                    <a href="#lnktemplateifEquals" class="text-warning">
+                        <h7> &nbsp;&nbsp;# If Equals
+                        </h7>
+                    </a>
+                    <a href="#lnktemplaterenderfile" class="text-warning">
+                        <h7> &nbsp;&nbsp;# Render File
+                        </h7>
+                    </a>
+
+                    <a href="#lnktemplateformatDate" class="text-warning">
+                        <h7> &nbsp;&nbsp;# Format Date
+                        </h7>
+                    </a>
+
+                    <a href="#lnktemplateifIsNthItem" class="text-warning">
+                        <h7> &nbsp;&nbsp;# if Is Nth Item
+                        </h7>
+                    </a>
+
+                    <a href="#lnktemplateBlockHelpers" class="text-warning">
+                        <h7> &nbsp;&nbsp;# Block Helpers
+                        </h7>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body ">
+
+            <div>
+                <p>
+                    <h4 class="text-info"> What is Handlebars? </h4>
+                </p>
+                <p>Handlebars <a href="https://handlebarsjs.com/guide/#what-is-handlebars" target="_blank"><i
+                            class="fa fa-external-link-square" aria-hidden="true"></i></a> is a simple templating language.
+                    <br> It uses a template and an input object to generate HTML or other text formats. Handlebars templates look like regular text with embedded Handlebars expressions.
+                </p>
+                <p id="lnktemplatelist">Below is an example of a list template:</p>
+                <pre class=" language-javascript" data-language="javascript"> <code class=" language-javascript">&lt;span id="d_pagination_prop"&gt;<span class="token function">{{<span>setVariable "d_pagination_size" 6</span>}}</span>&lt;/span&gt; 
+<span class="token function">{{<span>#each this</span>}}</span>
+    &lt;div class="row listrow" d-pagegroup="<span class="token function">{{<span>DymerPaginationPageIndex ../this.length @index</span>}}</span>"&gt;
+    &lt;div data-component-entitystatus="" data-vvveb-disabled="" class="row"&gt;<span class="token function">{{<span>{EntityStatus this</span>}}</span>}&lt;/div&gt;
+        &lt;div class="col-3"&gt;
+            &lt;img class="img-fluid logof" src="<span class="token function">{{<span>loadfile _id logo.id</span>}}</span>"&gt;
+        &lt;/div&gt;
+        &lt;div class="col-9"&gt; 
+            &lt;h1 class="text-info"&gt;<span class="token function">{{<span>title</span>}}</span></span>&lt;/h1&gt;
+        &lt;/div&gt;
+        &lt;div class="descrellipse"&gt;<span class="token function">{{<span>description</span>}}</span>&lt;/div&gt;
+    <span class="token function">{{<span>#if additionalmaterial</span>}}</span>
+        &lt;section class=" "&gt;
+            &lt;div class="container_section"&gt;
+                &lt;div class="container-fluid_"&gt;
+                    &lt;div class=""&gt;
+                        &lt;div class=""&gt;
+                            &lt;h2 class="primaryColor primaryTitlesection"&gt;&lt;b&gt;Additional material&lt;/b&gt;&lt;/h2&gt;
+                        &lt;/div&gt;
+                        &lt;div class="container-fluid_"&gt;
+                            &lt;ul&gt;
+                                <span class="token function">{{<span>#each additionalmaterial</span>}}</span>
+                                    &lt;li spellcheckker="false" contenteditable="true"&gt; 
+                                        file id:<span class="token function">{{<span>pdf.id</span>}}</span>
+                                        <span class="token function">{{<span>#if pdf</span>}}</span>
+                                            &lt;a title="<span class="token function">{{<span>label</span>}}</span>" href="<span class="token function">{{<span>loadfile ../../_id pdf.id</span>}}</span>" target="_blank"&gt;+<span class="token function">{{<span>label</span>}}</span>&lt;/a&gt;
+                                        <span class="token function">{{<span>else</span>}}</span>
+                                            &lt;a title="<span class="token function">{{<span>url</span>}}</span>" href="<span class="token function">{{<span>url</span>}}</span>" target="_blank"&gt;<span class="token function">{{<span>label</span>}}</span>&lt;/a&gt;
+                                        <span class="token function">{{<span>/if</span>}}</span>
+                                    &lt;/li&gt;
+                                <span class="token function">{{<span>/each </span>}}</span>
+                            &lt;/ul&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/section&gt;
+        &lt;section class=" "&gt;
+            &lt;div class="container_section"&gt;
+                &lt;div class="separator"&gt;&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/section&gt;
+    <span class="token function">{{<span>/if</span>}}</span>
+    <span class="token function">{{<span>#if gallery.length</span>}}</span>
+        &lt;div class="col-6"&gt;
+            &lt;div class=" "&gt;
+                <span class="token function">{{<span>#each gallery</span>}}</span>
+                    &lt;div class="carousel-item item <span class="token function">{{<span>#ifEquals @index 0</span>}}</span>active<span class="token function">{{<span>/ifEquals</span>}}</span>"&gt;
+                        <span class="token function">{{<span>#if img</span>}}</span>
+                            &lt;img src="<span class="token function">{{<span>loadfile ../../_id img.id</span>}}</span>" alt=""&gt; <span class="token function">{{<span>else</span>}}</span>
+                        &lt;img src="<span class="token function">{{<span>url</span>}}</span>" alt=""&gt; 
+                        <span class="token function">{{<span>/if</span>}}</span>
+                    &lt;/div&gt;
+                <span class="token function">{{<span>/each </span>}}</span>
+        &lt;/div&gt;
+    &lt;/div&gt;
+    <span class="token function">{{<span>/if</span>}}</span>
+    &lt;span class="pull-right text-info " style="padding-top: 10px;cursor:pointer" title="<span class="token function">{{<span>name</span>}}</span>" onclick="kmsrenderdetail(&quot;<span class="token function">{{<span>_id</span>}}</span>&quot;)"&gt;
+        View More
+    &lt;/span&gt;
+    &lt;/div&gt;
+ &lt;/div&gt;
+ &lt;hr&gt;
+ <span class="token function">{{<span>/each</span>}}</span>
+ &lt;div data-component-dpagination="" class="row pagination" d-pagination-size="6"&gt;<span class="token function">{{<span>DymerPagination this</span>}}</span>&lt;/div&gt;
+</code></pre>
+                <h4 class="text-info" id="lnktemplatesetvariable"><i class="fa fa-caret-right" aria-hidden="true"></i> Set Variable
+                </h4>
+                <pre class=" language-javascript" data-language="javascript"><code class=" language-javascript"><span class="token function">{{<span>setVariable "your_variable_name" your_value</span>}}</span><br>Example:<br><span class="token function">{{<span>setVariable "d_pagination_size" 6</span>}}</span>
+</code></pre>
+                <h4 class="text-info" id="lnktemplateifEquals"><i class="fa fa-caret-right" aria-hidden="true"></i> If Equals
+                </h4>
+                <pre class=" language-javascript" data-language="javascript"><code class=" language-javascript"><span class="token function">{{<span>#ifEquals your_variable_name your_value</span>}}
+    your code
+{{<span>else</span>}}
+    your code
+{{<span>/ifEquals</span>}}</span><br>Example:<br><span class="token function">{{<span>#ifEquals @index 0</span>}}HELLO!!{{<span>/ifEquals</span>}}</span>
+</code></pre>
+                <h4 class="text-info" id="lnktemplaterenderfile"><i class="fa fa-caret-right" aria-hidden="true"></i> Render File
+                </h4>
+                <pre class=" language-javascript" data-language="javascript"><code class=" language-javascript"><span class="token function">&lt;img class="img-fluid logof" src="{{<span>loadfile _id your_object_key.id</span>}}"&gt;</span><br>Example:<br><span class="token function">&lt;img class="img-fluid logof" src="{{<span>loadfile _id logo.id</span>}}"&gt;</span>
+</code></pre>
+                <p>If the attached file is in a json array structure</p>
+                <pre class=" language-javascript" data-language="javascript"><code class=" language-javascript"><span class="token function">{{<span>#each your_object_array_key</span>}}
+    &lt;a title="{{<span>label</span>}}" href="{{<span>loadfile relative_path_root_entity/_id your_object_key.id</span>}}" target="_blank"&gt;{{<span>label</span>}}&lt;/a&gt;
+{{<span>/each </span>}}</span><br>Example:<br><span class="token function">{{<span>#each additionalmaterial</span>}}
+    &lt;a title="{{<span>label</span>}}" href="{{<span>loadfile ../../_id pdf.id</span>}}" target="_blank"&gt;{{<span>label</span>}}&lt;/a&gt;
+{{<span>/each </span>}}</span>
+</code></pre>
+                <h4 class="text-info" id="lnktemplateformatDate"><i class="fa fa-caret-right" aria-hidden="true"></i> Format Date
+                </h4>
+                <pre class=" language-javascript" data-language="javascript"><code class=" language-javascript"><span class="token function">{{<span>formatDate your_object_key "date format desired"</span>}}</span><br>Example:<br><span class="token function">Updated {{<span>formatDate properties.changed "dd/MM/yyyy HH:mm"</span>}}</span>
+</code></pre>
+                <h4 class="text-info" id="lnktemplateifIsNthItem"><i class="fa fa-caret-right" aria-hidden="true"></i> If Is Nth Item
+                </h4>
+                <pre class=" language-javascript" data-language="javascript"><code class=" language-javascript"><span class="token function">{{<span>#each this</span>}}
+    {{<span>#ifIsNthItem nth=your_number_value</span>}}
+        yes
+    {{<span>else</span>}}
+        no
+    {{<span>/ifIsNthItem</span>}}
+{{<span>/each</span>}}</span><br>Example:<br><span class="token function">{{<span>#each this</span>}}
+    {{<span>#ifIsNthItem nth=8</span>}}
+        yes
+    {{<span>else</span>}}
+        no
+    {{<span>/ifIsNthItem</span>}}
+{{<span>/each</span>}}</span>
+</code></pre>
+                <h4 class="text-info" id="lnktemplateBlockHelpers"><i class="fa fa-caret-right" aria-hidden="true"></i> Block Helpers
+                </h4>
+                <p>
+                    How to create a registerhelper <a href="https://handlebarsjs.com/guide/hooks.html#helpermissing" target="_blank"><i class="fa fa-external-link-square" aria-hidden="true"></i></a>. Add your registerhelper in dymer-webserver\public\cdn\js\handlebarshook.js
+                </p>
+            </div>
+        </div>
+        <div class="card-footer ">
+            <hr />
+            <div class="stats"><i class="fa fa-history"></i> Updated 29/09/2021</div>
+        </div>
+    </div>
+</div>

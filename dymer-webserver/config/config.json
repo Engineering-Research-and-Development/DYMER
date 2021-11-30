@@ -1,0 +1,74 @@
+{
+    "development": {
+        "config_id": "development",
+        "services": {
+            "webserver": {
+                "app_name": "webserver",
+                "app_desc": "dymer webserver",
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 8080,
+                "context-path": "",
+                "adminUser": "admin",
+                "adminPass": "dymer",
+                "idp": []
+            },
+            "entity": {
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 1358
+            },
+            "template": {
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 4545
+            },
+            "form": {
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 4747
+            },
+            "dservice": {
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 5050
+            }
+        }
+    },
+    "production": {
+        "config_id": "production",
+        "services": {
+            "webserver": {
+                "app_name": "webserver",
+                "app_desc": "dymer webserver",
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 8080,
+                "context-path": "",
+                "adminUser": "admin",
+                "adminPass": "dymer",
+                "idp": []
+            },
+            "entity": {
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 1358
+            },
+            "template": {
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 4545
+            },
+            "form": {
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 4747
+            },
+            "dservice": {
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 5050
+            }
+        }
+    }
+}

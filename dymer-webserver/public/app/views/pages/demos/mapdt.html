@@ -1,0 +1,431 @@
+<a id="back-to-top" href="#" class="btn btn-sm back-to-top ng-scope" role="button" onclick="$('.main-panel').scrollTop(0)">
+    <i class="fa fa-chevron-up"></i></a>
+<div class="col-md-12">
+    <div class="card ">
+        <div class="card-header ">
+            <h5 class="card-title">Dymer Viewer</h5>
+
+            <div class="card-category">
+                render entities: Map & DataTables<br> <br>
+                <div>
+                    <a href="#lnkmapconfiguration" class="text-warning">
+                        <h7><i class="fa fa-circle" aria-hidden="true" style="font-size: 8px;position: relative;bottom: 2px;"></i> &nbsp;&nbsp;Map/DataTable Base Configuration</h7>
+                    </a><br>
+                    <a href="#lnkdtconfigurationadvanced" class="text-warning">
+                        <h7><i class="fa fa-circle" aria-hidden="true" style="font-size: 8px;position: relative;bottom: 2px;"></i> &nbsp;&nbsp;DataTable Advanced Configuration</h7>
+                    </a><br>
+                    <a href="#lnkmapstyle" class="text-warning">
+                        <h7><i class="fa fa-circle" aria-hidden="true" style="font-size: 8px;position: relative;bottom: 2px;"></i> &nbsp;&nbsp;Map Style</h7>
+                    </a><br>
+                    <a href="#lnkmapmarker" class="text-warning">
+                        <h7><i class="fa fa-circle" aria-hidden="true" style="font-size: 8px;position: relative;bottom: 2px;"></i> &nbsp;&nbsp;Map Marker</h7>
+                    </a>
+                </div>
+                <a href="/demodownload/View/dymer_mapdt.html" class="btn btn-wd btn-info  float-right " target="_self">
+                    <i class="fa fa-download"></i> Download Example
+                </a>
+            </div>
+        </div>
+        <div class="card-body ">
+
+
+            <div class="row row-eq-height">
+                <div class="col-2  text-center">
+                    <div class="crop-height rounded border ">
+                        <img src="../assets/img/demo/html_map.jpg" data-toggle="modal" data-target="#html_map" class="img-thumbnail   cur-p scale  ">
+                    </div>
+
+                    <div id="html_map" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="html_map" aria-hidden="true">
+                        <div class="modal-dialog" style=" max-width: 80%;  ">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <img src="../assets/img/demo/html_map.jpg">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Example - Map&DT </small>
+                </div>
+
+                <div class="col-2  text-center">
+                    <div class="crop-height  rounded border">
+                        <img src="../assets/img/demo/html_mapfullscreen.jpg" data-toggle="modal" data-target="#html_mapfullscreen" class="img-thumbnail  cur-p scale  ">
+                    </div>
+
+                    <div id="html_mapfullscreen" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="html_mapfullscreen" aria-hidden="true">
+                        <div class="modal-dialog" style=" max-width: 80%;  ">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <img src="../assets/img/demo/html_mapfullscreen.jpg">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Example - Full Screen</small>
+                </div>
+                <div class="col-2   text-center">
+                    <div class="crop-height  rounded border">
+                        <img src="../assets/img/demo/html_mapfullpage.jpg" data-toggle="modal" data-target="#html_mapfullpage" class="img-thumbnail   cur-p scale  ">
+                    </div>
+
+                    <div id="html_mapfullpage" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="html_mapfullpage" aria-hidden="true">
+                        <div class="modal-dialog" style=" max-width: 80%; max-height: 80%; ">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <img src="../assets/img/demo/html_mapfullpage.jpg" style="margin:0 auto;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Example - Full Page </small>
+                </div>
+
+                <div class="col-2   text-center">
+                    <div class="crop-height  rounded border">
+                        <img src="../assets/img/demo/html_mapdetail.jpg" data-toggle="modal" data-target="#html_mapdetail" class="img-thumbnail   cur-p scale  ">
+                    </div>
+
+                    <div id="html_mapdetail" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalCList" aria-hidden="true">
+                        <div class="modal-dialog" style=" max-width: 80%; max-height: 80%; ">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <img src="../assets/img/demo/html_mapdetail.jpg" style="margin:0 auto;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Example - Detail </small>
+                </div>
+
+            </div>
+            <div>
+                <br>
+
+
+                <p> The following is an example of how to setup a simple Dymer Viewer Map&DataTable.</p>
+                <div class="alert alert-info">
+                    <span> <i class="nc-icon nc-pin-3"></i> The entities must have a location attribute to be viewed inside the map as a marker! </span>
+                </div>
+
+                <pre class=" language-javascript" data-language="javascript"><code class=" language-javascript">    <span class="token function">"location": {
+      "type": "Point",
+      "coordinates": [<span class="token keyword">"16.5058996","48.2256476"</span>]
+    } </span>
+</code></pre>
+                <h4 class="text-info" id="lnkmapconfiguration"><i class="fa fa-caret-right" aria-hidden="true"></i> Configuration</h4>
+
+
+                <p>Create a js function named <b>mainDymerMap()</b>, define the json that configures the Viewer and pass it in the funtion <b>generateMapDT()</b></p>
+                <pre class=" language-javascript" data-language="javascript">
+ <code class=" language-javascript"><span class="token tag">&lt;script&gt;</span>
+    var jsonDymerConfig = {
+        <span class="token keyword">query: {</span> <span class="token attr-name">// define the query to do in dymer</span>
+            "instance": {
+                "index":<span class="token attr-name"> index-entity  </span>
+                "type": <span class="token attr-name"> type-entity  </span>
+            }
+        <span class="token keyword">},</span>
+        <span class="token keyword">endpoint</span>: 'entity.search', <span class="token attr-name">// set the endpoint to execute the query of entities</span>
+        <span class="token keyword">viewtype</span>: 'teaserlist', <span class="token attr-name">// set to use the 'Preview in List' template</span>
+        <span class="token keyword">swapgeop</span>: true,
+        <span class="token keyword">dt</span>: { <span class="token attr-name">// set data-table columns</span>
+            columns: [
+              { title: "Title", data: "title" },
+              { title: "", data: "_id", 
+                  render: function (data, type, row) {
+                      return '&lt;i class="fa fa-eye" aria-hidden="true" style="cursor:pointer;color:#17a2b8" onclick="kmsrenderdetail(\'' + data + '\')"&gt;&lt;/i&gt;';	},
+                className: 'text-center', "orderable": false}		
+              ]
+      },
+       <span class="token keyword">target</span>: {
+            <span class="token keyword">fullcontent</span>: {<span class="token attr-name">// configure where and how to render the detail of an entity</span>
+                <span class="token keyword">id</span>: "#cont-MyEnt", <span class="token attr-name">// the Map & DataTablewill be rendered inside the element with id "#cont-MyList"</span>
+                <span class="token keyword">action</span>: "html" <span class="token attr-name">// set the method to insert the content (html/append/prepend)</span>
+                }
+            <span class="token keyword">map</span>:{  <span class="token keyword">id</span>: "#cont-TotalMap"<span class="token attr-name">// configure id map container (if map/dt view) </span>},
+            <span class="token keyword">dt</span>:{  <span class="token keyword">id</span>: "#cont-Dt"<span class="token attr-name">// cconfigure id dataTable container (if map/dt view)</span>},
+            <span class="token keyword">list</span>:{  <span class="token keyword">id</span>: "#cont-MyList"<span class="token attr-name">// configure id list container (if list view)</span>}
+            }
+        }
+    };
+    <span class="token keyword">function</span> <span class="token function">mainDymerView</span>() {
+        <span class="token function">generateMapDT</span>(jsonDymerConfig);
+    }
+ <span class="token tag">&lt;/script&gt;</span></code></pre>
+
+                <p>
+                    Import the <b>dymer.map.js</b> with id 'dymerurl' and set the &lt;dymerip&gt; </p>
+                <pre class=" language-javascript" data-language="javascript"><code class=" language-javascript"><span class="token tag"> &lt;script id="dymerurl" src="<span class="token keyword">&lt;dymerip&gt;</span>/public/cdn/js/dymer.map.js"> &lt;/script&gt;</span></code></pre>
+                <p>Create a DOM element where render the Entity details (id="cont-MyEnt" in this case, an element with id="cont-Map" where render the Map and an element with id="cont-Dt" where render the DataTable</p>
+                <pre class=" language-javascript" data-language="javascript"><code class=" language-javascript"><span class="token tag"> &lt;div class="container" <span class="token keyword">id="cont-TotalMap"</span>&gt;
+    &lt;div <span class="token keyword">id="divEagleFilter"</span> class="col-3  "&gt;
+     this html block will be shown in the fullscreen map
+    &lt;/div&gt;
+    &lt;div <span class="token keyword">id="cont-Map"</span>&gt;
+    &lt;/div&gt;
+ &lt;/div&gt;
+
+ &lt;div <span class="token keyword">id="cont-Dt"</span>&gt;&lt;/div&gt;
+ &lt;div <span class="token keyword">id="cont-MyEnt"</span>&gt; &lt;/div&gt;
+</span>
+version 2</code></pre>
+
+                <p>
+
+                    Dymer Viewer imports Bootstrap v4 and jQuery 3, if you use previous versions add a json object called <b>dymerconf</b> as below to exclude the import. To set the 'user id' and 'group id' add the variables <b>d_uid</b> and <b>d_gid</b>.
+                </p>
+                <pre class=" language-javascript" data-language="javascript">
+<code class=" language-javascript"> var <span class="token function">d_uid</span> = <span class="token keyword">'&lt;user-id&gt;'</span>; <span class="token attr-name">// user id</span>
+ var <span class="token function">d_gid</span> = <span class="token keyword">'&lt;group-id&gt;'</span>; <span class="token attr-name">// group id</span> 
+ var <span class="token function">dymerconf</span> = { <span class="token attr-name">// disable import bootstrap & jquery</span>
+    <span class="token function">notImport : ["bootstrap","jquery"]</span>
+ };</span></code></pre>
+            </div>
+
+            <h4 class="text-info" id="lnkdtconfigurationadvanced"><i class="fa fa-caret-right" aria-hidden="true"></i> Data Table</h4>
+            <pre class=" language-javascript" data-language="javascript">
+<code class=" language-javascript">map:{ 
+    dt: {
+        columns: [{ 
+            defaultContent: "",
+            className: ' noselectfilter',//onlyDateSearch, noautofilter , tdEllipse
+            visible: false
+            } ] 
+        }
+    } </code></pre>
+            <br> <b>className</b>: noselectfilter = remove select filter in the footer
+            <br> <b>className</b>: onlyDateSearch = filter for date
+            <br> <b>className</b>: noautofilter = remove input filter in the head
+            <br> <b>visible</b>: false = remove the filed form the table and it can be activate form <i class="fas fa-bars"></i>'Set Field Visibility'
+            <h4 class="text-info" id="lnkmapmarker"><i class="fa fa-caret-right" aria-hidden="true"></i> Markers</h4>
+            <img src="../assets/img/demo/mapstyle/markers-soft.png" style="height: 30px;    margin-bottom: 10px;"> .... ....
+            <br> Add 'map' key, if it does not exist, in your json object 'jsonDymerConfig'
+
+            <pre class=" language-javascript" data-language="javascript">
+<code class=" language-javascript">map:{ 
+    markers:{ 
+        'index_entity':[ { 							
+                            default: true,
+                            icon: 'fa-circle', 
+                            prefix: 'fa', 
+                            markerColor: 'blue'  
+                        },
+                        { 
+                          key: 'key-to-compare', 
+                          value: 'value-to compare', 
+                          icon: 'fa-circle', 
+                          prefix: 'fa',
+                          markerColor: 'blue',
+                          iconColor: 'black'
+                        },//example multi option
+                        {
+                            key: 'category',
+                            value: ["editing", "analysis" ],
+                            icon: 'fa-circle', 
+                            prefix: 'fa', 
+                            markerColor: 'green-red' 
+                            }  
+                    ] 
+        }
+    } </code></pre>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Description</th>
+                        <th>Default Value</th>
+                        <th>Possible values</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>icon</td>
+                        <td>Name of the icon</td>
+                        <td>'home'</td>
+                        <td>See glyphicons or font-awesome</td>
+                    </tr>
+                    <tr>
+                        <td>prefix</td>
+                        <td>Select the icon library</td>
+                        <td>'glyphicon'</td>
+                        <td>'fa' for font-awesome or 'glyphicon' for bootstrap 3</td>
+                    </tr>
+                    <tr>
+                        <td>markerColor</td>
+                        <td>Single Color of the marker</td>
+                        <td>'blue'</td>
+                        <td>'red', 'darkred','lightred','beige', 'orange', 'green', 'darkgreen','lightgreen', 'blue','lightblue', 'purple', 'darkpurple', 'cadetblue','pink','white','gray','lightgray','black' </td>
+                    </tr>
+                    <tr>
+                        <td>markerColor</td>
+                        <td>Double Colors of the marker</td>
+                        <td> </td>
+                        <td>'orange-red', 'darkred-red', 'lightred-red', 'beige-red', 'green-red', 'darkgreen-red', 'lightgreen-red', 'blue-red', 'darkblue-red', 'lightblue-red', 'purple-red', 'darkpurple-red', 'pink-red', 'cadetblue-red', 'white-red', 'gray-red',
+                            'lightgray-red', 'black-red'<br> 'darkred-orange', 'lightred-orange', 'beige-orange', 'green-orange', 'darkgreen-orange', 'lightgreen-orange', 'blue-orange', 'darkblue-orange', 'lightblue-orange', 'purple-orange', 'darkpurple-orange',
+                            'pink-orange', 'cadetblue-orange', 'white-orange', 'gray-orange', 'lightgray-orange', 'black-orange' <br> 'orange-green', 'darkred-green', 'lightred-green', 'beige-green', 'green-green', 'darkgreen-green', 'lightgreen-green',
+                            'blue-green', 'darkblue-green', 'lightblue-green', 'purple-green', 'darkpurple-green', 'pink-green', 'cadetblue-green', 'white-green', 'gray-green', 'lightgray-green', 'black-green' <br> 'orange-blue','darkred-blue','darkred-blue',
+                            'lightred-blue', 'beige-blue', 'green-blue', 'darkgreen-blue', 'lightgreen-blue', 'blue-blue', 'darkblue-blue', 'lightblue-blue', 'purple-blue', 'darkpurple-blue', 'pink-blue', 'cadetblue-blue', 'white-blue', 'gray-blue', 'lightgray-blue',
+                            'black-blue' <br> 'orange-darkred', 'darkred-darkred', 'lightred-darkred', 'beige-darkred', 'green-darkred', 'darkgreen-darkred', 'lightgreen-darkred', 'blue-darkred', 'darkblue-darkred', 'lightblue-darkred', 'purple-darkred',
+                            'darkpurple-darkred', 'pink-darkred', 'cadetblue-darkred', 'white-darkred', 'gray-darkred', 'lightgray-darkred', 'black-darkred' <br> 'orange-darkblue','darkred-darkblue', 'lightred-darkblue', 'beige-darkblue', 'green-darkblue',
+                            'darkgreen-darkblue', 'lightgreen-darkblue', 'blue-darkblue', 'darkblue-darkblue', 'lightblue-darkblue', 'purple-darkblue', 'darkpurple-darkblue', 'pink-darkblue', 'cadetblue-darkblue', 'white-darkblue', 'gray-darkblue', 'lightgray-darkblue',
+                            'black-darkblue' <br> 'orange-darkgreen','darkred-darkgreen', 'lightred-darkgreen', 'beige-darkgreen', 'green-darkgreen', 'darkgreen-darkgreen', 'lightgreen-darkgreen', 'blue-darkgreen', 'darkblue-darkgreen', 'lightblue-darkgreen',
+                            'purple-darkgreen', 'darkpurple-darkgreen', 'pink-darkgreen', 'cadetblue-darkgreen', 'white-darkgreen', 'gray-darkgreen', 'lightgray-darkgreen', 'black-darkgreen' <br> 'orange-cadetblue', 'darkred-cadetblue', 'lightred-cadetblue',
+                            'beige-cadetblue', 'green-cadetblue', 'darkgreen-cadetblue', 'lightgreen-cadetblue', 'blue-cadetblue', 'darkblue-cadetblue', 'lightblue-cadetblue', 'purple-cadetblue', 'darkpurple-cadetblue', 'pink-cadetblue', 'cadetblue-cadetblue',
+                            'white-cadetblue', 'gray-cadetblue', 'lightgray-cadetblue', 'black-cadetblue' <br>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>markerColor</td>
+                        <td>Triple Colors of the marker</td>
+                        <td> </td>
+                        <td>
+                            'orange-green-red','green-blue-red','blue-purple-red','purple-darkred-red','darkred-darkblue-red','darkblue-darkgreen-red','darkgreen-darkpurple-red','darkpurple-cadetblue-red','cadetblue-lightred-red','lightred-beige-red','beige-lightgreen-red','lightgreen-lightblue-red','lightblue-pink-red','pink-white-red','white-lightgray-red','lightgray-gray-red','gray-black-red','green-blue-orange','blue-purple-orange','purple-darkred-orange','darkred-darkblue-orange','darkblue-darkgreen-orange','darkgreen-darkpurple-orange','darkpurple-cadetblue-orange','cadetblue-lightred-orange','lightred-beige-orange','beige-lightgreen-orange','lightgreen-lightblue-orange','lightblue-pink-orange','pink-white-orange','white-lightgray-orange','lightgray-gray-orange','gray-black-orange','green-blue-green','blue-purple-green','purple-darkred-green','darkred-darkblue-green','darkblue-darkgreen-green','darkgreen-darkpurple-green','darkpurple-cadetblue-green','cadetblue-lightred-green','lightred-beige-green','beige-lightgreen-green','lightgreen-lightblue-green','lightblue-pink-green','pink-white-green','white-lightgray-green','lightgray-gray-green','gray-black-green','purple-darkred-blue','darkred-darkblue-blue','darkblue-darkgreen-blue','darkgreen-darkpurple-blue','darkpurple-cadetblue-blue','cadetblue-lightred-blue','lightred-beige-blue','beige-lightgreen-blue','lightgreen-lightblue-blue','lightblue-pink-blue','darkred-darkblue-purple','darkblue-darkgreen-purple',
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>markerColor</td>
+                        <td>Quadruple Colors of the marker</td>
+                        <td> </td>
+                        <td>
+                            'purple-red-green-blue','darkred-red-green-purple','darkblue-red-green-darkred','darkgreen-red-green-darkblue','darkpurple-darkred-green-darkgreen','cadetblue-darkred-darkgreen-darkpurple','darkred-orange-blue-purple','darkblue-orange-blue-darkred','darkgreen-orange-blue-darkblue','darkpurple-orange-blue-darkgreen','cadetblue-orange-blue-darkpurple','darkblue-green-purple-darkred','green-darkgreen-purple-darkblue','darkpurple-green-purple-darkgreen','cadetblue-green-purple-darkpurple','green-blue-darkred-darkblue','darkpurple-blue-darkred-darkgreen','cadetblue-blue-darkred-darkpurple','darkpurple-purple-darkblue-darkgreen','cadetblue-purple-darkblue-darkpurple','cadetblue-darkred-darkgreen-darkpurple'
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>iconColor</td>
+                        <td>Color of the icon</td>
+                        <td>'white'</td>
+                        <td>'white', 'black' or css code (hex, rgba etc)</td>
+                    </tr>
+
+                </tbody>
+            </table>
+            <h4 class="text-info" id="lnkmapstyle"><i class="fa fa-caret-right" aria-hidden="true"></i> Map Style</h4>
+            <br> Add 'map' key, if it does not exist, in your json object 'jsonDymerConfig'
+
+            <pre class=" language-javascript" data-language="javascript">
+                <code class=" language-javascript">map:{ 
+                    style: 'insert-style'
+                    .... 
+                    } </code></pre>
+            <p><b>Available styles: </b> 'classic', 'light', 'topo', 'esristreet', 'lightstar', 'esrimap' <br>
+                <div class="row row-eq-height">
+                    <div class="col-2  text-center">
+                        <div class="crop-height rounded border ">
+                            <img src="../assets/img/demo/mapstyle/map-classic.jpg" data-toggle="modal" data-target="#html_map_style_classic" class="img-thumbnail   cur-p scale  ">
+                        </div>
+                        <div id="html_map_style_classic" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="html_map_style_classic" aria-hidden="true">
+                            <div class="modal-dialog" style=" max-width: 80%;  ">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <small class="text-muted">Example - Classic Style </small>
+                                    </div>
+                                    <div class="modal-body">
+                                        <img src="../assets/img/demo/mapstyle/map-classic.jpg">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <small class="text-muted">Example - Classic Style </small>
+                    </div>
+                    <div class="col-2  text-center">
+                        <div class="crop-height rounded border ">
+                            <img src="../assets/img/demo/mapstyle/map-light.jpg" data-toggle="modal" data-target="#html_map_style_light" class="img-thumbnail   cur-p scale  ">
+                        </div>
+                        <div id="html_map_style_light" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="html_map_style_light" aria-hidden="true">
+                            <div class="modal-dialog" style=" max-width: 80%;  ">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <small class="text-muted">Example - Light Style </small>
+                                    </div>
+                                    <div class="modal-body">
+                                        <img src="../assets/img/demo/mapstyle/map-light.jpg">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <small class="text-muted">Example - Light Style </small>
+                    </div>
+                    <div class="col-2  text-center">
+                        <div class="crop-height rounded border ">
+                            <img src="../assets/img/demo/mapstyle/map-topo.jpg" data-toggle="modal" data-target="#html_map_style_topo" class="img-thumbnail   cur-p scale  ">
+                        </div>
+                        <div id="html_map_style_topo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="html_map_style_topo" aria-hidden="true">
+                            <div class="modal-dialog" style=" max-width: 80%;  ">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <small class="text-muted">Example - Topo Style </small>
+                                    </div>
+                                    <div class="modal-body">
+                                        <img src="../assets/img/demo/mapstyle/map-topo.jpg">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <small class="text-muted">Example - Topo Style </small>
+                    </div>
+                    <div class="col-2  text-center">
+                        <div class="crop-height rounded border ">
+                            <img src="../assets/img/demo/mapstyle/map-esristreet.jpg" data-toggle="modal" data-target="#html_map_style_esristreet" class="img-thumbnail   cur-p scale  ">
+                        </div>
+                        <div id="html_map_style_esristreet" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="html_map_style_esristreet" aria-hidden="true">
+                            <div class="modal-dialog" style=" max-width: 80%;  ">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <small class="text-muted">Example - EsriStreet Style </small>
+                                    </div>
+                                    <div class="modal-body">
+                                        <img src="../assets/img/demo/mapstyle/map-esristreet.jpg">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <small class="text-muted">Example - EsriStreet Style </small>
+                    </div>
+                    <div class="col-2  text-center">
+                        <div class="crop-height rounded border ">
+                            <img src="../assets/img/demo/mapstyle/map-lightstar.jpg" data-toggle="modal" data-target="#html_map_style_lightstar" class="img-thumbnail   cur-p scale  ">
+                        </div>
+                        <div id="html_map_style_lightstar" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="html_map_style_lightstar" aria-hidden="true">
+                            <div class="modal-dialog" style=" max-width: 80%;  ">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <small class="text-muted">Example - Light Style </small>
+                                    </div>
+                                    <div class="modal-body">
+                                        <img src="../assets/img/demo/mapstyle/map-lightstar.jpg">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <small class="text-muted">Example - Light Style </small>
+                    </div>
+                    <div class="col-2  text-center">
+                        <div class="crop-height rounded border ">
+                            <img src="../assets/img/demo/mapstyle/map-esrimap.jpg" data-toggle="modal" data-target="#html_map_style_esrimap" class="img-thumbnail   cur-p scale  ">
+                        </div>
+                        <div id="html_map_style_esrimap" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="html_map_style_esrimap" aria-hidden="true">
+                            <div class="modal-dialog" style=" max-width: 80%;  ">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <small class="text-muted">Example - EsriMap Style </small>
+                                    </div>
+                                    <div class="modal-body">
+                                        <img src="../assets/img/demo/mapstyle/map-esrimap.jpg">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <small class="text-muted">Example - EsriMap Style </small>
+                    </div>
+                </div>
+            </p>
+        </div>
+
+
+        <div class="card-footer ">
+            <hr />
+            <div class="stats"><i class="fa fa-history"></i> Updated 10/12/2020</div>
+        </div>
+    </div>
+</div>

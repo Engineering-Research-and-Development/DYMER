@@ -1,0 +1,215 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title text-warning"> <span class="card-category"> <i class="fa fa-wrench"></i> </span>Configurator</h5>
+
+            </div>
+            <div class="card-body   ">
+                <div id="builder" class="col-md-12"></div>
+                <div class="text-right">  </div>
+                <br>
+                <div id="wizardConfigurator" ng-controller="confController"> 
+                       
+                     
+
+                    <!-- <form id="formconf" method="post" ng-submit="submit()">  -->
+                     <div id="acordeon">
+                        <div class="panel-group" id="accordion">
+                            <div class="panel panel-border panel-default">
+                                <a data-toggle="collapse" href="#general" aria-expanded="true">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            Base Configuration
+                                             <!--  <i class="fa fa-angle-down"></i> -->  
+                                        </h4>
+                                    </div>
+                                </a>
+                                <div id="general" class="panel-collapse collapse show">
+                                    <div class="panel-body">  
+                                        <section id="c-general" class="containerConfig">
+                                           <!--   <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    Base Configuration </h4>
+                                            </div> -->
+                                             
+                                            
+                                            <div class="form-group" ><label class="text-info">View as </label>
+                                            <select class="form-control" name="viewtype" id="viewtype" ng-model="formData.viewtype">
+                                                <option value="0" data-view="list">List</option>
+                                                <option value="1" data-view="map">Map</option>
+                                                <option value="2" data-view="keyurl">Key by url</option>
+                                            </select>
+                                            </div>
+
+                                            <div class="form-group " style="display:none">
+                                                <label class="text-info">Dymer IP Address</label>
+                                                <input type="hidden" class="form-control col-12 span12" name="baseurl" id="baseurl" ng-model="formData.baseurl">
+                                                <small class="form-text text-muted">Please provide the name of the testform</small>
+                                            </div>
+
+
+                                            <div class="form-group">
+                                            <label class="checkbox" ><input type="checkbox" name="loadSearch" id="loadSearch" ng-model="formData.loadSearch"> Search entities on load page</label>
+                                            </div>
+                                            <div class="form-group">
+                                            <label class="checkbox" ><input type="checkbox" name="showBread" id="showBread" ng-model="formData.showBread"> Show breadcrumb</label>
+                                            </div>
+                                            <div class="form-group ">
+                                                <label class="text-info">Model to Add</label>
+                                                 <!-- <select class="form-control" name="modeltoAdd" id="modeltoAdd" ng-model="formData.modeltoAdd">
+                                                 </select> -->
+                                                
+                                               <input type="text" class="form-control col-12 span12" name="modeltoAdd" id="modeltoAdd" ng-model="formData.modeltoAdd">
+
+                                                <small class="form-text text-muted">Please provide the name of the testform</small>
+                                            </div>
+                                            
+                                            <div class="row"> 
+                                                <div class="col-md-8 "> <div class="control-group">
+                                                     <label class="control-label" for=" "> Query <span class="label-required">(Required)</span>
+                                                     </label>
+                                                     
+                                                     <textarea class="col-md-12 col-sm-12" rows="3" id="query" name="query" ng-model="formData.query" aria-required="true">
+                                                         
+                                                     </textarea>  
+                                                    </div>
+                                                 </div> 
+                                                 <div class="col-md-4 "> 
+                                                    
+                                                        <div class="form-group ">
+                                                            <label class="text-info">Button Label</label>
+                                                            <input class="form-control col-12 span12" id="label" name="label" type="text" value="" ng-model="formData.label"> 
+                                                        </div>  
+                                                        
+                                                        <div class="form-group ">
+                                                            <label class="text-info">UserID - 20125 </label>
+                                                            <input class="form-control col-12 span12" id="u_id" name="u_id" type="text" value="20125" ng-model="formData.u_id"> 
+                                                        </div>    
+                                                        <div class="form-group ">
+                                                            <label class="text-info">GroupID - 20121 </label>
+                                                            <input class="form-control col-12 span12" id="g_id" name="g_id" type="text" value="20121" ng-model="formData.g_id"> 
+                                                        </div>  
+
+
+                                                </div> 
+                                                           
+                                                        
+                                                        
+                                            </div>
+                                              
+
+
+
+                               
+                               
+                                </section>
+                                      </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-border panel-default">
+                                <a data-toggle="collapse" href="#searchbar" aria-expanded="true">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            Search Bar
+                                          <!--  <i class="fa fa-angle-down"></i> -->  
+                                        </h4>
+                                    </div>
+                                </a>
+                                <div id="searchbar" class="panel-collapse collapse show">
+                                    <div class="panel-body">  
+                                        <section id="c-searchbar" class="containerConfig">
+                        
+                                            <!-- <div class="panel-heading">
+                                                <h4 class="panel-title">
+                                                    Search Bar
+                                                    
+                                                </h4>
+                                            </div>-->
+
+                                            <div class="row" >
+                                                <div class="col-sm-12">
+                                                    <div class="form-group">
+                                                        <label class="checkbox" class="text-info">
+                                                            <input type="checkbox" name="showSearch" id="showSearch" ng-model="formData.showSearch"> Show Search Bar</label>
+                                                        </div>
+                                                </div>
+                    
+                                            </div>
+                                            <div class="row" > 
+                                                <div class="col-sm-4 col-4">
+                                                    <div class="form-group" ><label class="text-info">Type of search </label>
+                                                        <select class="form-control" name="searchType" id="searchType" ng-model="formData.searchType">
+                                                             <option value="1" data-search="free">Search free input</option>
+                                                            <option value="2" data-search="snippets" >Search for snippet</option>
+                                                        </select>
+                                                        <small class="form-text text-muted">select Search Free Input to use global search</small>
+                    
+                                                        </div>
+                                                </div>
+                                                <div class="col-sm-4 col-4">
+                                                    <div class="form-group ">
+                                                        <label class="text-info">Key Get form URL (global search)</label>
+                                                        <input type="text" class="form-control col-12 span12" name="keyurlget" id="keyurlget" ng-model="formData.keyurlget">
+                                 
+                                                        <small class="form-text text-muted">Insert name form form URL to recovery get value</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="form-group ">
+                                                        <label class="text-info">Index model for filter</label>
+                                                        <input type="text" class="form-control col-12 span12" name="filtermodel" id="filtermodel" ng-model="formData.filtermodel">
+                                                        <small class="form-text text-muted">Enter the entity index to load filters</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-12 "> 
+                                                    
+                                                    <label class="text-info"> Base filter to add in search </label>
+                                                     <textarea name="basefilter" class="col-md-12 col-sm-12" rows="3" id="baseFilterSearch" ng-model="formData.baseFilterSearch">
+                                                         
+                                                     </textarea>
+                                                     
+                                                     </div>
+                                                     <div class="col-sm-12 "> 
+                                                    
+                                                        <label class="text-info"> Custom filter  </label>
+                                                         <textarea name="customfilter" class="col-md-12 col-sm-12" rows="3" id="customFilterSearch" ng-model="formData.customFilterSearch">
+                                                             
+                                                         </textarea>
+                                                         
+                                                         </div>
+
+
+
+
+                                            </div>    
+                    
+                    
+                                        </section>
+                                       </div>
+                                </div>
+                            </div>  
+                        </div>
+                    </div>
+
+
+                    <div class="text-right">
+                        <button class="btn btn-sm btn-primary" id="submit" ng-click="generatePage(formData)"><i class="fa fa-code" aria-hidden="true"></i>  Generate HTML Page</button>
+                        <!-- <button class="btn btn-sm  btn-info" id="btn-test"><i class="fa fa-file-archive-o" aria-hidden="true"></i> Generate Fragments</button> -->
+                        <button class="btn btn-sm  btn-warning" id="btn-reset"><i class="fa fa-eraser" aria-hidden="true"></i> Reset</button>
+                    </div>
+                  <!--  </form> -->
+                  <div id="iframeResult"></div>
+                  <div id="renderiframeResult"></div>
+
+
+
+                </div>
+                 
+            </div>
+            
+        </div>
+    </div>
+</div>

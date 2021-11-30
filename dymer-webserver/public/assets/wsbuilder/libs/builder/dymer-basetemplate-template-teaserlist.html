@@ -1,0 +1,18 @@
+<span id="d_pagination_prop">{{setVariable "d_pagination_size" 6}}</span> {{#each this}}
+<div class="row listrow" d-pagegroup="{{{DymerPaginationPageIndex ../this.length @index}}}">
+    <div data-component-entitystatus="" data-vvveb-disabled="" class="row">{{{EntityStatus this}}}</div>
+    <div class="col-3">
+        <img class="img-fluid logof" src="{{cdnpath}}api/entities/api/v1/entity/content/{{logo.id}}">
+    </div>
+    <div class="col-9">
+        <div>
+            <h1 class="text-info">{{title}}</h1>
+        </div>
+        <div class="descrellipse">{{description}}</div>
+        <span class="pull-right text-info " style="padding-top: 10px;cursor:pointer" title="{{name}}" onclick="kmsrenderdetail(&quot;{{_id}}&quot;)">
+				View More
+			</span>
+    </div>
+</div>
+{{/each}}
+<div data-component-dpagination="" class="row pagination" d-pagination-size="6">{{{DymerPagination this}}}</div>

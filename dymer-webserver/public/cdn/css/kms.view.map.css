@@ -1,0 +1,371 @@
+#dynamicMAP {
+    height: 500px;
+}
+
+.leaflet-top.leaflet-right {
+    background-color: #444;
+    height: 100%;
+}
+
+.leaflet-top.leaflet-right .leaflet-control {
+    margin: 0;
+}
+
+.toolBarRightUl {
+    border: 0;
+}
+
+.toolBarRightUl li a {
+    background-color: transparent!important;
+    color: #f5f5f5;
+    border-radius: 0;
+    border: 0!important;
+    width: 40px!important;
+    height: 40px!important
+}
+
+.toolBarRightUl li a:hover {
+    color: white;
+}
+
+.toolBarRightUl li a i {
+    line-height: 50px;
+    font-size: 18px;
+    width: 100%;
+}
+
+.bs-tooltip-left.show {
+    z-index: 99999;
+}
+
+
+/*inzio cluster*/
+
+.marker-cluster-small {
+    /*  background-color: transparent;*/
+    background-color: rgb(41 129 202 / 43%);
+}
+
+.marker-cluster div {
+    color: white;
+}
+
+.marker-cluster-small div {
+    /* background-color: rgb(41, 129, 202);*/
+    background-color: rgb(41 129 202 / 80%);
+    /* border: 1px solid #ececec; */
+}
+
+
+/*fine cluster*/
+
+.leaflet-bottom.leaflet-left form {
+    background: #ecececa3!important;
+    pointer-events: auto;
+    left: 5px;
+    position: fixed;
+    bottom: -3px;
+}
+
+
+/*.cloned_interactiveF{
+    margin: 0 0 -7px 3px!important;
+}
+.cloned_interactiveF form{
+	    background: #ecececa3!important;
+}
+.fixedmapfilter{
+	 
+	margin: 0 0 -7px 3px!important;
+	    position: fixed;
+    z-index: 999999;
+    bottom: 3px;
+	
+	display: block;
+	    padding-left: 0;
+}
+.fixedmapfilter form{
+	    background: #ecececa3!important;
+}
+ .leaflet-container:fullscreen{
+	  z-index: 99000; 
+ }*/
+
+.form-group {
+    margin-bottom: 2px;
+}
+
+
+/*.form-group label {
+ 	    padding-top: 0;
+ 	    color: #757575!important;
+ 	    font-weight: 500;
+ 	    margin-bottom: 0px;
+ 	}*/
+
+.btnmapfilter {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.nomaxW {
+    max-width: none!important;
+}
+
+.hide_el {
+    display: none!important;
+}
+
+.tableOpen {
+    width: 90%;
+}
+
+.tableOpen #sidebar {
+    padding: 5px;
+}
+
+.leaflet-sidebar.right {
+    padding: 0;
+    border-left: 1px solid rgb(215, 221, 222);
+    z-index: 780;
+}
+
+.leaflet-sidebar.right.visible {
+    right: 39px;
+}
+
+.leaflet-sidebar.right.visible~.leaflet-right {
+    right: 0;
+}
+
+.leaflet-touch .leaflet-sidebar>.leaflet-control {
+    border: none;
+    padding: 8 0px;
+    background: #fffffff5;
+    border-radius: 0;
+}
+
+.leaflet-sidebar .close {
+    top: 0px;
+    color: #f5f5f5!important;
+    left: -31px;
+    z-index: 999999;
+    opacity: 0.8;
+    border-radius: 0px;
+    background-color: rgb(68, 68, 68);
+    font-size: initial;
+    text-shadow: none;
+    line-height: 30px;
+    border-bottom: 1px solid rgb(215, 221, 222);
+    border-left: 1px solid rgb(215, 221, 222);
+}
+
+.leaflet-sidebar .close:hover {
+    opacity: 1!important;
+    color: #ffffff!important;
+}
+
+.style-4::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgb(215, 221, 222);
+    background-color: #F5F5F5;
+}
+
+.style-4::-webkit-scrollbar {
+    width: 5px;
+    background-color: #F5F5F5;
+}
+
+.style-4::-webkit-scrollbar-thumb {
+    background-color: rgb(173, 173, 173);
+    border: 0px solid #555555;
+}
+
+
+/*DataTable*/
+
+#cont-Dt .col-9 {
+    padding: 0;
+    width: 100%;
+    max-width: 100%;
+    flex-basis: 99%;
+}
+
+.depcolumn {
+    width: 150px;
+    max-width: 150px;
+}
+
+.tdEllipseOpen {
+    float: right;
+    cursor: pointer;
+    padding-left: 1px;
+}
+
+.tdEllipseOpen:hover {
+    color: #0066cc;
+}
+
+.tdEllipse .fa-angle-up:before {
+    content: "\f107"!important;
+}
+
+#dynamicDT_wrapper .dt-buttons button {
+    background-color: #b1b1b3;
+    border-color: #b1b1b3;
+}
+
+#dynamicDT_wrapper .dt-buttons button:hover {
+    background-color: #06c;
+    border-color: #06c;
+}
+
+#icnshowadd {
+    position: absolute;
+    top: 7px;
+    right: 20px;
+    z-index: 99999;
+    cursor: pointer;
+    color: #b1b1b3;
+}
+
+#icnshowadd:hover,
+#icnsdownload:hover,
+#icnsHideShow:hover {
+    color: #06c;
+}
+
+#icnsdownload {
+    cursor: pointer;
+    color: #b1b1b3;
+    position: relative;
+    bottom: -5px;
+    margin-right: 7px;
+}
+
+#icnsHideShow {
+    cursor: pointer;
+    color: #b1b1b3;
+    position: relative;
+    margin-right: 7px;
+    bottom: -3px;
+}
+
+#contDwnlBtn button {
+    margin-right: 5px;
+}
+
+.max-orgtitle-width {
+    max-width: 400px!important;
+}
+
+.d_table_filer th {
+    max-width: 400px!important;
+}
+
+#hdNavbar {
+    border-top: 3px solid #023d7d;
+}
+
+table.dataTable thead tr[role=row] th {
+    color: white;
+    background-color: #023d7d;
+    /* font-size: 0.875rem;*/
+    font-family: sans-serif, Arial, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-weight: 500;
+}
+
+#dynamicDT {
+    border-radius: 4px;
+    box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+}
+
+table.dataTable thead tr[role=row] th:first-child {
+    border-top-left-radius: 4px;
+}
+
+table.dataTable thead tr[role=row] th:last-child {
+    border-top-right-radius: 4px;
+}
+
+table.dataTable thead th:before,
+table.dataTable thead th:after {
+    display: none!important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 0!important;
+    margin: 0!important;
+    ;
+}
+
+.border-left-primary {
+    border-left-color: #2d72be!important;
+}
+
+tbody .tdEllipse>div {
+    overflow: hidden;
+    height: 50px;
+    /*text-overflow: ellipsis;
+    -webkit-line-clamp: 2;*/
+    /*display: -webkit-box;*/
+    /* -webkit-box-orient: vertical;
+    padding-bottom: 6px!important;*/
+}
+
+tbody .tdEllipse hr {
+    margin: 2px;
+}
+
+tbody .ellipseInOut {
+    cursor: zoom-out;
+    min-width: 250px;
+    max-width: 300px;
+}
+
+tbody .tdEllipse.ellipseInOut {
+    cursor: zoom-in;
+}
+
+.btn-icon-split {
+    padding: 0!important;
+}
+
+.note-editor .note-toolbar {
+    background-color: #f5f5f5;
+    border-color: #ddd;
+}
+
+.note-editor .note-toolbar button {
+    background-color: #fff;
+    border-color: #ccc;
+}
+
+.panel-heading {
+    padding: 10px 15px;
+    border-bottom: 1px solid transparent;
+}
+
+
+/*dymer_breadcrumb*/
+
+#dymer_breadcrumb .dbreadcrumb {
+    color: #fff;
+    position: relative;
+    bottom: 28px;
+    left: -20px;
+    background-color: #2d72be;
+}
+
+#dymer_breadcrumb .dbreadcrumb:first-of-type {
+    padding-left: 5px;
+}
+
+#dymer_breadcrumb .dbreadcrumb:last-of-type {
+    padding-right: 5px;
+}
+
+
+/*END dymer_breadcrumb*/
+
+
+/*DataTable Fine*/

@@ -1,0 +1,77 @@
+<div class="row">
+
+
+    <div class="col-md-4">
+
+        <div class="card">
+
+            <div class="card-body">
+                <form>
+                    <div class="input-group no-border">
+                        <input type="text" value="" class="form-control" placeholder="Search by title" ng-model="search.title" />
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <i class="nc-icon nc-zoom-split"></i>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div ng-hide="listaForms.length">
+                    <div class="alert alert-warning  "> No Model available </div>
+                </div>
+                <ul class="list-unstyled team-members">
+                    <li ng-repeat="el in listaForms | filter:search" class="kmspointer hover actcolor">
+                        <div class="row">
+                            <!--  <div class=" col-1">
+             <div class="avatar">
+                <img src="../assets/img/faces/ayo-ogunseinde-2.jpg" alt="Circle Image"
+                  class="img-circle img-no-padding img-responsive">
+              </div>
+            </div>-->
+                            <div class="col-md-7 col-7">
+                                <span ng-click="loadHtmlForm(el,$index);templ.isActive = !templ.isActive" style="bottom: -17px; 
+    position: relative;" ng-class="{active:$index== selected}">{{ el.title }}</span>
+                                <!-- <br>
+              <span class="text-muted">
+             <small>Offline</small>
+              </span>-->
+                            </div>
+                            <div class="  col-5 text-right">
+                                <btn class="btn btn-sm btn-outline-success btn-round btn-icon" ng-click="loadHtmlForm(el,$index)"><i class="fa fa-eye" aria-hidden="true"></i></btn>
+                                <btn class="btn btn-sm btn-outline-success btn-round btn-icon" ng-click="loadDetailsForm(el,$index)"><i class="fa fa-info" aria-hidden="true"></i></btn>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card ">
+            <div class="card-header  ">
+                <h5 class="card-title b-b1px text-info ">{{formtitle}}</h5>
+            </div>
+            <div class="card-body ">
+
+                <div class="row">
+
+
+                    <div class="col-md-12" id="cont-RenderForm">
+                        <div id="html-torender">
+                            <div class="text-center">
+                                <i class="nc-icon nc-tile-56  text-warning" style="    font-size: 113px;"></i>
+                            </div>
+                        </div>
+                        <div id="appendfiles"></div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="card-footer ">
+                <hr>
+                <div class="stats" ng-show="objChanged"><i class="fa fa-history"></i><span ng-bind="objChanged | date:'MM/dd/yyyy HH:mm'"></span></div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,541 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Bridge-Adapter Entities Configuration<span class='pull-right'><i
+                            class="fa fa-cogs burgherAction"
+                            ng-click="showConfigBridgeEntities = ! showConfigBridgeEntities" aria-hidden="true"></i>
+                    </span></h5>
+                <!-- <p class="card-category">Handcrafted by our friends from
+                      
+                        </p>-->
+            </div>
+
+            <div class="card-body" ng-show="showConfigBridgeEntities">
+                <form name="formconfigBridge" id="formconfigBridge">
+                    <input type="hidden" ng-model="configBridge._id">
+                    <div class="row ">
+                        <div class="col-6 ">
+                            <div class="form-group ">
+                                <label>Title *</label>
+                                <input type="text" ng-model="configBridge.title" class="form-control" ng-required="true">
+                            </div>
+                        </div>
+                        <div class="col-6 ">
+                            <div class="form-group ">
+                                <label>Indexes *</label>
+                                <input type="text" ng-model="configBridge.indexes" class="form-control" ng-list>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row bordercontent" style="margin: 3px;">
+                        <div class="col-12" style="padding: 0px;font-weight: bold;"> <label class="text-primary"> <i
+                                    class="fa fa-search" aria-hidden="true"></i> Api search</label></div>
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Method *</label>
+                                <select ng-model="configBridge.api.search.method" class="form-control ">
+                                    <option value="GET">GET</option>
+                                    <option value="POST">POST</option>
+                                    <option value="DELETE">DELETE</option>
+                                    <option value="PUT">PUT</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-3 ">
+                            <div class="form-group ">
+                                <label>Host *</label>
+                                <input type="text" ng-model="configBridge.api.search.host" class="form-control ">
+                            </div>
+                        </div>
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Port </label>
+                                <input type="text " class="form-control " ng-model="configBridge.api.search.port">
+                            </div>
+                        </div>
+                        <div class="col-5 ">
+                            <div class="form-group ">
+                                <label>Path *</label>
+                                <input type="text " class="form-control " ng-model="configBridge.api.search.path">
+                                <label ng-non-bindable>
+                                    tokens available {{external-json-objext-key}}, i.e. {{id}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-6 ">
+                            <div class="form-group ">
+                                <label>Header *</label>
+                                <textarea type="text " class="form-control " ng-model="configBridge.api.search.header">
+                                </textarea>
+                            </div>
+                        </div>
+                        <div class="col-6 ">
+                            <div class="form-group ">
+                                <label>Container key *</label>
+                                <input type="text " class="form-control " ng-model="configBridge.api.search.containerkey">
+                            </div>
+                        </div>
+                        <div class="col-12 ">
+                            <div class="form-group ">
+                                <label>Mapping Dymer Query vs External Query Params* </label>
+                                <textarea type="text " class="form-control " ng-model="configBridge.api.search.mapping.query">
+                                </textarea>
+                                <label>JsonMapper Documentation <a target="_blank"
+                                        href="https://github.com/marchah/json-mapper-json"><i class="fa fa-github"
+                                            aria-hidden="true"></i></a> </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row bordercontent" style="margin: 3px;">
+                        <div class="col-12" style="padding: 0px;font-weight: bold;"> <label class="text-success"> <i
+                                    class="fa fa-plus" aria-hidden="true"></i> Api Add Resource</label></div>
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Method *</label>
+                                <select ng-model="configBridge.api.create.method" class="form-control ">
+                                    <option value="GET">GET</option>
+                                    <option value="POST">POST</option>
+                                    <option value="DELETE">DELETE</option>
+                                    <option value="PUT">PUT</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-3 ">
+                            <div class="form-group ">
+                                <label>Host *</label>
+                                <input type="text" ng-model="configBridge.api.create.host" class="form-control ">
+                            </div>
+                        </div>
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Port </label>
+                                <input type="text " class="form-control " ng-model="configBridge.api.create.port">
+                            </div>
+                        </div>
+                        <div class="col-5 ">
+                            <div class="form-group ">
+                                <label>Path *</label>
+                                <input type="text " class="form-control " ng-model="configBridge.api.create.path">
+                                <label ng-non-bindable>
+                                    tokens available {{external-json-objext-key}}, i.e. {{id}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-6 ">
+                            <div class="form-group ">
+                                <label>Header *</label>
+                                <textarea type="text " class="form-control " ng-model="configBridge.api.create.header">
+                                </textarea>
+                            </div>
+                        </div>
+                        <div class="col-6 ">
+                            <div class="form-group ">
+                                <label>Container key *</label>
+                                <input type="text " class="form-control " ng-model="configBridge.api.create.containerkey">
+                            </div>
+                        </div>
+                        <!--<div class="col-12 ">
+                            <div class="form-group ">
+                                <label>Content Type</label>
+                                <select class="form-control" ng-model="configBridge.api.create.header.Content-Type">
+                                    <option value="option-1">Option 1</option>
+                                    <option value="option-2">Option 2</option>
+                                  </select>
+                            </div>
+                        </div>-->
+                        <div class="col-12 ">
+                            <div class="form-group ">
+                                <label>Mapping Dymer Entity vs External Entity* </label>
+                                <textarea type="text " class="form-control " ng-model="configBridge.api.create.mapping.extentity">
+                                </textarea>
+                                <label>JsonMapper Documentation <a target="_blank"
+                                        href="https://github.com/marchah/json-mapper-json"><i class="fa fa-github"
+                                            aria-hidden="true"></i></a> </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row bordercontent" style="margin: 3px;">
+                        <div class="col-12" style="padding: 0px;font-weight: bold;"> <label class="text-warning"> <i
+                                    class="fa fa-pencil" aria-hidden="true"></i> Api Edit Resource</label></div>
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Method *</label>
+                                <select ng-model="configBridge.api.update.method" class="form-control ">
+                                    <option value="GET">GET</option>
+                                    <option value="POST">POST</option>
+                                    <option value="DELETE">DELETE</option>
+                                    <option value="PUT">PUT</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-3 ">
+                            <div class="form-group ">
+                                <label>Host *</label>
+                                <input type="text" ng-model="configBridge.api.update.host" class="form-control ">
+                            </div>
+                        </div>
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Port </label>
+                                <input type="text " class="form-control " ng-model="configBridge.api.update.port">
+                            </div>
+                        </div>
+                        <div class="col-5 ">
+                            <div class="form-group ">
+                                <label>Path *</label>
+                                <input type="text " class="form-control " ng-model="configBridge.api.update.path">
+                                <label ng-non-bindable>
+                                    tokens available {{external-json-objext-key}}, i.e. {{id}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-6 ">
+                            <div class="form-group ">
+                                <label>Header *</label>
+                                <textarea type="text " class="form-control " ng-model="configBridge.api.update.header">
+                                </textarea>
+                            </div>
+                        </div>
+                        <div class="col-6 ">
+                            <div class="form-group ">
+                                <label>Container key *</label>
+                                <input type="text " class="form-control " ng-model="configBridge.api.update.containerkey">
+                            </div>
+                        </div>
+                        <!--<div class="col-12 ">
+                            <div class="form-group ">
+                                <label>Content Type</label>
+                                <select class="form-control" ng-model="configBridge.api.update.header.Content-Type">
+                                    <option value="option-1">Option 1</option>
+                                    <option value="option-2">Option 2</option>
+                                  </select>
+                            </div>
+                        </div>-->
+                        <div class="col-12 ">
+                            <div class="form-group ">
+                                <label>Mapping Dymer Entity vs External Entity*</label>
+                                <textarea type="text " class="form-control " ng-model="configBridge.api.update.mapping.extentity">
+                                </textarea>
+                                <label>JsonMapper Documentation <a target="_blank"
+                                        href="https://github.com/marchah/json-mapper-json"><i class="fa fa-github"
+                                            aria-hidden="true"></i></a> </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row bordercontent" style="margin: 3px;">
+                        <div class="col-12" style="padding: 0px;font-weight: bold;"> <label class="text-info"> <i
+                                    class="fa fa-pencil" aria-hidden="true"></i> Api Patch Resource</label></div>
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Method *</label>
+                                <select ng-model="configBridge.api.patch.method" class="form-control ">
+                                    <option value="GET">GET</option>
+                                    <option value="POST">POST</option>
+                                    <option value="DELETE">DELETE</option>
+                                    <option value="PUT">PUT</option>
+                                    <option value="PATCH">PATCH</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-3 ">
+                            <div class="form-group ">
+                                <label>Host *</label>
+                                <input type="text" ng-model="configBridge.api.patch.host" class="form-control ">
+                            </div>
+                        </div>
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Port </label>
+                                <input type="text " class="form-control " ng-model="configBridge.api.patch.port">
+                            </div>
+                        </div>
+                        <div class="col-5 ">
+                            <div class="form-group ">
+                                <label>Path *</label>
+                                <input type="text " class="form-control " ng-model="configBridge.api.patch.path">
+                                <label ng-non-bindable>
+                                    tokens available {{external-json-objext-key}}, i.e. {{id}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-6 ">
+                            <div class="form-group ">
+                                <label>Header *</label>
+                                <textarea type="text " class="form-control " ng-model="configBridge.api.patch.header">
+                                                    </textarea>
+                            </div>
+                        </div>
+                        <div class="col-6 ">
+                            <div class="form-group ">
+                                <label>Container key *</label>
+                                <input type="text " class="form-control " ng-model="configBridge.api.patch.containerkey">
+                            </div>
+                        </div>
+                        <div class="col-12 ">
+                            <div class="form-group ">
+                                <label>Mapping Dymer Entity vs External Entity*</label>
+                                <textarea type="text " class="form-control " ng-model="configBridge.api.patch.mapping.extentity">
+                                                    </textarea>
+                                <label>JsonMapper Documentation <a target="_blank"
+                                        href="https://github.com/marchah/json-mapper-json"><i class="fa fa-github"
+                                            aria-hidden="true"></i></a> </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row bordercontent" style="margin: 3px;">
+                        <div class="col-12" style="padding: 0px;font-weight: bold;"> <label class="text-danger"> <i
+                                    class="fa fa-trash" aria-hidden="true"></i> Api Delete Resource</label></div>
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Method *</label>
+                                <select ng-model="configBridge.api.delete.method" class="form-control ">
+                                    <option value="GET">GET</option>
+                                    <option value="POST">POST</option>
+                                    <option value="DELETE">DELETE</option>
+                                    <option value="PUT">PUT</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-3 ">
+                            <div class="form-group ">
+                                <label>Host *</label>
+                                <input type="text" ng-model="configBridge.api.delete.host" class="form-control ">
+                            </div>
+                        </div>
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Port </label>
+                                <input type="text " class="form-control " ng-model="configBridge.api.delete.port">
+                            </div>
+                        </div>
+                        <div class="col-5 ">
+                            <div class="form-group ">
+                                <label>Path *</label>
+                                <input type="text " class="form-control " ng-model="configBridge.api.delete.path">
+                                <label ng-non-bindable>
+                                    tokens available {{external-json-objext-key}}, i.e. {{id}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-6 ">
+                            <div class="form-group ">
+                                <label>Header *</label>
+                                <textarea type="text " class="form-control " ng-model="configBridge.api.delete.header">
+                                </textarea>
+                            </div>
+                        </div>
+                        <!--<div class="col-6 ">
+                            <div class="form-group ">
+                                <label>Container key *</label>
+                                <input type="text " class="form-control " ng-model="configBridge.api.update.containerkey">
+                            </div>
+                        </div>-->
+                        <!--<div class="col-12 ">
+                            <div class="form-group ">
+                                <label>Content Type</label>
+                                <select class="form-control" ng-model="configBridge.api.update.header.Content-Type">
+                                    <option value="option-1">Option 1</option>
+                                    <option value="option-2">Option 2</option>
+                                  </select>
+                            </div>
+                        </div>-->
+                        <div class="col-12 ">
+                            <div class="form-group ">
+                                <label>Mapping Dymer Entity vs External Entity*</label>
+                                <textarea type="text " class="form-control " ng-model="configBridge.api.delete.mapping.extentity">
+                                </textarea>
+                                <label>JsonMapper Documentation <a target="_blank"
+                                        href="https://github.com/marchah/json-mapper-json"><i class="fa fa-github"
+                                            aria-hidden="true"></i></a> </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row bordercontent" style="margin: 3px;">
+                        <div class="col-12" style="padding: 0px;font-weight: bold;"> <label style="color: #266a81;"><i
+                                    class="fa fa-cloud"></i> <i class="fa fa-exchange" aria-hidden="true"></i> <i
+                                    class="nc-icon nc-world-2" aria-hidden="true"></i> Mapping External Entities vs
+                                Dymer Entities</label></div>
+                        <div class="col-12 ">
+                            <div class="form-group ">
+                                <textarea type="text " class="form-control " ng-model="configBridge.mapping.extentity">
+                                </textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row bordercontent" style="margin: 3px;">
+                        <div class="col-12" style="padding: 0px;font-weight: bold;"> <label style="color: #266a81;"><i
+                                    class="nc-icon nc-world-2"></i> <i class="fa fa-exchange" aria-hidden="true"></i> <i
+                                    class="fa fa-cloud" aria-hidden="true"></i> Mapping Dymer Entities vs External
+                                Entities</label></div>
+                        <div class="col-4 ">
+                            <div class="form-group ">
+                                <label>_index *</label>
+                                <!-- <input type="text " class="form-control " ng-model="configBridge.mapping.dentity._index.path">-->
+                                <textarea type="text " class="form-control " ng-model="configBridge.mapping.dentity._index">
+                                </textarea>
+                                <label>{"path" : "field2","defaultValue" : "YOURINDEX"} </label>
+                            </div>
+                        </div>
+                        <div class="col-4 ">
+                            <div class="form-group ">
+                                <label>_type *</label>
+                                <!--<input type="text " class="form-control " ng-model="configBridge.mapping.dentity._type.path">-->
+                                <textarea type="text " class="form-control " ng-model="configBridge.mapping.dentity._type">
+                                                                </textarea>
+                                <label>{"path" : "field2","defaultValue" : "YOURINDEX"} </label>
+                            </div>
+                        </div>
+                        <div class="col-4 ">
+                            <div class="form-group ">
+                                <label>_id *</label>
+                                <!-- <input type="text " class="form-control " ng-model="configBridge.mapping.dentity._id.path">-->
+                                <textarea type="text " class="form-control " ng-model="configBridge.mapping.dentity._id">
+                                                                                                </textarea>
+                                <label>{"path" : "YOURIDKEY"} </label>
+                            </div>
+                        </div>
+                        <div class="col-12 ">
+                            <div class="form-group ">
+                                <label>_source *</label>
+                                <textarea type="text " class="form-control " ng-model="configBridge.mapping.dentity._source">
+                                </textarea>
+                                <label>JsonMapper Documentation <a target="_blank"
+                                        href="https://github.com/marchah/json-mapper-json"><i class="fa fa-github"
+                                            aria-hidden="true"></i></a> </label>
+                            </div>
+                        </div>
+                        <div class="col-12 ">
+                            <div class="form-group ">
+                                <label>properties *</label>
+                                <textarea type="text " class="form-control " ng-model="configBridge.mapping.dentity.properties">
+                                </textarea>
+                                <label>JsonMapper Documentation <a target="_blank"
+                                        href="https://github.com/marchah/json-mapper-json"><i class="fa fa-github"
+                                            aria-hidden="true"></i></a> </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-right ">
+                        <div class="col-12 ">
+                            <span class="btn btn-info " ng-show="!configBridge._id" ng-click="formconfigBridge.$valid && saveConfigBridge(configBridge)">Save</span>
+                            <span class="btn btn-warning " ng-show="configBridge._id" ng-click="formconfigBridge.$valid && saveConfigBridge(configBridge)">Update</span>
+                            <span class="btn btn-danger " ng-show="configBridge._id" ng-click="configBridge = {}">Cancel</span>
+                            <!--<button type="submit" class=" btn btn-info"> Save
+                            </button>-->
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="card-footer ">
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row ">
+    <div class="col-md-12 ">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title ">Bridge-Adapter Entities Rules<span class='pull-right'> <i
+                            class="fa fa-bars burgherAction " aria-hidden="true "
+                            ng-click="showMappingBridgeRule=! showMappingBridgeRule "></i></span></h5>
+                <!-- <p class="card-category ">Handcrafted by our friends from
+                          
+                            </p>-->
+            </div>
+
+            <div class="card-body " ng-hide="showMappingBridgeRule " style="overflow-x:hidden;">
+                <table class="table ">
+                    <thead class=" text-primary ">
+                        <th>
+                            Title
+                        </th>
+                        <th>
+                            Indexes
+                        </th>
+                        <th>
+                            <label class="text-primary"> <i class="fa fa-search" aria-hidden="true"></i> Api
+                                search</label>
+                        </th>
+                        <th><label class="text-success"> <i class="fa fa-plus" aria-hidden="true"></i> Api Add
+                                Resource</label></th>
+                        <th>
+                            <label class="text-warning"> <i class="fa fa-pencil" aria-hidden="true"></i> Api Edit
+                                Resource</label>
+                        </th>
+                        <th>
+                            <label class="text-info"> <i class="fa fa-pencil" aria-hidden="true"></i> Api Patch
+                                Resource</label>
+                        </th>
+                        <th><label class="text-danger"> <i class="fa fa-trash" aria-hidden="true"></i> Api Delete
+                                Resource</label></th>
+                        <th>
+                            <label style="color: #266a81;"><i class="fa fa-cloud"></i> <i class="fa fa-exchange"
+                                    aria-hidden="true"></i> <i class="nc-icon nc-world-2" aria-hidden="true"></i>
+                                External vs Dymer Entities</label>
+                        </th>
+                        <th>
+                            <label style="color: #266a81;"><i class="nc-icon nc-world-2"></i> <i class="fa fa-exchange"
+                                    aria-hidden="true"></i> <i class="fa fa-cloud" aria-hidden="true"></i>
+                                Dymer
+                                vs External Entities</label>
+                        </th>
+                        <th class=" text-center ">
+                        </th>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="el in ListbridgeEntities ">
+                            <td style="max-width: 100px;">
+                                {{ el.title }}
+                            </td>
+                            <td style="max-width: 150px;">
+                                <div ng-repeat="elresult in el.indexes " type="item-text-wrap">
+                                    {{ elresult }}
+                                </div>
+                            </td>
+                            <td><i class="fa fa-bars burgherAction " aria-hidden="true " ng-click="showDetailsapisearch=! showDetailsapisearch "></i>
+                                <pre ng-show="showDetailsapisearch ">{{el.api.search |  json }}</pre>
+                            </td>
+                            <td><i class="fa fa-bars burgherAction " aria-hidden="true " ng-click="showDetailsapicreate=! showDetailsapicreate "></i>
+                                <pre ng-show="showDetailsapicreate ">{{el.api.create |  json }}</pre>
+                            </td>
+                            <td><i class="fa fa-bars burgherAction " aria-hidden="true " ng-click="showDetailsapiupdate=! showDetailsapiupdate "></i>
+                                <pre ng-show="showDetailsapiupdate ">{{el.api.update |  json }}</pre>
+                            </td>
+                            <td><i class="fa fa-bars burgherAction " aria-hidden="true " ng-click="showDetailsapipatch=! showDetailsapipatch "></i>
+                                <pre ng-show="showDetailsapipatch ">{{el.api.patch |  json }}</pre>
+                            </td>
+                            <td><i class="fa fa-bars burgherAction " aria-hidden="true " ng-click="showDetailsapidelete=! showDetailsapidelete "></i>
+                                <pre ng-show="showDetailsapidelete ">{{el.api.delete |  json }}</pre>
+                            </td>
+                            <td><i class="fa fa-bars burgherAction " aria-hidden="true " ng-click="showDetails=! showDetails "></i>
+                                <pre ng-show="showDetails ">{{el.mapping.extentity |  json }}</pre>
+                            </td>
+
+                            <td><i class="fa fa-bars burgherAction " aria-hidden="true " ng-click="showDetailsdentity=! showDetailsdentity "></i>
+                                <pre ng-show="showDetailsdentity ">{{el.mapping.dentity |  json }}</pre>
+                            </td>
+                            <td class=" text-center ">
+                                <i class="fa fa-clone cloneAction " aria-hidden="true " ng-click="setupdateConfigBridge( $index,'clone');  "></i>
+                                <i class="fa fa-pencil updateAction " aria-hidden="true " ng-click="setupdateConfigBridge( $index);  " ng-confirm-click="Confirm update? "></i>
+                                <i class="fa fa-trash deleteAction " aria-hidden="true " ng-click="removeConfigBridge( $index) " ng-confirm-click="Confirm delete? "></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer ">
+
+            </div>
+        </div>
+    </div>
+</div>

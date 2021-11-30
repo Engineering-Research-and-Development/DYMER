@@ -1,0 +1,37 @@
+<div class="col-md-12">
+    <div class="card ">
+        <div class="card-header ">
+            <h5 class="card-title">Fix Problems in Dymer</h5>
+            <div class="card-category">
+
+
+            </div>
+        </div>
+        <div class="card-body ">
+
+            <div>
+                <p>
+                    <h5 class="text-warning"> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> rejected execution (queue capacity) on org.elasticsearch.search.action.SearchServiceTransportAction</h5>
+                </p>
+                <h6> Solution : Edit <a href="https://github.com/elastic/elasticsearch/blob/master/distribution/docker/src/docker/config/elasticsearch.yml" target="_blank">elasticsearch.yml</a> </h6>
+                <pre class=" language-javascript" data-language="javascript"> <code class=" language-javascript">discovery.zen.minimum_master_nodes: 1 <br> thread_pool.search.queue_size: 1000<br> thread_pool.search.size: 30<br> thread_pool.search.min_queue_size: 2000<br> thread_pool.search.max_queue_size: 5000<br> thread_pool.search.auto_queue_frame_size: 5000                        <br> thread_pool.search.target_response_time: 1s</code></pre>
+                <p>
+                    docker run --name elastichsearch3 -d -v /c/Docker/custom_elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml -v /c/Docker/esdata:/usr/share/elasticsearch/data -p 9200:9200 -p 9300:9300 32f93c89076d
+                </p>
+                <p>
+                    <h5 class="text-warning"> <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> cluster_block_exception [cluster_block_exception] blocked by: [FORBIDDEN/12/index read-only /</h5>
+                </p>
+                <h6>Solution 1: free up disk space</h6>
+                <p>Freeing up enough disk space so that more than 5% of the disk is free will solve this problem.</p>
+                <h6> Solution 1: Edit <a href="https://github.com/elastic/elasticsearch/blob/master/distribution/docker/src/docker/config/elasticsearch.yml" target="_blank">elasticsearch.yml</a> </h6>
+                <pre class=" language-javascript" data-language="javascript">
+ <code class=" language-javascript"> cluster.routing.allocation.disk.threshold_enabled: false </code></pre> curl -XPUT -H "Content-Type: application/json" http://127.0.0.1:9200/_all/_settings -d "{\"index.blocks.read_only_allow_delete\":
+                null}"
+            </div>
+        </div>
+        <div class="card-footer ">
+            <hr />
+            <div class="stats"><i class="fa fa-history"></i> Updated 11/09/2019</div>
+        </div>
+    </div>
+</div>

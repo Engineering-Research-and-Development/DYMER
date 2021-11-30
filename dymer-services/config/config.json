@@ -1,0 +1,70 @@
+{
+    "development": {
+        "config_id": "development",
+        "services": {
+            "dservice": {
+                "app_name": "dservice",
+                "app_desc": "dymer services",
+                "protocol": "http",
+                "ip": "127.0.0.1",
+                "port": 5050,
+                "ip_port": "127.0.0.1:5050",
+                "repository": {
+                    "protocol": "http",
+                    "ip": "127.0.0.1",
+                    "port": 27017,
+                    "index_ref": "dservice"
+                }
+            },
+            "webserver": {
+                "app_name": "webserver",
+                "app_desc": "dymer webserver",
+                "protocol": "http",
+                "ip": "127.0.0.1",
+                "port": 8080
+            },
+            "opnsearch": {
+                "user": {
+                    "d_uid": 5,
+                    "d_gid": 55,
+                    "d_mail": "test@liferay.com",
+                    "d_pwd": "1234"
+                }
+            }
+        }
+    },
+    "production": {
+        "config_id": "production",
+        "services": {
+            "dservice": {
+                "app_name": "dservice",
+                "app_desc": "dymer services",
+                "protocol": "http",
+                "ip": "127.0.0.1",
+                "port": 5050,
+                "ip_port": "127.0.0.1:5050",
+                "repository": {
+                    "protocol": "http",
+                    "ip": "127.0.0.1",
+                    "port": 27017,
+                    "index_ref": "dservice"
+                }
+            },
+            "webserver": {
+                "app_name": "webserver",
+                "app_desc": "dymer webserver",
+                "protocol": "http",
+                "ip": "127.0.0.1",
+                "port": 8080
+            },
+            "opnsearch": {
+                "user": {
+                    "d_uid": 5,
+                    "d_gid": 55,
+                    "d_mail": "test@liferay.com",
+                    "d_pwd": "1234"
+                }
+            }
+        }
+    }
+}

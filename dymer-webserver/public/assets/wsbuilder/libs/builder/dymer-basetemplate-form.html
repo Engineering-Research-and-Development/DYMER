@@ -1,0 +1,51 @@
+<h1 class="text-center">{{titolo}}</h1>
+<form id="entityForm" class="senderForm">
+    <input name="instance[index]" type="hidden" value="{{instance}}">
+    <input name="instance[type]" type="hidden" value="{{instance}}">
+    <div class="rendered-form">
+        <div class="form-group ">
+            <label class="kms-title-label">Title</label>
+            <input type="text" class="form-control col-12 span12" name="data[title]" required>
+            <small class="form-text text-muted">Please provide the name of the {{titolo}}</small>
+        </div>
+        <div class="form-group ">
+            <label class="kms-title-label">Description</label>
+            <textarea type="textarea" class="form-control  col-12 span12" name="data[description]" required></textarea>
+
+        </div>
+        <div class="form-group">
+            <label class="kms-title-label">Status</label>
+            <select class="form-control col-12 span12" name="data[properties][status]">
+                <option value="1">Published</option>
+                <option value="2">Not Published</option>
+                <option value="3">Draft</option>
+                <!--<option value="0">Deleted</option>-->
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="kms-title-label">Visibility</label>
+            <select class="form-control col-12 span12" name="data[properties][visibility]">
+                <option value="2">Restricted</option>
+                <option value="0">Public</option>
+                <option value="1">Private</option>
+            </select>
+            <small class="form-text text-muted"><b>Restricted:</b> resource visibility restricted only to the current
+                workspace members</small>
+            <small class="form-text text-muted"><b>Private:</b> visibility restricted to the resource owner</small>
+            <small class="form-text text-muted"><b>Public:</b> resource is visible also to other platform workspaces
+                that are using the same resource model</small>
+        </div>
+        <div class="alert alertaction" role="alert" style="display: none;">
+            <button type="button" class="close" onclick="$(this).closest('.alert').slideUp()">
+                <span aria-hidden="true">×</span>
+            </button>
+            <div class="msg_title"></div>
+            <div class="msg_txt"></div>
+        </div>
+        <div class="text-right actionsAddEntity">
+            <span type="button" id="btnCloseDymerModal" class="btn btn-default" onclick="closeDymerModal('entityAdd')">Close</span>
+            <span class="btn btn-info pull-right" id="btnAddDymerModal" onclick="actionPostMultipartForm('entity/{{instance}}', $(this),undefined, undefined,undefined,undefined,true)">Submit</span>
+        </div>
+
+    </div>
+</form>

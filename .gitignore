@@ -1,0 +1,10 @@
+node_modules
+config_original.json
+*/logs/debug.log*
+*/logs/error.log
+*/logs/info.log
+*/logs/warn.log
+routestest.js
+airegio.json
+keycloak-config.js
+authenticate_opid.js

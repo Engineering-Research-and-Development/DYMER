@@ -1,0 +1,37 @@
+  .repeatable {
+      border: 1px solid #ced4da;
+      border-radius: .25rem;
+      padding: 8px;
+  }
+  
+  .repeatable.first-repeatable .act-remove {
+      display: none;
+  }
+  
+  .action-br {
+      text-align: right;
+      margin-top: 10px;
+  }
+  
+  .error_border {
+      border-color: #b50303;
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  }
+  
+  .kms-title-label {
+      font-weight: bold!important;
+      color: #17a2b8!important;
+  }
+  
+  #cont-GeneralList li,
+  #cont-UploaderList li,
+  #cont-FormList li,
+  #cont-TemplateList li {
+      cursor: pointer;
+  }
+  
+  #cont-RenderForm {
+      border: 1px solid #ced4da;
+      margin-top: 20px;
+      padding: 10px 20px;
+  }

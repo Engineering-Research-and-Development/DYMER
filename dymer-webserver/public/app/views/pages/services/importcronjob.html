@@ -1,0 +1,175 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Cron job from another dymer<span class='pull-right'><i
+                            class="fa fa-cogs burgherAction"
+                            ng-click="showConfigAuthentication = ! showConfigAuthentication" aria-hidden="true"></i>
+                    </span>
+                </h5>
+            </div>
+            <div class="card-body " ng-show="showConfigAuthentication">
+                <h4>DYMER CONJOB</h4>
+                <form name="formCONJOB" id="formCONJOB">
+                    <input type="hidden" ng-model="configCONJOB._id">
+                    <input type="hidden" ng-model="configCONJOB.authtype">
+                    <div class="row">
+                        <div class=" col-12">
+                             
+                            <div class="form-group"> 
+                                <div class="text-info pull-right">
+                                    <input type="checkbox" ng-model="configCONJOB.active"> Enabled
+                                </div>
+                            </div> 
+                            <div class="form-group">
+                                <label class="text-info"> Title *</label>
+                            <input type="text" class="form-control col-12" ng-model="configCONJOB.title" required>
+                            </div>        
+                            <div class="form-group">  <label class="text-info"> Cron Pattern <a href="http://crontab.org/" target="_blank"><i
+                                        class="fa fa-external-link-square" aria-hidden="true"></i></a> </label>
+                            <input type="text" class="form-control col-12" ng-model="configCONJOB.time">
+                           </div>
+                           
+                            <div class="form-group">
+                                 <label class="text-info"> Source path *</label>
+                            <input type="text" class="form-control col-12" ng-model="configCONJOB.sourcepath" required>
+                          </div>
+                         <div class="form-group">
+                                  <label class="text-info"> Source index *</label>
+                             
+                            <input type="text" class="form-control col-12" ng-model="configCONJOB.sourceindex" required>
+                           </div>
+                            <div class="form-group"> <label class="text-info"> Target index *</label>
+                            <input type="text" class="form-control col-12" ng-model="configCONJOB.targetindex" required>
+                           </div>
+                           
+                            <div class="form-group"> 
+                                 <label class="text-info"> Prefix target id</label><small style="color: #8c8985;"> (add a
+                                prefix to the ids)</small>
+                            <input type="text" class="form-control col-12" ng-model="configCONJOB.targetprefix">
+                            </div>
+                            <!-- <div>
+                                <div>Test analizza <span class="btn " ng-click="loadrelcont">test</span></div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div>Lista A</div>
+                                        <div id="list_a"></div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div>Lista B</div>
+                                        <div id="list_b"></div>
+                                    </div>
+
+
+                                </div>
+
+                            </div>-->
+
+                            <div class="form-group">
+                                <span class="text-info ">
+                                     <input type="checkbox" ng-model="configCONJOB.sameid">
+                                    Import the same id </span><small style="color: #8c8985;">(Pay attention! use this
+                                    setting if you want to clone / migrate the entities in the same dymer, after manual
+                                    cloning
+                                    remember to delete the index and the enities from the dashnoard <i class="fa fa-scissors  flushAction" title="Delete Index and all entities"></i>.
+                                    if there are multiple dymer sources an id conflict
+                                    could occur)</small>
+                            </div>
+
+
+                            <div class="form-group"><span class="text-info ">
+                                <input type="checkbox" ng-model="configCONJOB.importrelation">
+                                    Import relations </span><small style="color: #8c8985;">(only the first level of
+                                    relations will be imported
+                                    not the entities)</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-right ">
+                        <div class="col-12 ">
+                            <span class="btn btn-info " ng-show="!configCONJOB._id" ng-click="formCONJOB.$valid && saveCRONJOB(configCONJOB)">Save</span>
+                            <span class="btn btn-warning " ng-show="configCONJOB._id" ng-click="formCONJOB.$valid && saveCRONJOB(configCONJOB)">Update</span>
+                            <span class="btn btn-danger " ng-show="configCONJOB._id" ng-click="configCONJOB = {}">Cancel</span>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row ">
+    <div class="col-md-12 ">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title ">Cron job from another dymer Rules<span class='pull-right'> <i
+                            class="fa fa-bars burgherAction " aria-hidden="true "
+                            ng-click="showMappingBridgeRule=! showMappingBridgeRule "></i></span></h5>
+                <!-- <p class="card-category ">Handcrafted by our friends from
+                          
+                            </p>-->
+            </div>
+
+            <div class="card-body " ng-hide="showMappingBridgeRule " style="overflow-x:hidden;">
+                <table class="table ">
+                    <thead class=" text-primary ">
+                        <th>
+                            Title
+                        </th>
+                        <th>
+                            Enabled
+                        </th>
+                        <th>
+                            time
+                        </th>
+                        <th>
+                            Source path
+                        </th>
+                        <th>
+                            Source/Target index
+                        </th>
+                        <th>
+                            Prefix target id
+                        </th>
+
+                        <th class=" text-center ">
+                        </th>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="el in List ">
+                            <td style="max-width: 100px;">
+                                {{ el.title }}
+                            </td>
+                            <td style="max-width: 100px;">
+                                {{ el.active }}
+                            </td>
+                            <td style="max-width: 100px;">
+                                {{ el.time }}
+                            </td>
+                            <td style="max-width: 100px;">
+                                {{ el.sourcepath }}
+                            </td>
+                            <td style="max-width: 100px;">
+                                {{ el.sourceindex }}->{{ el.targetindex }}
+                            </td>
+                            <td style="max-width: 100px;">
+                                {{ el.targetprefix }}
+                            </td>
+
+
+                            <td class=" text-center ">
+                                <i class="fa fa-clone cloneAction " aria-hidden="true " ng-click="setupdateCRONJOB( $index,'clone');  "></i>
+                                <i class="fa fa-pencil updateAction " aria-hidden="true " ng-click="setupdateCRONJOB( $index);  " ng-confirm-click="Confirm update? "></i>
+                                <i class="fa fa-trash deleteAction " aria-hidden="true " ng-click="removeCRONJOB( $index) " ng-confirm-click="Confirm delete? "></i>
+                                <i class="fa fa-play deleteAction " aria-hidden="true " ng-click="runCRONJOB( $index) " ng-confirm-click="Confirm to run import? "></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer ">
+
+            </div>
+        </div>
+    </div>
+</div>

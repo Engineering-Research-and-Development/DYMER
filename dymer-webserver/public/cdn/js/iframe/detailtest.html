@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title> </title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <script>
+        /*   $(document).ready(function() {
+                            fetch("/api/checklogin/?rd="+window.location.href).then(response => {
+                                console.log(response);
+                                console.log(response.url==window.location.href);
+                                if(response.redirected && response.url!=window.location.href)
+                                    window.location = response.url;
+                       })
+                       .catch(error => console.log("Si è verificato un errore!"))
+                             });
+                             */
+    </script>
+
+
+    <script>
+        function getUrlParameters(parameter, staticURL, decode) {
+
+            var currLocation = (staticURL.length) ? staticURL : window.location.search,
+                parArr = currLocation.split("?")[1].split("&"),
+                returnBool = true;
+
+            for (var i = 0; i < parArr.length; i++) {
+                parr = parArr[i].split("=");
+                if (parr[0] == parameter) {
+                    return (decode) ? decodeURIComponent(parr[1]) : parr[1];
+                    returnBool = true;
+                } else {
+                    returnBool = false;
+                }
+            }
+
+            if (!returnBool) return false;
+        }
+
+        var idParameter = getUrlParameters("_id", "", true);
+
+        console.log("_id" + idParameter);
+
+        var dTagFilter;
+
+        var dymerconf = {
+            notImport: []
+        };
+
+
+
+
+        var jsonDymerConfig = {
+            query: { // define the query to do in dymer
+                "query": {
+                    "query": {
+                        "match": {
+                            "_id": idParameter // entity Id
+                        }
+                    }
+                }
+            },
+            endpoint: 'entity.search', // set the endpoint to execute the query of entities
+            viewtype: 'fullcontent', // set to use the 'Fullcontent' template
+            target: {
+                fullcontent: { // configure where and how to render the detail of an entity
+                    id: "#cont-MyList", // the entity will be rendered inside the element with id "#cont-MyList"
+                    action: "html", // set the method to insert the content (html/append/prepend)
+                    reload: false // if false the query will be executed only on page load 
+                }
+            }
+        };
+
+        function mainDymerView() {
+            drawEntities(jsonDymerConfig);
+        }
+    </script>
+    <script id="dymerurl" src="http://localhost:8080/public/cdn/js/dymer.viewer.js"></script>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+    <main id="main">
+
+        <section id="featured-services" class="featured-services">
+            <div class="container">
+                <div class="row">
+
+                    <div class="col-12 span12 ">
+                        <span id="primodfil" class="btn btn-listdymer " onclick="drawEntities(jsonDymerConfig)"> <i
+                                class="fa fa-list" aria-hidden="true"></i> List </span> <span id="cont-addentity" class="pull-right">
+                        </span>
+                    </div>
+
+                </div>
+
+                <div id="cont-MyList" class="row"></div>
+            </div>
+
+        </section>
+
+
+
+
+
+
+
+
+
+
+    </main>
+    <!-- End #main -->
+
+
+    <div>
+
+    </div>
+
+
+
+
+
+</body>
+
+</html>

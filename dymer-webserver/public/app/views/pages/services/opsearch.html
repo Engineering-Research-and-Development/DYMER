@@ -1,0 +1,288 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Openness Search Configuration<span class='pull-right'><i
+                            class="fa fa-cogs burgherAction" ng-click="showConfigOpnSearch = ! showConfigOpnSearch"
+                            aria-hidden="true"></i> </span></h5>
+                <!-- <p class="card-category">Handcrafted by our friends from
+                      
+                        </p>-->
+            </div>
+            <div class="card-body" ng-show="showConfigOpnSearch">
+                <div id="editAsset">
+
+                    <div class="row">
+                        <div class="col-12 ">
+                            <h5>Insert</h5>
+                        </div>
+                        <input type="hidden" ng-model="opnsearch.config.insert.servicetype">
+                        <input type="hidden" ng-model="opnsearch.config.insert.id">
+                    </div>
+                    <div class="row ">
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Method</label>
+                                <select ng-model="opnsearch.config.insert.configuration.method " class="form-control ">
+                                    <option value="GET">GET</option>
+                                    <option value="POST">POST</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-3 ">
+                            <div class="form-group ">
+                                <label>Host</label>
+                                <input type="text" ng-model="opnsearch.config.insert.configuration.host " class="form-control ">
+                            </div>
+                        </div>
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Port</label>
+                                <input type="text " class="form-control " ng-model="opnsearch.config.insert.configuration.port ">
+                            </div>
+                        </div>
+
+                        <div class="col-5 ">
+                            <div class="form-group ">
+                                <label>Path</label>
+                                <input type="text " class="form-control " ng-model="opnsearch.config.insert.configuration.path ">
+                            </div>
+                        </div>
+                        <div class="col-5 ">
+                            <div class="form-group ">
+                                <label>Dymer Path</label>
+                                <input type="text " class="form-control " ng-model="opnsearch.config.insert.configuration.dymerpath">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-right ">
+                        <div class="col-12 ">
+                            <span class="btn btn-info " ng-click="saveOpnSearchConfig(opnsearch.config.insert) ">Save</span>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row ">
+                        <div class="col-12 ">
+                            <h5>Update</h5>
+                        </div>
+                        <input type="hidden" ng-model="opnsearch.config.update.servicetype ">
+                        <input type="hidden" ng-model="opnsearch.config.update.id">
+                    </div>
+                    <div class="row ">
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Method</label>
+                                <select ng-model="opnsearch.config.update.configuration.method " class="form-control ">
+                                    <option value="GET">GET</option>
+                                    <option value="POST">POST</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-3 ">
+                            <div class="form-group ">
+                                <label>Host</label>
+                                <input type="text " ng-model="opnsearch.config.update.configuration.host " class="form-control ">
+                            </div>
+                        </div>
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Port</label>
+                                <input type="text " class="form-control " ng-model="opnsearch.config.update.configuration.port ">
+                            </div>
+                        </div>
+                        <div class="col-5 ">
+                            <div class="form-group ">
+                                <label>Path</label>
+                                <input type="text " class="form-control " ng-model="opnsearch.config.update.configuration.path ">
+                            </div>
+                        </div>
+                        <div class="col-5 ">
+                            <div class="form-group ">
+                                <label>Dymer Path</label>
+                                <input type="text " class="form-control " ng-model="opnsearch.config.update.configuration.dymerpath">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-right ">
+                        <div class="col-12 ">
+                            <span class="btn btn-info " ng-click="saveOpnSearchConfig(opnsearch.config.update) ">Save</span>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row ">
+                        <div class="col-12 ">
+                            <h5>Delete</h5>
+                        </div>
+                        <input type="hidden" ng-model="opnsearch.config.delete.servicetype ">
+                        <input type="hidden" ng-model="opnsearch.config.delete.id">
+                    </div>
+                    <div class="row ">
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Method</label>
+                                <select ng-model="opnsearch.config.delete.configuration.method " class="form-control ">
+                                    <option value="GET">GET</option>
+                                    <option value="POST">POST</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-3 ">
+                            <div class="form-group ">
+                                <label>Host</label>
+                                <input type="text " ng-model="opnsearch.config.delete.configuration.host " class="form-control ">
+                            </div>
+                        </div>
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Port</label>
+                                <input type="text " class="form-control " ng-model="opnsearch.config.delete.configuration.port ">
+                            </div>
+                        </div>
+                        <div class="col-5 ">
+                            <div class="form-group ">
+                                <label>Path</label>
+                                <input type="text " class="form-control " ng-model="opnsearch.config.delete.configuration.path ">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-5 ">
+                        <div class="form-group ">
+                            <label>Dymer Path</label>
+                            <input type="text " class="form-control " ng-model="opnsearch.config.delete.configuration.dymerpath">
+                        </div>
+                    </div>
+                    <div class="row text-right ">
+                        <div class="col-12 ">
+                            <span class="btn btn-info " ng-click="saveOpnSearchConfig(opnsearch.config.delete) ">Save</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer ">
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row ">
+    <div class="col-md-12 ">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title ">Openness Search Mapping Rule<span class='pull-right'> <i
+                            class="fa fa-bars burgherAction " aria-hidden="true "
+                            ng-click="showMappingRule=! showMappingRule "></i></span></h5>
+                <!-- <p class="card-category ">Handcrafted by our friends from
+                          
+                            </p>-->
+            </div>
+
+            <div class="card-body " ng-show="showMappingRule ">
+                <div id="editAsset ">
+                    <div class="row ">
+                        <div class="col-3 ">
+                            <div class="form-group ">
+                                <label>Index</label>
+                                <input type="text " class="form-control " ng-model="rule.op_index" ng-change="clearString()">
+                                </select>
+                            </div>
+                            <div class="form-group ">
+                                <label>Type</label>
+                                <input type="text " class="form-control " ng-model="rule.op_type" ng-change="clearString()">
+                            </div>
+                        </div>
+                        <div class="col-9 ">
+                            <div class="form-group ">
+                                <label>Mapping</label>
+                                <textarea rows="10 " class="form-control " ng-model="rule.op_mapping" style="min-height: 190px "></textarea>
+                                </textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div ng-show="listEntitiesAvailable.length">
+                        <label>Entities available <i class="fa fa-bars burgherAction " aria-hidden="true "
+                                ng-click="showlistEntitiesAvailable=! showlistEntitiesAvailable "></i></label>
+                        <div class="row" ng-show="showlistEntitiesAvailable ">
+                            <div class="col-3" ng-repeat="el in listEntitiesAvailable"> {{el._index}} - {{el._type}} <i class="fa fa-arrow-circle-up dympointer" aria-hidden="true" ng-click="copyPastIndType(el)"></i></div>
+                        </div>
+                    </div>
+                    <div ng-show="listModelsAvailable.length" style="margin-top: 10px;">
+                        <label>Models available <i class="fa fa-bars burgherAction " aria-hidden="true "
+                                ng-click="showlistModelsAvailable=! showlistModelsAvailable "></i></label>
+                        <div class="row" ng-show="showlistModelsAvailable ">
+                            <div class="col-3" ng-repeat="el in listModelsAvailable"> {{el._index}} - {{el._type}} <i class="fa fa-arrow-circle-up dympointer" aria-hidden="true" ng-click="copyPastIndType(el)"></i></div>
+
+                        </div>
+
+                    </div>
+                    <div class="row text-right ">
+                        <div class="col-12 ">
+                            <span class="btn btn-info " ng-click="createOpnSearchRule(rule)"><i class="fa fa-map-signs "
+                                    aria-hidden="true "></i> Add</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer ">
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row ">
+    <div class="col-md-12 ">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title text-warning ">Entities<span class="card-category " style="font-size: small; "> vs
+                        Assets</span></h5>
+            </div>
+            <div class="card-body ">
+                <div class=" ">
+                    <table class="table ">
+                        <thead class=" text-primary ">
+                            <th>
+                                index
+                            </th>
+                            <th>
+                                type
+                            </th>
+                            <th>
+                                Mapping
+                            </th>
+                            <th class=" text-center ">
+
+                            </th>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="el in ListRules ">
+                                <td>
+                                    {{ el._index }}
+                                </td>
+                                <td>
+                                    {{ el._type }}
+                                </td>
+                                <td><i class="fa fa-bars burgherAction " aria-hidden="true " ng-click="showDetails=! showDetails "></i>
+                                    <pre ng-show="showDetails ">{{ el.mapping |  json }}</pre>
+                                </td>
+                                <td class=" text-center ">
+                                    <i class="fa fa-trash deleteAction " aria-hidden="true " ng-click="removeOpnSearchRule( $index) " ng-confirm-click="Confirm unfavorite? "></i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+
+            </div>
+            <!--<div class="card-footer ">
+                  <hr>
+                  <div class="stats ">
+                    <i class="fa fa-history "></i> Updated 3 minutes ago
+                  </div>
+                </div>-->
+        </div>
+    </div>
+</div>

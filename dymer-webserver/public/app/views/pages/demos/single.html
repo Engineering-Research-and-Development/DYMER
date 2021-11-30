@@ -1,0 +1,89 @@
+<div class="col-md-12">
+    <div class="card ">
+        <div class="card-header ">
+            <h5 class="card-title">Dymer Viewer</h5>
+            <div class="card-category">
+                render entities: Single Entity
+                <a href="/demodownload/View/dymer_single_detail.html" class="btn btn-wd btn-info  float-right " target="_self">
+                    <i class="fa fa-download"></i> Download Example
+                </a>
+            </div>
+        </div>
+        <div class="card-body ">
+
+            <div class="row row-eq-height">
+
+                <div class="col-2  text-center">
+                    <div class="crop-height  rounded border">
+                        <img src="../assets/img/demo/render-single-detail.png" data-toggle="modal" data-target="#myModalRListD" class="img-thumbnail  cur-p scale  ">
+                    </div>
+
+                    <div id="myModalRListD" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalRListD" aria-hidden="true">
+                        <div class="modal-dialog" style=" max-width: 80%;  ">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <img src="../assets/img/demo/render-single-detail.png">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Example - Render Detail</small>
+                </div>
+
+            </div>
+            <div>
+                <br> The following is an example of how to setup a simple Dymer Viewer.
+                <p>Create a js function named <b>mainDymerView()</b>, define the json that configures the Viewer and pass it in the funtion <b>drawEntities()</b></p>
+                <pre class=" language-javascript" data-language="javascript">
+ <code class=" language-javascript"><span class="token tag">&lt;script&gt;</span>
+    var jsonDymerConfig = {
+        <span class="token keyword">query: {</span> <span class="token attr-name">// define the query to do in dymer</span>
+            "query": {
+              "query": {
+                  "match": {
+                      "_id": "_r6JvGoBD8fk-DDNrTCJ"</span> <span class="token attr-name">// entity Id</span>
+                  }
+              }
+          }
+        <span class="token keyword">},</span>
+        <span class="token keyword">endpoint</span>: 'entity.search', <span class="token attr-name">// set the endpoint to execute the query of entities</span>
+        <span class="token keyword">viewtype</span>: 'fullcontent', <span class="token attr-name">// set to use the 'Fullcontent' template</span>
+        <span class="token keyword">target</span>: { 
+            <span class="token keyword">fullcontent</span>: {<span class="token attr-name">// configure where and how to render the detail of an entity</span>
+                <span class="token keyword">id</span>: "#cont-MyList", <span class="token attr-name">// the entity will be rendered inside the element with id "#cont-MyList"</span>
+                <span class="token keyword">action</span>: "html" <span class="token attr-name">// set the method to insert the content (html/append/prepend)</span>
+                <span class="token keyword">reload</span>: false <span class="token attr-name">// if false the query will be executed only on page load </span>
+              }
+        }
+    };
+    <span class="token keyword">function</span> <span class="token function">mainDymerView</span>() {
+        <span class="token function">drawEntities</span>(jsonDymerConfig);
+    }
+ <span class="token tag">&lt;/script&gt;</span></code></pre>
+
+                <p>
+                    Import the <b>dymer.viewer.js</b> with id 'dymerurl' and set the &lt;dymerip&gt; </p>
+                <pre class=" language-javascript" data-language="javascript"><code class=" language-javascript"><span class="token tag"> &lt;script id="dymerurl" src="<span class="token keyword">&lt;dymerip&gt;</span>/public/cdn/js/dymer.viewer.js"> &lt;/script&gt;</span></code></pre>
+                <p>Create a DOM element where render the entities and another which onclick invokes the function <b>drawEntities()</b> to redraw them</p>
+                <pre class=" language-javascript" data-language="javascript"><code class=" language-javascript"><span class="token tag">&lt;div id="cont-MyList"&gt;&lt;/div&gt;</span></code></pre>
+
+                <p>
+
+                    Dymer Viewer imports Bootstrap v4 and jQuery 3, if you use previous versions add a json object called <b>dymerconf</b> as below to exclude the import. To set the 'user id' and 'group id' add the variables <b>d_uid</b> and <b>d_gid</b>.
+                </p>
+                <pre class=" language-javascript" data-language="javascript">
+<code class=" language-javascript"> var <span class="token function">d_uid</span> = <span class="token keyword">'&lt;user-id&gt;'</span>; <span class="token attr-name">// user id</span>
+ var <span class="token function">d_gid</span> = <span class="token keyword">'&lt;group-id&gt;'</span>; <span class="token attr-name">// group id</span> 
+ var <span class="token function">dymerconf</span> = { <span class="token attr-name">// disable import bootstrap & jquery</span>
+    <span class="token function">notImport : ["bootstrap","jquery"]</span>
+ };</span></code></pre>
+            </div>
+        </div>
+
+
+        <div class="card-footer ">
+            <hr />
+            <div class="stats"><i class="fa fa-history"></i> Updated 09/24/2019</div>
+        </div>
+    </div>
+</div>

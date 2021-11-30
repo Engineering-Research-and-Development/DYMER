@@ -1,0 +1,133 @@
+.listedPlant .portlet-content-container .portlet-body {
+    background: white;
+    -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    -ms-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    -o-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    padding-bottom: 0;
+    min-height: 150px;
+    margin-top: 30px;
+    padding-left: 0;
+    padding-right: 0;
+    color: #333;
+}
+
+.listedPlant .portlet-content-container .portlet-body .asset-content {
+    margin: 0!important;
+}
+
+.listedPlant h3.asset-entries-group-label {
+    color: #ffffff;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    padding-left: 50px;
+}
+
+.listedPlant h3.asset-entries-group-label:nth-of-type(1) {
+    background-color: #e45016;
+}
+
+.listedPlant h3.asset-entries-group-label:nth-of-type(2) {
+    background-color: #91bc1b;
+}
+
+.listedPlant h3.asset-entries-group-label:nth-of-type(3) {
+    background-color: #28245c;
+}
+
+.listedPlant h3.asset-entries-group-label:nth-of-type(4) {
+    background-color: #ff525e;
+}
+
+.listedPlant .container_section {
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px 15px 10px 15px;
+}
+
+.listedPlant .container.listed {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.listedPlant .overlay-effect {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    text-align: center;
+}
+
+.listedPlant .overlay-effect .figcaption {
+    text-align: left;
+    min-height: 100px;
+    width: 100%;
+    top: auto;
+    bottom: 0;
+    opacity: 0;
+    -webkit-transform: translateY(100%);
+    -moz-transform: translateY(100%);
+    -ms-transform: translateY(100%);
+    transform: translateY(100%);
+    -webkit-transition: -webkit-transform 0.4s, opacity 0.1s 0.3s;
+    -moz-transition: -moz-transform 0.4s, opacity 0.1s 0.3s;
+    transition: transform 0.4s, opacity 0.1s 0.3s;
+    -webkit-backface-visibility: hidden;
+    background-color: rgba(131, 172, 217, 0.65);
+    ;
+    color: #fff;
+}
+
+.listedPlant .overlay-effect .figcaption {
+    position: absolute;
+    /* top: 0;*/
+    left: 0;
+}
+
+.listedPlant .overlay-effect .figcaption .content {
+    padding: 20px;
+}
+
+.listedPlant .overlay-effect:hover .figcaption {
+    opacity: 1;
+    -webkit-transform: translateY(0px);
+    -moz-transform: translateY(0px);
+    -ms-transform: translateY(0px);
+    transform: translateY(0px);
+    -webkit-transition: -webkit-transform 0.4s, opacity 0.1s;
+    -moz-transition: -moz-transform 0.4s, opacity 0.1s;
+    transition: transform 0.4s, opacity 0.1s;
+}
+
+.listedPlant .overlay-effect .figcaption {
+    overflow: hidden;
+}
+
+.listedPlant .overlay-effect img.img-responsive {
+    max-width: 270px;
+}
+
+.listedPlant .ml0 {
+    margin-left: 0!important;
+}
+
+.listedPlant .listrow {
+    padding-bottom: 20px;
+    border-bottom: 2px solid #2d72be;
+    margin-bottom: 20px;
+}
+
+.listedPlant .descrellipse {
+    overflow: hidden;
+    /*display: -webkit-box;*/
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.listedPlant .logof {
+    margin-top: 20px;
+}
+
+.listedPlant .overlay-effect .companyname {
+    text-transform: uppercase;
+}

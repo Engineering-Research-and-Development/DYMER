@@ -1,0 +1,53 @@
+<html>
+
+<head>
+    <title>Dymer List</title>
+    <script>
+        var d_uid = 0; //user id
+        var d_gid = 0; //group id
+        //uncomment to disable import bootstrap & jquery
+        /*var dymerconf={
+			notImport:["bootstrap","jquery"]
+        };*/
+        var jsonDymerConfig = {
+            query: {
+                "instance": {
+                    "index": "geopoint",
+                    "type": "geopoint"
+                }
+            },
+            endpoint: 'entity.search',
+            viewtype: 'teaserlist',
+            target: {
+                teaserlist: {
+                    id: "#cont-MyList",
+                    action: "html",
+                    reload: false
+                },
+                fullcontent: {
+                    id: "#cont-MyList",
+                    action: "html"
+                }
+            }
+        };
+
+        function mainDymerView() {
+            drawEntities(jsonDymerConfig);
+        }
+    </script>
+    <script id="dymerurl" src="http://localhost:8080/public/cdn/js/dymer.viewer.js"></script>
+</head>
+
+<body class="container">
+    <div class="row">
+        <div class="col-12  ">
+            <br>
+            <span class="btn btn-mini btn-info " onclick="drawEntities(jsonDymerConfig)">My List</span>
+            <br><br>
+        </div>
+    </div>
+    <div id="cont-MyList">
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,196 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Authorization/Authentication Config<span class='pull-right'><i
+                            class="fa fa-cogs burgherAction"
+                            ng-click="showConfigAuthentication = ! showConfigAuthentication" aria-hidden="true"></i>
+                    </span>
+                </h5>
+            </div>
+            <div class="card-body " ng-show="showConfigAuthentication">
+                <h4>DYMER JWT</h4>
+                <form name="formconfigJWT" id="formconfigJWT">
+                    <input type="hidden" ng-model="configJWT._id">
+                    <input type="hidden" ng-model="configJWT.authtype">
+                    <div class="row">
+                        <div class=" col-12">
+                            <label class="text-info"> Request url </label>
+                            <div class="text-info pull-right"><input type="checkbox" ng-model="configJWT.active"> Enabled
+                            </div>
+                            <input type="text" class="form-control col-12" ng-model="configJWT.host" required>
+                            <label class="text-info"> Secret key </label>
+                            <input type="text" class="form-control col-12" ng-model="configJWT.prop.secretkey">
+                        </div>
+                    </div>
+                    <div class="row text-right ">
+                        <div class="col-12 ">
+                            <span class="btn btn-info " ng-show="!configJWT._id" ng-click="formconfigJWT.$valid && saveConfigAuthentication(configJWT)">Save</span>
+                            <span class="btn btn-warning " ng-show="configJWT._id" ng-click="formconfigJWT.$valid && saveConfigAuthentication(configJWT)">Update</span>
+                            <span class="btn btn-danger " ng-show="configJWT._id" ng-click="configJWT = {}">Cancel</span>
+                        </div>
+                    </div>
+                </form>
+                <h4>OIDC</h4>
+                <form name="formconfigOIDC" id="formconfigOIDC">
+                    <input type="hidden" ng-model="configOIDC._id">
+                    <input type="hidden" ng-model="configOIDC.authtype">
+                    <div class="row">
+                        <div class=" col-12">
+                            <label class="text-info"> Request url </label>
+                            <div class="text-info pull-right">
+                                <input type="checkbox" ng-model="configOIDC.active"> Enabled
+                            </div>
+                            <input type="text" class="form-control col-12" ng-model="configOIDC.host" required>
+
+                            <label class="text-info"> OIDC Name </label>
+                            <input type="text" class="form-control col-12" ng-model="configOIDC.prop.oidcname">
+                        </div>
+
+                    </div><br>
+                    <h6 class="text-info text-center">Client-OIDC Config</h6>
+                    <div class="row">
+                        <div class=" col-12">
+                            <label class="text-info"> discover </label>
+                            <input type="text" class="form-control col-12" ng-model="configOIDC.prop.client.discover">
+                            <label class="text-info"> scope </label>
+                            <input type="text" class="form-control col-12" ng-model="configOIDC.prop.client.scope">
+                            <label class="text-info"> client_id </label>
+                            <input type="text" class="form-control col-12" ng-model="configOIDC.prop.client.client_id">
+                            <label class="text-info"> response_type </label>
+                            <input type="text" class="form-control col-12" ng-model="configOIDC.prop.client.response_type">
+
+                        </div>
+                    </div><br>
+                    <h6 class="text-info text-center">Dymer-OIDC Config</h6>
+                    <div class="row">
+                        <div class=" col-12">
+                            <label class="text-info"> issuer </label>
+                            <input type="text" class="form-control col-12" ng-model="configOIDC.prop.dymer.issuer">
+                            <label class="text-info"> clientSecret </label>
+                            <input type="text" class="form-control col-12" ng-model="configOIDC.prop.dymer.clientSecret">
+                            <label class="text-info"> clientID </label>
+                            <input type="text" class="form-control col-12" ng-model="configOIDC.prop.dymer.client_id">
+                            <label class="text-info"> authorizationURL </label>
+                            <input type="text" class="form-control col-12" ng-model="configOIDC.prop.dymer.authorizationURL">
+                            <label class="text-info"> userInfoURL </label>
+                            <input type="text" class="form-control col-12" ng-model="configOIDC.prop.dymer.userInfoURL">
+                            <label class="text-info"> tokenURL </label>
+                            <input type="text" class="form-control col-12" ng-model="configOIDC.prop.dymer.tokenURL">
+                            <label class="text-info"> callbackURL </label>
+                            <input type="text" class="form-control col-12" ng-model="configOIDC.prop.dymer.callbackURL">
+                            <label class="text-info"> passReqToCallback </label>
+                            <input type="text" class="form-control col-12" ng-model="configOIDC.prop.dymer.passReqToCallback">
+                            <label class="text-info"> scope </label>
+                            <input type="text" class="form-control col-12" ng-model="configOIDC.prop.dymer.scope">
+                        </div>
+                    </div>
+                    <div class="row text-right ">
+                        <div class="col-12 ">
+                            <span class="btn btn-info " ng-show="!configOIDC._id" ng-click="formconfigOIDC.$valid && saveConfigAuthentication(configOIDC)">Save</span>
+                            <span class="btn btn-warning " ng-show="configOIDC._id" ng-click="formconfigOIDC.$valid && saveConfigAuthentication(configOIDC)">Update</span>
+                            <span class="btn btn-danger " ng-show="configOIDC._id" ng-click="configOIDC = {}">Cancel</span>
+                        </div>
+                    </div>
+                </form>
+                <!--<h4>Oauth 2 </h4>
+                <div class="row">
+                    <div class=" col-12">
+                        <label class="text-info"> Name </label>
+                        <div class="text-info pull-right"><input type="checkbox"> Enabled</div>
+                        <input type="text" class="form-control col-12" ng-value="">
+                        <label class="text-info"> baseSite </label>
+                        <input type="text" class="form-control col-12" ng-value="">
+                        <label class="text-info"> internalSite </label>
+                        <input type="text" class="form-control col-12" ng-value="">
+                        <label class="text-info"> authorizationURL </label>
+                        <input type="text" class="form-control col-12" ng-value="">
+                        <label class="text-info"> tokenURL </label>
+                        <input type="text" class="form-control col-12" ng-value="">
+                        <label class="text-info"> revokeUrl </label>
+                        <input type="text" class="form-control col-12" ng-value="">
+                        <label class="text-info"> clientID </label>
+                        <input type="text" class="form-control col-12" ng-value="">
+                        <label class="text-info"> clientSecret </label>
+                        <input type="text" class="form-control col-12" ng-value="">
+                        <label class="text-info"> callbackURL </label>
+                        <input type="text" class="form-control col-12" ng-value="">
+                        <label class="text-info"> xtokenURL </label>
+                        <input type="text" class="form-control col-12" ng-value="">
+                        <label class="text-info"> adminUser </label>
+                        <input type="text" class="form-control col-12" ng-value="">
+                        <label class="text-info"> adminEmail </label>
+                        <input type="text" class="form-control col-12" ng-value="">
+                        <label class="text-info"> adminPass </label>
+                        <input type="text" class="form-control col-12" ng-value="">
+                    </div>
+                </div>
+                <div class="row text-right ">
+                    <div class="col-12 ">
+                        <a class="btn btn-sm btn-primary" target="_blank" href="" ng-click="saveOauthconfig()"><i
+								class="fa fa-floppy-o" aria-hidden="true"></i> Save config</a>
+                    </div>
+                </div>-->
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row ">
+    <div class="col-md-12 ">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title ">Authorization/Authentication Rules<span class='pull-right'> <i
+                            class="fa fa-bars burgherAction " aria-hidden="true "
+                            ng-click="showMappingBridgeRule=! showMappingBridgeRule "></i></span></h5>
+                <!-- <p class="card-category ">Handcrafted by our friends from
+                          
+                            </p>-->
+            </div>
+
+            <div class="card-body " ng-hide="showMappingBridgeRule " style="overflow-x:hidden;">
+                <table class="table ">
+                    <thead class=" text-primary ">
+                        <th>
+                            Request url
+                        </th>
+                        <th>
+                            Enabled
+                        </th>
+                        <th>
+                            Type
+                        </th>
+                        <th>Properties</th>
+                        <th class=" text-center ">
+                        </th>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="el in ListAuthentications ">
+                            <td style="max-width: 100px;">
+                                {{ el.host }}
+                            </td>
+                            <td style="max-width: 100px;">
+                                {{ el.active }}
+                            </td>
+                            <td style="max-width: 100px;">
+                                {{ el.authtype }}
+                            </td>
+
+                            <td><i class="fa fa-bars burgherAction " aria-hidden="true " ng-click="showProps=! showProps "></i>
+                                <pre ng-show="showProps ">{{el.prop |  json }}</pre>
+                            </td>
+
+                            <td class=" text-center ">
+                                <i class="fa fa-clone cloneAction " aria-hidden="true " ng-click="setupdateConfigAuthentication( $index,'clone');  "></i>
+                                <i class="fa fa-pencil updateAction " aria-hidden="true " ng-click="setupdateConfigAuthentication( $index);  " ng-confirm-click="Confirm update? "></i>
+                                <i class="fa fa-trash deleteAction " aria-hidden="true " ng-click="removeConfigAuthentication( $index) " ng-confirm-click="Confirm delete? "></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer ">
+
+            </div>
+        </div>
+    </div>
+</div>

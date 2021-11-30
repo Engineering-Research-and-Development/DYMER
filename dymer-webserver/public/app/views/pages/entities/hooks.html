@@ -1,0 +1,139 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Subscribe</h5>
+                <!-- <p class="card-category">Handcrafted by our friends from
+                      
+                        </p>-->
+            </div>
+            <div class="card-body">
+                <div id="editAsset">
+
+                    <div class="row ">
+                        <div class="col-2 ">
+                            <div class="form-group">
+                                <label>Index</label>
+                                <input type="text" class="form-control" placeholder="" ng-model="hook._index" ng-change="clearString()">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-2 ">
+                            <div class="form-group">
+                                <label>Type</label>
+                                <input type="text" class="form-control" placeholder="" ng-model="hook._type" ng-change="clearString()">
+                            </div>
+
+                        </div>
+                        <div class="col-2 ">
+                            <div class="form-group">
+                                <label>Hook type</label>
+                                <select ng-model="hook.eventType" class="form-control">
+                                                    <option value="after_insert" selected="selected" >After Instert</option>
+                                                    <option value="after_update"  >After Update</option> 
+                                                    <option value="after_delete"  >After Delete</option> 
+                                                </select>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label>Service</label>
+                                <select ng-model="hook.service" class="form-control">
+                                                        <option value="openness_search"  >Openness Search</option>
+                                                        <option value="eaggregation_hook"  >E-Aggregation</option>
+                                                    </select>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div ng-show="listEntitiesAvailable.length">
+                        <label>Entities available    <i class="fa fa-bars burgherAction " aria-hidden="true " ng-click="showlistEntitiesAvailable=! showlistEntitiesAvailable "></i></label>
+                        <div class="row" ng-show="showlistEntitiesAvailable ">
+                            <div class="col-3" ng-repeat="el in listEntitiesAvailable"> {{el._index}} - {{el._type}} <i class="fa fa-arrow-circle-up dympointer" aria-hidden="true" ng-click="copyPastIndType(el)"></i></div>
+
+                        </div>
+
+                    </div>
+                    <div ng-show="listModelsAvailable.length" style="margin-top: 10px;">
+                        <label>Models available    <i class="fa fa-bars burgherAction " aria-hidden="true " ng-click="showlistModelsAvailable=! showlistModelsAvailable "></i></label>
+                        <div class="row" ng-show="showlistModelsAvailable ">
+                            <div class="col-3" ng-repeat="el in listModelsAvailable"> {{el._index}} - {{el._type}} <i class="fa fa-arrow-circle-up dympointer" aria-hidden="true" ng-click="copyPastIndType(el)"></i></div>
+
+                        </div>
+
+                    </div>
+                    <div class="row text-right">
+                        <div class="col-12  ">
+                            <span class="btn btn-info " ng-click="createDymerHook(hook)"><i class="fa fa-random" aria-hidden="true"></i> Add</span>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title text-warning">Entities<span class="card-category" style="font-size: small;"> vs Services</span></h5>
+            </div>
+            <div class="card-body   ">
+                <div class=" ">
+                    <table class="table">
+                        <thead class=" text-primary">
+                            <th>
+                                index
+                            </th>
+                            <th>
+                                type
+                            </th>
+                            <th>
+                                Hook type
+                            </th>
+                            <th>
+                                Service
+                            </th>
+                            <th class=" text-center">
+
+                            </th>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="el in ListHooks  ">
+                                <td>
+                                    {{ el._index }}
+                                </td>
+                                <td>
+                                    {{ el._type }}
+                                </td>
+                                <td>
+                                    {{ el.eventType }}
+                                </td>
+                                <td>
+                                    {{ el.service.serviceType }}
+                                </td>
+                                <td class=" text-center">
+                                    <i class="fa fa-trash deleteAction" aria-hidden="true" ng-click="removeDymerHook($index)"></i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+
+            </div>
+            <!--<div class="card-footer ">
+                      <hr>
+                      <div class="stats">
+                        <i class="fa fa-history"></i> Updated 3 minutes ago
+                      </div>
+                    </div>-->
+        </div>
+    </div>
+</div>

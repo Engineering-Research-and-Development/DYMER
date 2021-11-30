@@ -1,0 +1,64 @@
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <form>
+                    <div class="input-group no-border">
+                        <input type="text" value="" class="form-control" placeholder="Search by title" ng-model="search.title" />
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <i class="nc-icon nc-zoom-split"></i>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div ng-hide="listaModels.length">
+                    <div class="alert alert-info  "> No Model Available </div>
+                </div>
+                <ul class="list-unstyled team-members">
+                    <li ng-repeat="el in listaModels | filter:search" class="kmspointer hover actcolor">
+                        <div class="row">
+
+                            <div class="col-md-7 col-7">
+                                <span ng-click="loadHtmlForm(el,$index);templ.isActive = !templ.isActive" style="bottom: -17px; 
+      position: relative;" ng-class="{active:$index== selected}">{{ el.title }}</span>
+
+                            </div>
+                            <div class="col-md-4 col-4 text-right">
+                                <btn class="btn btn-sm btn-outline-success btn-round btn-icon" ng-click="loadHtmlForm(el,$index)"><i class="fa  fa-plus" aria-hidden="true"></i></btn>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card ">
+            <div class="card-header  ">
+                <h5 class="card-title b-b1px text-info ">{{formtitle}}</h5>
+            </div>
+            <div class="card-body ">
+
+                <div class=" ">
+
+
+                    <div id="cont-RenderForm">
+                        <div id="html-torender">
+                            <div class="text-center">
+                                <i class="nc-icon nc-world-2 text-info" style="    font-size: 113px;"></i>
+                            </div>
+                        </div>
+                        <div id="appendfiles"></div>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="card-footer ">
+                <hr>
+                <!--<div class="stats" ng-show="objChanged"><i class="fa fa-history"></i><span ng-bind="objChanged | date:'MM/dd/yyyy HH:mm'"></span></div>-->
+            </div>
+        </div>
+    </div>
+</div>

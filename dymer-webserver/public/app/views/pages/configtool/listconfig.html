@@ -1,0 +1,61 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title text-warning"> <span class="card-category"> <i class="fa fa-wrench"></i> </span>Configurator List</h5>
+
+            </div>
+            <div class="card-body   ">
+                  <div ng-controller="confListController"> 
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class=" ">
+                                <div  >
+                                    
+                                    <table class="table ">
+                                        <thead class=" text-primary ">
+                                            <th>
+                                                index
+                                            </th>
+                                            <th>
+                                                View type
+                                            </th>
+                                            <th>
+                                                Configuration json
+                                            </th>
+                                            <th class=" text-center ">
+                
+                                            </th>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="el in ListConfigRules ">
+                                                <td data-id="{{ el._id }}">
+                                                    {{ el._index }}
+                                                </td>
+                                                <td>
+                                                    {{ el.typeView }}
+                                                </td>
+                                                <td><i class="fa fa-bars burgherAction " aria-hidden="true " ng-click="showDetails=! showDetails "></i>
+                                                    <pre ng-show="showDetails ">{{ el.configuration |  json }}</pre>
+                                                </td>
+                                                <td class=" text-center ">
+                                                    <btn class="btn btn-sm btn-outline-warning btn-round btn-icon" ng-click="generateConfigRule ( $index) "  ><i class="fa fa-eye" aria-hidden="true"></i></btn>
+
+                                                    <btn class="btn btn-sm btn-outline-success btn-round btn-icon" ng-click="removeConfigRule( $index) "><i class="fa fa-trash" aria-hidden="true"></i></btn>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div id="iframeResult"></div>
+                                    <div id="renderiframeResult"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                </div>
+                 
+            </div>
+            
+        </div>
+    </div>
+</div>

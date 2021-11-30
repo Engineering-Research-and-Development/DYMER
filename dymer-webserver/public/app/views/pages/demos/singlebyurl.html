@@ -1,0 +1,71 @@
+<div class="col-md-12">
+    <div class="card ">
+        <div class="card-header ">
+            <h5 class="card-title">Dymer Viewer</h5>
+            <div class="card-category">
+                render entities: Single Entity
+                <a href="/demodownload/View/dymer_single_detail_urlid.html" class="btn btn-wd btn-info  float-right " target="_self">
+                    <i class="fa fa-download"></i> Download Example
+                </a>
+            </div>
+        </div>
+        <div class="card-body ">
+
+            <div class="row row-eq-height">
+
+                <div class="col-2  text-center">
+                    <div class="crop-height  rounded border">
+                        <img src="../assets/img/demo/render-single-detail.png" data-toggle="modal" data-target="#myModalRListD" class="img-thumbnail  cur-p scale  ">
+                    </div>
+
+                    <div id="myModalRListD" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalRListD" aria-hidden="true">
+                        <div class="modal-dialog" style=" max-width: 80%;  ">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <img src="../assets/img/demo/render-single-detail.png">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Example - Render Detail</small>
+                </div>
+
+            </div>
+            <div>
+                <br> The following is an example of how to setup a simple Dymer Viewer.
+                <p>Create a js function named <b>mainDymerView()</b> that invoke the function <b>drawEntities(targetId,key).</b>
+                    <p>
+                        'targetId': dom element id , 'key': key in get request that contain the element's id</p>
+                    <pre class=" language-javascript" data-language="javascript">
+ <code class=" language-javascript"><span class="token tag">&lt;script&gt;</span>
+    <span class="token keyword">function</span> <span class="token function">mainDymerView</span>() {
+        <span class="token function">drawEntityByIdUrl</span>("#cont-MyList", 'e_id');
+    }
+ <span class="token tag">&lt;/script&gt;</span></code></pre>
+
+                    <p>
+                        Import the <b>dymer.viewer.js</b> with id 'dymerurl' and set the &lt;dymerip&gt; </p>
+                    <pre class=" language-javascript" data-language="javascript"><code class=" language-javascript"><span class="token tag"> &lt;script id="dymerurl" src="<span class="token keyword">&lt;dymerip&gt;</span>/public/cdn/js/dymer.viewer.js"> &lt;/script&gt;</span></code></pre>
+                    <p>Create a DOM element where render the entity </p>
+                    <pre class=" language-javascript" data-language="javascript"><code class=" language-javascript"><span class="token tag">&lt;div id="cont-MyList"&gt;&lt;/div&gt;</span></code></pre>
+
+                    <p>
+
+                        Dymer Viewer imports Bootstrap v4 and jQuery 3, if you use previous versions add a json object called <b>dymerconf</b> as below to exclude the import. To set the 'user id' and 'group id' add the variables <b>d_uid</b> and <b>d_gid</b>.
+                    </p>
+                    <pre class=" language-javascript" data-language="javascript">
+<code class=" language-javascript"> var <span class="token function">d_uid</span> = <span class="token keyword">'&lt;user-id&gt;'</span>; <span class="token attr-name">// user id</span>
+ var <span class="token function">d_gid</span> = <span class="token keyword">'&lt;group-id&gt;'</span>; <span class="token attr-name">// group id</span> 
+ var <span class="token function">dymerconf</span> = { <span class="token attr-name">// disable import bootstrap & jquery</span>
+    <span class="token function">notImport : ["bootstrap","jquery"]</span>
+ };</span></code></pre>
+            </div>
+        </div>
+
+
+        <div class="card-footer ">
+            <hr />
+            <div class="stats"><i class="fa fa-history"></i> Updated 09/24/2019</div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,118 @@
+<a id="back-to-top" href="#" class="btn btn-sm back-to-top ng-scope" role="button" onclick="$('.main-panel').scrollTop(0)"><i class="fa fa-chevron-up"></i></a>
+<div class="col-md-12">
+    <div class="card ">
+        <div class="card-header ">
+            <h5 class="card-title">Models</h5>
+            <div class="card-category">
+                <div>
+                    <a href="#lnkstatusvis" class="text-warning">
+                        <h7> &nbsp;&nbsp;# Status/Visibility
+                        </h7>
+                    </a>
+                    <a href="#lnkselectlistmulti" class="text-warning">
+                        <h7> &nbsp;&nbsp;# Select list multiple
+                        </h7>
+                    </a>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body ">
+
+
+
+
+
+
+
+
+
+
+            <div>
+                <p>
+                    <h4 class="text-info"> Status & Visibility </h4>
+                </p>
+
+                <p id="lnkstatusvis">Entity display rules :</p>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Status / Visibility</th>
+                            <th scope="col">Restricted <i class="fa fa-unlock-alt icon-action" title="restricted"></i>
+                            </th>
+                            <th scope="col">Private <i class="fa fa-lock icon-action" title="private"></i></th>
+                            <th scope="col">Public</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">Published</th>
+                            <td>Owner <i class="fa fa-user icon-action" title="Owner"></i> & <br> Workspace Members</td>
+                            <td>Owner <i class="fa fa-user icon-action" title="Owner"></i> </td>
+                            <td>All</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Draft</th>
+                            <td>Owner <i class="fa fa-user icon-action" title="Owner"></i> & <br> Workspace Members</td>
+                            <td>Owner <i class="fa fa-user icon-action" title="Owner"></i> </td>
+                            <td>Owner <i class="fa fa-user icon-action" title="Owner"></i> </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Unpublished</th>
+                            <td>Owner <i class="fa fa-user icon-action" title="Owner"></i> </td>
+                            <td>Owner <i class="fa fa-user icon-action" title="Owner"></i> </td>
+                            <td>Owner <i class="fa fa-user icon-action" title="Owner"></i> </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <b>Visibility</b><br>
+                <b>Restricted</b>: resource visibility restricted only to the current workspace members<br>
+                <b>Private</b>: visibility restricted to the resource owner<br>
+                <b>Public</b>: resource is visible also to other platform workspaces that are using the same resource model
+
+
+                <h3 class="text-success text-center" id="lnkselectlistmulti"><b>Search for snippets</b></h3>
+
+                <ul>
+                    <h4 class="text-info">- Select List Multiple</h4>
+                    List of attributes to use
+                    <ul>
+                        <li><span></span>="your-label" : </li>
+                        <li>searchable-multiple="true" </li>
+                        <li>searchable-override="data[json-key]": </li>
+                        <li>searchable-text=" span to render if is checkbox>": </li>
+                    </ul>
+                    <label>Example of multiple search</label>
+                </ul>
+                <div>
+                    <pre class=" language-javascript" data-language="javascript"><code class=" language-javascript"><span class="token tag">
+                    <span class="token function">&lt;div class="form-group repeatable first-repeatable"&gt;
+                        &lt;div&gt;</span>
+                        &lt;label for="description" class=" "&gt;Aspects that needed improvement&lt;/label&gt;
+                            &lt;select class="form-control" <span class="token attr-name">name="data[tipomio][0]" searchable-label="Organization" searchable-multiple="true" searchable-override="data[tipomio]"</span>&gt;
+                                    &lt;option value="RTO"&gt;RTO&lt;/option&gt; 
+                                    &lt;option value="LE"&gt;LE&lt;/option&gt; 
+                                    &lt;option value="SME"&gt;SME&lt;/option&gt; 
+                                    &lt;option value="LEA"&gt;LEA&lt;/option&gt; 
+                                    &lt;option value="Public Body"&gt;Public Body&lt;/option&gt; 
+                                    &lt;option value="NPO"&gt;NPO&lt;/option&gt; 
+                                    &lt;option value="NGO"&gt;NGO&lt;/option&gt; 
+                                    &lt;option value="Association"&gt;Association&lt;/option&gt; 
+                                    &lt;option value="Think Tank"&gt;Think Tank&lt;/option&gt; 
+                                &lt;option value="LEA due"&gt;LEA due&lt;/option&gt;&lt;/select&gt;
+                        <span class="token function">&lt;/div&gt;
+                            &lt;div class="action-br"&gt;
+                            &lt;span class="btn  btn-outline-primary  btn-sm" onclick="cloneRepeatable($(this))"&gt;+&lt;/span&gt;
+                            &lt;span class="btn  btn-outline-danger  btn-sm act-remove" onclick="removeRepeatable($(this))"&gt;-&lt;/span&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                                </span></span></code></pre>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer ">
+            <hr />
+            <div class="stats"><i class="fa fa-history"></i> Updated 29/09/2021</div>
+        </div>
+    </div>
+</div>

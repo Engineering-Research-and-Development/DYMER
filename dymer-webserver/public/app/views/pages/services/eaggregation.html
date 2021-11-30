@@ -1,0 +1,264 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">E-aggregation Configuration<span class='pull-right'><i class="fa fa-cogs burgherAction"  ng-click="showConfigEaggregation = ! showConfigEaggregation" aria-hidden="true"></i>  </span></h5>
+                <!-- <p class="card-category">Handcrafted by our friends from
+                      
+                        </p>-->
+            </div>
+            <div class="card-body" ng-show="showConfigEaggregation">
+                <div id="editAsset">
+                    <div class="row ">
+                        <div class="col-3 ">
+                            <div class="form-group ">
+                                <label>Index</label>
+                                <input type="text " class="form-control " ng-model="rule._index" ng-change="clearString()" readonly>
+                                </select>
+                            </div>
+                            <div class="form-group ">
+                                <label>Type</label>
+                                <input type="text " class="form-control " ng-model="rule._type" ng-change="clearString()" readonly>
+                            </div>
+                        </div>
+                        <div class="col-9 ">
+                            <div class="form-group ">
+                                <label>Mapping</label>
+                                <textarea rows="10 " class="form-control " ng-model="rule.mapping" style="min-height: 190px "></textarea>
+                                </textarea>
+                            </div>
+                        </div>
+
+                        <!-- <div ng-show="listEntitiesAvailable.length">
+                        <label>Entities available    <i class="fa fa-bars burgherAction " aria-hidden="true " ng-click="showlistEntitiesAvailable=! showlistEntitiesAvailable "></i></label>
+                        <div class="row" ng-show="showlistEntitiesAvailable ">
+                            <div class="col-3" ng-repeat="el in listEntitiesAvailable"> {{el._index}} - {{el._type}} <i class="fa fa-arrow-circle-up dympointer" aria-hidden="true" ng-click="copyPastIndType(el)"></i></div>
+                        </div>
+                    </div>
+                    <div ng-show="listModelsAvailable.length" style="margin-top: 10px;">
+                        <label>Models available    <i class="fa fa-bars burgherAction " aria-hidden="true " ng-click="showlistModelsAvailable=! showlistModelsAvailable "></i></label>
+                        <div class="row" ng-show="showlistModelsAvailable ">
+                            <div class="col-3" ng-repeat="el in listModelsAvailable"> {{el._index}} - {{el._type}} <i class="fa fa-arrow-circle-up dympointer" aria-hidden="true" ng-click="copyPastIndType(el)"></i></div>
+
+                        </div>
+
+                    </div>-->
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-12 ">
+                            <h5>Insert/Create</h5>
+                        </div>
+                        <input type="hidden" ng-model="eaggregation.config.insert.servicetype">
+
+                    </div>
+                    <div class="row ">
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Method</label>
+                                <select ng-model="eaggregation.config.insert.configuration.method " class="form-control ">
+                                                        <option value="GET"  >GET</option>
+                                                        <option value="POST"  >POST</option> 
+                                                    </select>
+                            </div>
+                        </div>
+
+                        <div class="col-3 ">
+                            <div class="form-group ">
+                                <label>Host</label>
+                                <input type="text" ng-model="eaggregation.config.insert.configuration.host " class="form-control ">
+                            </div>
+                        </div>
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Port</label>
+                                <input type="text " class="form-control " ng-model="eaggregation.config.insert.configuration.port ">
+                            </div>
+                        </div>
+                        <div class="col-5 ">
+                            <div class="form-group ">
+                                <label>Path</label>
+                                <input type="text " class="form-control " ng-model="eaggregation.config.insert.configuration.path ">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-right ">
+                        <div class="col-12 ">
+                            <span class="btn btn-info " ng-click="createEaggregationRule(eaggregation.config.insert,rule) ">Save</span>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row ">
+                        <div class="col-12 ">
+                            <h5>Update</h5>
+                        </div>
+                        <input type="hidden" ng-model="eaggregation.config.update.servicetype ">
+
+                    </div>
+                    <div class="row ">
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Method</label>
+                                <select ng-model="eaggregation.config.update.configuration.method " class="form-control ">
+                                                            <option value="GET"  >GET</option>
+                                                            <option value="POST"  >POST</option> 
+                                                        </select>
+                            </div>
+                        </div>
+
+                        <div class="col-3 ">
+                            <div class="form-group ">
+                                <label>Host</label>
+                                <input type="text " ng-model="eaggregation.config.update.configuration.host " class="form-control ">
+                            </div>
+                        </div>
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Port</label>
+                                <input type="text " class="form-control " ng-model="eaggregation.config.update.configuration.port ">
+                            </div>
+                        </div>
+                        <div class="col-5 ">
+                            <div class="form-group ">
+                                <label>Path</label>
+                                <input type="text " class="form-control " ng-model="eaggregation.config.update.configuration.path ">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-right ">
+                        <div class="col-12 ">
+                            <span class="btn btn-info " ng-click="createEaggregationRule(eaggregation.config.update,rule) ">Save</span>
+                        </div>
+                    </div>
+                    <!--  <hr>
+                    <div class="row ">
+                        <div class="col-12 ">
+                            <h5>Delete</h5>
+                        </div>
+                        <input type="hidden" ng-model="opnsearch.config.delete.servicetype ">
+                         
+                    </div>
+                    <div class="row ">
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Method</label>
+                                <select ng-model="opnsearch.config.delete.configuration.method " class="form-control ">
+                                                                <option value="GET"  >GET</option>
+                                                                <option value="POST"  >POST</option> 
+                                                            </select>
+                            </div>
+                        </div>
+
+                        <div class="col-3 ">
+                            <div class="form-group ">
+                                <label>Host</label>
+                                <input type="text " ng-model="opnsearch.config.delete.configuration.host " class="form-control ">
+                            </div>
+                        </div>
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Port</label>
+                                <input type="text " class="form-control " ng-model="opnsearch.config.delete.configuration.port ">
+                            </div>
+                        </div>
+                        <div class="col-5 ">
+                            <div class="form-group ">
+                                <label>Path</label>
+                                <input type="text " class="form-control " ng-model="opnsearch.config.delete.configuration.path ">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row text-right ">
+                        <div class="col-12 ">
+                            <span class="btn btn-info " ng-click="saveOpnSearchConfig(opnsearch.config.delete) ">Save</span>
+                        </div>
+                    </div>-->
+                </div>
+            </div>
+            <div class="card-footer ">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row ">
+    <div class="col-md-12 ">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title text-warning ">Entities<span class="card-category " style="font-size: small; "> vs Assets</span></h5>
+            </div>
+            <div class="card-body ">
+                <div class=" ">
+                    <table class="table ">
+                        <thead class=" text-primary ">
+                            <th>
+                                index
+                            </th>
+                            <th>
+                                servicetype
+                            </th>
+                            <th>
+                                Methos
+                            </th>
+                            <th>
+                                Host
+                            </th>
+                            <th>
+                                Port
+                            </th>
+                            <th>
+                                Path
+                            </th>
+                            <th>
+                                Mapping
+                            </th>
+                            <th class=" text-center ">
+
+                            </th>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="el in ListRules ">
+                                <td>
+                                    {{ el._index }}
+                                </td>
+                                <td>
+                                    {{ el.servicetype }}
+                                </td>
+                                <td>
+                                    {{ el.configuration.method }}
+                                </td>
+                                <td>
+                                    {{ el.configuration.host }}
+                                </td>
+                                <td>
+                                    {{ el.configuration.port }}
+                                </td>
+                                <td>
+                                    {{ el.configuration.path }}
+                                </td>
+
+                                <td><i class="fa fa-bars burgherAction " aria-hidden="true " ng-click="showDetails=! showDetails "></i>
+                                    <pre ng-show="showDetails ">{{ el.mapping |  json }}</pre>
+                                </td>
+                                <td class=" text-center ">
+                                    <i class="fa fa-trash deleteAction " aria-hidden="true " ng-click="removeEaggregationRule( $index) " ng-confirm-click="Confirm unfavorite? "></i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+
+            </div>
+            <!--<div class="card-footer ">
+                  <hr>
+                  <div class="stats ">
+                    <i class="fa fa-history "></i> Updated 3 minutes ago
+                  </div>
+                </div>-->
+        </div>
+    </div>
+</div>

@@ -1,0 +1,20 @@
+<div class="container">
+    <div class="container_section listedPlant">
+        {{#each this}}
+        <div class="row listrow">
+            <div class="col-3">
+                <img class="img-fluid logof" src="{{cdnpath}}api/entities/api/v1/entity/{{logo.path}}" />
+            </div>
+            <div class="col-9">
+                <div>
+                    <h1 class="text-info">{{name}}</h1>
+                </div>
+                <div class="descrellipse">{{description}}</div>
+                <span class="pull-right text-info " style="padding-top: 10px;cursor:pointer" title="{{name}}" onclick='kmsrenderdetail("{{_id}}")'>
+					View More
+				</span>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</div>

@@ -1,0 +1,144 @@
+<div class="container">
+
+    <div class="container_section plantDetails">
+        <section class="bghead">
+            <div class="container_section  header">
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="logo">
+                            <img class="img-responsive" alt="Logo" src="{{cdnpath}}api/entities/api/v1/entity/{{logo.path}}" />
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <br> <br>
+                    <h1 class="text-info text-left  ">
+                        {{name}}
+                    </h1>
+
+                </div>
+
+            </div>
+        </section>
+        <section class=" ">
+            <div class="container_section">
+                <div class="row">
+                    {{description}}
+                </div>
+            </div>
+        </section>
+        <section class=" ">
+            <div class="container_section">
+                <div class="separator  "></div>
+            </div>
+        </section>
+        {{#if equipment}}
+        <section class=" ">
+            <div class="row  ">
+                <div class="container_section">
+                    <h5 class="primaryColor primaryTitlesection h2clear"> <i class="fa fa-calendar" aria-hidden="true"></i> Equipment </h5>
+                </div>
+            </div>
+            <div class="row">
+                <div class="container_section">
+                    {{equipment}}
+                </div>
+            </div>
+        </section>
+
+        {{/if}} {{#if responsible}}
+        <section class=" ">
+            <div class="row ">
+                <div class="container_section">
+                    <h5 class="thirdColor primaryTitlesection h2clear"> <i class="fa fa-user" aria-hidden="true"></i> Responsible </h5>
+                </div>
+            </div>
+            <div class="row">
+                <div class="container_section">
+                    {{responsible}}
+                </div>
+            </div>
+        </section>
+        {{/if}} {{#if locationtext}}
+        <section class=" ">
+            <div class="row ">
+                <div class="container_section">
+                    <h5 class="thirdColor primaryTitlesection h2clear"> <i class="fa fa-globe" aria-hidden="true"></i> Location </h5>
+                </div>
+            </div>
+            <div class="row">
+                <div class="container_section">
+                    {{locationtext}}
+                </div>
+            </div>
+        </section>
+        {{/if}} {{#if multimedia}} {{#if multimedia.0.multimedia_label}}
+        <section class="  ptb10">
+            <div class="container_section">
+                <div class="row">
+                    <h5 class="thirdColor primaryTitlesection h2clear"><i class="fa fa-files-o" aria-hidden="true"></i> Multimedia
+                    </h5>
+                </div>
+                <div class="row">
+                    <ul class=" ">
+                        {{#each multimedia }}
+                        <li><a href="{{multimedia_link}}" class="no-text-decoration  " style="color: initial!important;" title="" target="_blank">{{multimedia_label}} </a></li>
+                        {{/each }}
+
+                    </ul>
+                </div>
+            </div>
+        </section>
+        {{/if}} {{/if}} {{#if contacts}}
+
+        <section class=" ">
+            <div class="row ">
+                <div class="container_section">
+                    <h5 class="thirdColor primaryTitlesection h2clear"> <i class="fa fa-address-card-o" aria-hidden="true"></i> Contacts </h5>
+                </div>
+            </div>
+            <div class="row">
+                <div class="container_section">
+                    {{contacts}}
+                </div>
+            </div>
+        </section>
+        {{/if}} {{#if relations}}
+        <section class="  ptb10">
+            <div class="container_section">
+                <div class="row">
+                    <h5 style="color: #3387c4;"> <i class="fa fa-share-alt" aria-hidden="true"></i> Relations</h5>
+
+                </div>
+                <div class="row">
+                    <ul>
+                        {{#each relations }}
+                        <li>
+
+                            <span style="cursor:pointer" onmouseout="this.style.color='initial'" onmouseover="this.style.color='#3387c4'" onclick="kmsrenderdetail('{{_id}}')">
+                                {{name}}
+                            </span>
+                        </li>
+                        {{/each }}
+
+                    </ul>
+                </div>
+            </div>
+        </section>
+        {{/if}} {{#if link}}
+        <section class=" ">
+            <div class="container_section">
+
+                <div class="row text-center">
+                    <a href="{{link}}" class="btndwnloadFile text-decoration bkb" title="" target="_blank" style="    margin: 0 auto;
+                    cursor: pointer;"><i
+                            class="fa fa-link" aria-hidden="true"></i> Go To Site</a>
+                </div>
+            </div>
+        </section>
+        {{/if}}
+
+
+    </div>

@@ -1,0 +1,34 @@
+<div data-component-entitystatus="" data-vvveb-disabled="" class="row">
+    {{{EntityStatus this}}}</div>
+<div class="row  ">
+    <div class="col-3">
+        <img class="img-fluid logof" src="{{cdnpath}}api/entities/api/v1/entity/content/{{logo.id}}">
+    </div>
+    <div class="col-9">
+        <div>
+            <h1 class="text-info">{{title}}</h1>
+        </div>
+        <div class="descrellipse">{{description}}</div>
+
+    </div>
+</div>
+{{#if relations}}
+<section class="  ptb10">
+    <div class="container_section">
+        <div class="row col-12 span12">
+            <h5 style="color: #3387c4;"> <i class="fa fa-share-alt" aria-hidden="true"></i> Relations</h5>
+        </div>
+        <div class="row">
+            <ul>
+                {{#each relations }}
+                <li>
+                    <span style="cursor: pointer; color: initial;" onmouseout="this.style.color='initial'" onmouseover="this.style.color='#3387c4'" onclick="kmsrenderdetail('{{_id}}')">
+                                {{title}}
+                            </span>
+                </li>
+                {{/each }}
+            </ul>
+        </div>
+    </div>
+</section>
+{{/if}}

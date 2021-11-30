@@ -1,0 +1,248 @@
+<a id="back-to-top" href="#" class="btn btn-sm back-to-top ng-scope" role="button" onclick="$('.main-panel').scrollTop(0)"><i class="fa fa-chevron-up"></i></a>
+
+<div class="col-md-12">
+    <div class="card ">
+        <div class="card-header ">
+            <h5 class="card-title">Dymer Search</h5>
+            <div class="card-category">
+                <div>
+                    <a href="#lnksnippsetsearch" class="text-warning">
+                        <h7> &nbsp;&nbsp;# Search Bar for snippets
+                        </h7>
+                    </a>
+                    <a href="#lnkdymersearch" class="text-warning">
+                        <h7> &nbsp;&nbsp;# Dymer Search Bar
+                        </h7>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body ">
+
+            <div class="row row-eq-height">
+                <div class="col-2  text-center">
+                    <div class="crop-height rounded border ">
+                        <img src="../assets/img/demo/searchbaropenflat.png" data-toggle="modal" data-target="#myModalRList" class="img-thumbnail   cur-p scale  ">
+                    </div>
+
+                    <div id="myModalRList" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalRList" aria-hidden="true">
+                        <div class="modal-dialog" style=" max-width: 80%;  ">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <img src="../assets/img/demo/searchbaropenflat.png">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Example - Search bar filters opened </small>
+                </div>
+                <div class="col-2  text-center">
+                    <div class="crop-height rounded border ">
+                        <img src="../assets/img/demo/searchbarpopover.png" data-toggle="modal" data-target="#myModalRList1" class="img-thumbnail   cur-p scale  ">
+                    </div>
+
+                    <div id="myModalRList1" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalRList1" aria-hidden="true">
+                        <div class="modal-dialog" style=" max-width: 80%;  ">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <img src="../assets/img/demo/searchbarpopover.png">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Example - Search bar modal filters </small>
+                </div>
+                <div class="col-2  text-center">
+                    <div class="crop-height rounded border ">
+                        <img src="../assets/img/demo/dymersearchbar.png" data-toggle="modal" data-target="#myModalRList2" class="img-thumbnail   cur-p scale  ">
+                    </div>
+
+                    <div id="myModalRList2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalRList2" aria-hidden="true">
+                        <div class="modal-dialog" style=" max-width: 80%;  ">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <img src="../assets/img/demo/dymersearchbar.png">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Example - Dymer Search bar</small>
+                </div>
+            </div>
+            <div>
+                <br>
+                <p id="lnksnippsetsearch">Search bar script to add.</p>
+                <pre class=" language-javascript" data-language="javascript">
+                                 <code class=" language-javascript"> 
+    function mainDymerView() {//prepareFrame();//, "demproduct"
+        var index = 'demproduct';
+        loadModelListToModal($('#cont-addentity'), index);
+        var obj = getAllUrlParams(); //recupera i parametri presenti nell'url (passati in get)
+        var elId = obj["d_eid"]; //d_eid : lo scegli tu da portlet
+        if (elId != undefined)
+            drawEntityByIdUrl("#cont-MyList", "d_eid"); //d_eid : lo scegli tu da portlet , "#cont-MyList": è il contenitore dove
+        renderizzare
+        else
+        drawEntities(jsonConfig); //rimane tale
+        //FINE
+        var indexFilter = "demproduct";
+        setTimeout(function() {
+        dTagFilter = $('#dTagFilter');
+        dTagFilter.dymertagsinput({
+        //indexmodelfilter:"hubcapmodel",
+        indexterms: {
+                "bool": {
+                    "must": [{
+                        "terms": {
+                            "_index": [ "demproduct"]
+                            }
+                        }]
+                    }
+                },
+        allowDuplicates: true,
+        freeInput: false,
+        itemValue: 'id', // this will be used to set id of tag
+        itemText: 'label' // this will be used to set text of tag
+        });
+        if (!dTagFilter.dymertagsinput('getOptionFreeInput'))
+            dTagFilter.on('beforeItemRemove', function(event) {
+        $('#d_entityfilter [filter-relid="' + event.item.id + '"').prop("checked", false);
+        });
+        
+        }, 2000);
+        console.log('dTagFilter', dTagFilter);
+        loadFilterModel(indexFilter, dTagFilter);
+    }
+                                    </code></pre>
+                <br>
+                <p>Search bar modal filter with custom filters.</p>
+                <pre class=" language-html" data-language="html">
+                 <code class=" language-html"> 
+    &lt;div id="dymer_filtercontent"&gt;
+        &lt;div class="row"&gt;
+            &lt;div class="col-12"&gt;
+                &lt;div class="input-group" id="adv-search" style_="display: none;"&gt;
+                    &lt;input id="dTagFilter" type="text" data-role="tagsinput" placeholder="Search for snippets, click on caret"
+                    class="freetext_"&gt;
+                    &lt;div class="input-group-btn"&gt;
+                        &lt;div class="btn-group" role="group"&gt;
+                            &lt;div class="dropdown dropdown-lg"&gt;
+                                &lt;button type="button" id="dFilterClearAll" class="btn freetext_"&gt;&lt;i class="fas fa-eraser"
+                                onclick="clearDFilter()"&gt;&lt;/i&gt;&lt;/button&gt;
+                                &lt;!----&gt;&lt;button type="button" id="dFilterDropdown" class="btn btn-default dropdown-toggle"
+                                data-toggle="dropdown"&gt;&lt;span class="caret"&gt;&lt;/span&gt;&lt;/button&gt;
+                                &lt;!-- --&gt;
+                                &lt;div id="d_entityfilter" class="dropdown-menu dropdown-menu-right " useplaceholder="true" role="menu"&gt;
+                                Hello
+                                &lt;div class="grpfilter"&gt;
+                                &lt;div&gt;&lt;label class="kms-title-label"&gt;Nearby Resources (in meters)&lt;/label&gt;&lt;/div&gt; &lt;input
+                                type="text" class="form-control col-12 span12" name="data[distance]"
+                                searchable-label="Distance (m)" required="" filter-id="distance"&gt;
+                                &lt;div class="switch_container pull-right"&gt; &lt;i class="fa fa-refresh filterSingRefresh"
+                                aria-hidden="true" title="refresh filter value" filter-relid="distance"
+                                filter-rel="data[distance]" filter-labeltext="" filter-label="Distance (m)"
+                                filter-multiple="false" onclick="refreshDTagFilter( $(this))"&gt;&lt;/i&gt; &lt;label
+                                class="switch switchfilter " title="active filter"&gt;&lt;input type="checkbox"
+                                filter-relid="distance" filter-rel="data[distance]"
+                                filter-label="Distance (m)" filter-labeltext="" filter-multiple="false"
+                                onclick="manageDTagFilter( $(this))"&gt; &lt;span class="slider round"&gt;&lt;/span&gt;
+                                &lt;/label&gt; &lt;/div&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                        &lt;button type="button" class="btn btn-primary" onclick="switchByFilter(dTagFilter)"&gt;&lt;i class="fa fa-search"
+                        aria-hidden="true"&gt;&lt;/i&gt;&lt;/button&gt;
+                        &lt;!-- &lt;button type="button" class="btn btn-primary" onclick="switchByGeneralText()"&gt;&lt;i class="fa fa-ship"
+                        aria-hidden="true"&gt;&lt;/i&gt;&lt;/button&gt;--&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;  </code></pre>
+                <br>
+                <p>Search bar flat opened on load.</p>
+                <pre class=" language-html" data-language="ht,ò">
+ <code class=" language-html"> 
+    &lt;div id="dymer_filtercontent"&gt;
+        &lt;div class="row"&gt;
+            &lt;div class="col-12"&gt;
+                &lt;div class="input-group" id="adv-search" style_="display: none;"&gt;
+                    &lt;input id="dTagFilter" type="text" data-role="tagsinput" placeholder="Search for snippets, click on caret"
+                     class="freetext_"&gt;
+                    &lt;div class="input-group-btn"&gt;
+                        &lt;div class="btn-group" role="group"&gt;
+                            &lt;div class="dropdown dropdown-lg"&gt;
+                                &lt;button type="button" id="dFilterClearAll" class="btn freetext_"&gt;&lt;i class="fas fa-eraser"
+                                onclick="clearDFilter()"&gt;&lt;/i&gt;&lt;/button&gt;
+                                &lt;!----&gt;&lt;button type="button" id="dFilterDropdown" class="btn btn-default dropdown-toggle"
+                                onclick="toggleFilter()" &gt;&lt;span class="caret"&gt;&lt;/span&gt;&lt;/button&gt;
+                                &lt;!-- --&gt;              
+                            &lt;/div&gt;
+                            &lt;button type="button" class="btn btn-primary" onclick="switchByFilter(dTagFilter)"&gt;&lt;i class="fa fa-search"
+                            aria-hidden="true"&gt;&lt;/i&gt;&lt;/button&gt;
+                            &lt;!-- &lt;button type="button" class="btn btn-primary" onclick="switchByGeneralText()"&gt;&lt;i class="fa fa-ship"
+                            aria-hidden="true"&gt;&lt;/i&gt;&lt;/button&gt;--&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div class="col-12"&gt;
+                 &lt;div id="d_entityfilter" class="expanded" useplaceholder="true" style="display: block;" &gt; &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt; 
+  </code></pre> in your model elements add data-filterpos="2" searchable-label="Titolo" <br> searchable-multiple="true" if is multiple search <br> in relation element where data-torelation='...' <br> searchable-override="data[hashtags]"
+                if not composed<br>
+                <b>query.query.relationdymer</b>:{<span>"indice_relazione":["id_entità_relazione"]</span>} contiene il filtro con le relazioni<br> <b>query.getfields</b> <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html">doc</a>recupera
+                solo determinati attributi
+                <br><b>qoptions.recoverRelation</b>: true/false recupera o meno le relazioni nel risultato di ricerca
+            </div>
+            <h4 class="text-info" id="lnkdymersearch"><i class="fa fa-caret-right" aria-hidden="true"></i> Dymer Search Bar
+            </h4>
+            <p>Create new object <b>dymerSearch</b> inside mainDymerView() function</p>
+            <pre class=" language-javascript" data-language="javascript">
+<code class=" language-javascript"> 
+function mainDymerView() {
+    dsearch = <span class="token keyword">new dymerSearch</span>({
+        <span class="token keyword">"objname"</span>: "dsearch", <span class="token attr-name">//same object name</span> -> <span class="token tag">Mandatory</span>
+        <span class="token keyword">"formid"</span>: "myfilter", <span class="token attr-name">//id of your form</span> -> <span class="token tag">Mandatory</span>
+        <span class="token keyword">"filterModel"</span>:"demproduct", <span class="token attr-name">// index model to load searchables elements</span> -> <span class="token tag">Not Mandatory</span>
+        <span class="token keyword">"innerContainerid"</span>: "contform", <span class="token attr-name">// id div element indise form</span> -> <span class="token tag">Mandatory</span>
+        <span class="token keyword">"groupfilterclass"</span>: "col-12", <span class="token attr-name">// class to add on filters</span> -> <span class="token tag">Not Mandatory , default value = "span12 col-12"</span>
+        <span class="token keyword">"conditionQuery"</span>: "OR", <span class="token attr-name">// AND or OR </span> -> <span class="token tag">Not Mandatory, default value = "AND"</span>
+        <span class="token keyword">"addfreesearch"</span>:true, <span class="token attr-name">// will add global search input, true/false</span> -> <span class="token tag">Not Mandatory, default value = false</span>
+        <span class="token keyword">"query"</span>: { <span class="token attr-name">// base query for search</span>
+            "bool": {
+                "must": [{
+                        "terms": { "_index": ["demproduct"] }
+                        }]
+                    }
+            }
+        });
+}
+</code>
+            </pre>
+            <p>Create a <b>form</b> element with id (same value in dymerSearch.formid) and class="dymerSearch", create a
+                <b>div</b> element with id (same value in dymerSearch.innerContainerid)
+                <br> How to use Multiselect
+                <a href="https://developer.snapappointments.com/bootstrap-select/" target="_blank"><i
+                        class="fa fa-external-link-square" aria-hidden="true"></i></a>
+
+            </p>
+            <pre class=" language-javascript" data-language="javascript">
+<code class=" language-javascript"> 
+    &lt;form id="myfilter" class="dymerSearch"&gt;
+    //here you can add custom filters
+        &lt;div id="contform" class="row"&gt;//the sorted auto filters will be added here &lt;/div&gt;
+    //here you can add custom filters
+    &lt;/form&gt;
+</code>
+</pre>
+        </div>
+        <div class="card-footer ">
+            <hr />
+            <div class="stats"><i class="fa fa-history"></i> Updated 27/07/2021</div>
+        </div>
+    </div>
+</div>

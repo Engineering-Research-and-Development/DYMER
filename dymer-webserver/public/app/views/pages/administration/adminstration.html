@@ -1,0 +1,263 @@
+<div class="row">
+
+    <div class="col-3">
+        <div class="card card-stats">
+            <div class="card-body ">
+                <div class="row">
+                    <div class="col-5 col-md-4">
+                        <div class="icon-big text-center icon-warning">
+                            <i class="nc-icon nc-atom text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-md-8">
+                        <div class="numbers">
+                            <p class="card-category">Indices</p>
+                            <p class="card-title">{{totIndices}}
+                                <p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer ">
+                <hr>
+                <!--  <div class="stats">
+            <i class="fa fa-refresh"></i> Update Now
+          </div>-->
+            </div>
+        </div>
+    </div>
+    <div class="col-3">
+        <div class="card card-stats">
+            <div class="card-body ">
+                <div class="row">
+                    <div class="col-5 col-md-4">
+                        <div class="icon-big text-center icon-warning">
+                            <i class="nc-icon nc-layout-11 text-success"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-md-8">
+                        <div class="numbers">
+                            <p class="card-category">Templates</p>
+                            <p class="card-title">{{totTemplates}}
+                                <p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer ">
+                <hr>
+                <div class="stats">
+                    <!--<i class="fa fa-calendar-o"></i> Last day-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-3">
+        <div class="card card-stats">
+            <div class="card-body ">
+                <div class="row">
+                    <div class="col-5 col-md-4">
+                        <div class="icon-big text-center icon-warning">
+                            <i class="nc-icon nc-tile-56 text-warning"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-md-8">
+                        <div class="numbers">
+                            <p class="card-category">Models</p>
+                            <p class="card-title">{{totModels}}
+                                <p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer ">
+                <hr>
+                <!-- <div class="stats">
+            <i class="fa fa-refresh"></i> Update now
+          </div>-->
+            </div>
+        </div>
+    </div>
+    <div class="col-3">
+        <div class="card card-stats">
+            <div class="card-body ">
+                <div class="row">
+                    <div class="col-5 col-md-4">
+                        <div class="icon-big text-center icon-warning">
+                            <i class="nc-icon nc-world-2 text-info"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-md-8">
+                        <div class="numbers">
+                            <p class="card-category">Entities</p>
+                            <p class="card-title">{{totEntities}}
+                                <p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer ">
+                <hr>
+                <!--  <div class="stats">
+              <i class="fa fa-refresh"></i> Update Now
+            </div>-->
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title text-warning">Models<span class="card-category" style="font-size: small;"> vs indices</span></h5>
+
+            </div>
+            <div class="card-body   ">
+                <div class=" ">
+                    <table class="table">
+                        <thead class=" text-primary">
+                            <th>
+                                index
+                            </th>
+                            <th class=" text-center">
+                                Model
+                            </th>
+                            <th class=" text-center">
+                                Entities
+                            </th>
+
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="el in ListEntities  ">
+                                <td>
+                                    {{ el.index }}
+                                </td>
+
+
+                                <td class="text-right">
+                                    <div ng-if="el.model.exsist == true" class=" text-center">
+                                        <!-- <i class="nc-icon nc-check-2"></i>-->
+                                        {{ el.model.title }}
+                                    </div>
+                                    <div ng-if="el.model.exsist != true" class=" text-center">
+                                        <i class="nc-icon nc-simple-remove"></i>
+                                    </div>
+                                </td>
+                                <td class=" text-center">
+                                    {{ el.count }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+
+            </div>
+            <!--<div class="card-footer ">
+              <hr>
+              <div class="stats">
+                <i class="fa fa-history"></i> Updated 3 minutes ago
+              </div>
+            </div>-->
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title text-success">Templates <span class="card-category" style="font-size: small;"> vs indices</span></h5>
+
+            </div>
+            <div class="card-body   ">
+                <div class=" ">
+                    <table class="table">
+                        <thead class=" text-primary">
+                            <th>
+                                Index
+                            </th>
+                            <th class=" text-center">
+                                Full Content
+                            </th>
+                            <th class=" text-center">
+                                Preview List
+                            </th>
+                            <th class=" text-center">
+                                Preview Map
+                            </th>
+
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="el in ListEntities  ">
+                                <td>
+                                    {{ el.index }} ( {{ el.model.title }} )
+                                </td>
+                                <td>
+                                    <div ng-if="el.templates.fullcontent.exsist == true" class=" text-center">
+                                        <!--<i class="nc-icon nc-check-2"></i>-->
+                                        <div>{{ el.templates.fullcontent.title }}</div>
+                                    </div>
+                                    <div ng-if="el.templates.fullcontent.exsist != true" class=" text-center">
+                                        <i class="nc-icon nc-simple-remove"></i>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div ng-if="el.templates.teaserlist.exsist == true" class=" text-center">
+                                        <!-- <i class="nc-icon nc-check-2"></i>-->
+                                        <div>{{ el.templates.teaserlist.title }}</div>
+                                    </div>
+                                    <div ng-if="el.templates.teaserlist.exsist != true" class=" text-center">
+                                        <i class="nc-icon nc-simple-remove"></i>
+                                    </div>
+                                </td>
+                                <td class="text-right">
+                                    <div ng-if="el.templates.teasermap.exsist == true" class=" text-center">
+                                        <!--<i class="nc-icon nc-check-2"></i>-->
+                                        <div>{{ el.templates.teasermap.title }}</div>
+                                    </div>
+                                    <div ng-if="el.templates.teasermap.exsist != true" class=" text-center">
+                                        <i class="nc-icon nc-simple-remove"></i>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            <!--<div class="card-footer ">
+              <hr>
+              <div class="stats">
+                <i class="fa fa-history"></i> Updated 3 minutes ago
+              </div>
+            </div>-->
+        </div>
+    </div>
+</div>
+
+<!--
+
+<form  id="uploadfrom" ng-controller="formCtrl">
+    <label>Titolo</label>
+    <input class="form-control" type="text" name="title" ng-model="myform.title">
+    <br>
+    <label>Author</label>
+    <input class="form-control" type="text" name="author" ng-model="myform.author">
+    <br>
+    <label>Description</label>
+    <input class="form-control" type="text" name="description" ng-model="myform.description">
+    <br>
+    <input id="inp_file" type="file" file-input="files" multiple="multiple" />
+
+    <br>
+    <label>tre</label>
+    <input class="form-control" type="text" name="lol" ng-model="myform.lol">
+    <br>
+    <br>
+    <br>
+    <div id="success">{{success}}</div>
+    <button class="btn btn-mini btn-info text-right" id='upload' ng-click='upload()' >Inserisci</button>
+</form>  -->

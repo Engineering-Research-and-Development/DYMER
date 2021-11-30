@@ -1,0 +1,186 @@
+ /*portlet generica*/
+ /*  .list-cat-tag {
+            padding-left: 15px;
+        }
+
+       .listedPlant .portlet-content-container .portlet-body {
+            background: white;
+            -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+            -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+            -ms-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+            -o-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+            padding-bottom: 0;
+            min-height: 150px;
+            margin-top: 30px;
+            padding-left: 0;
+            padding-right: 0;
+            color: #333;
+        }
+
+        .listedPlant .oedipus-no-data {
+            padding-left: 5px;
+            color: #aaa;
+           
+            font-style: italic;
+
+        }
+
+        .listedPlant .portlet-content-container .portlet-body .asset-content {
+            margin: 0 !important;
+        }*/
+ 
+ .listedPlant .taglib-header {
+     float: left !important;
+     min-height: 20px;
+     width: 100% !important;
+     margin-bottom: 10px;
+     margin-top: 10px;
+ }
+ 
+ .listedPlant .taglib-header .header-title {
+     text-align: right;
+     color: #2d72be;
+     border-bottom: 2px solid #dadbdd;
+ }
+ 
+ .plantDetails .primaryTitlesection {
+     padding-bottom: 10px;
+     font-weight: inherit;
+ }
+ 
+ .plantDetails section .container_section {
+     padding: 10px 15px 10px 15px;
+ }
+ 
+ .plantDetails .headbk {
+     background-color: #15143a;
+     position: relative;
+ }
+ 
+ .plantDetails .header .title {
+     margin-top: 2%;
+     text-align: center;
+     border-bottom: 0 !important;
+     vertical-align: middle;
+     /*   color: rgb(255, 255, 255);*/
+ }
+ 
+ .plantDetails .header .logo {
+     text-align: center;
+ }
+ 
+ .plantDetails .header .logo img {
+     max-width: 251px;
+     max-height: 50px;
+ }
+ 
+ .plantDetails .content_title {
+     position: relative;
+     padding: 15px 0;
+ }
+ 
+ .plantDetails .primaryColor {
+     color: rgb(233, 78, 29);
+ }
+ 
+ .plantDetails .primaryBackground {
+     background-color: #e65417;
+     color: rgb(255, 255, 255);
+ }
+ 
+ .plantDetails .h2clear {
+     margin: 0;
+     padding: 0;
+ }
+ 
+ .plantDetails .thirdBackground {
+     background-color: #3387c4;
+ }
+ 
+ .plantDetails .primaryBackground .primaryColor,
+ .plantDetails .thirdBackground .primaryColor {
+     color: #fff;
+ }
+ 
+ .plantDetails .separator {
+     margin-top: 0px;
+     margin-bottom: 0px;
+     border-color: #e45016;
+ }
+ 
+ .plantDetails .thirdColor {
+     color: #3387c4;
+ }
+ 
+ .plantDetails .separator.thirdBackground {
+     border-color: #3387c4;
+ }
+ 
+ .plantDetails .separator.blue {
+     border-color: #254aa5;
+ }
+ 
+ .plantDetails .separator.grey {
+     border-color: #dadbdd;
+ }
+ 
+ .plantDetails .btndwnloadFile {
+     background-color: #3d3d3d;
+     color: #ffffff;
+     border: none;
+     border-top-color: currentcolor;
+     border-right-color: currentcolor;
+     border-bottom-color: currentcolor;
+     border-left-color: currentcolor;
+     cursor: pointer;
+     display: inline-block;
+     letter-spacing: 1px;
+     outline: none;
+     position: relative;
+     white-space: initial;
+     -webkit-transition: all 0.3s;
+     -moz-transition: all 0.3s;
+     transition: all 0.3s;
+     border-radius: 4px;
+     padding: 13px 40px;
+     font-weight: 300;
+     margin-bottom: 15px;
+     text-decoration: none;
+     margin-right: 15px;
+     background-color: #e94e1d;
+     box-shadow: 0 4px rgb(171, 59, 24);
+ }
+ 
+ .plantDetails .no-text-decoration {
+     text-decoration: none;
+ }
+ 
+ .plantDetails .btndwnloadFile:hover {
+     box-shadow: 0 2px rgb(171, 59, 24);
+     color: #fff;
+     bottom: -1px;
+ }
+ 
+ .plantDetails .btndwnloadFile.bkb {
+     background-color: #15143a;
+     box-shadow: 0 4px rgb(67, 65, 123);
+ }
+ 
+ .plantDetails .btndwnloadFile.bkb:hover {
+     box-shadow: 0 2px rgb(67, 65, 123);
+ }
+ 
+ .bghead {
+     height: 120px;
+     /* background-image: url('/documents/10199/0/project-management11.jpg');*/
+     background-repeat: repeat;
+     background-position: left top;
+     background-attachment: scroll;
+     background-size: auto;
+     margin-bottom: 10px;
+ }
+ 
+ #entityEdit .rendered-form .btn.btn-mini.btn-info.pull-right {
+     display: none!important;
+ }

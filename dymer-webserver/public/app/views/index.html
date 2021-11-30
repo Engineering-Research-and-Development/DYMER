@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="userApp">
+
+<head>
+    <meta charset="utf-8" />
+    <!-- <base href="/d4ptest/" />-->
+    <script>
+        var site_prefix = 'site_prefix_value';
+    </script>
+
+    <link rel="apple-touch-icon" sizes="76x76" href="public/assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" href="public/assets/img/favicon.png">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>
+        DYnamic Information ModElling & Rendering
+    </title>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
+    <!--     Fonts and icons     -->
+    <!--<script src="public/assets/wsbuilder/js/popper.min.js"></script>-->
+    <!-- <script src="public/assets/auth/js/keycloak.js"></script>-->
+    <script src="public/assets/wsbuilder/js/popper.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,200" rel="stylesheet" />
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet" />
+    <!-- CSS Files -->
+    <!-- Bootstrap core CSS -->
+    <link href="public/assets/css/bootstrap.css" rel="stylesheet">
+
+
+    <script src="public/assets/js/angular.js"></script>
+    <script src="public/assets/js/plugins/ocLazyLoad/ocLazyLoad.js"></script>
+    <script src="public/assets/js/angular-route.js"></script>
+    <script src="public/assets/js/angular-cookies.js"></script>
+    <script src="public/assets/js/angular-file-upload.js"></script>
+    <script src="public/assets/js/json-viewer.js"></script>
+    <script src="public/assets/js/upload.js"></script>
+    <script src="public/app/app.js"></script>
+    <script src="public/app/routes.js"></script>
+    <!-- <script src="public/app/services/dymerSutility.js"></script>-->
+    <script src="public/app/controllers/entitiesCtrl.js"></script>
+    <script src="public/app/controllers/templateCtrl.js"></script>
+    <script src="public/app/controllers/manageModel.js"></script>
+    <script src="public/app/controllers/manageTemplate.js"></script>
+    <script src="public/app/controllers/dashBCtrl.js"></script>
+    <script src="public/app/controllers/entitiesImport_ff.js"></script>
+    <script src="public/app/controllers/formCtrl.js"></script>
+    <script src="public/app/controllers/dymerHooksCtrl.js"></script>
+    <script src="public/app/controllers/bridgeEntitiesCtrl.js"></script>
+    <script src="public/app/controllers/openSearchCtrl.js"></script>
+    <script src="public/app/controllers/eaggregationCtrl.js"></script>
+    <script src="public/app/controllers/queryBCtrl.js"></script>
+    <script src="public/app/controllers/configuratorCtrl.js"></script>
+    <script src="public/app/controllers/loginCtrl.js"></script>
+    <script src="public/app/controllers/taxCtrl.js"></script>
+    <script src="public/app/services/serviceEntity.js"></script>
+    <script src="public/app/controllers/permissionCtrl.js"></script>
+    <script src="public/app/controllers/authenticationConfigCtrl.js"></script>
+    <script src="public/app/controllers/importcronjobCtrl.js"></script>
+
+
+    <link href="public/assets/css/paper-dashboard.css" rel="stylesheet" />
+    <link href="public/assets/css/json-viewer.css" rel="stylesheet">
+
+</head>
+
+<body class="">
+
+    <div id="contfullp" class="wrapper full-page_" ng-class="{'full-page':!globals.loggedIn}">
+        <div class="sidebar" data-color="white" data-active-color="danger" ng-show="globals.loggedIn">
+            <!--
+        Tip 1: You can change the color of the sidebar using: data-color="blue | green | orange | red | yellow"
+    -->
+            <div class="logo">
+                <a href="/" class="simple-text logo-mini">
+                    <div class="logo-image-small">
+                        <img src="public/assets/img/logo-small.png">
+                    </div>
+                </a>
+                <a href="/" class="simple-text logo-normal">
+                    DYMER
+                </a>
+            </div>
+            <div class="sidebar-wrapper">
+                <ul class="nav">
+                    <li class="active ">
+                        <a href="dashboard">
+                            <i class="nc-icon nc-chart-bar-32"></i>
+                            <p>Dashboard</p>
+                        </a>
+
+                    </li>
+
+                    <li>
+                        <a href="#" class="haschild">
+
+                            <i class="fa fa-lock"></i>
+                            <p>Permissions</p>
+
+                        </a>
+                        <div class=" kmssublist">
+                            <ul class="">
+                                <li class="  ">
+                                    <a href="authenticationconfig"><i class="fa fa-key"></i>
+                                        <p>Authorization</p>
+                                    </a>
+                                </li>
+                                <li class="  ">
+                                    <a href="permissionmanage"><i class="nc-icon nc-badge"></i>
+                                        <p>Roles</p>
+                                    </a>
+                                </li>
+
+
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <a href="#" class="haschild">
+                            <i class="nc-icon nc-layout-11"></i>
+                            <p>Templates</p>
+                        </a>
+                        <div class=" kmssublist">
+                            <ul class="">
+                                <li class="  ">
+                                    <a class="" href="templates"><i class="nc-icon nc-bullet-list-67 lg "></i>
+                                        <p>List Template</p>
+                                    </a>
+                                </li>
+
+                                <li class=" "> <a href="managetemplate" target="_self"><i
+                                            class="nc-icon nc-ruler-pencil"></i>
+                                        <p>Manage Templates</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <a href="#" class="haschild">
+                            <i class="nc-icon nc-tile-56"></i>
+                            <p>Models</p>
+                        </a>
+                        <div class=" kmssublist">
+                            <ul class="">
+                                <li class="  ">
+                                    <a class="" href="models"><i class="nc-icon nc-bullet-list-67 lg "></i>
+                                        <p>List Models</p>
+                                    </a>
+                                </li>
+
+                                <li class="  "> <a class="" href="managemodel" target="_self"><i
+                                            class="nc-icon nc-ruler-pencil"></i>
+                                        <p>Manage Models</p>
+                                    </a>
+                                </li>
+                                <li class="  "> <a class="" href="modeldoc" target="_self"><i
+                                            class="nc-icon nc-single-copy-04"></i>
+                                        <p>Documentation</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <a href="#" class="haschild">
+                            <i class="nc-icon nc-world-2"></i>
+                            <p>Entities</p>
+                        </a>
+                        <div class=" kmssublist">
+                            <ul class="">
+                                <li class="  ">
+                                    <a class="" href="listentities"><i class="nc-icon nc-bullet-list-67 lg "></i>
+                                        <p>Manage Entities</p>
+                                    </a>
+                                </li>
+
+                                <li class="  "> <a class="" href="addentity"><i class="nc-icon nc-ruler-pencil"></i>
+                                        <p>Add Entity</p>
+                                    </a>
+                                </li>
+                                <li class="  "> <a class="" href="importfromfile"><i class="nc-icon nc-air-baloon"></i>
+                                        <p>Import</p>
+                                    </a>
+                                </li>
+                                <li class="  ">
+                                    <a class="" href="querybuilder"><i class="fa fa-gamepad"></i>
+                                        <p>Query Builder</p>
+                                    </a>
+                                </li>
+
+                                <li class="  ">
+                                    <a class="" href="hooks"> <i class="fa fa-toggle-on" aria-hidden="true"></i>
+                                        <p>Hook</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <!---->
+                    <li>
+                        <a href="#" class="haschild">
+                            <i class="fa fa-wrench"></i>
+                            <p>Config Tool</p>
+                        </a>
+                        <div class=" kmssublist">
+                            <ul class="">
+                                <li class="  ">
+                                    <a class="" href="listconfig"><i class="nc-icon nc-bullet-list-67 lg "></i>
+                                        <p>List Config</p>
+                                    </a>
+                                </li>
+                                <li class="  ">
+                                    <a class="" href="configurator"><i class="fa fa-wrench"></i>
+                                        <p>Add Config</p>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <a href="#" class="haschild">
+                            <!--<i class="fa fa-ravelry" aria-hidden="true"></i>-->
+                            <i class="nc-icon nc-vector" aria-hidden="true"></i>
+                            <p>Bridge Entities</p>
+                        </a>
+                        <div class=" kmssublist">
+                            <ul class="">
+                                <li class="  ">
+                                    <a class="" href="bridge-entities-conf"><i class="fa fa-cogs"
+                                            aria-hidden="true"></i>
+                                        <p>Configuration</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <!---->
+                    <li>
+                        <a href="#" class="haschild">
+                            <i class="nc-icon nc-box"></i>
+                            <p>Services</p>
+                        </a>
+                        <div class=" kmssublist">
+                            <ul class="">
+                                <li class="  ">
+                                    <a class="" href="opennessearch"><i class="fa fa-map-signs  "></i>
+                                        <p>Openness Search</p>
+                                    </a>
+                                </li>
+                                <li class="  ">
+                                    <a class="" href="eaggregation"><i class="fa fa-object-ungroup"
+                                            aria-hidden="true"></i>
+                                        <p>E-Aggregation</p>
+                                    </a>
+                                </li>
+                                <li class="  ">
+                                    <a class="" href="importcronjob"><i class="fa fa-refresh" aria-hidden="true"></i>
+                                        <p>Import Dymer</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <a href="#" class="haschild">
+                            <i class="nc-icon nc-cloud-download-93"></i>
+                            <p>Documentation</p>
+                        </a>
+
+                        <div class=" kmssublist">
+                            <ul class="">
+                                <li class="  ">
+                                    <a class="" href="fixproblems"><i class="fa fa-exclamation-triangle"></i>
+                                        <p>Fix Problems</p>
+                                    </a>
+                                </li>
+                                <li class="  ">
+                                    <a class="" href="demolist"><i class="nc-icon nc-single-copy-04"></i>
+                                        <p>List entities</p>
+                                    </a>
+                                </li>
+                                <li class="  "> <a class="" href="demosingle"><i class="nc-icon nc-paper"></i>
+                                        <p>Single Entity</p>
+                                    </a>
+                                </li>
+                                <li class="  "> <a class="" href="singlebyurl"><i class="nc-icon nc-paper"></i>
+                                        <p>
+                                            Entity By ID</p>
+                                    </a>
+                                </li>
+                                <li class="  "> <a class="" href="demomap"><i class="nc-icon nc-compass-05"></i>
+                                        <p>Map/DataTable</p>
+                                    </a>
+                                </li>
+                                <li class="  "> <a class="" href="demosearchbar"><i class="fa fa-search"
+                                            aria-hidden="true"></i>
+                                        <p>Searchbar</p>
+                                    </a>
+                                </li>
+                                <li class="  "> <a class="" href="demomanager"><i
+                                            class="nc-icon nc-settings-gear-65"></i>
+                                        <p>DYMER Manager</p>
+                                    </a>
+                                </li>
+                                <li class="  "> <a class="" href="modelsdoc"><i class="nc-icon nc-tile-56"></i>
+                                        <p>Models</p>
+                                    </a>
+                                </li>
+                                <li class="  "> <a class="" href="templatesdoc"><i class="nc-icon nc-layout-11"></i>
+                                        <p>Templates</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="main-panel">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-lg navbar-absolute fixed-top navbar-transparent">
+                <div class="container-fluid">
+                    <div class="navbar-wrapper">
+                        <div class="navbar-toggle">
+                            <button type="button" class="navbar-toggler">
+                                <span class="navbar-toggler-bar bar1"></span>
+                                <span class="navbar-toggler-bar bar2"></span>
+                                <span class="navbar-toggler-bar bar3"></span>
+                            </button>
+                        </div>
+                        <span onclick="$('#contfullp').toggleClass('full-page');" class="full_normal_zoom" ng-show="globals.loggedIn">
+                            <i class="nc-icon nc-minimal-left"></i>
+
+                        </span>
+                        <span class="navbar-brand">DYnamic information ModElling & Rendering</span>
+                    </div>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-bar navbar-kebab"></span>
+                        <span class="navbar-toggler-bar navbar-kebab"></span>
+                        <span class="navbar-toggler-bar navbar-kebab"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-end" id="navigation">
+                        <!--<form>
+                            <div class="input-group no-border">
+                                <input type="text" value="" class="form-control" placeholder="Search...">
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <i class="nc-icon nc-zoom-split"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>-->
+                        <ul class="navbar-nav">
+                            <!--  <li class="nav-item">
+                                <a class="nav-link btn-magnify" href="#pablo">
+                                    <i class="nc-icon nc-layout-11"></i>
+                                    <p>
+                                        <span class="d-lg-none d-md-block">Stats</span>
+                                    </p>
+                                </a>
+                            </li>-->
+                            <li class="nav-item btn-rotate dropdown" ng-show="globals.loggedIn">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="nc-icon nc-bell-55"></i>
+                                    <p>
+                                        <span class="d-lg-none d-md-block">Some Actions</span>
+                                    </p>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                                    <a class="dropdown-item" href="logout"> Logout &nbsp;&nbsp; &nbsp;&nbsp; <i
+                                            class="nc-icon nc-user-run"></i></a>
+                                    <!--<a class="dropdown-item" href="#">Another action</a>
+                                    <a class="dropdown-item" href="#">Something else here</a>-->
+                                </div>
+                            </li>
+                            <!--  <li class="nav-item">
+                                <a class="nav-link btn-rotate" href="/logout">
+                                    <i class="nc-icon nc-settings-gear-65"></i>
+                                    <p>
+                                        <span class="d-lg-none d-md-block">Account</span>
+                                    </p>
+                                </a>
+                            </li>-->
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <!-- End Navbar -->
+            <!-- <div class="panel-header panel-header-lg">
+  
+  <canvas id="bigDashboardChart"></canvas>
+  
+  
+</div> -->
+            <div class="content">
+                <div class="row_">
+                    <div class="col-md-12_">
+                        <div class=" " ng-view></div>
+
+                    </div>
+                </div>
+            </div>
+            <footer class="footer footer-black  footer-white ">
+                <div class="container-fluid">
+                    <div class="row">
+                        <nav class="footer-nav">
+                            <ul>
+                                <li>
+                                    <a href=" " target="_blank"></a>
+                                </li>
+
+                                <li>
+                                    <a href=" " target="_blank">Licenses</a>
+                                </li>
+                            </ul>
+                        </nav>
+                        <div class="credits ml-auto">
+                            <span class="copyright">
+                                ©
+                                <script>
+                                    document.write(new Date().getFullYear())
+                                </script>, made by <b>Engineering</b>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    <!--   Core JS Files 
+  <script src="public/assets/js/core/jquery.min.js"></script>
+  <script src="public/assets/js/core/popper.min.js"></script>
+<script src="assets/js/core/bootstrap.min.js"></script>
+-->
+    <script>
+        var cdnurl = "";
+        var serverUrl = site_prefix;
+        var d_uid = '99999';
+    </script>
+    <script src="public/assets/js/jquery-3.3.1.js"></script>
+    <script src="public/assets/js/bootstrap.js"></script>
+
+    <script src="public/assets/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+
+
+    <!-- Chart JS -->
+    <script src="public/assets/js/plugins/chartjs.min.js"></script>
+    <!--  Notifications Plugin    -->
+    <script src="public/assets/js/plugins/bootstrap-notify.js"></script>
+    <!-- Control Center for Now Ui Dashboard: parallax effects, scripts for the example pages etc -->
+    <script src="public/assets/js/paper-dashboard.min.js?v=2.0.0" type="text/javascript"></script>
+    <!-- Paper Dashboard DEMO methods, don't include it in your project! -->
+    <script src="public/assets/wsbuilder/libs/jszip/jszip.min.js"></script>
+    <script src="public/assets/wsbuilder/libs/jszip/jszip-utils.min.js"></script>
+    <!--[if IE]>
+    <script src="public/assets/wsbuilder/libs/jszip/jszip-utils-ie.min.js"></script>
+    <![endif]-->z
+    <script src="public/assets/wsbuilder/libs/jszip/FileSaver.js"></script>
+    <script src="public/assets/js/kmsweb.js"></script>
+    <link href="public/assets/jquerybuilder/css/query-builder.default.min.css" rel="stylesheet">
+    <link href="public/assets/jquerybuilder/css/query-builder.dymer.css" rel="stylesheet">
+    <script src="public/assets/jquerybuilder/js/query-builder.standalone.min.js"></script>
+    <script src="public/assets/jquerybuilder/js/query-builder.js"></script>
+    <script src="public/assets/jquerybuilder/js/query-builder-elasticsearch.js"></script>
+    <link href="public/cdn/css/jquery.dataTables.min.css" rel="stylesheet">
+    <script src="public/cdn/js/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="public/cdn/js/dymer.querygen.js" type="text/javascript"></script>
+    <script>
+        $(document).ready(function() {
+            // Javascript method's body can be found in public/assets/assets-for-demo/js/demo.js
+
+        });
+    </script>
+    <!--<link href="public/assets/gwsbuilder/dist/css/grapes.min.css" rel="stylesheet">
+<script src="public/assets/gwsbuilder/dist/grapes.min.js"></script>
+-->
+    <!--
+
+<script src="public/assets/wsbuilder/js/jquery.min.js"></script>-->
+    <script src="public/assets/wsbuilder/js/jquery.hotkeys.js"></script>
+
+
+
+    <!--   b <script src="public/assets/wsbuilder/js/popper.min.js"></script>
+<script src="public/assets/wsbuilder/js/bootstrap.min.js"></script> 
+-->
+
+    <script src="public/assets/wsbuilder/libs/builder/builder.js"></script>
+
+    <script src="public/assets/wsbuilder/libs/builder/undo.js"></script>
+
+    <script src="public/assets/wsbuilder/libs/builder/inputs.js"></script>
+
+
+    <script src="public/assets/wsbuilder/libs/builder/components-bootstrap4.js"></script>
+    <script src="public/assets/wsbuilder/libs/builder/components-widgets.js"></script>
+    <script src="public/assets/wsbuilder/libs/builder/components-kms.js"></script>
+    <script src="public/assets/wsbuilder/libs/builder/blocks-bootstrap4.js"></script>
+    <!--<script src="public/assets/wsbuilder/libs/builder/components-server.js"></script>-->
+
+    <link href="public/assets/wsbuilder/libs/codemirror/lib/codemirror.css" rel="stylesheet" />
+    <link href="public/assets/wsbuilder/libs/codemirror/theme/material.css" rel="stylesheet" />
+    <script src="public/assets/wsbuilder/libs/codemirror/lib/codemirror.js"></script>
+    <script src="public/assets/wsbuilder/libs/codemirror/lib/xml.js"></script>
+    <script src="public/assets/wsbuilder/libs/codemirror/lib/formatting.js"></script>
+    <script src="public/assets/wsbuilder/libs/builder/plugin-codemirror.js"></script>
+
+
+    <link rel="stylesheet" href="public/assets/angular-ui-tree/angular-ui-tree.css">
+    <script type="text/javascript" src="public/assets/angular-ui-tree/angular-ui-tree.js"></script>
+    <!-- <link href="/public/cdn/css/kmw.form.css" rel="stylesheet" />-->
+    <!--Marco <script src="/public/cdn/js/dymer.oauth.js"></script>-->
+    <script src="public/cdn/js/utility.js"></script>
+    <script src="public/cdn/js/jquery.serializejson.js"></script>
+    <script src="public/cdn/js/ajaxcall.js"></script>
+    <script type="text/javascript" src="public/cdn/js/handlebars.min.js"></script>
+    <script type="text/javascript" src="public/cdn/js/handlebarshook.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+    <link href="public/assets/css/prism-okaidia.css" rel="stylesheet">
+    <link href="public/assets/css/kmsweb.css" rel="stylesheet">
+
+</body>
+
+</html>

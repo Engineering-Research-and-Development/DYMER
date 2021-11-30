@@ -1,0 +1,40 @@
+<div class="container">
+
+    <div class="container_section plantDetails">
+        <section class="bghead">
+            <div class="container_section  header">
+
+
+                <div class="row">
+                    <div class="logo">
+                        <img class="img-responsive" style="    width: 92%;" alt="Logo" src="http://localhost:8080/api/entities/api/v1/entity/{{logo.path}}" />
+                    </div>
+                </div>
+                <div class="row">
+                    <h1 class="title text-info">
+                        {{name}}
+                    </h1>
+                </div>
+
+
+            </div>
+        </section>
+        <section class=" ">
+            <div class="container_section">
+                <div class="row">
+                    {{description}}
+                </div>
+            </div>
+        </section>
+        <section class=" ">
+            <div class="container_section">
+                <div class="separator  "></div>
+            </div>
+        </section>
+        <span class="pull-right text-info " style="padding-top: 10px;cursor:pointer" title="{{name}}" onclick='kmsrenderdetail("{{_id}}")'>
+			View More
+		</span>
+
+    </div>
+    <br>
+</div>

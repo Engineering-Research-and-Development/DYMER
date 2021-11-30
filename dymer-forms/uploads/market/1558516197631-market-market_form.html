@@ -1,0 +1,62 @@
+<h1 class="text-center">Market</h1>
+<form id="marketForm" class="senderForm">
+	<input name="data[posturl]" type="hidden">
+	<input name="instance[index]" type="hidden" value="market">
+	<input name="instance[type]" type="hidden" value="market"> 
+	<div class="rendered-form">
+		<div class="form-group field-trial_title">
+			<label class="kms-title-label">Name</label>
+			<input type="text" class="form-control" name="data[name]">
+			<small class="form-text text-muted">Please provide the name of the plant / laboratory</small>
+		</div>
+		<div class="form-group">
+			<label class="kms-title-label">Logo</label>
+			<input type="file" class="form-control" name="data[logo]">
+			<small class="form-text text-muted">Please provide an image identifying the
+				market</small>
+		</div>
+		<div class=" form-group field-description">
+			<label for="description" class="kms-title-label">Description</label>
+			<textarea type="textarea" class="form-control" name="data[description]"></textarea>
+			<small class="form-text text-muted">Please provide a summary of the market</small>
+		</div>
+		<div class=" form-group field-trial_title">
+			<label class="kms-title-label">Link</label>
+			<input type="text" class="form-control" name="data[link]">
+			<small class="form-text text-muted">Please provide the link to the market website</small>
+		</div>
+		<div class=" form-group field-trial_title">
+			<label class="kms-title-label">Responsible</label>
+			<input type="text" class="form-control" name="data[responsible]">
+			<small class="form-text text-muted">Please specify the name of the market responsible</small>
+		</div>
+		<div class=" form-group field-description">
+			<label for="description" class="kms-title-label">Location</label>
+			<textarea type="textarea" class="form-control" name="data[locationtext]"></textarea>
+			<small class="form-text text-muted">Please specify where the market is located</small>
+		</div>
+		<div class="form-group ">
+			<input type="hidden" class="form-control" name="data[location][type]" value="Point">
+			<label class=" ">Latitudine</label>
+			<input type="number" class="form-control" name="data[location][coordinates][0]">
+			<label class=" ">Longitude</label>
+			<input type="number" class="form-control" name="data[location][coordinates][1]">
+		</div>
+		<div class=" form-group field-description">
+			<label for="description" class=" kms-title-label">Contacts</label>
+			<textarea type="textarea" class="form-control" name="data[contacts]"></textarea>
+			<small class="form-text text-muted">Please provide email and phone number to ask for
+				more information</small>
+		</div>
+		<div class="alert alertaction" role="alert" style="display: none;">
+			<button type="button" class="close" onclick="$(this).closest('.alert').slideUp()">
+				<span aria-hidden="true">×</span>
+			</button>
+			<div class="msg_title"></div>
+			<div class="msg_txt"></div>
+		</div>
+		<div class="text-right">
+			<span class="btn btn-mini btn-info pull-right" onclick="actionPostMultipartForm('entity', $(this),undefined, undefined,undefined,undefined,true)">Submit</span>
+		</div>
+	</div>
+</form>

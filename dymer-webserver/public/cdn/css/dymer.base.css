@@ -1,0 +1,734 @@
+.repeatable {
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    padding: 8px;
+}
+
+.repeatable.first-repeatable .act-remove {
+    display: none;
+}
+
+.action-br {
+    text-align: right;
+    margin-top: 10px;
+}
+
+.error_border {
+    border-color: #b50303 !important;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+.kms-title-label {
+    font-weight: bold !important;
+    color: #17a2b8 !important;
+}
+
+#cont-GeneralList li,
+#cont-UploaderList li,
+#cont-FormList li,
+#cont-TemplateList li {
+    cursor: pointer;
+}
+
+#cont-RenderForm {
+    border: 1px solid #ced4da;
+    margin-top: 20px;
+    padding: 10px 20px;
+}
+
+.cur-p {
+    cursor: pointer;
+}
+
+.dbreadcrumb {
+    color: #7d7d7c;
+    cursor: pointer;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 90px;
+    display: inline-block;
+    /*text-transform: lowercase;*/
+}
+
+.dbreadcrumb:hover {
+    max-width: 60%;
+}
+
+.dbreadcrumb:first-letter {
+    text-transform: uppercase;
+}
+
+.dbreadcrumb:hover {
+    color: #2d72be;
+}
+
+
+/*
+  .dbreadcrumb .dbrdtitle .separ {
+      display: inline-block
+  }
+  
+  #dymer_breadcrumb>span:first-child .separ {
+      visibility: hidden;
+  }*/
+
+#dymer_breadcrumb>span+span:before {
+    padding: 0 0px 0 6px;
+    color: #ccc;
+    content: "/\00a0";
+}
+
+#dymer_breadcrumb>[data-dbrdid="dbrdidlist"] {
+    overflow: unset;
+    position: relative;
+    bottom: 4px;
+    margin-right: 3px;
+}
+
+.icon-action {
+    cursor: pointer;
+    color: #7d7d7c;
+}
+
+.icon-action:hover {
+    cursor: pointer;
+    color: #2d72be !important;
+}
+
+.listAddEntityicon {
+    position: absolute;
+    font-size: 13px;
+    left: -24px;
+    top: 6px;
+}
+
+.listAddEntityli {
+    position: relative;
+    list-style: none;
+    color: #7d7d7c;
+}
+
+.listAddEntityli:hover {
+    cursor: pointer;
+    color: #2d72be !important;
+}
+
+.rotandflip {
+    transform: rotate(90deg) scaleX(-1);
+}
+
+#entityEdit .rendered-form .btn.btn-info.pull-right,
+#entityEdit .actionsAddEntity {
+    display: none !important;
+}
+
+#DymerMenuUser {
+    right: 6px;
+    bottom: 6px;
+    left: auto;
+    position: fixed;
+}
+
+#userDymerLogged {
+    display: none;
+}
+
+#loginDymerBtn,
+#menuDymerBtn i,
+#userDymerLogged i {
+    font-size: 29px;
+    color: #7d7d7c8f;
+}
+
+#menuDymerBtn i {
+    font-size: 25px;
+}
+
+#loginDymerBtn:hover,
+#userDymerLogged i:hover,
+#menuDymerBtn:hover i {
+    color: #006bac;
+    cursor: pointer;
+}
+
+.grp_userDymermenu {
+    right: 10px;
+    bottom: 10px;
+    position: fixed;
+}
+
+#menuDymerBtn {
+    cursor: pointer;
+    bottom: 1px;
+}
+
+#userDymermenu_checkbox:checked+#userDymerLogged {
+    display: block;
+}
+
+#userDymerLogged i {
+    display: none;
+    opacity: 0;
+    cursor: pointer;
+}
+
+#userDymermenu_checkbox:checked+#userDymerLogged i:nth-child(1) {
+    font-size: 18px;
+    display: block;
+    top: 9px;
+    right: 39px;
+    position: relative;
+    opacity: 1;
+}
+
+#userDymermenu_checkbox:checked+#userDymerLogged i:nth-child(2) {
+    font-size: 21px;
+    display: block;
+    top: -36px;
+    right: 9px;
+    position: relative;
+    opacity: 1;
+}
+
+input:focus:invalid:focus,
+textarea:focus:invalid:focus,
+select:focus:invalid:focus {
+    border-color: #e9322d;
+    -webkit-box-shadow: 0 0 6px #f8b9b7;
+    -moz-box-shadow: 0 0 6px #f8b9b7;
+    box-shadow: 0 0 6px #f8b9b7;
+}
+
+#dymerpaginator {
+    margin: 0 auto;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.dwhashlist .dwtag {
+    margin-right: 7px;
+}
+
+.dwhashlist .dwtag:hover {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+
+/*btn-toggle*/
+
+
+/* The switch - the box around the slider */
+
+.switch_container {
+    margin-top: 6px;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+
+/* Hide default HTML checkbox */
+
+
+/*  .switch:after {
+      content: "aa";
+  }
+  
+  .switch:before {
+      content: "cc";
+  }*/
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+
+/* The slider */
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 15px;
+    width: 15px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
+}
+
+input:checked+.slider {
+    background-color: #2196f3;
+}
+
+input:focus+.slider {
+    box-shadow: 0 0 1px #2196f3;
+}
+
+input:checked+.slider:before {
+    -webkit-transform: translateX(19px);
+    -ms-transform: translateX(19px);
+    transform: translateX(19px);
+}
+
+
+/* Rounded sliders */
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.slider:after {
+    content: "ON";
+    top: 4px;
+    position: absolute;
+    right: 0.5rem;
+    color: #fff;
+    text-align: left;
+    left: 0.43rem;
+    font-size: 7px;
+    width: 2.325rem;
+    letter-spacing: 0.3pt;
+}
+
+.bootstrap-tagsinput .tag.label-info {
+    background-color: #5bc0de;
+    border-radius: 0.25em;
+    text-align: center;
+    padding: 0.2em 0.6em 0.3em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+}
+
+#dFilterDropdown {
+    color: #333;
+    border-color: #adadad;
+    border-radius: unset;
+    border-left: navajowhite;
+}
+
+.bootstrap-tagsinput {
+    border-top-right-radius: 0px !important;
+    border-bottom-right-radius: 0px !important;
+}
+
+#adv-search .bootstrap-tagsinput,
+#dTagFilter {
+    width: calc(100% - 78px);
+}
+
+#dTagFilter.freetext {
+    width: calc(100% - 41px);
+}
+
+#dTagFilter {
+    background-color: #fff !important;
+    border: 1px solid #ccc !important;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075) !important;
+    padding: 4px 6px !important;
+    color: #555 !important;
+    vertical-align: middle !important;
+    border-radius: 4px;
+    max-width: none !important;
+    flex: none;
+    /* line-height: 22px!important; */
+    cursor: text !important;
+    border-top-right-radius: 0px !important;
+    border-bottom-right-radius: 0px !important;
+}
+
+.grpfilter {
+    margin-bottom: 19px;
+}
+
+#d_entityfilter.expanded .grpfilter {
+    margin-bottom: 5px;
+    width: 32%;
+    float: left;
+    margin-right: 1%;
+}
+
+#dFilterClearAll {
+    display: none;
+    position: absolute;
+    right: 38px;
+}
+
+#dFilterClearAll.freetext {
+    right: 0px;
+}
+
+#adv-search:hover #dFilterClearAll {
+    display: block;
+}
+
+#adv-search #dFilterClearAll:hover {
+    display: block;
+    color: #dc3545;
+}
+
+.filterSingRefresh {
+    color: #cccccc;
+    margin-right: 6px;
+    position: relative;
+    bottom: 1px;
+}
+
+.filterSingRefresh:hover {
+    color: #4167d5;
+    cursor: pointer;
+}
+
+#d_entityfilter .form-group.repeatable {
+    border: hidden;
+    padding: 0;
+    padding-bottom: 11px;
+}
+
+#d_entityfilter {
+    width: 500px;
+    padding: 8px;
+    max-height: 382px;
+    overflow-y: scroll;
+    z-index: 998 !important;
+}
+
+#d_entityfilter.expanded {
+    width: 100%;
+    border-width: 0px 1px 1px;
+    border-right-style: solid;
+    border-bottom-style: solid;
+    border-left-style: solid;
+    border-right-color: rgb(204, 204, 204);
+    border-bottom-color: rgb(204, 204, 204);
+    border-left-color: rgb(204, 204, 204);
+    border-image: initial;
+    overflow: hidden;
+    border-top-style: initial;
+    border-top-color: initial;
+    display: none;
+    margin-bottom: 5px;
+}
+
+#inputFreeText {
+    top: 0px;
+    position: relative;
+}
+
+.switch.switchfilter {
+    margin: 0;
+}
+
+.d_table_filer th,
+.d_table_filer th {
+    padding: 0 !important;
+}
+
+.d_table_filer th input,
+.d_table_filer th select {
+    margin: 5px;
+    width: 90%;
+}
+
+.d_table_filer th input,
+.d_table_filer th option {
+    color: #7a80dd;
+}
+
+.d_table_filer th option[value=""] {
+    color: gray;
+}
+
+.d_table_filer th input:focus,
+.d_table_filer th select:focus {
+    outline-color: #7a80dd;
+}
+
+#cntbtnactdeact .clname {
+    bottom: 4px;
+    position: relative;
+    margin-right: 5px;
+}
+
+#cntbtnactdeact .clact_deact {
+    /*margin-right: 10px;*/
+    width: 25%;
+    display: inline-block;
+    border-right: 1px solid;
+    padding-top: 3px;
+    padding-left: 6px;
+}
+
+#cntbtnactdeact .clact_deact .switch {
+    float: right;
+    right: 10px;
+    height: 18px;
+    width: 36px;
+}
+
+#cntbtnactdeact .clact_deact .switch .slider:before {
+    height: 13px;
+    width: 13px;
+    left: 2px;
+}
+
+#cntbtnactdeact .clact_deact .switch .slider:after {
+    top: 5px;
+    left: 0.25rem;
+}
+
+tfoot .d_table_filer th div {
+    padding: 0px 0 1px 10px;
+}
+
+#cntbtnactdeact {
+    border-top: 1px solid gray;
+    padding: 4px 0px 4px 0px;
+    border-bottom: 1px solid gray;
+}
+
+#dynamicDT_wrapper .dt-buttons,
+#cntbtnactdeact {
+    margin: 10px 0;
+}
+
+#dynamicDT_wrapper {
+    overflow-y: hidden;
+    overflow-x: auto;
+    padding-bottom: 15px;
+}
+
+#cntbtnactdeact .clname i {
+    font-size: 6px;
+    position: relative;
+    bottom: 3px;
+}
+
+table.dataTable thead th,
+table.dataTable thead td {
+    border-bottom: 1px solid gray;
+}
+
+table.dataTable tfoot th,
+table.dataTable tfoot td {
+    border-bottom: 1px solid gray;
+    border-top: 1px solid gray;
+    vertical-align: top;
+}
+
+.modal {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}
+
+
+/*
+::-webkit-scrollbar {
+     display: none;
+}*/
+
+
+/*loader*/
+
+
+/*finr btn-toggle*/
+
+.loading-animation-ajax {
+    /*  background: rgba(226, 226, 226, 0.25) url(/openness62-theme/images/progress_bar/loading_animation.gif) no-repeat center center;
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: absolute;
+  bottom: 0;
+  z-index: 999999*/
+    position: fixed;
+    z-index: 999;
+    height: 2em;
+    width: 2em;
+    overflow: show;
+    margin: auto;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.loading-animation-ajax:before {
+    content: "";
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(45, 44, 44, 0.28);
+    /*   background: radial-gradient(rgba(20, 20, 20, .8), rgba(0, 0, 0, .8));
+  background: -webkit-radial-gradient(rgba(20, 20, 20, .8), rgba(0, 0, 0, .8));*/
+}
+
+
+/* :not(:required) hides these rules from IE9 and below */
+
+.loading-animation-ajax:not(:required) {
+    /* hide "loading..." text */
+    font: 0/0 a;
+    color: transparent;
+    text-shadow: none;
+    background-color: transparent;
+    border: 0;
+}
+
+.loading-animation-ajax:not(:required):after {
+    content: "";
+    display: block;
+    font-size: 10px;
+    width: 1em;
+    height: 1em;
+    margin-top: -0.5em;
+    -webkit-animation: spinner 1500ms infinite linear;
+    -moz-animation: spinner 1500ms infinite linear;
+    -ms-animation: spinner 1500ms infinite linear;
+    -o-animation: spinner 1500ms infinite linear;
+    animation: spinner 1500ms infinite linear;
+    border-radius: 0.5em;
+    -webkit-box-shadow: rgba(255, 255, 255, 0.75) 1.5em 0 0 0, rgba(255, 255, 255, 0.75) 1.1em 1.1em 0 0, rgba(255, 255, 255, 0.75) 0 1.5em 0 0, rgba(255, 255, 255, 0.75) -1.1em 1.1em 0 0, rgba(255, 255, 255, 0.75) -1.5em 0 0 0, rgba(255, 255, 255, 0.75) -1.1em -1.1em 0 0, rgba(255, 255, 255, 0.75) 0 -1.5em 0 0, rgba(255, 255, 255, 0.75) 1.1em -1.1em 0 0;
+    box-shadow: rgba(255, 255, 255, 0.75) 1.5em 0 0 0, rgba(255, 255, 255, 0.75) 1.1em 1.1em 0 0, rgba(255, 255, 255, 0.75) 0 1.5em 0 0, rgba(255, 255, 255, 0.75) -1.1em 1.1em 0 0, rgba(255, 255, 255, 0.75) -1.5em 0 0 0, rgba(255, 255, 255, 0.75) -1.1em -1.1em 0 0, rgba(255, 255, 255, 0.75) 0 -1.5em 0 0, rgba(255, 255, 255, 0.75) 1.1em -1.1em 0 0;
+}
+
+
+/* Animation */
+
+@-webkit-keyframes spinner {
+    0% {
+        -webkit-transform: rotate(0deg);
+        -moz-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+        -moz-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@-moz-keyframes spinner {
+    0% {
+        -webkit-transform: rotate(0deg);
+        -moz-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+        -moz-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@-o-keyframes spinner {
+    0% {
+        -webkit-transform: rotate(0deg);
+        -moz-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+        -moz-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spinner {
+    0% {
+        -webkit-transform: rotate(0deg);
+        -moz-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+        -moz-transform: rotate(360deg);
+        -ms-transform: rotate(360deg);
+        -o-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+
+/*loader*/
+
+#grantPermission {
+    padding: 0 10px;
+}
+
+#grantPermission .rpperm {
+    margin-right: 0.5%;
+    flex: 0 0 33% !important;
+}
+
+#grantPermission .grtgrpDelete {
+    display: none;
+}
+
+#grantPermission .grtgrpMgrant {
+    display: none;
+}
+
+.dymerSearch {
+    padding: 16px;
+    margin: 0 0 10px 0;
+    background: #ececec;
+}
+
+.bootstrap-select button.dropdown-toggle {
+    border-color: #ced4da !important;
+    border-style: solid;
+    background-color: #fff;
+}
+
+.dymerSearch .control-label {
+    color: #757575 !important;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.dymerSearch .control-label:first-letter {
+    text-transform: uppercase;
+}

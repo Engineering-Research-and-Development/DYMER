@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title> </title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+    <script>
+        var dviewtype = "list";
+        var d_uid = 0;
+        var d_gid = 0;
+    </script>
+    <script>
+        var dTagFilter;
+        var dymerQueries = [{
+            "bool": {
+                "must": [{
+                    "term": {
+                        "_index": "demproduct"
+                    }
+                }]
+            }
+        }];
+        var dymerconf = {
+            notImport: []
+        };
+        var jsonConfig = {
+            query: {
+                'query': {
+                    'query': dymerQueries[0]
+                }
+            },
+            endpoint: 'entity.search',
+            viewtype: 'teaserlist',
+            target: {
+                teaserlist: {
+                    id: "#cont-MyList",
+                    action: "html",
+                    reload: false
+                },
+                fullcontent: {
+                    id: "#cont-MyList",
+                    action: "html"
+                }
+            }
+        };
+
+        function mainDymerView() {
+            var index = 'demproduct';
+            if (index != "")
+                loadModelListToModal($('#cont-addentity'), index);
+            loadEntitiesTemplate(jsonConfig);
+            checkbreadcrumb(null, $('#primodfil'));
+            drawEntities(jsonConfig);
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container-fluid" id="containerDymerViewer">
+        <div class="">
+            <div class="col-12 span12 ">
+                <span id="primodfil " class="btn  btn-listdymer " onclick="drawEntities(jsonConfig);">
+					<i class="fa fa-list" aria-hidden="true"></i> lista</span> <span id="cont-addentity" class="pull-right"> </span>
+            </div>
+        </div>
+        <div id="cont-MyList"></div>
+        <script id="dymerurl" src="http://localhost:8080/public/cdn/js/dymer.viewer.js"></script>
+    </div>
+</body>
+
+</html>

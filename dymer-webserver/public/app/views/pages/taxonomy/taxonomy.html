@@ -1,0 +1,181 @@
+<script type="text/ng-template" id="nodes_renderer.html">
+    <div ui-tree-handle class="tree-node tree-node-content">
+        <a class="btn btn-success btn-sm" ng-if="node.nodes && node.nodes.length > 0" data-nodrag ng-click="toggle(this)"><span
+          class="fa"
+          ng-class="{
+            'fa-chevron-right': collapsed,
+            'fa-chevron-down': !collapsed
+          }"></span></a>
+        <!--( <span>ID={{node.id}}</span>)-->
+        <div></div>
+        <span class="form-group tree-span-lacale-value" ng-repeat="(key, val) in node.locales">
+            <img src="../assets/img/flag/{{key}}.png">  {{val.value}}
+          </span>
+
+
+        <a class="pull-right btn btn-danger btn-sm" data-nodrag ng-click="remove(this)"><span
+          class="fa fa-times"></span></a>
+        <!--<a class="pull-right btn btn-primary btn-sm" data-nodrag ng-click="newSubItem(this)" style="margin-right: 8px;"><span
+          class="fa fa-plus"></span></a>-->
+        <a class="pull-right btn btn-primary btn-sm" data-nodrag ng-click="openModal('insertSubItem',this,'insert')" style="margin-right: 8px;"><span
+          class="fa fa-plus"></span></a>
+        <a class="pull-right btn btn-warning btn-sm" data-nodrag ng-click="openModal('updateSubItem',this,'update')"><span
+            class="fa fa-pencil"></span></a>
+    </div>
+    <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
+        <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'">
+        </li>
+    </ol>
+</script>
+<div class="col-md-12">
+    <div class="card ">
+        <div class="card-header ">
+            <h5 class="card-title">Taxonomy</h5>
+            <div class="card-category">
+                manage vocabulary
+            </div>
+        </div>
+        <div class="card-body ">
+            <div class="row">
+                <div class="col-12 text-right">
+                    <a href="" <i class="fa fa-plus-square-o" ng-click="actionShowHideAddVocab()"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="row" ng-show="showAddVocab">
+                <div class="col-12">
+
+                    <div>
+                        <form ng-submit="createVocabulary(form)">
+                            <label>Vocabulary Name</label>
+                            <input type="text" required class="form-control " ng-model="form.title">
+                            <label>Description</label>
+                            <textarea class="form-control " ng-model="form.description"></textarea>
+                            <!-- 
+                            <input type="checkbox" ng-model="form.bindservice"><label> Bind to external service</label>-->
+                            <div class="row text-right ">
+                                <div class="col-12 ">
+                                    <input class="btn btn-info " type="submit" value="Add Vocabulary">
+
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12">
+                    <h5 class="card-title">Vocabularies</h5>
+                    <ul class="nav nav-pills nav-fill">
+                        <li class="nav-item" ng-repeat="singlvoc in vocabularies" ng-click="selectVocab($index,singlvoc)">
+                            <a class="nav-link  " ng-class="{active: $index == selectedVocab}" href="#"><i class="fa fa-book" aria-hidden="true"></i> {{singlvoc.title}}</a>
+                        </li>
+                    </ul>
+
+                    <div class="alert alert-info" role="alert" ng-show="!vocabularies.length">
+                        No data Available
+                    </div>
+                </div>
+            </div>
+            <div class="row" ng-class="{'d-none': selectedVocab == -1}" ng-model="selectedVocab">
+
+                <div class="col-12 text-right">
+
+                    <span class="  btn btn-info btn-sm" ng-click="openModal('insertSubItem')"><span
+                            class="fa fa-plus"></span></span>
+                </div>
+
+                <div class="col-12">
+
+                    <div ui-tree id="tree-root">
+                        <ol ui-tree-nodes ng-model="data">
+                            <li ng-repeat="node in data" ui-tree-node ng-include="'nodes_renderer.html'"></li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="col-12 text-right">
+                    <input class="btn btn-info " ng-click="saveUpdateVocab()" value="Save vocabulary">
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="card-footer ">
+            <hr />
+            <div class="stats"><i class="fa fa-history"></i> Updated 12/05/2019</div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="insertSubItem" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <form>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p class="modal-title text-primary"> Insert New Element</p>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><small><i class="la la-close"></i></small></span>
+                  </button>
+                </div>
+                <input type="hidden" ng-model="newelvocab.id">
+                <div class="modal-body text">
+                    <div class="row">
+                        <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/en.png"></div>
+                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" style="margin: 0 auto;" ng-model="newelvocab.locales.en.value" /></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/it.png" class="align-middle"></div>
+                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" ng-model="newelvocab.locales.it.value" /></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/fr.png"></div>
+                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" ng-model="newelvocab.locales.fr.value" /></div>
+                    </div>
+
+                    <div class="modal-footer ">
+                        <button class="btn btn-primary btn-sm " type="submit " ng-click="insertvocab(newelvocab) "><i class="la la-check "></i> Save</button>
+                    </div>
+                </div>
+
+        </form>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="updateSubItem" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <form>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p class="modal-title text-primary">Update Element</p>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><small><i class="la la-close"></i></small></span>
+                  </button>
+                </div>
+                <input type="hidden" ng-model="editvocab.id">
+                <div class="modal-body text">
+                    <div class="row">
+                        <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/en.png"></div>
+                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" style="margin: 0 auto;" ng-model="editvocab.locales.en.value" /></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/it.png"></div>
+                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" style="margin: 0 auto;" ng-model="editvocab.locales.it.value" /></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/fr.png"></div>
+                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" style="margin: 0 auto;" ng-model="editvocab.locales.fr.value" /></div>
+                    </div>
+
+                </div>
+
+        </form>
+
+        </div>
+    </div>

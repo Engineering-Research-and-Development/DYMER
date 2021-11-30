@@ -1,0 +1,56 @@
+<div class="col-md-12">
+    <div class="card ">
+        <div class="card-header ">
+            <h5 class="card-title">Dymer Model</h5>
+            <div class="card-category">
+
+            </div>
+        </div>
+        <div class="card-body ">
+            <hr>
+            <h3 class="text-success text-center"><b>Search for snippets</b></h3>
+
+            <ul>
+                <h4 class="text-info">- Select List Multiple</h4>
+                List of attributes to use
+                <ul>
+                    <li><span></span>="your-label" : </li>
+                    <li>searchable-multiple="true" </li>
+                    <li>searchable-override="data[json-key]": </li>
+                    <li>searchable-text=" span to render if is checkbox>": </li>
+                </ul>
+                <label>Example of multiple search</label>
+            </ul>
+            <div>
+                <pre class=" language-javascript" data-language="javascript"><code class=" language-javascript"><span class="token tag">
+    <span class="token function">&lt;div class="form-group repeatable first-repeatable"&gt;
+        &lt;div&gt;</span>
+        &lt;label for="description" class=" "&gt;Aspects that needed improvement&lt;/label&gt;
+            &lt;select class="form-control" <span class="token attr-name">name="data[tipomio][0]" searchable-label="Organization" searchable-multiple="true" searchable-override="data[tipomio]"</span>&gt;
+                    &lt;option value="RTO"&gt;RTO&lt;/option&gt; 
+                    &lt;option value="LE"&gt;LE&lt;/option&gt; 
+                    &lt;option value="SME"&gt;SME&lt;/option&gt; 
+                    &lt;option value="LEA"&gt;LEA&lt;/option&gt; 
+                    &lt;option value="Public Body"&gt;Public Body&lt;/option&gt; 
+                    &lt;option value="NPO"&gt;NPO&lt;/option&gt; 
+                    &lt;option value="NGO"&gt;NGO&lt;/option&gt; 
+                    &lt;option value="Association"&gt;Association&lt;/option&gt; 
+                    &lt;option value="Think Tank"&gt;Think Tank&lt;/option&gt; 
+                &lt;option value="LEA due"&gt;LEA due&lt;/option&gt;&lt;/select&gt;
+        <span class="token function">&lt;/div&gt;
+            &lt;div class="action-br"&gt;
+            &lt;span class="btn  btn-outline-primary  btn-sm" onclick="cloneRepeatable($(this))"&gt;+&lt;/span&gt;
+            &lt;span class="btn  btn-outline-danger  btn-sm act-remove" onclick="removeRepeatable($(this))"&gt;-&lt;/span&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+                </span></span></code></pre>
+            </div>
+        </div>
+
+
+        <div class="card-footer ">
+            <hr />
+            <div class="stats"><i class="fa fa-history"></i> Updated 20/24/2020</div>
+        </div>
+    </div>
+</div>

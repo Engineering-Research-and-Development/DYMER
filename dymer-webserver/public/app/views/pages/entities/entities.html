@@ -1,0 +1,120 @@
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="input-group no-border">
+                    <div class="input-group-append " style="width: 100%;">
+                        <select ng-model="search_index" class="form-control">
+                            <option value="">All</option>
+                            <option ng-repeat="el in indexEntities | orderBy " value="{{el}}"> {{ el}} </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-group no-border">
+                    <input type="text" value="" class="form-control" placeholder="Search by title" ng-model="searchName" />
+                    <div class="input-group-append">
+                        <div class="input-group-text">
+                            <i class="nc-icon nc-zoom-split"></i>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div ng-hide="listEntity.length" class="ng-hide">
+                    <div class="alert alert-info  "> No Entity available </div>
+                </div>
+                <ul class="list-unstyled team-members">
+                    <li ng-repeat="el in listEntity | filter:{title:searchName, _index:search_index } | startFrom:currentPage*pageSize | limitTo:pageSize" class="kmspointer hover actcolor">
+                        <div class="row" refEntity="{{ el._id }}">
+                            <div class="col-md-7  col-7">
+                                <span ng-click="RenderEntity(el,$index);templ.isActive = !templ.isActive" style="bottom: -17px; position: relative;" ng-class="{active:$index== selected}">{{
+                                    el.title }}<br>
+                                    <span class="txtinsta">({{ el._index }})</span>
+                                </span>
+                            </div>
+                            <div class="col-5 text-right">
+                                <btn class="btn btn-sm btn-outline-success btn-round btn-icon" ng-click="RenderEntity(el,$index)"><i class="fa fa-eye" aria-hidden="true"></i>
+                                </btn>
+                                <!-- <btn class="btn btn-sm btn-outline-success btn-round btn-icon" ng-click="EditEntity(el,$index)"><i class="fa fa-pencil" aria-hidden="true"></i></btn>
+                               -->
+                                <btn class="btn btn-sm btn-outline-success btn-round btn-icon" ng-click="DeleteEntity(el,$index)"><i class="fa fa-trash" aria-hidden="true"></i>
+                                </btn>
+
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+
+                <br>
+                <div class="row align-items-center">
+                    <div class="col">
+                        <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1" class="btn btn-primary">
+                            Previous
+                        </button>
+                    </div>
+                    <div class="col text-center"> <span>{{currentPage+1}}/{{numberOfPages()}}</span></div>
+                    <div class="col"> <button ng-disabled="currentPage >= listEntity.length/pageSize - 1" class="btn btn-primary" ng-click="currentPage=currentPage+1">
+                            Next
+                        </button></div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card ">
+            <div class="card-header  ">
+                <!-- <h5 class="card-title b-b1px text-info ">{{formtitle}}</h5>-->
+                <span class='pull-right'><i class="fa fa-cogs burgherAction"
+                        ng-click="showFilterUpdate = ! showFilterUpdate" aria-hidden="true"></i> </span>
+                <form id="updateOwner" class="senderForm row b-b1px" ng-show="showFilterUpdate">
+                    <input type="hidden" name="data[id]" value="{{entityEid}}">
+
+                    <div class="form-group col-4 ">
+                        <label class="kms-title-label col-6 col-form-label">User ID </label>
+
+                        <input type="text" class="form-control " name="data[properties][owner][uid]" value="{{entityuid}}">
+
+                    </div>
+                    <div class="form-group col-4">
+                        <label class="kms-title-label col-6 col-form-label">Group ID </label>
+
+                        <input type="text" class="form-control  " name="data[properties][owner][gid]" value="{{entitygid}}">
+
+                    </div>
+                    <div class="form-group col-4">
+
+                        <button type="button" class="btn btn-primary onputform" style="position: absolute;bottom: -9px;" onclick="actionPatchMultipartForm('entity',undefined,undefined, '#updateOwner',undefined,undefined,true)">Save
+                            changes</button>
+                    </div>
+                    <div class="alert alertaction col-12" role="alert" style="display: none;">
+                        <button type="button" class="close" onclick="$(this).closest('.alert').slideUp()">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <div class="msg_title"></div>
+                        <div class="msg_txt"></div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="card-body ">
+                <div class="row">
+                    <div class="col-md-12" id="cont-RenderForm">
+                        <div id="html-torender">
+                            <div class="text-center">
+                                <i class="nc-icon nc-world-2 text-info" style="    font-size: 113px;"></i>
+                            </div>
+                        </div>
+                        <div id="appendfiles"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer ">
+                <hr>
+                <div class="stats" ng-show="objChanged"><i class="fa fa-history"></i><span ng-bind="objChanged | date:'MM/dd/yyyy HH:mm'"></span></div>
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,99 @@
+<html>
+
+<head>
+    <title>Dymer Map/Table</title>
+    <script>
+        var jsonConfig = {
+            query: {
+                "instance": {
+                    "index": "geopoint",
+                    "type": "geopoint"
+                }
+            },
+            endpoint: 'entity.search',
+            viewtype: 'teaserlist',
+            swapgeop: true,
+            dt: {
+                columns: [{
+                        title: "Title",
+                        data: "title"
+                    }, {
+                        title: "Position",
+                        data: "locationtext"
+                    }, {
+                        title: "Contact",
+                        data: "contacts"
+                    }, {
+                        title: "Web site",
+                        data: "link",
+                        render: function(data, type, row) {
+                            return '<a href="' + data + '"   target="_blank" style="   "><i class="fa fa-globe"style=" color:#17a2b8"  aria-hidden="true"></i></a >';
+                        },
+                        className: 'text-center'
+                    }, {
+                        title: "",
+                        data: "_id",
+                        render: function(data, type, row) {
+                            return '<i class="fa fa-eye" aria-hidden="true" style="cursor:pointer;color:#17a2b8" onclick="$(\'#cont-MyEnt\').hide();kmsrenderdetail(\'' + data + '\')"></i>';
+                        },
+                        className: 'text-center',
+                        "orderable": false
+                    }
+
+                ]
+            },
+            target: {
+                fullcontent: {
+                    id: "#cont-MyList",
+                    action: "html"
+                }
+            }
+        };
+
+        function mainDymerMap() {
+            generateMapDT(jsonConfig);
+        }
+    </script>
+    <script id="dymerurl" src="http://localhost:8080/public/cdn/js/dymer.map.js"></script>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="row">
+            <div class="col-12  ">
+                <br>
+                <!-- <span class="btn btn-mini btn-info " onclick="location.reload();"> <i class="fa fa-refresh" aria-hidden="true"></i> Reload Map</span>-->
+                <span class="btn btn-mini btn-info " onclick="$('#cont-MyEnt').show();$('#cont-MyList').empty();"> <i class="fa fa-refresh" aria-hidden="true"></i> Reload Map</span>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="container" id="cont-MyEnt">
+
+
+        <div class="row">
+            <div id="divEagleFilter" class="col-3  ">
+                <form id="formFilter" class="senderForm" style="padding: 16px; margin: 0 0 10px 0;background: #ececec; border:1px solid rgb(215, 221, 222)">
+
+                    <div class="form-group  ">
+                        <label class="col-form-label-sm">Search</label>
+                        <input type="text" class="form-control form-control-sm" name="query[query][prefix][title]" placeholder="by title...">
+                        <!--<input type="text" class="form-control form-control-sm" name="query[query][match][name]" >-->
+                    </div>
+                    <span class="btn btn-primary btn-sm btnmapfilter " onclick="getEntities2($(this))">SEARCH</span>
+                    <button class="btn btn-warning btn-sm btnmapfilter " type="reset" value="Reset" onclick="resetMapFiltered($(this))">Reset</button>
+                </form>
+            </div>
+            <div class="col-9" id="cont-Map">
+            </div>
+        </div>
+
+        <br>
+        <div id="cont-Dt"></div>
+    </div>
+    <div id="cont-MyList">
+    </div>
+</body>
+
+</html>

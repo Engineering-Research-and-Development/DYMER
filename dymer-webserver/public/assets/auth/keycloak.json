@@ -1,0 +1,12 @@
+{
+  "realm": "Demo-Realm",
+  "auth-server-url": "http://localhost:6060/auth/",
+  "ssl-required": "external",
+  "resource": "nodejs-microservice-clinet",
+  "verify-token-audience": true,
+  "credentials": {
+    "secret": "c96cee0f-802f-4ab5-ab8f-d0aecbc29483"
+  },
+  "use-resource-role-mappings": true,
+  "confidential-port": 0
+}
