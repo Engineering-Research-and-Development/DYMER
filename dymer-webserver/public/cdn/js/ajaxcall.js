@@ -362,8 +362,10 @@ Ajaxcall.prototype = {
                 const jwtextrainfo = localStorage.getItem('DYM_EXTRA'); //dymJWT
                 xhr.setRequestHeader("extrainfo", jwtextrainfo);
                 const authorizationtk = localStorage.getItem('DYMAT'); //dymJWT
-                if (authorizationtk != undefined && authorizationtk != 'undefined' && authorizationtk != null && authorizationtk != 'null')
-                    xhr.setRequestHeader("authorizationtk", "Bearer " + authorizationtk);
+                if (authorizationtk != undefined && authorizationtk != 'undefined' && authorizationtk != null && authorizationtk != 'null') {
+                    xhr.setRequestHeader("authorizationtk", authorizationtk);
+                    //xhr.setRequestHeader("authorizationtk", "Bearer " + authorizationtk);
+                }
                 /*
                 if (authorizationtk != undefined && authorizationtk != 'undefined' && authorizationtk != null && authorizationtk != 'null')
                                     xhr.setRequestHeader("authorizationtk", "Bearer " + authorizationtk);
