@@ -1,10 +1,9 @@
 node_modules
 config_original.json
-*/logs/debug.log*
-*/logs/error.log
-*/logs/info.log
-*/logs/warn.log
+debug.log
+error.log
+info.log
+warn.log
 routestest.js
-airegio.json
 keycloak-config.js
 authenticate_opid.js
