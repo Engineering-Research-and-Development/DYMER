@@ -142,7 +142,7 @@ router.get('/userinfo', (req, res) => {
                             objuser.id = response.data.email;
                             objuser.d_appuid = response.data.app_id;
                             objuser.username = response.data.username;
-                            objuser.extrainfo.emailAddress = decoded.email;
+                            objuser.extrainfo.emailAddress = response.data.email;
                             if (!(Object.entries(extradata).length === 0)) {
                                 objuser.extrainfo = {...extradata, ...objuser.extrainfo };
                             }
