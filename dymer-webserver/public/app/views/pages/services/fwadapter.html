@@ -1,0 +1,170 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">FIWARE ADAPTERr<span class='pull-right'> </i> </span></h5>
+                <!-- <p class="card-category">Handcrafted by our friends from
+                      
+                        </p>-->
+            </div>
+            <div class="card-body">
+                <div id="editAsset">
+
+                    <div class="row">
+                        <div class="col-12 ">
+                            <h5>Insert</h5>
+                        </div>
+                        <input type="hidden" ng-model="fwadapter.config.insert.servicetype">
+                        <input type="hidden" ng-model="fwadapter.config.insert.id">
+                    </div>
+                    <div class="row ">
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Method</label>
+                                <select ng-model="fwadapter.config.insert.configuration.method " class="form-control ">
+                                    <option value="GET">GET</option>
+                                    <option value="POST">POST</option>
+                                    <option value="PUT">PUT</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-3 ">
+                            <div class="form-group ">
+                                <label>Host</label>
+                                <input type="text" ng-model="fwadapter.config.insert.configuration.host " class="form-control ">
+                            </div>
+                        </div>
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Port</label>
+                                <input type="text " class="form-control " ng-model="fwadapter.config.insert.configuration.port ">
+                            </div>
+                        </div>
+
+                        <div class="col-5 ">
+                            <div class="form-group ">
+                                <label>Path</label>
+                                <input type="text " class="form-control " ng-model="fwadapter.config.insert.configuration.path ">
+                            </div>
+                        </div>
+                        <div class="col-5 ">
+                            <div class="form-group ">
+                                <label>Relations</label>
+                                <input type="text " class="form-control " ng-model="fwadapter.config.insert.configuration.relations">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-right ">
+                        <div class="col-12 ">
+                            <span class="btn btn-info " ng-click="savefwadapterConfig(fwadapter.config.insert) ">Save</span>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row ">
+                        <div class="col-12 ">
+                            <h5>Update</h5>
+                        </div>
+                        <input type="hidden" ng-model="fwadapter.config.update.servicetype ">
+                        <input type="hidden" ng-model="fwadapter.config.update.id">
+                    </div>
+                    <div class="row ">
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Method</label>
+                                <select ng-model="fwadapter.config.update.configuration.method " class="form-control ">
+                                    <option value="GET">GET</option>
+                                    <option value="POST">POST</option>
+                                    <option value="PUT">PUT</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-3 ">
+                            <div class="form-group ">
+                                <label>Host</label>
+                                <input type="text " ng-model="fwadapter.config.update.configuration.host " class="form-control ">
+                            </div>
+                        </div>
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Port</label>
+                                <input type="text " class="form-control " ng-model="fwadapter.config.update.configuration.port ">
+                            </div>
+                        </div>
+                        <div class="col-5 ">
+                            <div class="form-group ">
+                                <label>Path</label>
+                                <input type="text " class="form-control " ng-model="fwadapter.config.update.configuration.path ">
+                            </div>
+                        </div>
+                        <div class="col-5 ">
+                            <div class="form-group ">
+                                <label>Relations</label>
+                                <input type="text " class="form-control " ng-model="fwadapter.config.update.configuration.relations">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-right ">
+                        <div class="col-12 ">
+                            <span class="btn btn-info " ng-click="savefwadapterConfig(fwadapter.config.update) ">Save</span>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row ">
+                        <div class="col-12 ">
+                            <h5>Delete</h5>
+                        </div>
+                        <input type="hidden" ng-model="fwadapter.config.delete.servicetype ">
+                        <input type="hidden" ng-model="fwadapter.config.delete.id">
+                    </div>
+                    <div class="row ">
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Method</label>
+                                <select ng-model="fwadapter.config.delete.configuration.method " class="form-control ">
+                                    <option value="GET">GET</option>
+                                    <option value="POST">POST</option>
+                                    <option value="PUT">PUT</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-3 ">
+                            <div class="form-group ">
+                                <label>Host</label>
+                                <input type="text " ng-model="fwadapter.config.delete.configuration.host " class="form-control ">
+                            </div>
+                        </div>
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Port</label>
+                                <input type="text " class="form-control " ng-model="fwadapter.config.delete.configuration.port ">
+                            </div>
+                        </div>
+                        <div class="col-5 ">
+                            <div class="form-group ">
+                                <label>Path</label>
+                                <input type="text " class="form-control " ng-model="fwadapter.config.delete.configuration.path ">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-5 ">
+                        <div class="form-group ">
+                            <label>Relations</label>
+                            <input type="text " class="form-control " ng-model="fwadapter.config.delete.configuration.relations">
+                        </div>
+                    </div>
+                    <div class="row text-right ">
+                        <div class="col-12 ">
+                            <span class="btn btn-info " ng-click="savefwadapterConfig(fwadapter.config.delete) ">Save</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer ">
+
+            </div>
+        </div>
+    </div>
+</div>

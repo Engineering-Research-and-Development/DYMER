@@ -83,18 +83,18 @@ router.get('/userinfo', (req, res) => {
         username: 'guest@dymer.it',
     };
     var queryFind = { host: data.referer, active: true };
-
+    // console.log('infouse', queryFind);
     DymRule.find(queryFind).then((els) => {
 
         if (els.length || data.idsadm) {
             var el = els[0];
-            console.log('el', el);
+            // console.log('el', el);
             let authtype = (el == undefined) ? "" : el.authtype;
             if (authtype == "jwtparent" || data.idsadm) {
                 var token = data.DYM;
                 if (token != undefined && token != "null" && token != null) {
                     var decoded = JSON.parse(Buffer.from(token, 'base64').toString());
-                    console.log('decoded', decoded);
+                    // console.log('decoded', decoded);
                     objuser.email = decoded.email;
                     objuser.id = decoded.email;
                     objuser.extrainfo.emailAddress = decoded.email;

@@ -9,62 +9,64 @@
             </div>
             <div class="card-body">
                 <div id="editAsset">
-
                     <div class="row ">
                         <div class="col-2 ">
                             <div class="form-group">
                                 <label>Index</label>
                                 <input type="text" class="form-control" placeholder="" ng-model="hook._index" ng-change="clearString()">
+                                <input type="hidden" class="form-control" placeholder="" ng-model="hook._type" ng-change="clearString()">
                                 </select>
                             </div>
                         </div>
-                        <div class="col-2 ">
-                            <div class="form-group">
-                                <label>Type</label>
-                                <input type="text" class="form-control" placeholder="" ng-model="hook._type" ng-change="clearString()">
-                            </div>
 
-                        </div>
                         <div class="col-2 ">
                             <div class="form-group">
                                 <label>Hook type</label>
                                 <select ng-model="hook.eventType" class="form-control">
-                                                    <option value="after_insert" selected="selected" >After Instert</option>
-                                                    <option value="after_update"  >After Update</option> 
-                                                    <option value="after_delete"  >After Delete</option> 
-                                                </select>
+                                    <option value="after_insert" selected="selected">After Instert</option>
+                                    <option value="after_update">After Update</option>
+                                    <option value="after_delete">After Delete</option>
+                                </select>
                             </div>
                         </div>
                         <div class="col-3">
                             <div class="form-group">
                                 <label>Service</label>
                                 <select ng-model="hook.service" class="form-control">
-                                                        <option value="openness_search"  >Openness Search</option>
-                                                        <option value="eaggregation_hook"  >E-Aggregation</option>
-                                                    </select>
+                                    <option value="openness_search">Openness Search</option>
+                                    <option value="fwadapter">Fw-Adapter</option>
+                                    <option value="eaggregation_hook">E-Aggregation</option>
+                                </select>
                             </div>
                         </div>
 
                     </div>
                     <div ng-show="listEntitiesAvailable.length">
-                        <label>Entities available    <i class="fa fa-bars burgherAction " aria-hidden="true " ng-click="showlistEntitiesAvailable=! showlistEntitiesAvailable "></i></label>
+                        <label>Entities available <i class="fa fa-bars burgherAction " aria-hidden="true "
+                                ng-click="showlistEntitiesAvailable=! showlistEntitiesAvailable "></i></label>
                         <div class="row" ng-show="showlistEntitiesAvailable ">
-                            <div class="col-3" ng-repeat="el in listEntitiesAvailable"> {{el._index}} - {{el._type}} <i class="fa fa-arrow-circle-up dympointer" aria-hidden="true" ng-click="copyPastIndType(el)"></i></div>
+                            <div class="col-3" ng-repeat="el in listEntitiesAvailable">
+                                <div ng-click="copyPastIndType(el)" class="dympointer"><i class="fa fa-arrow-circle-up " aria-hidden="true"></i> {{el._index}} </div>
+                            </div>
 
                         </div>
 
                     </div>
                     <div ng-show="listModelsAvailable.length" style="margin-top: 10px;">
-                        <label>Models available    <i class="fa fa-bars burgherAction " aria-hidden="true " ng-click="showlistModelsAvailable=! showlistModelsAvailable "></i></label>
+                        <label>Models available <i class="fa fa-bars burgherAction " aria-hidden="true "
+                                ng-click="showlistModelsAvailable=! showlistModelsAvailable "></i></label>
                         <div class="row" ng-show="showlistModelsAvailable ">
-                            <div class="col-3" ng-repeat="el in listModelsAvailable"> {{el._index}} - {{el._type}} <i class="fa fa-arrow-circle-up dympointer" aria-hidden="true" ng-click="copyPastIndType(el)"></i></div>
+                            <div class="col-3" ng-repeat="el in listModelsAvailable">
+                                <div ng-click="copyPastIndType(el)" class="dympointer"><i class="fa fa-arrow-circle-up " aria-hidden="true"></i> {{el._index}} </div>
+                            </div>
 
                         </div>
 
                     </div>
                     <div class="row text-right">
                         <div class="col-12  ">
-                            <span class="btn btn-info " ng-click="createDymerHook(hook)"><i class="fa fa-random" aria-hidden="true"></i> Add</span>
+                            <span class="btn btn-info " ng-click="createDymerHook(hook)"><i class="fa fa-random"
+                                    aria-hidden="true"></i> Add</span>
                         </div>
                     </div>
                 </div>
@@ -81,36 +83,36 @@
     <div class="col-md-12">
         <div class="card ">
             <div class="card-header ">
-                <h5 class="card-title text-warning">Entities<span class="card-category" style="font-size: small;"> vs Services</span></h5>
+                <h5 class="card-title text-warning">Entities<span class="card-category" style="font-size: small;"> vs
+                        Services</span></h5>
             </div>
             <div class="card-body   ">
                 <div class=" ">
                     <table class="table">
                         <thead class=" text-primary">
-                            <th>
-                                index
+                            <th ng-class="selectedCls('_index')" ng-click="changeSorting('_index')">
+                                index <i class="fa fa-sort-alpha-desc" ng-show="sort.descending"></i>
+                                <i class="fa fa-sort-alpha-asc" ng-show="!sort.descending">
                             </th>
-                            <th>
-                                type
-                            </th>
+
                             <th>
                                 Hook type
                             </th>
-                            <th>
-                                Service
+                            <th ng-class="selectedCls('service.serviceType')"
+                                ng-click="changeSorting('service.serviceType')">
+                                Service <i class="fa fa-sort-alpha-desc" ng-show="sort.descending"></i>
+                                <i class="fa fa-sort-alpha-asc" ng-show="!sort.descending">
                             </th>
                             <th class=" text-center">
 
                             </th>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="el in ListHooks  ">
+                            <tr ng-repeat="el in ListHooks | orderBy:sort.column:sort.descending ">
                                 <td>
                                     {{ el._index }}
                                 </td>
-                                <td>
-                                    {{ el._type }}
-                                </td>
+
                                 <td>
                                     {{ el.eventType }}
                                 </td>
@@ -118,10 +120,11 @@
                                     {{ el.service.serviceType }}
                                 </td>
                                 <td class=" text-center">
-                                    <i class="fa fa-trash deleteAction" aria-hidden="true" ng-click="removeDymerHook($index)"></i>
+                                    <i class="fa fa-trash deleteAction" aria-hidden="true"
+                                        ng-click="removeDymerHook(el._id)"></i>
                                 </td>
-                            </tr>
-                        </tbody>
+                                </tr>
+                                </tbody>
                     </table>
                 </div>
 

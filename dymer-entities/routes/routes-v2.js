@@ -684,7 +684,57 @@ var checkUnionRelation = function(originalList) {
         console.error("ERROR | " + nameFile + ' | checkUnionRelation | promise  : ', err);
     });
 }
+var listSingleRelation = function(id) {
+    return new Promise(function(resolve, reject) {
+        let qparams = { index: "entity_relation" };
+        qparams["body"] = {
+            "query": {
+                "bool": {
+                    "should": [{
+                            "bool": {
+                                "must": [{
+                                    "match": {
+                                        "_id1": id
+                                    }
+                                }]
+                            }
+                        },
+                        {
+                            "bool": {
+                                "must": [{
+                                    "match": {
+                                        "_id2": id
+                                    }
+                                }]
+                            }
+                        }
+                    ]
+                }
+            }
+        };
+        qparams["body"].size = 10000;
+        //entity_relation
+        //qparams = { index: 'entity_relation',
+        // body:{}}  ;
+        client.indices.exists({ index: "entity_relation" }, function(err_, resp_, status_) {
+            //   console.log("RESPENT", err_, resp_, status_);
+            if (status_ == 200) {
+                client.search(qparams).then(function(relresp) {
+                    resolve(relresp.hits.hits);
 
+                }, function(err) {
+                    console.error("ERROR | " + nameFile + ' | fetchSingleRelation | search qparams : ', err);
+                    resolve();
+                });
+
+            } else {
+                resolve([]);
+            }
+        });
+    }).catch(function(err) {
+        console.error("ERROR | " + nameFile + ' | fetchSingleRelation | promise  : ', err);
+    });
+};
 var fetchSingleRelation = function(element) {
     return new Promise(function(resolve, reject) {
         let qparams = { index: "entity_relation" };
@@ -1689,7 +1739,7 @@ router.post('/:enttype', function(req, res) {
     } else {
         dymerextrainfo = undefined;
     }*/
-    const urs_uid = dymeruser.id;
+    let urs_uid = dymeruser.id;
     let urs_gid = dymeruser.gid;
     /* if (dymerextrainfo != undefined)
          urs_gid = dymerextrainfo.extrainfo.groupId;*/
@@ -1699,8 +1749,12 @@ router.post('/:enttype', function(req, res) {
     var act = "create";
     var index = req.params.enttype;
     var queryString = "";
+    let asis = false;
     if (dymeruser.roles.indexOf("app-admin") > -1) {
         hasperm = true;
+    }
+    if ((dymeruser.roles.indexOf("app-admin") > -1) || (dymeruser.roles.indexOf("app-adapter") > -1)) {
+        asis = true;
     }
     queryString = "?role[]=" + dymeruser.roles.join("&role[]=");
     var url = util.getServiceUrl("dservice") + "/api/v1/perm/entityrole/";
@@ -1773,41 +1827,17 @@ router.post('/:enttype', function(req, res) {
                                 stringAsKey(data, ark, element);
                             });
                         }
-                        //   data.properties.owner.uid = 0;
-                        //   data.properties.owner.gid = 0;
-                        //   if (decoded != null) {
-                        // data.properties.owner.uid = decoded.sub;
-                        data.properties.owner = {};
-                        data.properties.owner.uid = urs_uid;
-                        //data.properties.owner.uid = decoded.email;
-                        //data.properties.owner.gid = decoded.extrainfo.groupId;
-                        data.properties.owner.gid = urs_gid;
-                        /*properties: {
-                            owner: {
-                                uid: ownerUid,
-                                    gid: ownerGid
-                            },
-                            ipsource: ipcall
-                        }*/
-                        data.properties.lang = "und";
-                        data.properties.tid = "0";
-                        /*  data.properties.grant = {};
-                       data.properties.grant.view = {
-                             uid: [],
-                             gid: []
-                         };
-                         data.properties.grant.update = {
-                             uid: [],
-                             gid: []
- 
-                         };
-                         data.properties.grant.delete = {
-                             uid: [],
-                             gid: []
- 
-                         };*/
-                        data.properties.created = new Date().toISOString();
-                        data.properties.changed = new Date().toISOString();
+                        logger.info("predata" + JSON.stringify(data));
+                        //       if (!((JSON.parse(data.properties)).hasOwnProperty("owner") && asis)) {
+                        if (!(data.properties.owner != undefined && asis)) {
+                            data.properties.owner = {};
+                            data.properties.owner.uid = urs_uid;
+                            data.properties.owner.gid = urs_gid;
+                            data.properties.lang = "und";
+                            data.properties.tid = "0";
+                            data.properties.created = new Date().toISOString();
+                            data.properties.changed = new Date().toISOString();
+                        }
                         let params = (instance) ? instance : {};
                         params["body"] = data;
                         // params["body"].size = 10000;
@@ -1837,7 +1867,11 @@ router.post('/:enttype', function(req, res) {
                                  extraInfo.extrainfo.emailAddress = dymeruser.id;*/
                             console.log(nameFile + ' | /:enttype | create | pre check hook extraInfo: ', dymerextrainfo);
                             logger.info(nameFile + '  | /:enttype | create |  pre check hook| obj, extraInfo:' + JSON.stringify(resp) + ' , ' + JSON.stringify(dymerextrainfo));
-                            checkServiceHook('after_insert', resp, dymerextrainfo);
+                            setTimeout(() => {
+                                checkServiceHook('after_insert', resp, dymerextrainfo, req);
+                            }, 3000);
+
+
                             return res.send(ret);
                         });
                     }
@@ -1848,6 +1882,235 @@ router.post('/:enttype', function(req, res) {
                 ret.setSuccess(false);
                 return res.send(ret);
             }
+        }, (error) => {
+            console.error("ERROR | " + nameFile + '  | /:enttype | permission:', error);
+            ret.setMessages("No permission");
+            res.status(200);
+            ret.setSuccess(false);
+            return res.send(ret);
+        });
+});
+router.put('/update/:id', (req, res) => {
+    var ret = new jsonResponse();
+    const hdymeruser = req.headers.dymeruser
+    const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+    const dymerextrainfo = dymeruser.extrainfo;
+    const urs_uid = dymeruser.id;
+    let urs_gid = dymeruser.gid;
+    if (dymerextrainfo != undefined)
+        urs_gid = dymerextrainfo.groupId;
+    let asis = false;
+    if ((dymeruser.roles.indexOf("app-admin") > -1) || (dymeruser.roles.indexOf("app-adapter") > -1)) {
+        asis = true;
+    }
+    let rfrom = (req.headers["reqfrom"]).replace("http://", "").replace("https://", "").replace("/", "");
+    //var url = util.getServiceUrl("dservice") + "/api/dservice/api/v1/fwadapter/configs";
+    var url = util.getServiceUrl("dservice") + "/api/v1/fwadapter/configs";
+    '/api/dservice/api/v1/fwadapter/configs'
+    // axios.post(url_dservice + '/api/v1/servicehook/checkhook', { data: postObj, "extraInfo": extraInfo }, {
+    //     headers: headers
+    //  })
+
+    // let par = { "query": { "servicetype": { "$ne": "general" } } };
+    let par = { "query": { "servicetype": "update" } };
+
+    console.log("INFO | " + nameFile + " | url :", url);
+    console.log("INFO | " + nameFile + " | par :", par, rfrom);
+    //axios.get(url, {})
+    axios.get(url, {
+            "params": par
+        })
+        .then((optresp) => {
+
+            let entry = optresp.data.data[0];
+            console.log("INFO | " + nameFile + " | optresp :", entry);
+            console.log("INFO | " + nameFile + " | entry.configuration.host :", entry.configuration.host, (entry.configuration.host).includes(rfrom));
+            //  optresp.data.data.forEach(function(entry) {
+            if ((entry.configuration.host).includes(rfrom)) {
+                let listRel = [];
+                if (entry.configuration.hasOwnProperty("relations")) {
+                    listRel = entry.configuration.relations.split(",");
+                }
+                //aaaaaaaaaaa
+                upload(req, res, function(err) {
+                    if (err) {
+                        console.error("ERROR | " + nameFile + ' | /:id | put | upload:', err);
+                        ret.setMessages("Upload Error");
+                        ret.setSuccess(false);
+                        ret.setExtraData({ "log": err.stack });
+                        return res.send(ret);
+                    }
+                    var id = req.params.id;
+                    var callData = util.getAllQuery(req);
+                    var instance = callData.instance;
+                    var data = callData.data;
+                    var params = (instance) ? instance : {};
+                    var editValues = data;
+                    let elIndex = instance.index;
+                    var ref = {};
+                    console.log("INFO | " + nameFile + " | data :", JSON.stringify(editValues), listRel);
+                    if (editValues.relation != undefined) {
+                        //  ref = {};
+                        listRel.forEach(value => {
+                                for (var myKey in editValues.relation) {
+                                    for (var elre in editValues.relation[myKey]) {
+                                        ref[myKey] = editValues.relation[myKey];
+                                    }
+                                }
+                                /*console.log("INFO | " + nameFile + " | value :", editValues.relation.dih[0], value);
+                                if ((editValues.relation).hasOwnProperty(value)) {
+                                    ref[value] = editValues.relation[value];
+                                }*/
+                            })
+                            //ref = Object.assign({}, editValues.relation);
+                        delete editValues.relation;
+                    }
+                    let _relationtodelete = [];
+                    listSingleRelation(id).then(function(oldrelation) {
+                        console.log('oldrelation', oldrelation);
+                        // let oldFilteredrelation=[];
+                        oldrelation.forEach(function(relel, index) {
+                            //     console.log("Relation relel", relel);    
+                            if (relel._source["_id1"] == id) {
+                                if (listRel.includes(relel._source["_index2"])) {
+                                    if (ref.hasOwnProperty([relel._source["_index2"]])) {
+                                        if (!ref[relel._source["_index2"]].includes(relel._source["_id2"])) {
+                                            _relationtodelete.push(relel._source["_id2"]);
+                                        }
+                                    }
+
+                                    // oldFilteredrelation.push(relel._source["_id2"]);
+                                }
+                            }
+                            if (relel._source["_id2"] == id) {
+                                if (listRel.includes(relel._source["_index1"])) {
+                                    if (ref.hasOwnProperty([relel._source["_index1"]])) {
+                                        if (!ref[relel._source["_index1"]].includes(relel._source["_id1"])) {
+                                            _relationtodelete.push(relel._source["_id1"]);
+                                        }
+                                    }
+
+                                    //oldFilteredrelation.push(relel._source["_id1"]);
+                                }
+                            }
+                        });
+                        let parmquery = {};
+                        parmquery["body"] = {
+                            "query": {
+                                "match": {
+                                    "_id": id
+                                }
+                            }
+                        };
+                        parmquery["body"].size = 10000;
+                        client.search(parmquery).then(function(resp) {
+                            resp["hits"].hits.forEach((element) => {
+                                var oldElement = element;
+                                console.log('oldElement', oldElement);
+                                console.log('_relationtodelete', _relationtodelete);
+                                var elId = oldElement["_id"];
+                                if (_relationtodelete.length > 0) {
+                                    console.log(nameFile + ' | /:id | put | id,deleted relations :', id, JSON.stringify(_relationtodelete));
+                                    logger.info(nameFile + ' | /:id | put | id,deleted relations :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(_relationtodelete));
+                                    _relationtodelete.forEach(function(entry) {
+                                        deleteRelation(elId, entry);
+                                    });
+
+                                }
+                                if (ref != undefined) {
+                                    checkRelation(ref, oldElement._index, elId);
+                                }
+                                var new_Temp_Entity = extend({}, oldElement);;
+                                // console.log("new_Temp_Entity", new_Temp_Entity);
+                                new_Temp_Entity._source = editValues;
+                                // console.log("new_Temp_Entity2", new_Temp_Entity);
+                                new_Temp_Entity._source.properties = extend(oldElement._source.properties, editValues.properties);
+                                if (req.files != undefined)
+                                    req.files.forEach(function(el) {
+                                        var ark = replaceAll(el.fieldname, '[', '@@');
+                                        var temp_el = el;
+                                        delete el.fieldname;
+                                        ark = replaceAll(ark, ']', '');
+                                        ark = ark.split("@@");
+                                        ark.shift();
+                                        stringAsKey(new_Temp_Entity._source, ark, el);
+                                    });
+                                new_Temp_Entity._source.properties.changed = new Date().toISOString();
+                                var params_del = {};
+                                params_del["id"] = new_Temp_Entity["_id"];
+                                params_del["index"] = new_Temp_Entity._index;
+                                params_del["type"] = new_Temp_Entity._type;
+                                // params_del["refresh"] = 'true';
+                                client.delete(params_del).then(function(resp) {
+                                    client.index({
+                                        index: new_Temp_Entity._index,
+                                        type: new_Temp_Entity._type,
+                                        id: new_Temp_Entity["_id"],
+                                        body: new_Temp_Entity._source,
+                                        refresh: 'true'
+                                    }).then(function(resp) {
+                                        console.log(nameFile + ' | /:id | put | updated :', id, JSON.stringify(resp));
+                                        logger.info(nameFile + ' | /:id | put | updated dymeruser.id, id, enity :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(new_Temp_Entity));
+                                        logger.info(nameFile + ' | /:id | put | updated dymeruser.id, id, _relationtodelete :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(_relationtodelete));
+                                        ret.setMessages("Updated!");
+                                        var objHook = new_Temp_Entity;
+                                        /* var extraInfo = dymerextrainfo;
+                                         if (extraInfo != undefined)
+                                             extraInfo.extrainfo.emailAddress = dymeruser.id;*/
+                                        console.log(nameFile + ' | /:id | put | pre check hook id,extraInfo: ', id, JSON.stringify(dymerextrainfo));
+                                        logger.info(nameFile + ' | /:id | put | pre check hook| obj, extraInfo:' + dymeruser.id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
+                                        checkServiceHook('after_update', objHook, dymerextrainfo, req);
+                                        return res.send(ret);
+                                    }).catch(function(err) {
+                                        console.error("ERROR | " + nameFile + ' | /:id | put | id: ', id, err);
+                                        logger.error(nameFile + '| /:id | put | id, entity:' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(new_Temp_Entity));
+                                        ret.setSuccess(false);
+                                        ret.setMessages("Error Updated!");
+                                        return res.send(ret);
+                                    });
+                                }).catch(function(err) {
+                                    console.error("ERROR | " + nameFile + ' | /:id | put | delete: ', id, err);
+                                    ret.setSuccess(false);
+                                    ret.setMessages("Error Updated!");
+                                    return res.send(ret);
+                                });
+                            });
+                        }).catch(function(err) {
+                            console.error("ERROR | " + nameFile + ' | /:id | put | delete search: ', id, err);
+                            ret.setSuccess(false);
+                            ret.setMessages("Error Updated!");
+                            return res.send(ret);
+                        });
+                    });
+
+                    /* var _split = data.todelete;
+                     var _todeleteObj = data.todeleteObj;
+                     if (_split != undefined) {
+                         _split.forEach(function(entry) {
+                             recFile(mongoose.Types.ObjectId(entry)).then(function(result) {
+                                     gridFSBucket.delete(mongoose.Types.ObjectId(entry)).then(() => {
+                                             console.log(nameFile + ' | /:id | put | deleted Attachments :', entry);
+                                         })
+                                         .catch(function(err) {
+                                             console.error("ERROR | " + nameFile + ' | /:id | put | deleted Attachments :', err);
+                                         });
+                                 })
+                                 .catch(function(err) {
+                                     console.error("ERROR | " + nameFile + ' | /:id | put | recFile :', err);
+                                     //  res.end("");
+                                 });
+                         });
+                         delete editValues.todelete;
+                         delete editValues.todeleteObj;
+                     }*/
+
+                });
+            } else {
+                ret.setMessages("not include rule");
+                ret.setSuccess(false);
+                return res.send(ret)
+            }
+            // });
         }, (error) => {
             console.error("ERROR | " + nameFile + '  | /:enttype | permission:', error);
             ret.setMessages("No permission");
@@ -2030,7 +2293,7 @@ router.put('/:id', (req, res) => {
                                              extraInfo.extrainfo.emailAddress = dymeruser.id;*/
                                         console.log(nameFile + ' | /:id | put | pre check hook id,extraInfo: ', id, JSON.stringify(dymerextrainfo));
                                         logger.info(nameFile + ' | /:id | put | pre check hook| obj, extraInfo:' + dymeruser.id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
-                                        checkServiceHook('after_update', objHook, dymerextrainfo);
+                                        checkServiceHook('after_update', objHook, dymerextrainfo, req);
                                         return res.send(ret);
                                     }).catch(function(err) {
                                         console.error("ERROR | " + nameFile + ' | /:id | put | id: ', id, err);
@@ -2499,7 +2762,7 @@ router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
                         extraInfo.extrainfo.emailAddress = dymeruser.id;*/
                     console.log(nameFile + ' | deleteAllEntityByIndex | pre check hook id,extraInfo: ', dymeruser.id, JSON.stringify(objHook), JSON.stringify(dymerextrainfo));
                     logger.info(nameFile + ' | deleteAllEntityByIndex | pre check hook id,extraInfo: ' + dymeruser.id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
-                    checkServiceHook('after_delete', objHook, dymerextrainfo);
+                    checkServiceHook('after_delete', objHook, dymerextrainfo, req);
                 },
                 function(err) {
                     logger.error(nameFile + ' | deleteAllEntityByIndex | entity remov ,index:' + dymeruser.id + ' , ' + index + ' , ' + err);
@@ -2661,7 +2924,7 @@ router.delete('/:id', (req, res) => {
                              extraInfo.extrainfo.emailAddress = dymeruser.id;*/
                         console.log(nameFile + ' | delete/:id | pre check hook id,extraInfo: ', dymeruser.id, id, JSON.stringify(dymerextrainfo));
                         logger.info(nameFile + ' | delete/:id | pre check hook id,extraInfo: ' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
-                        checkServiceHook('after_delete', objHook, dymerextrainfo);
+                        checkServiceHook('after_delete', objHook, dymerextrainfo, req);
                         return res.send(ret);
                     });
                 });
@@ -2676,13 +2939,17 @@ router.delete('/:id', (req, res) => {
     });
 });
 //inoltro al microservizio dservice
-function checkServiceHook(EventSource, objSend, extraInfo) {
+function checkServiceHook(EventSource, objSend, extraInfo, req) {
     //insert non ho i dati quindi devo fare un get
     var url_dservice = util.getServiceUrl("dservice");
     logger.info(nameFile + ' | checkServiceHook | url_dservice,EventSource,objSend: ' + url_dservice + ' , ' + EventSource + ' , ' + JSON.stringify(objSend));
     console.log(nameFile + ' | checkServiceHook | url_dservice,EventSource: ', url_dservice, EventSource);
     console.log(nameFile + ' | checkServiceHook | objSend: ', JSON.stringify(objSend));
-    if (EventSource.includes("insert")) {
+    console.log(nameFile + ' | checkServiceHook | reqfrom: ', req.headers);
+    const headers = {
+        'reqfrom': req.headers["reqfrom"]
+    }
+    if (EventSource.includes("insert") || EventSource.includes("update")) {
         var params = {
             "body": {
                 "query": {
@@ -2693,24 +2960,56 @@ function checkServiceHook(EventSource, objSend, extraInfo) {
             }
         };
         client.search(params, function(err, resp, status) {
-            objSend = resp.hits.hits[0];
-            var postObj = {
-                eventSource: EventSource,
-                obj: objSend
-            };
-            axios.post(url_dservice + '/api/v1/servicehook/checkhook', { data: postObj, "extraInfo": extraInfo }).then(response => {
-                    console.log(nameFile + ' | checkServiceHook | insert axios.post: ', response);
-                })
-                .catch(error => {
-                    console.error("ERROR | " + nameFile + ' | checkServiceHook | insert axios.post: ', error);
-                });
+            //marcoper adapter
+            checkUnionRelation(resp.hits.hits).then(function(match) {
+                let element = match[0];
+                console.log('ent match element', JSON.stringify(element));
+                //    match.forEach(element => {
+                if (element.hasOwnProperty("relations")) {
+                    if (element.relations.length > 0)
+                        element.relations.forEach(entityrelation => {
+                            let indexentrel = entityrelation._index;
+                            let identrel = entityrelation._id;
+                            if (!element["_source"].hasOwnProperty("relation"))
+                                element["_source"].relation = {};
+                            if (element["_source"].relation.hasOwnProperty(indexentrel)) {
+                                element["_source"].relation[indexentrel].push({
+                                    "to": identrel
+                                });
+                            } else {
+                                element["_source"].relation[indexentrel] = [{
+                                    "to": identrel
+                                }];
+                            }
+                        });
+                    delete element.relations;
+                }
+                console.log('NEW match', JSON.stringify(element));
+                // objSend = resp.hits.hits[0];
+                var postObj = {
+                    eventSource: EventSource,
+                    obj: element
+                };
+                axios.post(url_dservice + '/api/v1/servicehook/checkhook', { data: postObj, "extraInfo": extraInfo }, {
+                        headers: headers
+                    }).then(response => {
+                        console.log(nameFile + ' | checkServiceHook | insert axios.post: ', response);
+                    })
+                    .catch(error => {
+                        logger.error("ERROR | " + nameFile + ' | checkServiceHook | insert axios.post: ', error);
+                        // console.error("ERROR | " + nameFile + ' | checkServiceHook | insert axios.post: ', error);
+                    });
+                //   });
+            }).catch(function(err) {
+                console.error("ERROR | " + nameFile + '  | _search | checkUnionRelation:', err);
+            });
         });
     } else {
         var postObj = {
             eventSource: EventSource,
             obj: objSend
         };
-        axios.post(url_dservice + '/api/v1/servicehook/checkhook', { data: postObj, "extraInfo": extraInfo }).then(response => {
+        axios.post(url_dservice + '/api/v1/servicehook/checkhook', { data: postObj, "extraInfo": extraInfo }, { headers: headers }).then(response => {
                 console.log(nameFile + ' | checkServiceHook | axios.post: ', response);
             })
             .catch(error => {

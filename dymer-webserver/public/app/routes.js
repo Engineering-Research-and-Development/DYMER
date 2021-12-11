@@ -61,6 +61,10 @@ function config($routeProvider, $locationProvider) {
             templateUrl: site_prefix + "/public/app/views/pages/services/opsearch.html",
             controller: "openSearchController"
         })
+        .when(site_prefix + "/fwadapter", {
+            templateUrl: site_prefix + "/public/app/views/pages/services/fwadapter.html",
+            controller: "fwadapterController"
+        })
         .when(site_prefix + "/eaggregation", {
             templateUrl: site_prefix + "/public/app/views/pages/services/eaggregation.html",
             controller: "eaggregationController"

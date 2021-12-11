@@ -210,11 +210,11 @@ function loadUserInfo(req, res, next) {
     //console.log("cookiecookie", cookie);
     // console.log('TESTSESSION', req.session.cc, req.session.cc == undefined);
     // console.log('TESTSESSION req ', req);
-    //console.log('TESTSESSION req referer', req.headers.referer);
+    console.log('TESTSESSION req referer', req.headers.referer);
     //  console.log('TESTSESSION req dservice', util.getServiceUrl("dservice"));
     //  console.log('TESTSESSION  req.protocol', req.protocol);
-    //console.log('TESTSESSION req host', req.get('host'));
-    //  console.log('TESTSESSION req originalUrl', req.originalUrl);
+    console.log('TESTSESSION req host', req.get('host'));
+    console.log('TESTSESSION req originalUrl', req.originalUrl);
     var authuserUrl = util.getServiceUrl("dservice") + "/api/v1/authconfig/userinfo";
     var dymtoken = (req.headers.authorization != undefined) ? req.headers.authorization.split(' ')[1] : undefined;
     var dymtokenAT = req.headers.authorizationtk;
@@ -242,10 +242,17 @@ function loadUserInfo(req, res, next) {
     if (referer != undefined) {
         if ((referer).includes(req.host))
             referer = req.get('host');
-    } else {
-        referer = "testimport";
     }
-    //console.log('loadUserInfo post-reteret', referer);
+    /* else {
+            referer = "testimport";
+        }*/
+    let originalRef = (req.headers["reqfrom"] == undefined) ? req.headers.referer : req.headers.reqfrom;
+    originalRef = (originalRef == undefined) ? req.get('host') : originalRef;
+    //console.log('loadUserInfo post-req.headers', req.headers);
+    console.log('loadUserInfo post-referer', req.headers.referer);
+    console.log('loadUserInfo post-reqfrom', req.headers["reqfrom"]);
+    console.log('loadUserInfo originalRef', originalRef, typeof originalRef);
+    console.log('--------------------------');
     var config = {
         method: 'get',
         url: authuserUrl,
@@ -263,7 +270,10 @@ function loadUserInfo(req, res, next) {
     axios(config)
         .then(function(response) {
             // console.log('dymeruser', response.data.data);
-            req.headers["dymeruser"] = new Buffer(JSON.stringify(response.data.data)).toString("base64")
+            req.headers["dymeruser"] = new Buffer(JSON.stringify(response.data.data)).toString("base64");
+            //if (req.headers["reqfrom"] == undefined || req.headers["reqfrom"] == 'undefined')
+            if (req.headers["reqfrom"] == undefined)
+                req.headers["reqfrom"] = originalRef;
             next();
         })
         .catch(function(error) {
@@ -291,6 +301,11 @@ app.use(util.getContextPath('webserver') + "/api/entities/", loadUserInfo, entit
 //app.use(util.getContextPath('webserver') + "/api/entities/", keycloak.protect('realm:app-user'), entityRoutes);
 //m 2021_20_20 app.use(util.getContextPath('webserver') + "/api/private/dservice/", ensureLoggedInOpen, dserviceRoutes);
 app.use(util.getContextPath('webserver') + "/api/dservice/", loadUserInfo, dserviceRoutes);
+app.post(util.getContextPath('webserver') + "/api/test/", loadUserInfo, (req, res, next) => {
+    console.log("test");
+    next();
+    //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
+});
 //app.use(util.getContextPath('webserver') + "/api/auth/", dauthRoutes);
 
 const parseToken = raw => {

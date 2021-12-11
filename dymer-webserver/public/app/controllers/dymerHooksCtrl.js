@@ -7,8 +7,8 @@ angular.module('dymerHooksCtrl', [])
             eventType: 'after_insert',
             service: 'openness_search'
         };
-        $scope.copyPastIndType = function(el) {
 
+        $scope.copyPastIndType = function(el) {
             $scope.hook._type = el._type;
             $scope.hook._index = el._index;
         }
@@ -16,29 +16,40 @@ angular.module('dymerHooksCtrl', [])
             $scope.hook._type = (($scope.hook._type.replace(/[^a-z]/g, "")).trim()).toLowerCase();
             $scope.hook._index = (($scope.hook._index.replace(/[^a-z]/g, "")).trim()).toLowerCase();
         }
-
-        $http.get(baseContextPath + '/api/dservice/api/v1/servicehook/hooks/', {
-
-        }).then(function(retE) {
-
-
+        $http.get(baseContextPath + '/api/dservice/api/v1/servicehook/hooks/', {}).then(function(retE) {
             $scope.ListHooks = retE.data.data;
             //return $scope.listEntity = templ_data.arr;
         });
-        $http.get(baseContextPath + '/api/entities/api/v1/entity/allindex', this.entData).then(function(rt) {
+        $scope.sort = {
+            column: '',
+            descending: false
+        };
 
+        $scope.changeSorting = function(column) {
+
+            var sort = $scope.sort;
+
+            if (sort.column == column) {
+                sort.descending = !sort.descending;
+            } else {
+                sort.column = column;
+                sort.descending = false;
+            }
+        };
+
+        $scope.selectedCls = function(column) {
+            return column == $scope.sort.column && 'sort-' + $scope.sort.descending;
+        };
+        $http.get(baseContextPath + '/api/entities/api/v1/entity/allindex', this.entData).then(function(rt) {
             var allindex = rt.data.data;
             $scope.listEntitiesAvailable = [];
             for (const [key, value] of Object.entries(allindex)) {
-
                 var newObj = {
                     _index: key,
                     _type: Object.keys(value.mappings)[0]
                 };
-
                 if (key != "entity_relation")
                     $scope.listEntitiesAvailable.push(newObj);
-
             }
             $http.get(baseContextPath + '/api/forms/api/v1/form/', {}).then(function(rtf) {
                     // Vvveb.listResources.setModels(ret.data.data);
@@ -60,65 +71,72 @@ angular.module('dymerHooksCtrl', [])
                     console.log(response.status);
                 })
                 // $scope.listEntitiesAvailable = ret.data.data;
-
         }).catch(function(response) {
             console.log(response.status);
         });
         $scope.createDymerHook = function(dataPost) {
-            dataPost.microserviceType = "entity";
-
-            var modService = dataPost.service;
-            if (modService == "openness_search") {
-                dataPost.service = {
-                    serviceType: modService,
-                    servicePath: baseContextPath + "/api/dservice/api/v1/opn/listener"
+                dataPost.microserviceType = "entity";
+                var modService = dataPost.service;
+                if (modService == "openness_search") {
+                    dataPost.service = {
+                        serviceType: modService,
+                        servicePath: baseContextPath + "/api/dservice/api/v1/opn/listener"
+                    }
                 }
-            }
-            if (modService == "eaggregation_hook") {
-                dataPost.service = {
-                    serviceType: modService,
-                    servicePath: baseContextPath + "/api/dservice/api/v1/eaggregation/listener"
+                if (modService == "eaggregation_hook") {
+                    dataPost.service = {
+                        serviceType: modService,
+                        servicePath: baseContextPath + "/api/dservice/api/v1/eaggregation/listener"
+                    }
                 }
-            }
-            $http({
+                if (modService == "fwadapter") {
+                    dataPost.service = {
+                        serviceType: modService,
+                        servicePath: baseContextPath + "/api/dservice/api/v1/fwadapter/listener"
+                    }
+                }
+                $http({
+                    method: 'POST',
+                    url: baseContextPath + '/api/dservice/api/v1/servicehook/addhook',
+                    data: { data: dataPost }
+                }).then(function successCallback(response) {
 
-                method: 'POST',
-                url: baseContextPath + '/api/dservice/api/v1/servicehook/addhook',
-                data: { data: dataPost }
+                        if (response.data.success) {
+                            useGritterTool("<b><i class='fa fa-toggle-on'></i> HOOK</b>", response.data.message);
+                            response.data.data.forEach(element => {
+                                $scope.ListHooks.push(element);
+                            });
+                        } else {
+                            useGritterTool("<b><i class='fa fa-toggle-on'></i> HOOK</b>", response.data.message, "warning");
+                        }
 
-            }).then(function successCallback(response) {
-
-
-                    response.data.data.forEach(element => {
-                        $scope.ListHooks.push(element);
+                    },
+                    function errorCallback(response) {
+                        useGritterTool("<b><i class='fa fa-toggle-on'></i> HOOK</b>", response.data.message, "warning");
+                        console.log("Error. HOOK Try Again!", response);
                     });
-
-                },
-                function errorCallback(response) {
-
-                    console.log("Error. while created user Try Again!", response);
-
-                });
-
-        }
-        $scope.removeDymerHook = function(index) {
-            var el_id = $scope.ListHooks[index];
-
-
+            }
+            // $scope.removeDymerHook = function(index) {
+        $scope.removeDymerHook = function(id) {
+            //  var el_id = $scope.ListHooks[index];
             $http({
-
                 method: 'DELETE',
-                url: baseContextPath + '/api/dservice/api/v1/servicehook/hook/' + el_id._id
-
+                url: baseContextPath + '/api/dservice/api/v1/servicehook/hook/' + id
             }).then(function successCallback(response) {
-
-
-                    $scope.ListHooks.splice(index, 1);
+                    if (response.data.success) {
+                        useGritterTool("<b><i class='fa fa-toggle-on'></i> HOOK</b>", response.data.message);
+                        var index = $scope.ListHooks.findIndex(function(o) {
+                            return o._id === id;
+                        })
+                        if (index !== -1) $scope.ListHooks.splice(index, 1);
+                    } else {
+                        useGritterTool("<b><i class='fa fa-toggle-on'></i> HOOK</b>", response.data.message, "warning");
+                    }
+                    //$scope.ListHooks.splice(index, 1);
                 },
                 function errorCallback(response) {
-
-                    console.log("Error. while delete hook Try Again!", response);
-
+                    useGritterTool("<b><i class='fa fa-toggle-on'></i> HOOK</b>", response.data.message, "warning");
+                    console.log("Error. delete hook Try Again!", response);
                 });
         }
     });

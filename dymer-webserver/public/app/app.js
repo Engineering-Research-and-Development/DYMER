@@ -11,6 +11,7 @@ angular.module("userApp", [
     "dashCtrl",
     "entitiesImportControllers",
     "openSearchCtrl",
+    "fwadapterCtrl",
     "eaggregationCtrl",
     "dymerHooksCtrl",
     "bridgeEntitiesCtrl",

@@ -21,6 +21,7 @@ app.use(bodyParser.urlencoded({
 const portExpress = global.gConfig.port;
 var routes = require('./routes/routes-v1');
 var routes_dymer_openness = require('./routes/routes-d-opn-v1');
+var routes_dymer_fwadapter = require('./routes/routes-d-fwadapter-v1');
 var routes_dymer_hooks = require('./routes/routes-d-servicehooks');
 var routes_dymer_eaggregation = require('./routes/routes-d-eaggregation');
 var routes_dymer_usermap = require('./routes/routes-d-usermap');
@@ -44,6 +45,7 @@ app.use(function(req, res, next) {
     }
 });
 app.use(util.getContextPath('dservice') + '/api/v1/opn', routes_dymer_openness);
+app.use(util.getContextPath('dservice') + '/api/v1/fwadapter', routes_dymer_fwadapter);
 app.use(util.getContextPath('dservice') + '/api/v1/servicehook', routes_dymer_hooks);
 app.use(util.getContextPath('dservice') + '/api/v1/eaggregation', routes_dymer_eaggregation);
 //app.use(util.getContextPath('dservice') + '/api/v1/taxonomy', routes_dymer_taxonomy);
