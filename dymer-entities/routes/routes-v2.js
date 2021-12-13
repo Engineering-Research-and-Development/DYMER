@@ -1733,12 +1733,13 @@ router.post('/:enttype', function(req, res) {
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     let dymerextrainfo = dymeruser.extrainfo;
+    console.log("dymeruser", dymeruser);
     // var dymerextrainfo = req.headers.extrainfo;
-    if (dymerextrainfo != undefined && dymerextrainfo != "null" && dymerextrainfo != null) {
+    /*if (dymerextrainfo != undefined && dymerextrainfo != "null" && dymerextrainfo != null) {
         dymerextrainfo = JSON.parse(Buffer.from(req.headers.extrainfo, 'base64').toString('utf-8'));
     } else {
         dymerextrainfo = undefined;
-    }
+    } */
     let urs_uid = dymeruser.id;
     let urs_gid = dymeruser.gid;
     /* if (dymerextrainfo != undefined)
