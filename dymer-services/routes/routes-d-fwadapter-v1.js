@@ -137,11 +137,11 @@ function postfwadapter(typeaction, obj, extraInfo, rfrom) {
                         }
                     ],
                     "extrainfo": {
-                        companyId: 'dymer',
-                        groupId: '1',
-                        cms: 'lfr',
-                        userId: 'dymer@adapter.it',
-                        emailAddress: 'dymer@adapter.it',
+                        "companyId": 'dymer',
+                        "groupId": '1',
+                        "cms": 'lfr',
+                        "userId": 'dymer@adapter.it',
+                        "emailAddress": 'dymer@adapter.it',
                     },
                     "app_azf_domain": "",
                     "id": "dymer@adapter.it",
@@ -205,6 +205,8 @@ function postfwadapter(typeaction, obj, extraInfo, rfrom) {
                         }*/
                         logger.info(nameFile + ' | postfwadapter |' + action + ': Inoltro, ad adapter, arriva da ' + rfrom);
                         logger.info(nameFile + ' | postfwadapter |' + JSON.stringify(objToAssett));
+                        logger.info(nameFile + ' | postfwadapter | DYM ' + DYM);
+                        logger.info(nameFile + ' | postfwadapter | DYM_EXTRA ' + DYM_EXTRA);
                         callFwAdapter(objToAssett, index, DYM, DYM_EXTRA, action, el);
                     }
                 }

@@ -1765,7 +1765,7 @@ router.post('/:enttype', function(req, res) {
     // console.log(nameFile + ' | /:enttype | create | dymeruser:', JSON.stringify(dymeruser));
     axios.get(url)
         .then((response) => {
-            // console.log(nameFile + ' | /:enttype | create | permission create:', JSON.stringify(response.data.data.result));
+            console.log(nameFile + ' | /:enttype | create | permission create:', JSON.stringify(response.data.data.result));
             if (response.data.data.result || hasperm) {
                 upload(req, res, function(err) {
                     if (err) {

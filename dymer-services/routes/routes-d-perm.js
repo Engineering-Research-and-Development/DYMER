@@ -71,8 +71,9 @@ router.get('/entityrole/:act/:index', (req, res) => {
     var retData = { result: false };
     var message = "Permission denied";
     var queryFind = { role: { $in: req.query.role } };
-    //console.log(nameFile + ' | get/entityrole/:act/:index | queryFind : ', JSON.stringify(queryFind));
+    console.log(nameFile + ' | get/entityrole/:act/:index | queryFind : ', act, index, JSON.stringify(queryFind));
     DymRule.find(queryFind).then((els) => {
+        console.log(nameFile + ' | get/entityrole/:act/:index | DymRule : ', JSON.stringify(els));
         if (els.length > 0) {
             els.forEach(el => {
                 if ((el.perms.entities[act]) != undefined) {
