@@ -230,7 +230,7 @@ function loadUserInfo(req, res, next) {
     //  console.log('loadUserInfo req.query.tkdym', req.query.tkdym);
     var dymtoExtraInfo = req.headers.extrainfo;
     //console.log('loadUserInfo authuserUrl', authuserUrl);
-    //console.log('loadUserInfo dymtoken', dymtoken);
+    console.log('loadUserInfo dymtoken', dymtoken);
     //console.log('loadUserInfo dymtokenAT', dymtokenAT);
     var idsadm = false;
     if (req.cookies["lll"] != undefined) {

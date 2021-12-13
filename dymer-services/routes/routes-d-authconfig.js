@@ -83,9 +83,12 @@ router.get('/userinfo', (req, res) => {
         username: 'guest@dymer.it',
     };
     var queryFind = { host: data.referer, active: true };
-    // console.log('infouse', queryFind);
+    console.log('infouse', queryFind);
+    DymRule.find({}).then((els) => {
+        console.log('DymRule all', els);
+    });
     DymRule.find(queryFind).then((els) => {
-
+        console.log('DymRule', els);
         if (els.length || data.idsadm) {
             var el = els[0];
             // console.log('el', el);
