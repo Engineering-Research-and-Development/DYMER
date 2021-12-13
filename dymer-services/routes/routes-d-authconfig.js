@@ -84,11 +84,11 @@ router.get('/userinfo', (req, res) => {
     };
     var queryFind = { host: data.referer, active: true };
     console.log('infouse', queryFind);
-    DymRule.find({}).then((els) => {
-        console.log('DymRule all', els);
-    });
+    /* DymRule.find({}).then((els) => {
+         console.log('DymRule all', els);
+     });*/
     DymRule.find(queryFind).then((els) => {
-        console.log('DymRule', els);
+        //   console.log('DymRule', els);
         if (els.length || data.idsadm) {
             var el = els[0];
             // console.log('el', el);

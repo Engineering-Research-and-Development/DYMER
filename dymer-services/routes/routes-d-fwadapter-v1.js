@@ -228,14 +228,17 @@ function callFwAdapter(el, index, DYM, DYM_EXTRA, action, conf) {
         if (conf.configuration.port != '')
             posturl += ":" + conf.configuration.port;
     posturl += conf.configuration.path;
-    if (action == "delete")
-        posturl = posturl + "/" + el["_id"];
     var formdata = new FormData();
     let arrlistFiles = [];
     let dest = 'tempfolder';
     let id = el.instance["id"];
     const dir = dest + "/" + id;
-    checkFilesFormdata(arrlistFiles, el);
+    if (action == "delete") {
+        posturl = posturl + "/" + id;
+    } else {
+
+        checkFilesFormdata(arrlistFiles, el);
+    }
     let requests = arrlistFiles.map((fl) => {
         let url = util.getServiceUrl('webserver') + "/api/entities/api/v1/entity/contentfile/" + id + "/" + fl.id;
         url += "?tkdym=" + DYM;
@@ -250,6 +253,9 @@ function callFwAdapter(el, index, DYM, DYM_EXTRA, action, conf) {
             console.log(err);
         });
     })
+
+
+
     Promise.all(requests).then(() => {
         appendFormdataFiles(formdata, el, '', dir + "/");
         var config = {
@@ -263,18 +269,19 @@ function callFwAdapter(el, index, DYM, DYM_EXTRA, action, conf) {
             data: formdata
         };
         logger.info(nameFile + ' | callFwAdapter | invio, ad adapter | conf : ' + JSON.stringify(conf));
-        logger.info(nameFile + ' | callFwAdapter | invio, ad adapter | el : ' + JSON.stringify(el));
+        logger.info(nameFile + ' | callFwAdapter | invio, ad adapter | el : ' + action + "-" + posturl + "-" + JSON.stringify(el));
+        //  logger.info(nameFile + ' | callFwAdapter | invio, ad adapter | config : ' + JSON.stringify(config));
 
-        axios(config)
-            .then(function(updatedEl) {
-                if (fs.existsSync(dir)) {
-                    removeDir(dir);
-                    //  fs.rm(dir);
-                    // fs.rmdirSync(dir, { recursive: true });
-                }
-            }).catch(function(error) {
-                console.log("Error__________", error);
-            });
+        /* axios(config)
+             .then(function(updatedEl) {
+                 if (fs.existsSync(dir)) {
+                     removeDir(dir);
+                     //  fs.rm(dir);
+                     // fs.rmdirSync(dir, { recursive: true });
+                 }
+             }).catch(function(error) {
+                 console.log("Error__________", error);
+             });*/
     });
 }
 
