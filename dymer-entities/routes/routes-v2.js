@@ -1732,13 +1732,13 @@ router.post('/:enttype', function(req, res) {
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
-    const dymerextrainfo = dymeruser.extrainfo;
-    /*var dymerextrainfo = req.headers.extrainfo;
+    let dymerextrainfo = dymeruser.extrainfo;
+    // var dymerextrainfo = req.headers.extrainfo;
     if (dymerextrainfo != undefined && dymerextrainfo != "null" && dymerextrainfo != null) {
         dymerextrainfo = JSON.parse(Buffer.from(req.headers.extrainfo, 'base64').toString('utf-8'));
     } else {
         dymerextrainfo = undefined;
-    }*/
+    }
     let urs_uid = dymeruser.id;
     let urs_gid = dymeruser.gid;
     /* if (dymerextrainfo != undefined)
@@ -1895,7 +1895,7 @@ router.put('/update/:id', (req, res) => {
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
-    const dymerextrainfo = dymeruser.extrainfo;
+    let dymerextrainfo = dymeruser.extrainfo;
     const urs_uid = dymeruser.id;
     let urs_gid = dymeruser.gid;
     if (dymerextrainfo != undefined)
