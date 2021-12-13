@@ -272,16 +272,16 @@ function callFwAdapter(el, index, DYM, DYM_EXTRA, action, conf) {
         logger.info(nameFile + ' | callFwAdapter | invio, ad adapter | el : ' + action + "-" + posturl + "-" + JSON.stringify(el));
         //  logger.info(nameFile + ' | callFwAdapter | invio, ad adapter | config : ' + JSON.stringify(config));
 
-        /* axios(config)
-             .then(function(updatedEl) {
-                 if (fs.existsSync(dir)) {
-                     removeDir(dir);
-                     //  fs.rm(dir);
-                     // fs.rmdirSync(dir, { recursive: true });
-                 }
-             }).catch(function(error) {
-                 console.log("Error__________", error);
-             });*/
+        axios(config)
+            .then(function(updatedEl) {
+                if (fs.existsSync(dir)) {
+                    removeDir(dir);
+                    //  fs.rm(dir);
+                    // fs.rmdirSync(dir, { recursive: true });
+                }
+            }).catch(function(error) {
+                console.log("Error__________", error);
+            });
     });
 }
 
