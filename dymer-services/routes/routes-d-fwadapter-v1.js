@@ -119,7 +119,9 @@ function postfwadapter(typeaction, obj, extraInfo, rfrom) {
         if (els.length > 0) {
             try {
                 var el = els[0];
-                let extrainfo_objJsonStr = "test";
+                let extrainfo_objJsonStr = {
+                    extrainfo: { companyId: 'dymer', groupId: '1', cms: 'lfr', userId: 'pinocpallino@gg.it', emailAddress: 'pinocpallino@gg.it' }
+                };
                 // let extrainfo_objJsonStr = JSON.stringify(extraInfo);
                 let DYM_EXTRA = Buffer.from(extrainfo_objJsonStr).toString("base64");
                 var userinfo = {

@@ -1816,6 +1816,7 @@ router.post('/:enttype', function(req, res) {
                         //fine externale
                         var files_arr = [];
                         var label_index = -1;
+                        console.log('reqfile', req.files);
                         if (req.files != undefined) {
                             req.files.forEach(function(element) {
                                 var ark = replaceAll(element.fieldname, '[', '@@');
