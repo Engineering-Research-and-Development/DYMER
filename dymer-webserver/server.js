@@ -210,7 +210,10 @@ function loadUserInfo(req, res, next) {
     //console.log("cookiecookie", cookie);
     // console.log('TESTSESSION', req.session.cc, req.session.cc == undefined);
     // console.log('TESTSESSION req ', req);
+    console.log('TESTSESSION req referer', req.headers);
     console.log('TESTSESSION req referer', req.headers.referer);
+    console.log('TESTSESSION req req.headers.authorization', req.headers.authorization);
+    console.log('TESTSESSION req req.headers.Authorization', req.headers.Authorization);
     //  console.log('TESTSESSION req dservice', util.getServiceUrl("dservice"));
     //  console.log('TESTSESSION  req.protocol', req.protocol);
     console.log('TESTSESSION req host', req.get('host'));
