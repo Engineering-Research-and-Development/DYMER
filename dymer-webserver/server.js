@@ -266,7 +266,7 @@ function loadUserInfo(req, res, next) {
         data: {
             'DYM': dymtoken,
             'DYMAT': dymtokenAT,
-            'referer': referer,
+            'referer': originalRef,
             'dymtoExtraInfo': dymtoExtraInfo,
             'idsadm': idsadm
         }
