@@ -119,10 +119,10 @@ function postfwadapter(typeaction, obj, extraInfo, rfrom) {
         if (els.length > 0) {
             try {
                 var el = els[0];
-                let extrainfo_objJsonStr = {
+                extraInfo = {
                     extrainfo: { companyId: 'dymer', groupId: '1', cms: 'lfr', userId: 'pinocpallino@gg.it', emailAddress: 'pinocpallino@gg.it' }
                 };
-                // let extrainfo_objJsonStr = JSON.stringify(extraInfo);
+                let extrainfo_objJsonStr = JSON.stringify(extraInfo);
                 let DYM_EXTRA = Buffer.from(extrainfo_objJsonStr).toString("base64");
                 var userinfo = {
                     "isGravatarEnabled": false,
@@ -136,6 +136,13 @@ function postfwadapter(typeaction, obj, extraInfo, rfrom) {
                             "id": "20110"
                         }
                     ],
+                    "extrainfo": {
+                        companyId: 'dymer',
+                        groupId: '1',
+                        cms: 'lfr',
+                        userId: 'dymer@adapter.it',
+                        emailAddress: 'dymer@adapter.it',
+                    },
                     "app_azf_domain": "",
                     "id": "dymer@adapter.it",
                     "app_id": "",
