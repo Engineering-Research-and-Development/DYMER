@@ -129,7 +129,7 @@ router.get('/userinfo', (req, res) => {
                     method: 'get',
                     url: urlIDM,
                     headers: {
-                        'Authorization': token,
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     }
                 };
