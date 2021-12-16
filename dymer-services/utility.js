@@ -135,7 +135,7 @@ exports.checkIsDymerUser = function(req, res, next) {
 exports.checkIsAdmin = function(req, res, next) {
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
-    console.log("dymeruser", dymeruser);
+    //console.log("dymeruser", dymeruser);
     if ((dymeruser.roles.indexOf("app-admin") > -1)) {
         next();
     } else {
