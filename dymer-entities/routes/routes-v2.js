@@ -878,8 +878,8 @@ router.get('/contentfile/:entityid/:fileid', function(req, res, next) {
     var entityid = req.params.entityid;
     var file_id = req.params.fileid;
     if (!isValidObjectId(file_id)) {
-        console.error("ERROR | " + nameFile + ' |  get/contentfile/:entityid/:fileid | fileid !isValidObjectId:');
-        res.status(410).send('Not Found');
+        //console.error("ERROR | " + nameFile + ' |  get/contentfile/:entityid/:fileid | fileid !isValidObjectId:');
+        res.status(404).send('Not Found');
         return;
     }
     const hdymeruser = req.headers.dymeruser;
@@ -1733,7 +1733,7 @@ router.post('/:enttype', function(req, res) {
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     let dymerextrainfo = dymeruser.extrainfo;
-    console.log("dymeruser", dymeruser);
+    //console.log("dymeruser", dymeruser);
     // var dymerextrainfo = req.headers.extrainfo;
     /*if (dymerextrainfo != undefined && dymerextrainfo != "null" && dymerextrainfo != null) {
         dymerextrainfo = JSON.parse(Buffer.from(req.headers.extrainfo, 'base64').toString('utf-8'));
@@ -1792,7 +1792,7 @@ router.post('/:enttype', function(req, res) {
                                 ark = replaceAll(ark, ']', '');
                                 ark = ark.split("@@");
                                 ark.shift();
-                                stringAsKey(globalData, ark, element);
+                                stringAsKey(globalData.data, ark, element);
                             });
                         }
                         jsonMappingDymerEntityToExternal(globalData, bridgeConf, "create", req.files).then(function(mapdata) {
@@ -1867,7 +1867,7 @@ router.post('/:enttype', function(req, res) {
                             /* var extraInfo = dymerextrainfo;
                              if (extraInfo != undefined)
                                  extraInfo.extrainfo.emailAddress = dymeruser.id;*/
-                            console.log(nameFile + ' | /:enttype | create | pre check hook extraInfo: ', dymerextrainfo);
+                            // console.log(nameFile + ' | /:enttype | create | pre check hook extraInfo: ', dymerextrainfo);
                             logger.info(nameFile + '  | /:enttype | create |  pre check hook| obj, extraInfo:' + JSON.stringify(resp) + ' , ' + JSON.stringify(dymerextrainfo));
                             setTimeout(() => {
                                 checkServiceHook('after_insert', resp, dymerextrainfo, req);
