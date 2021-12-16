@@ -19,7 +19,7 @@ app.use(util.getContextPath('template') + "/api/v1/template/uploads/", publicRou
 app.use(util.getContextPath('template') + '/api/v1/template', routes);
 app.get(util.getContextPath('template') + "/*", (req, res) => {
     var ret = new jsonResponse();
-    console.error('ERROR |  /* : ', "Api error 404", req.path);
+    //console.error('ERROR |  /* : ', "Api error 404", req.path);
     ret.setMessages("Api error 404");
     res.status(404);
     ret.setSuccess(false);

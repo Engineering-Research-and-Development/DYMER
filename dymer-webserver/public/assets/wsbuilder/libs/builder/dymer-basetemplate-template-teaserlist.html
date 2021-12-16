@@ -2,7 +2,7 @@
 <div class="row listrow" d-pagegroup="{{{DymerPaginationPageIndex ../this.length @index}}}">
     <div data-component-entitystatus="" data-vvveb-disabled="" class="row">{{{EntityStatus this}}}</div>
     <div class="col-3">
-        <img class="img-fluid logof" src="{{cdnpath}}api/entities/api/v1/entity/content/{{logo.id}}">
+        <img class="img-fluid logof" src="{{loadfile _id logo.id}}">
     </div>
     <div class="col-9">
         <div>
@@ -10,8 +10,8 @@
         </div>
         <div class="descrellipse">{{description}}</div>
         <span class="pull-right text-info " style="padding-top: 10px;cursor:pointer" title="{{name}}" onclick="kmsrenderdetail(&quot;{{_id}}&quot;)">
-				View More
-			</span>
+            View More
+        </span>
     </div>
 </div>
 {{/each}}
