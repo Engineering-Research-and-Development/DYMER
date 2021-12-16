@@ -129,7 +129,7 @@ angular.module('formBuilderControllers', [])
                 
               }
             );*/
-            console.log("pre SECcondo");
+            //console.log("pre SECcondo");
 
 
             Vvveb.FileManager.init();
@@ -153,7 +153,7 @@ angular.module('formBuilderControllers', [])
                 $http.get(baseContextPath + '/api/entities/api/v1/entity/allstats', this.entData).then(function(rt) {
                     var allindex = rt.data.data.indices;
                     for (const [key, value] of Object.entries(allindex)) {
-                        console.log("errr", key, value);
+                        //  console.log("errr", key, value);
                         if (!listIndex.includes(value.index)) {
                             if (value.index > 0)
                                 listIndex.push(key);

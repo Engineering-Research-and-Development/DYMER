@@ -2009,8 +2009,11 @@ Vvveb.FileManager = {
 
             var page = $(this.parentNode).data("page");
             //console.log("FileManager page", page);
-            if (page) Vvveb.FileManager.loadPage(page);
-            return false;
+            if (page) {
+                Vvveb.FileManager.loadPage(page);
+
+            }
+            return true;
         })
 
         $(this.tree).on("click", "li[data-component] label ", function(e) {
@@ -2170,6 +2173,9 @@ Vvveb.FileManager = {
         $("[data-page='" + name + "']", this.tree).addClass("active");
         this.pagedetail = this.pages[name];
         this.currentPage = name;
+        //console.log("ssssss", Vvveb.FileManager.pages[page].title);
+
+        $("#pageTitleActualmanage").html(this.pagedetail.title);
         var url = this.pages[name]['url'];
         //  console.log('url', url);
         Vvveb.Builder.loadUrl(url + (disableCache ? (url.indexOf('?') > -1 ? '&' : '?') + Math.random() : ''),

@@ -1,4 +1,4 @@
-Vvveb.ComponentsGroup["Dymer Model"] = ["dymer/kmsgeopoint", "dymer/kmsrelation", "html/mytextinput", "html/dmodelentitytags"];
+Vvveb.ComponentsGroup["Dymer Model"] = ["dymer/kmsgeopoint", "dymer/kmsrelation", "dymer/dymrelation", "html/mytextinput", "html/dmodelentitytags"];
 Vvveb.ComponentsGroup["Dymer Template"] = ["dymer/entitystatus", "html/dentitylink", "dymer/dpagination", "html/dimage", "html/dtemplateentitytags"];
 Vvveb.Components.add("dymer/entitystatus", {
     name: "Entity Status",
@@ -247,7 +247,126 @@ Vvveb.Components.add("dymer/kmsrelation", {
         }
     ]
 });
+Vvveb.Components.add("dymer/dymrelation", {
+    name: "Relation",
+    attributes: ["data-component-dymrelation"],
+    image: "icons/alert.svg",
+    dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/alert.svg">',
+    html: '<div class="form-group">' +
+        '<label for="description" class="kms-title-label">Relation</label>' +
+        '<div>' +
+        '<div data-component-dymrelation class="form-group dymerselectpicker" contenteditable="false" data-torelation="">' +
+        '<span  contenteditable="false" class="inforelation">Relation</span> <i class="fa fa-code-fork rotandflip inforelation" aria-hidden="true"></i> <span contenteditable="false" class="torelation inforelation">......</span>' +
+        '</div>' +
+        '</div>',
+    listent: false,
+    reapetable: false,
+    init: function(node) {
+        //this.reapetable=true;
+        //$(node)
+        //   .find( "input[type='hidden'][name^='data[relation]']" ).attr('name','data[relation]['+new Date().getTime()+']');
 
+    },
+    onChange: function(node, property, value) {
+        if (property.key == "required") {
+            if (value == true) {
+                $(node)[0].attributes.required.value = ""
+            } else {
+                $(node).removeAttr("required")
+            }
+        }
+
+        if (property.key == "listent") {
+            $(node)
+                .find(".torelation")
+                .html(value);
+        }
+
+        if (property.key == "reapetable") {
+            this[property.key] = value;
+            if (this.reapetable) {
+                $(node).closest('.relationcontgrp').addClass("repeatable first-repeatable");
+            } else {
+                $(node).closest('.relationcontgrp').removeClass("repeatable first-repeatable");
+            }
+
+        }
+        return node;
+    },
+
+    properties: [{
+            name: "Required",
+            key: "required",
+            htmlAttr: "required",
+            inputtype: CheckboxInput,
+            init: function(node) {
+                if (node.hasAttribute('required')) {
+                    setTimeout(function() { $('#required_check').prop('checked', true); }, 2000)
+                }
+            },
+        },
+        {
+            name: "Reapetable",
+            key: "reapetable",
+            htmlAttr: "data-ddddt",
+            inputtype: CheckboxInput,
+
+            init: function(node) {
+
+                if ($(node).closest('.relationcontgrp').hasClass("repeatable"))
+                    setTimeout(function() { $('#properties [data-key="reapetable"] #reapetable_check').prop('checked', true); }, 2000);
+
+                //  var sel= $(node).find("data-torelation").prop('checked', true);;
+            }
+        },
+        {
+            name: "List of entities",
+            key: "listent",
+            inputtype: SelectInput,
+            htmlAttr: "data-torelation",
+            beforeInit: function(node) {
+
+                //  console.log("beforeInit a", this.data.options);
+                var _l = this;
+
+                propert = [];
+                angular
+                    .injector(["ng", "main.app"])
+                    .get("serviceEntity")
+                    .chiama()
+                    .then(function(ret) {
+                        var listIndexes = ret;
+                        console.log("serviceEntity listIndexes", listIndexes);
+                        //    console.log("beforeInit d");
+                        propert.push({
+                            value: "",
+                            text: ""
+                        });
+                        for (key of listIndexes.values()) {
+                            console.log("serviceEntity listIndexes", key);
+                            if (key != 'entity_relation')
+                                propert.push({
+                                    value: key,
+                                    text: key
+                                });
+                        }
+                        //     console.log("propert", _l, propert);
+                        _l.data.options = propert;
+                        //    console.log("propert2", _l.data.options, node);
+                        //    var sel= $(node).attr("data-torelation");
+                        //     console.log("seelzionato", sel);
+                        return node;
+                    });
+
+                //
+            },
+            data: {
+                extraclass: "btn-cccc",
+                options: []
+            }
+        }
+    ]
+});
 /* giaisg */
 Vvveb.Components.extend("_base", "html/mytextinput", {
     name: "Dymer Input",
@@ -395,10 +514,10 @@ Vvveb.Components.extend("_base", "html/dimage", {
     html: '<img src="{{cdnpath}}api/entities/api/v1/entity/content/{{<object-key>.id}}"  >',
     /*
     afterDrop: function (node)
-	{
-		node.attr("src", '');
-		return node;
-	},*/
+    {
+        node.attr("src", '');
+        return node;
+    },*/
     image: "icons/image.svg",
     properties: [{
         name: "Image",

@@ -360,6 +360,17 @@ pre.code-jquery code {
     width: 100%;
 }
 
+#vvveb-builder #pageTitleManage {
+    color: #007bff !important;
+    top: 4px;
+}
+
+#vvveb-builder #pageTitleManage #pageTitleActualmanage {
+    position: relative;
+    bottom: 7px;
+    padding-left: 7px;
+}
+
 #vvveb-builder #assetsTab .dropdown-menu .dropdown-item:hover,
 #vvveb-builder #assetsTab .dropdown-menu .dropdown-item:focus,
 #vvveb-builder #assetsTab .dropdown-menu .dropdown-item.active,
