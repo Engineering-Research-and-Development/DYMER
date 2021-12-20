@@ -1553,7 +1553,7 @@ function grantHtml(perm) {
             '           <div class="form-group repeatable rpperm first-repeatable col-3" style="">' +
             '	            <div>' +
             //   '		            <label for="description" class=" ">Update</label>' +
-            '		            <input type="text" class="form-control col-12 span12" name="data[properties][grant][update][uid][0]">' +
+            '		            <input type="mail" placeholder="portal user email" class="form-control col-12 span12" name="data[properties][grant][update][uid][0]">' +
             //  '		            <small class="form-text text-muted"> Uid co-owner</small>' +
             '	            </div>' +
             '	            <div class="action-br">' +
@@ -1568,7 +1568,7 @@ function grantHtml(perm) {
             '           <div class="form-group repeatable rpperm first-repeatable col-3" style="">' +
             '	            <div>' +
             //  '		            <label for="description" class=" ">Delete</label>' +
-            '		            <input type="text" class="form-control col-12 span12" name="data[properties][grant][delete][uid][0]">' +
+            '		            <input type="mail" placeholder="portal user email" placeholder="user email" class="form-control col-12 span12" name="data[properties][grant][delete][uid][0]">' +
             //  '		            <small class="form-text text-muted"> Uid co-owner</small>' +
             '	            </div>' +
             '	            <div class="action-br">' +
@@ -1871,13 +1871,15 @@ function kmsrenderEl(ar, rendertype) {
                             });
                         });
                 }
+                $('body').hideLoader();
             } else {
                 //   mytemplate = chekSatus(actualItem) + mytemplate;
                 var stone = Handlebars.compile(mytemplate)(item);
                 $(targetId)[action](stone);
                 onloadFiles((templateslist[tmpl]['files'][typetemplateToRender]).slice());
+                $('body').hideLoader();
             }
-            $('body').hideLoader();
+
         } else {
             console.log("ELSE rendertype ==  ", rendertype);
             if (action == "html")
@@ -2555,6 +2557,7 @@ function kmsrenderdetail(_id) {
     if (retriveIfIsType('map') || retriveIfIsType('dt')) {
         hideDatasetContainer();
     }
+
     actualTemplateType = "reset";
     removeTempImport('tftemp');
     var arObj = new Array();
@@ -3938,6 +3941,7 @@ function dymerSearch(options) {
         if (addsubquery)
             querycreator.bool.must.push(subquerycreator);
         //  console.log('querycreator', querycreator);
+
         switchQuery(querycreator);
     }
     this.init();
