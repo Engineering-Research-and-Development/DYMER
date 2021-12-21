@@ -83,10 +83,10 @@ let mapJsonArrayToGeoJson = function(arr) {
             let el = arr[i];
             if (el.location != undefined) {
 
-                if (el.location.type == "Point") {
-                    var tmp = el.location.coordinates[0];
-                    el.location.coordinates = [el.location.coordinates[1], tmp];
-                }
+                /* if (el.location.type == "Point") {
+                     var tmp = el.location.coordinates[0];
+                     el.location.coordinates = [el.location.coordinates[1], tmp];
+                 }*/
                 if (el.location.coordinates[0] != "" && el.location.coordinates[1] != "") {
                     el = mapJsonToGeoJson(el);
                     newArr.push(el);
@@ -539,7 +539,6 @@ function settingMapIcon(obj) {
 }
 
 function populateMap(arrdata) {
-    //  console.log('arrdata', arrdata);
     return new Promise(function(resolve, reject) {
 
         markers.clearLayers();
