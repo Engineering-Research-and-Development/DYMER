@@ -171,6 +171,7 @@ Vvveb.Components.add("dymer/kmsrelation", {
             }
 
         }
+
         return node;
     },
 
@@ -248,19 +249,22 @@ Vvveb.Components.add("dymer/kmsrelation", {
     ]
 });
 Vvveb.Components.add("dymer/dymrelation", {
-    name: "Relation",
+    name: "Relation Picker",
     attributes: ["data-component-dymrelation"],
-    image: "icons/alert.svg",
-    dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/alert.svg">',
+    image: "icons/dymer/relationpicker.svg",
+    dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/dymer/relationpicker.svg" height="50px">',
     html: '<div class="form-group">' +
         '<label for="description" class="kms-title-label">Relation</label>' +
         '<div>' +
-        '<div data-component-dymrelation class="form-group dymerselectpicker" contenteditable="false" data-torelation="">' +
-        '<span  contenteditable="false" class="inforelation">Relation</span> <i class="fa fa-code-fork rotandflip inforelation" aria-hidden="true"></i> <span contenteditable="false" class="torelation inforelation">......</span>' +
+        '<div data-component-dymrelation class="form-group dymerselectpicker"   data-torelation="">' +
+        '<span   class="inforelation">Relation</span> <i class="fa fa-code-fork rotandflip inforelation" aria-hidden="true"></i> <span contenteditable="false" class="torelation inforelation">......</span>' +
         '</div>' +
         '</div>',
     listent: false,
     reapetable: false,
+    actionsbox: false,
+    livesearch: false,
+    maxoptions: "",
     init: function(node) {
         //this.reapetable=true;
         //$(node)
@@ -268,6 +272,7 @@ Vvveb.Components.add("dymer/dymrelation", {
 
     },
     onChange: function(node, property, value) {
+        console.log(' property, value ', property.key, property, value);
         if (property.key == "required") {
             if (value == true) {
                 $(node)[0].attributes.required.value = ""
@@ -284,40 +289,93 @@ Vvveb.Components.add("dymer/dymrelation", {
 
         if (property.key == "reapetable") {
             this[property.key] = value;
+            console.log('$(node)', $(node));
             if (this.reapetable) {
-                $(node).closest('.relationcontgrp').addClass("repeatable first-repeatable");
+                $(node).attr("multiple", "");
             } else {
-                $(node).closest('.relationcontgrp').removeClass("repeatable first-repeatable");
+                $(node).removeAttr("multiple");
             }
-
         }
+
+        if (property.key == "actionsbox") {
+            //   this[property.key] = value;
+            if (value == true) {
+                $(node).attr("data-actions-box", value);
+            } else {
+                $(node).removeAttr("data-actions-box")
+            }
+        }
+        if (property.key == "livesearch") {
+            //  this[property.key] = value;
+            if (value == false) {
+                $(node).removeAttr("data-live-search")
+            }
+            /* if (value == true) {
+                 $(node).attr("data-live-search", value);
+             } else {
+                 $(node).removeAttr("data-live-search")
+             }*/
+        }
+        /* if (property.key == "searchableelement") {
+             if (value == true) {
+                 $(node).attr("searchable-element", "");
+             } else { $(node).removeAttr("searchable-element"); }
+         }*/
         return node;
     },
 
     properties: [{
+            name: "Live-search",
+            key: "livesearch",
+            htmlAttr: "data-live-search",
+            inputtype: CheckboxInput,
+            init: function(node) {
+                if (node.hasAttribute('data-live-search') && node.getAttribute('data-live-search') == "true") {
+                    setTimeout(function() { $('#properties [data-key="livesearch"] #livesearch_check').prop('checked', true); }, 1300)
+                }
+            }
+        },
+        {
+            name: "Actions-box",
+            key: "actionsbox",
+            htmlAttr: "data-actions-box",
+            inputtype: CheckboxInput,
+            init: function(node) {
+                if (node.hasAttribute('data-actions-box') && node.getAttribute('data-actions-box') == "true") {
+                    setTimeout(function() { $('#properties [data-key="actionsbox"] #actionsbox_check').prop('checked', true); }, 1300)
+                }
+            }
+        },
+        {
             name: "Required",
             key: "required",
             htmlAttr: "required",
             inputtype: CheckboxInput,
             init: function(node) {
                 if (node.hasAttribute('required')) {
-                    setTimeout(function() { $('#required_check').prop('checked', true); }, 2000)
+                    setTimeout(function() { $('#properties [data-key="required"] #required_check').prop('checked', true); }, 1300)
                 }
-            },
+            }
         },
         {
             name: "Reapetable",
             key: "reapetable",
-            htmlAttr: "data-ddddt",
+            htmlAttr: "multiple",
             inputtype: CheckboxInput,
-
             init: function(node) {
-
-                if ($(node).closest('.relationcontgrp').hasClass("repeatable"))
+                var attr = $(node).attr('multiple');
+                // For some browsers, `attr` is undefined; for others,
+                // `attr` is false.  Check for both.
+                if (typeof attr !== 'undefined' && attr !== false) {
                     setTimeout(function() { $('#properties [data-key="reapetable"] #reapetable_check').prop('checked', true); }, 2000);
-
-                //  var sel= $(node).find("data-torelation").prop('checked', true);;
+                }
             }
+        },
+        {
+            name: "Max Options",
+            key: "maxoptions",
+            htmlAttr: "data-max-options",
+            inputtype: TextInput
         },
         {
             name: "List of entities",
@@ -336,14 +394,14 @@ Vvveb.Components.add("dymer/dymrelation", {
                     .chiama()
                     .then(function(ret) {
                         var listIndexes = ret;
-                        console.log("serviceEntity listIndexes", listIndexes);
+                        // console.log("serviceEntity listIndexes", listIndexes);
                         //    console.log("beforeInit d");
                         propert.push({
                             value: "",
                             text: ""
                         });
                         for (key of listIndexes.values()) {
-                            console.log("serviceEntity listIndexes", key);
+                            // console.log("serviceEntity listIndexes", key);
                             if (key != 'entity_relation')
                                 propert.push({
                                     value: key,
@@ -364,6 +422,36 @@ Vvveb.Components.add("dymer/dymrelation", {
                 extraclass: "btn-cccc",
                 options: []
             }
+        }, {
+            name: "Searchable Label",
+            key: "searchable-label",
+            htmlAttr: "searchable-label",
+            inputtype: TextInput
+        }, {
+            name: "Searchable Text",
+            key: "searchable-text",
+            htmlAttr: "searchable-text",
+            inputtype: TextInput
+        }, {
+            name: "Searchable Element",
+            key: "searchable-element",
+            htmlAttr: "searchable-element",
+            inputtype: CheckboxInput,
+            init: function(node) {
+                if (node.hasAttribute('searchable-element') && node.getAttribute('searchable-element') == "true") {
+                    setTimeout(function() { $('#searchable-element_check').prop('checked', true); }, 1300)
+                }
+            }
+        }, {
+            name: "Searchable Multiple",
+            key: "searchable-multiple",
+            htmlAttr: "searchable-multiple",
+            inputtype: CheckboxInput,
+            init: function(node) {
+                if (node.hasAttribute('searchable-multiple') && node.getAttribute('searchable-multiple') == "true") {
+                    setTimeout(function() { $('#searchable-multiple_check').prop('checked', true); }, 2000)
+                }
+            }
         }
     ]
 });
@@ -376,97 +464,103 @@ Vvveb.Components.extend("_base", "html/mytextinput", {
     dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/text_input.png">',
     html: '<div class="form-group"><label>Text</label><input data-component-dymerinput class="form-control" type="text" ></div></div>',
     properties: [{
-        name: "Value",
-        key: "value",
-        htmlAttr: "value",
-        inputtype: TextInput
-    }, {
-        name: "Placeholder",
-        key: "placeholder",
-        htmlAttr: "placeholder",
-        inputtype: TextInput
-    }, {
-        name: "Type",
-        key: "type",
-        htmlAttr: "type",
-        inputtype: SelectInput,
-        validValues: ["button", "checkbox", "color", "date", "datetime-local", "email", "file", "hidden", "image", "month", "number", "password", "radio", "range", "reset", "search", "submit", "tel", "text", "time", "url", "week"],
-        data: {
-            options: [
-                { value: "text", text: "Text" },
-                { value: "button", text: "Button" },
-                { value: "checkbox", text: "Checkbox" },
-                { value: "color", text: "Color" },
-                { value: "date", text: "Date" },
-                { value: "datetime-local", text: "Datetime-local" },
-                { value: "email", text: "Email" },
-                { value: "file", text: "File" },
-                { value: "hidden", text: "Hidden" },
-                { value: "image", text: "Image" },
-                { value: "month", text: "Month" },
-                { value: "number", text: "Number" },
-                { value: "password", text: "Password" },
-                { value: "radio", text: "Radio" },
-                { value: "range", text: "Range" },
-                { value: "reset", text: "Reset" },
-                { value: "search", text: "Search" },
-                { value: "submit", text: "Submit" },
-                { value: "tel", text: "Tel" },
-                { value: "time", text: "Time" },
-                { value: "url", text: "Url" },
-                { value: "week", text: "Week" }
-            ]
-        }
-    }, {
-        name: "Required",
-        key: "required",
-        inputtype: CheckboxInput,
-        init: function(node) {
-            if (node.hasAttribute('required')) {
-                setTimeout(function() { $('#required_check').prop('checked', true); }, 2000)
+            name: "Value",
+            key: "value",
+            htmlAttr: "value",
+            inputtype: TextInput
+        }, {
+            name: "Placeholder",
+            key: "placeholder",
+            htmlAttr: "placeholder",
+            inputtype: TextInput
+        }, {
+            name: "Type",
+            key: "type",
+            htmlAttr: "type",
+            inputtype: SelectInput,
+            validValues: ["button", "checkbox", "color", "date", "datetime-local", "email", "file", "hidden", "image", "month", "number", "password", "radio", "range", "reset", "search", "submit", "tel", "text", "time", "url", "week"],
+            data: {
+                options: [
+                    { value: "text", text: "Text" },
+                    { value: "button", text: "Button" },
+                    { value: "checkbox", text: "Checkbox" },
+                    { value: "color", text: "Color" },
+                    { value: "date", text: "Date" },
+                    { value: "datetime-local", text: "Datetime-local" },
+                    { value: "email", text: "Email" },
+                    { value: "file", text: "File" },
+                    { value: "hidden", text: "Hidden" },
+                    { value: "image", text: "Image" },
+                    { value: "month", text: "Month" },
+                    { value: "number", text: "Number" },
+                    { value: "password", text: "Password" },
+                    { value: "radio", text: "Radio" },
+                    { value: "range", text: "Range" },
+                    { value: "reset", text: "Reset" },
+                    { value: "search", text: "Search" },
+                    { value: "submit", text: "Submit" },
+                    { value: "tel", text: "Tel" },
+                    { value: "time", text: "Time" },
+                    { value: "url", text: "Url" },
+                    { value: "week", text: "Week" }
+                ]
+            }
+        }, {
+            name: "Required",
+            key: "required",
+            inputtype: CheckboxInput,
+            init: function(node) {
+                if (node.hasAttribute('required')) {
+                    setTimeout(function() { $('#required_check').prop('checked', true); }, 2000)
+                }
+            }
+        }, {
+            name: "Searchable Label",
+            key: "searchable-label",
+            htmlAttr: "searchable-label",
+            inputtype: TextInput
+        }, {
+            name: "Searchable Override",
+            key: "searchable-override",
+            htmlAttr: "searchable-override",
+            inputtype: TextInput
+        }, {
+            name: "Searchable Text",
+            key: "searchable-text",
+            htmlAttr: "searchable-text",
+            inputtype: TextInput
+        }, {
+
+            name: "Searchable Element",
+            key: "searchable-element",
+            htmlAttr: "searchable-element",
+            inputtype: CheckboxInput,
+            init: function(node) {
+                if (node.hasAttribute('searchable-element') && node.getAttribute('searchable-element') == "true") {
+                    setTimeout(function() { $('#searchable-element_check').prop('checked', true); }, 1300)
+                }
+            }
+
+        },
+        {
+            name: "Searchable Multiple",
+            key: "searchable-multiple",
+            htmlAttr: "searchable-multiple",
+            inputtype: CheckboxInput,
+            init: function(node) {
+                if (node.hasAttribute('searchable-multiple')) {
+                    setTimeout(function() { $('#searchable-multiple_check').prop('checked', true); }, 2000)
+                }
             }
         }
-    }, {
-        name: "Searchable Label",
-        key: "searchable-label",
-        htmlAttr: "searchable-label",
-        inputtype: TextInput
-    }, {
-        name: "Searchable Override",
-        key: "searchable-override",
-        htmlAttr: "searchable-override",
-        inputtype: TextInput
-    }, {
-        name: "Searchable Text",
-        key: "searchable-text",
-        htmlAttr: "searchable-text",
-        inputtype: TextInput
-    }, {
-        name: "Searchable Element",
-        key: "searchable-element",
-        inputtype: CheckboxInput,
-        init: function(node) {
-            if (node.hasAttribute('searchable-element')) {
-                setTimeout(function() { $('#searchable-element_check').prop('checked', true); }, 2000)
-            }
-        }
-    }, {
-        name: "Searchable Multiple",
-        key: "searchable-multiple",
-        htmlAttr: "searchable-multiple",
-        inputtype: CheckboxInput,
-        init: function(node) {
-            if (node.hasAttribute('searchable-multiple')) {
-                setTimeout(function() { $('#searchable-multiple_check').prop('checked', true); }, 2000)
-            }
-        }
-    }],
+    ],
     onChange: function(node, property, value) {
-        if (property.key == "searchable-element") {
-            if (value == true) {
-                $(node).attr("searchable-element", "");
-            } else { $(node).removeAttr("searchable-element"); }
-        } else if (property.key == "required") {
+        /*  if (property.key == "searchable-element") {
+              if (value == true) {
+                  $(node).attr("searchable-element", "");
+              } else { $(node).removeAttr("searchable-element"); }
+          } else*/
+        if (property.key == "required") {
             if (value == true) {
                 $(node).prop("required", true);
             } else { $(node).removeAttr("required"); }

@@ -657,9 +657,29 @@ function populateHookRelation(x, y, z, w, k, a, b, arObj2, rel) {
             esxtraAttr += ' required ';
             $(this).removeAttr('required');
         }
+        let sel = "";
         if ($(this)) {
             //  var sel = $('<select class="form-control span12 col-12" name="data[relation][' + rel + '][' + inde + '][to]" onchange="relChngd($(this))" ' + esxtraAttr + '>').appendTo($(this));
-            var sel = $('<select class="form-control span12 col-12" searchable-multiple="true" searchable-override="data[relationdymer][' + rel + ']" searchable="" searchable-label="' + label + '2" name="data[relation][' + rel + '][' + inde + '][to]" onchange="relChngd($(this))" ' + esxtraAttr + '>').appendTo($(this));
+            if ($(this).hasClass("dymerselectpicker")) {
+                let attrismulti = $(this).attr('multiple');
+                // let ismulti = ($(this).hasAttr('data-max-options')) ? "multiple" : '';
+                let ismulti = (typeof attrismulti !== 'undefined' && attrismulti !== false) ? "multiple" : '';
+
+                let livesearch = ($(this).attr('data-live-search') == "true") ? 'data-live-search="true"' : '';
+                let actionsbox = ($(this).attr('data-actions-box') == "true") ? 'data-actions-box="true"' : '';
+                let maxoptions = '';
+                let attrmaxoptions = $(this).attr('data-max-options');
+                if (typeof attrmaxoptions !== 'undefined' && attrmaxoptions !== false) {
+                    maxoptions = ($(this).attr('data-max-options') != "") ? 'data-max-options="' + $(this).attr('data-max-options') + '"' : '';
+                }
+
+                let selpk = '<select class="form-control span12 col-12 selectpicker" name="data[relation][' + rel + '][' + inde + '][to]" ' + '  searchable-label="' + label + '"  class="selectpicker form-control " searchable-override="data[relationdymer][' + rel + ']"    ' + ismulti + " " + actionsbox + " " + livesearch + " " + maxoptions + " " + ' data-selected-text-format="count"   ></select>';
+                sel = $(selpk).appendTo($(this))
+            } else {
+                sel = $('<select class="form-control span12 col-12" searchable-multiple="true" searchable-override="data[relationdymer][' + rel + ']" searchable="" searchable-label="' + label + '2" name="data[relation][' + rel + '][' + inde + '][to]" onchange="relChngd($(this))" ' + esxtraAttr + '>').appendTo($(this));
+
+            }
+
         }
         // var sel = $('<select class="form-control span12 col-12" name="data[relation][' + rel + '][' + inde + '][to]" onchange="relChngd($(this))" ' + esxtraAttr + '>').appendTo($(this));
         sel.append($("<option>").attr('value', "").text(""));
@@ -836,7 +856,8 @@ function loadHtmlForm(sourceUrl, target, datapost, delaytime, action) {
     if (action == "append")
         $(target).append(ret);
     setTimeout(function() {
-        hookReleationForm();
+        //  hookReleationForm();
+        hookReleationForm_Promise();
         setbaseEntityConfig(target);
     }, 800);
 }
@@ -1871,15 +1892,13 @@ function kmsrenderEl(ar, rendertype) {
                             });
                         });
                 }
-                $('body').hideLoader();
             } else {
                 //   mytemplate = chekSatus(actualItem) + mytemplate;
                 var stone = Handlebars.compile(mytemplate)(item);
                 $(targetId)[action](stone);
                 onloadFiles((templateslist[tmpl]['files'][typetemplateToRender]).slice());
-                $('body').hideLoader();
             }
-
+            $('body').hideLoader();
         } else {
             console.log("ELSE rendertype ==  ", rendertype);
             if (action == "html")
@@ -2275,17 +2294,32 @@ function populateFormEdit(frm, item, basename, wasarr, origitem) {
             //   console.log("elPop", elPop);
             //   console.log("elPop.hasClass('selectpicker')", elPop.hasClass('selectpicker'));
             if (key == 'relations') {
-                var listRelation = {};
+                let listRelation = {};
                 for (var i = 0; i < value.length; i++) {
                     if (listRelation[value[i]._type] == undefined)
                         listRelation[value[i]._type] = [];
                     listRelation[value[i]._type].push(value[i]._id);
                 }
+                /*  Object.keys(listRelation).forEach(function(k) {
+                      var r_list = listRelation[k];
+                      for (var i = 0; i < r_list.length; i++) {
+                          var vs = ' [name="data[relation][' + k + '][' + i + '][to]"]';
+                          $(frm + vs).val(r_list[i]).attr("oldval", r_list[i]);
+                      }
+                  });*/
                 Object.keys(listRelation).forEach(function(k) {
                     var r_list = listRelation[k];
-                    for (var i = 0; i < r_list.length; i++) {
-                        var vs = ' [name="data[relation][' + k + '][' + i + '][to]"]';
-                        $(frm + vs).val(r_list[i]).attr("oldval", r_list[i]);
+                    let vs = '[name="data[relation][' + k + '][0][to]"]';
+                    var relElement = $(vs);
+                    if (relElement.hasClass('selectpicker')) {
+
+                        // $(frm + " " + vs).val(r_list);
+                        $(frm + " " + vs).selectpicker('val', r_list);
+                    } else {
+                        for (var i = 0; i < r_list.length; i++) {
+                            vs = ' [name="data[relation][' + k + '][' + i + '][to]"]';
+                            $(frm + vs).val(r_list[i]).attr("oldval", r_list[i]);
+                        }
                     }
                 });
                 // elPop.val(value);
@@ -2557,7 +2591,6 @@ function kmsrenderdetail(_id) {
     if (retriveIfIsType('map') || retriveIfIsType('dt')) {
         hideDatasetContainer();
     }
-
     actualTemplateType = "reset";
     removeTempImport('tftemp');
     var arObj = new Array();
@@ -3677,11 +3710,12 @@ function dymerSearch(options) {
                 $(groupEl).append('<input type="text" class="form-control col-12 span12" placeholder="Enter any term" name="data[_all]" searchable-override="_all" >');
                 myform_innerContainer.append(groupEl);
             }
-            $(itemValue).find("[searchable-label]").each(function() {
+            $(itemValue).find('[searchable-element="true"]').each(function() {
                 //let newId = idGen.getId();
                 let filterpos = ($(this).data('filterpos') == undefined) ? 0 : $(this).data('filterpos');
                 let singleEl = "";
                 if ($(this).attr("data-torelation") != undefined) {
+
                     let rel = $(this).attr('data-torelation');
                     let esxtraAttr = "";
                     let datapost = {
@@ -3690,10 +3724,14 @@ function dymerSearch(options) {
                     };
                     let listToselect = actionPostMultipartForm("entity.search", undefined, datapost, undefined, undefined, undefined, false, undefined);
                     let inde = 0;
-                    let ismulti = ($(this).attr('searchable-multiple') == "true") ? "" : 'data-max-options="1"';
+                    let ismulti = ($(this).attr('searchable-multiple') == "true") ? "multiple" : 'data-max-options="1"';
+                    let isactionsbox = "";
+                    if ($(this).attr('searchable-multiple') == "true") {
+                        isactionsbox = 'data-actions-box="true"';
+                    }
                     //  console.log('ismulti  rel', $(this).html(), $(this).attr('searchable-multiple'), ismulti);
                     // let $sel = $('<select class="form-control span12 col-12"  searchable-multiple="' + ismulti + '"  searchable-override="data[relationdymer][' + rel + ']" searchable="" searchable-label="' + $(this).attr('searchable-label') + '" name="data[relation][' + rel + '][' + inde + '][to]"  ' + esxtraAttr + '>').appendTo($(this));
-                    let $sel = $('<select name="data[relationdymer][' + rel + ']" searchable-label="' + $(this).attr('searchable-label') + '" class="selectpicker form-control"  data-live-search="true" multiple ' + ismulti + ' data-selected-text-format="count"  data-actions-box="true"></select>').appendTo($(this));
+                    let $sel = $('<select name="data[relationdymer][' + rel + ']" searchable-label="' + $(this).attr('searchable-label') + '" class="selectpicker form-control"  data-live-search="true"  ' + ismulti + ' ' + isactionsbox + ' data-selected-text-format="count"  ></select>').appendTo($(this));
                     /*if (usePlaceholder)
                         $sel.append($('<option value="" disabled selected>').attr('value', "").text($(this).attr('searchable-label')));*/
                     $.each(listToselect.data, function(ind, value) {
@@ -3702,13 +3740,16 @@ function dymerSearch(options) {
                         $sel.append($("<option>").attr('value', value._id).text(value.title));
                     });
                     //$sel.attr("filter-id", newId);
+
+                    $sel.attr("searchable-text", $(this).attr("searchable-text"));
+
                     singleEl = $sel;
                 } else {
                     if ($(this).is("select")) {
                         if (!$(this).hasClass("selectpicker")) {
                             let nameVal = $(this).attr('name');
                             let searchableOverride_ = $(this).attr('searchable-override');
-                            console.log('searchableOverride_', searchableOverride_);
+
                             if (searchableOverride_ != undefined) {
                                 nameVal = searchableOverride_;
                             }
@@ -3716,7 +3757,7 @@ function dymerSearch(options) {
                             let ismulti = ($(this).attr('searchable-multiple') == "true") ? "" : 'data-max-options="1"';
                             let $sel = $('<select name="' + nameVal + '" ' + '  searchable-label="' + $(this).attr('searchable-label') + '"  class="selectpicker form-control "  data-live-search="true" multiple ' + ismulti + ' data-selected-text-format="count"  data-actions-box="true"></select>').appendTo($(this));
                             //  $(this).addClass('selectpicker').attr('data-live-search', 'true').attr('multiple').att(ismulti);;
-                            console.log('ismulti', $(this).html(), $(this).attr('searchable-multiple'), ismulti);
+
                             $(this).find("option").each(function() {
                                 //alert(this.text + ' ' + this.value);
                                 //  $sel.append($("<option>").attr('data-tokens', this.value).attr('value', this.text).text(this.text));
@@ -3731,6 +3772,7 @@ function dymerSearch(options) {
                 }
                 let additionalText = "";
                 let additTextEl = singleEl.attr('searchable-text');
+
                 singleEl.removeAttr('required');
                 if (additTextEl != undefined) {
                     additTextEl = additTextEl.trim();
@@ -3738,6 +3780,7 @@ function dymerSearch(options) {
                         additionalText = additTextEl;
                     }
                 }
+
                 if (singleEl.is(":checkbox")) {
                     return;
                     // singleEl.css("display", "none");
@@ -3941,7 +3984,6 @@ function dymerSearch(options) {
         if (addsubquery)
             querycreator.bool.must.push(subquerycreator);
         //  console.log('querycreator', querycreator);
-
         switchQuery(querycreator);
     }
     this.init();

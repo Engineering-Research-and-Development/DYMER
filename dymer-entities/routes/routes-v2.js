@@ -227,72 +227,87 @@ function checkRelation(params, elIndex, elId) {
     // console.log('checkRelation', params, elIndex);
     console.log(nameFile + ' | checkRelation | params:', JSON.stringify(params), elIndex);
     for (var myKey in params) {
+        let _id2_list = [];
         for (var elre in params[myKey]) {
-            var _id2 = params[myKey][elre].to;
-            var qparams = {};
+            console.log('params[myKey]', params[myKey]);
+            let _id2 = params[myKey][elre].to;
+            if (Array.isArray(_id2)) {
+                _id2_list = params[myKey][elre].to;
+            } else {
+                _id2_list.push(_id2);
+            }
+            console.log('_id2', _id2);
+            console.log('myKey', myKey, elre);
+            let qparams = {};
             qparams["index"] = "entity_relation";
             qparams["type"] = "entity_relation";
-            // qparams = {};
-            /* qparams["body"] = {
-                 query: {
-                     "bool": {
-                         "should": [{
-                             "match": { "_id1": _id1 }
-                         }, {
-                             "match": { "_id2": _id1 }
-                         }]
+            _id2_list.forEach(singleId2 => {
+                // qparams = {}; 
+                /* qparams["body"] = {
+                     query: {
+                         "bool": {
+                             "should": [{
+                                 "match": { "_id1": _id1 }
+                             }, {
+                                 "match": { "_id2": _id1 }
+                             }]
+                         }
                      }
-                 }
- 
-             };*/
-            qparams["body"] = {
-                "bool": {
-                    "should": [{
-                            "bool": {
-                                "must": [{
-                                        "match": {
-                                            "_id1": _id1
+     
+                 };*/
+                qparams["body"] = {
+                    "bool": {
+                        "should": [{
+                                "bool": {
+                                    "must": [{
+                                            "match": {
+                                                "_id1": _id1
+                                            }
+                                        },
+                                        {
+                                            "match": {
+                                                "_index1": elIndex
+                                            }
                                         }
-                                    },
-                                    {
-                                        "match": {
-                                            "_index1": elIndex
+                                    ]
+                                }
+                            },
+                            {
+                                "bool": {
+                                    "must": [{
+                                            "match": {
+                                                "_id2": _id1
+                                            }
+                                        },
+                                        {
+                                            "match": {
+                                                "_index2": elIndex
+                                            }
                                         }
-                                    }
-                                ]
+                                    ]
+                                }
                             }
-                        },
-                        {
-                            "bool": {
-                                "must": [{
-                                        "match": {
-                                            "_id2": _id1
-                                        }
-                                    },
-                                    {
-                                        "match": {
-                                            "_index2": elIndex
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            };
-            qparams["body"].size = 1;
-            if (!_id1.length || !_id2.length) {
-                // console.log("!_id1.length", !_id1.length);
-            } else {
-                var newRel = {
-                        _index1: elIndex,
-                        "_id1": _id1,
-                        "_id2": params[myKey][elre].to,
-                        _index2: myKey
+                        ]
                     }
-                    //console.log("avvio controllo", qparams, JSON.stringify(qparams));
-                controlAndCreateRel(qparams, newRel);
-            }
+                };
+                qparams["body"].size = 1;
+                if (_id1 == "" || singleId2 == "" || singleId2 == undefined) {
+
+                } else {
+                    var newRel = {
+                            _index1: elIndex,
+                            "_id1": _id1,
+                            "_id2": singleId2,
+                            _index2: myKey
+                        }
+                        //console.log("avvio controllo", qparams, JSON.stringify(qparams));
+                    controlAndCreateRel(qparams, newRel);
+                }
+            });
+
+
+
+
         }
     }
     return true;
@@ -821,6 +836,7 @@ var fetchSingleRelation = function(element) {
                         //   console.log('works');
                     }, function(err) {
                         console.error("ERROR | " + nameFile + ' | fetchSingleRelation | search relparams : ', err);
+                        reject();
                     });
 
                 }, function(err) {
@@ -1863,7 +1879,12 @@ router.post('/:enttype', function(req, res) {
                             var elId = resp["_id"];
                             logger.info(nameFile + '  | /:enttype | create | dymeruser.id, params:' + dymeruser.id + ' , ' + JSON.stringify(params));
                             logger.info(nameFile + '  | /:enttype | create | ref, elIndex, elId:' + JSON.stringify(ref) + ' , ' + elIndex + ' , ' + elId);
-                            checkRelation(ref, elIndex, elId);
+                            try {
+                                checkRelation(ref, elIndex, elId);
+                            } catch (error) {
+                                logger.error(nameFile + '  | /:enttype | create |  checkRelation:' + error);
+                            }
+
                             /* var extraInfo = dymerextrainfo;
                              if (extraInfo != undefined)
                                  extraInfo.extrainfo.emailAddress = dymeruser.id;*/
@@ -2214,6 +2235,8 @@ router.put('/:id', (req, res) => {
                             //_relationtodelete = Object.assign({}, editValues.relationtodelete);
                             delete editValues.relationtodelete;
                         }
+                        if (_relationtodelete == undefined) _relationtodelete = [];
+
                         var _split = data.todelete;
                         var _todeleteObj = data.todeleteObj;
                         if (_split != undefined) {
@@ -2245,71 +2268,105 @@ router.put('/:id', (req, res) => {
                         client.search(params).then(function(resp) {
                             resp["hits"].hits.forEach((element) => {
                                 var oldElement = element;
-                                var elId = oldElement["_id"];
-                                if (_relationtodelete != undefined) {
-                                    console.log(nameFile + ' | /:id | put | id,deleted relations :', id, JSON.stringify(_relationtodelete));
-                                    logger.info(nameFile + ' | /:id | put | id,deleted relations :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(_relationtodelete));
-                                    _relationtodelete.forEach(function(entry) {
-                                        deleteRelation(elId, entry);
+                                listSingleRelation(id).then(function(oldrelation) {
+                                    oldrelation.forEach(function(relel, index) {
+                                        //     console.log("Relation relel", relel);    
+                                        if (relel._source["_id1"] == id) {
+                                            if (ref.hasOwnProperty([relel._source["_index2"]])) {
+                                                if (!ref[relel._source["_index2"]].includes(relel._source["_id2"])) {
+                                                    _relationtodelete.push(relel._source["_id2"]);
+                                                }
+                                            }
+                                        }
+                                        if (relel._source["_id2"] == id) {
+                                            if (ref.hasOwnProperty([relel._source["_index1"]])) {
+                                                if (!ref[relel._source["_index1"]].includes(relel._source["_id1"])) {
+                                                    _relationtodelete.push(relel._source["_id1"]);
+                                                }
+                                            }
+                                            //oldFilteredrelation.push(relel._source["_id1"]);
+
+                                        }
+
                                     });
-                                }
-                                if (ref != undefined) {
-                                    checkRelation(ref, oldElement._index, elId);
-                                }
-                                var new_Temp_Entity = extend({}, oldElement);;
-                                // console.log("new_Temp_Entity", new_Temp_Entity);
-                                new_Temp_Entity._source = editValues;
-                                // console.log("new_Temp_Entity2", new_Temp_Entity);
-                                new_Temp_Entity._source.properties = extend(oldElement._source.properties, editValues.properties);
-                                if (req.files != undefined)
-                                    req.files.forEach(function(el) {
-                                        var ark = replaceAll(el.fieldname, '[', '@@');
-                                        var temp_el = el;
-                                        delete el.fieldname;
-                                        ark = replaceAll(ark, ']', '');
-                                        ark = ark.split("@@");
-                                        ark.shift();
-                                        stringAsKey(new_Temp_Entity._source, ark, el);
-                                    });
-                                new_Temp_Entity._source.properties.changed = new Date().toISOString();
-                                var params_del = {};
-                                params_del["id"] = new_Temp_Entity["_id"];
-                                params_del["index"] = new_Temp_Entity._index;
-                                params_del["type"] = new_Temp_Entity._type;
-                                // params_del["refresh"] = 'true';
-                                client.delete(params_del).then(function(resp) {
-                                    client.index({
-                                        index: new_Temp_Entity._index,
-                                        type: new_Temp_Entity._type,
-                                        id: new_Temp_Entity["_id"],
-                                        body: new_Temp_Entity._source,
-                                        refresh: 'true'
-                                    }).then(function(resp) {
-                                        console.log(nameFile + ' | /:id | put | updated :', id, JSON.stringify(resp));
-                                        logger.info(nameFile + ' | /:id | put | updated dymeruser.id, id, enity :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(new_Temp_Entity));
-                                        logger.info(nameFile + ' | /:id | put | updated dymeruser.id, id, _relationtodelete :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(_relationtodelete));
-                                        ret.setMessages("Updated!");
-                                        var objHook = new_Temp_Entity;
-                                        /* var extraInfo = dymerextrainfo;
-                                         if (extraInfo != undefined)
-                                             extraInfo.extrainfo.emailAddress = dymeruser.id;*/
-                                        console.log(nameFile + ' | /:id | put | pre check hook id,extraInfo: ', id, JSON.stringify(dymerextrainfo));
-                                        logger.info(nameFile + ' | /:id | put | pre check hook| obj, extraInfo:' + dymeruser.id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
-                                        checkServiceHook('after_update', objHook, dymerextrainfo, req);
-                                        return res.send(ret);
+
+
+
+
+                                    var elId = oldElement["_id"];
+                                    if (_relationtodelete.length > 0) {
+                                        console.log(nameFile + ' | /:id | put | id,deleted relations :', id, JSON.stringify(_relationtodelete));
+                                        logger.info(nameFile + ' | /:id | put | id,deleted relations :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(_relationtodelete));
+                                        _relationtodelete.forEach(function(entry) {
+                                            deleteRelation(elId, entry);
+                                        });
+                                    }
+                                    if (ref != undefined) {
+                                        checkRelation(ref, oldElement._index, elId);
+                                    }
+                                    var new_Temp_Entity = extend({}, oldElement);;
+                                    // console.log("new_Temp_Entity", new_Temp_Entity);
+                                    new_Temp_Entity._source = editValues;
+                                    // console.log("new_Temp_Entity2", new_Temp_Entity);
+                                    new_Temp_Entity._source.properties = extend(oldElement._source.properties, editValues.properties);
+                                    if (req.files != undefined)
+                                        req.files.forEach(function(el) {
+                                            var ark = replaceAll(el.fieldname, '[', '@@');
+                                            var temp_el = el;
+                                            delete el.fieldname;
+                                            ark = replaceAll(ark, ']', '');
+                                            ark = ark.split("@@");
+                                            ark.shift();
+                                            stringAsKey(new_Temp_Entity._source, ark, el);
+                                        });
+                                    new_Temp_Entity._source.properties.changed = new Date().toISOString();
+                                    var params_del = {};
+                                    params_del["id"] = new_Temp_Entity["_id"];
+                                    params_del["index"] = new_Temp_Entity._index;
+                                    params_del["type"] = new_Temp_Entity._type;
+                                    // params_del["refresh"] = 'true';
+                                    client.delete(params_del).then(function(resp) {
+                                        client.index({
+                                            index: new_Temp_Entity._index,
+                                            type: new_Temp_Entity._type,
+                                            id: new_Temp_Entity["_id"],
+                                            body: new_Temp_Entity._source,
+                                            refresh: 'true'
+                                        }).then(function(resp) {
+                                            console.log(nameFile + ' | /:id | put | updated :', id, JSON.stringify(resp));
+                                            logger.info(nameFile + ' | /:id | put | updated dymeruser.id, id, enity :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(new_Temp_Entity));
+                                            logger.info(nameFile + ' | /:id | put | updated dymeruser.id, id, _relationtodelete :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(_relationtodelete));
+                                            ret.setMessages("Updated!");
+                                            var objHook = new_Temp_Entity;
+                                            /* var extraInfo = dymerextrainfo;
+                                             if (extraInfo != undefined)
+                                                 extraInfo.extrainfo.emailAddress = dymeruser.id;*/
+                                            console.log(nameFile + ' | /:id | put | pre check hook id,extraInfo: ', id, JSON.stringify(dymerextrainfo));
+                                            logger.info(nameFile + ' | /:id | put | pre check hook| obj, extraInfo:' + dymeruser.id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
+                                            checkServiceHook('after_update', objHook, dymerextrainfo, req);
+                                            return res.send(ret);
+                                        }).catch(function(err) {
+                                            console.error("ERROR | " + nameFile + ' | /:id | put | id: ', id, err);
+                                            logger.error(nameFile + '| /:id | put | id, entity:' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(new_Temp_Entity));
+                                            ret.setSuccess(false);
+                                            ret.setMessages("Error Updated!");
+                                            return res.send(ret);
+                                        });
                                     }).catch(function(err) {
-                                        console.error("ERROR | " + nameFile + ' | /:id | put | id: ', id, err);
-                                        logger.error(nameFile + '| /:id | put | id, entity:' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(new_Temp_Entity));
+                                        console.error("ERROR | " + nameFile + ' | /:id | put | delete: ', id, err);
                                         ret.setSuccess(false);
                                         ret.setMessages("Error Updated!");
                                         return res.send(ret);
                                     });
-                                }).catch(function(err) {
-                                    console.error("ERROR | " + nameFile + ' | /:id | put | delete: ', id, err);
-                                    ret.setSuccess(false);
-                                    ret.setMessages("Error Updated!");
-                                    return res.send(ret);
+
+
+
+
                                 });
+
+
+
+
 
                             });
                         }).catch(function(err) {

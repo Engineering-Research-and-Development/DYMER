@@ -915,12 +915,12 @@ Vvveb.Components.extend("_base", "html/repeatable", {
         name: "Repeatable",
         key: "repeatable",
         inputtype: CheckboxInput,
-        init: function (node) {
+        init: function(node) {
             if ($(node).closest("div").hasClass("repeatable first-repeatable")) {
-                setTimeout(function () { $('#repeatable_check').prop('checked', true); }, 2000)
+                setTimeout(function() { $('#repeatable_check').prop('checked', true); }, 2000)
             }
         },
-        onChange: function (node, value) {
+        onChange: function(node, value) {
             if (value == true) {
                 $(node).closest('.form-group').addClass("repeatable first-repeatable");
                 var act =
@@ -937,39 +937,38 @@ Vvveb.Components.extend("_base", "html/repeatable", {
             }
         }
     }],
-    beforeInit: function (node) {
-        if ($(node).closest("div").hasClass("repeatable first-repeatable")) {
-            if ($(node).find(".action-br").length == 0) {
-                var act =
-                    '<div class="action-br">' +
-                    '<span class="btn  btn-outline-primary  btn-sm" onclick = "cloneRepeatable($(this))" > +</span>' +
-                    '<span class="btn  btn-outline-danger  btn-sm act-remove" onclick="removeRepeatable($(this))">-</span>' +
-                    "</div>";
-                $(node).closest('div').append(act);
-            }
+    beforeInit: function(node) {
             if ($(node).closest("div").hasClass("repeatable first-repeatable")) {
-                if ($(node.children[0]).children().length == 0) {
-                    $(node.children[0]).css("height", "100px")
+                if ($(node).find(".action-br").length == 0) {
+                    var act =
+                        '<div class="action-br">' +
+                        '<span class="btn  btn-outline-primary  btn-sm" onclick = "cloneRepeatable($(this))" > +</span>' +
+                        '<span class="btn  btn-outline-danger  btn-sm act-remove" onclick="removeRepeatable($(this))">-</span>' +
+                        "</div>";
+                    $(node).closest('div').append(act);
                 }
-                else {
-                    $(node.children[0]).removeAttr("style")
+                if ($(node).closest("div").hasClass("repeatable first-repeatable")) {
+                    if ($(node.children[0]).children().length == 0) {
+                        $(node.children[0]).css("height", "100px")
+                    } else {
+                        $(node.children[0]).removeAttr("style")
+                    }
                 }
+                // if ($(node.children[0].childElementCount).length == 0) {
+                //     var txt = '<div class="text-help">' +
+                //         '<label>' +
+                //         'Inserire un  componente ripetibile' +
+                //         '</label> </div>'
+                //     $(node.children[0]).append(txt)
+                // }
+                // else {
+                //     $(node).find(".text-help").remove();
+                // }
             }
-            // if ($(node.children[0].childElementCount).length == 0) {
-            //     var txt = '<div class="text-help">' +
-            //         '<label>' +
-            //         'Inserire un  componente ripetibile' +
-            //         '</label> </div>'
-            //     $(node.children[0]).append(txt)
-            // }
-            // else {
-            //     $(node).find(".text-help").remove();
-            // }
         }
-    }
-    // onChange: function (node, input, value, component) {
-    //     console.log("CAMBIATO");
-    // }
+        // onChange: function (node, input, value, component) {
+        //     console.log("CAMBIATO");
+        // }
 });
 
 
@@ -1090,10 +1089,10 @@ Vvveb.Components.extend("_base", "html/image", {
     html: '<img src="' + Vvveb.baseUrl + 'icons/image.svg" height="128" width="128">',
     /*
     afterDrop: function (node)
-	{
-		node.attr("src", '');
-		return node;
-	},*/
+    {
+        node.attr("src", '');
+        return node;
+    },*/
     image: "icons/image.svg",
     properties: [{
         name: "Image",
@@ -1774,11 +1773,11 @@ Vvveb.Components.extend("_base", "html/textinput", {
         }, {
             name: "Searchable Element",
             key: "searchable-element",
-            //  htmlAttr: "searchable-element",
+            htmlAttr: "searchable-element",
             inputtype: CheckboxInput,
             init: function(node) {
-                if (node.hasAttribute('searchable-element')) {
-                    setTimeout(function() { $('#searchable-element_check').prop('checked', true); }, 2000)
+                if (node.hasAttribute('searchable-element') && node.getAttribute('searchable-element') == "true") {
+                    setTimeout(function() { $('#searchable-element_check').prop('checked', true); }, 1300)
                 }
             }
         }, {
@@ -1794,11 +1793,12 @@ Vvveb.Components.extend("_base", "html/textinput", {
         }
     ],
     onChange: function(node, property, value) {
-        if (property.key == "searchable-element") {
-            if (value == true) {
-                $(node).attr("searchable-element", "");
-            } else { $(node).removeAttr("searchable-element"); }
-        } else if (property.key == "required") {
+        /* if (property.key == "searchable-element") {
+             if (value == true) {
+                 $(node).attr("searchable-element", "");
+             } else { $(node).removeAttr("searchable-element"); }
+         } else*/
+        if (property.key == "required") {
             if (value == true) {
                 $(node).prop("required", true);
             } else { $(node).removeAttr("required"); }
@@ -1914,10 +1914,11 @@ Vvveb.Components.extend("_base", "html/selectinput", {
         }, {
             name: "Searchable Element",
             key: "searchable-element",
+            htmlAttr: "searchable-element",
             inputtype: CheckboxInput,
             init: function(node) {
-                if (node.hasAttribute('searchable-element')) {
-                    setTimeout(function() { $('#searchable-element_check').prop('checked', true); }, 2000)
+                if (node.hasAttribute('searchable-element') && node.getAttribute('searchable-element') == "true") {
+                    setTimeout(function() { $('#searchable-element_check').prop('checked', true); }, 1300)
                 }
             }
         }, {
@@ -1933,11 +1934,12 @@ Vvveb.Components.extend("_base", "html/selectinput", {
         }
     ],
     onChange: function(node, property, value) {
-        if (property.key == "searchable-element") {
-            if (value == true) {
-                $(node).attr("searchable-element", "");
-            } else { $(node).removeAttr("searchable-element"); }
-        } else if (property.key == "required") {
+        /*  if (property.key == "searchable-element") {
+              if (value == true) {
+                  $(node).attr("searchable-element", "");
+              } else { $(node).removeAttr("searchable-element"); }
+          } else */
+        if (property.key == "required") {
             if (value == true) {
                 $(node).prop("required", true);
             } else { $(node).removeAttr("required"); }
@@ -1981,10 +1983,11 @@ Vvveb.Components.extend("_base", "html/textareainput", {
     }, {
         name: "Searchable Element",
         key: "searchable-element",
+        htmlAttr: "searchable-element",
         inputtype: CheckboxInput,
         init: function(node) {
-            if (node.hasAttribute('searchable-element')) {
-                setTimeout(function() { $('#searchable-element_check').prop('checked', true); }, 2000)
+            if (node.hasAttribute('searchable-element') && node.getAttribute('searchable-element') == "true") {
+                setTimeout(function() { $('#searchable-element_check').prop('checked', true); }, 1300)
             }
         }
     }, {
@@ -1999,11 +2002,12 @@ Vvveb.Components.extend("_base", "html/textareainput", {
         }
     }],
     onChange: function(node, property, value) {
-        if (property.key == "searchable-element") {
-            if (value == true) {
-                $(node).attr("searchable-element", "");
-            } else { $(node).removeAttr("searchable-element"); }
-        } else if (property.key == "required") {
+        /* if (property.key == "searchable-element") {
+             if (value == true) {
+                 $(node).attr("searchable-element", "");
+             } else { $(node).removeAttr("searchable-element"); }
+         } else*/
+        if (property.key == "required") {
             if (value == true) {
                 $(node).prop("required", true);
             } else { $(node).removeAttr("required"); }
