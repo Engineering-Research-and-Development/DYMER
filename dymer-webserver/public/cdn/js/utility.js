@@ -3606,16 +3606,24 @@ function getFilterQueryType(filter) {
     return { addtoquery: addToQuery, filterquery: filterKey, value: filter_value, typeqr: filter_type, filter_cond: filter_condition, ismultiple: filter_multiple };
 }
 
+function opencloseDSAF(el) {
+    basefilter
+}
+
 function dymerSearch(options) {
     let _this = this;
     let defaultOptions = {
         "conditionQuery": "AND",
         "groupfilterclass": "span12 col-12",
         "addfreesearch": false,
+        "showFilterBtn": false
     }
     options = {...defaultOptions, ...options };
     this.init = function() {
         //   console.log('options', options);
+        if (options.showFilterBtn) {
+            $("#" + options.formid).append('<i class="fa fa-filter dsearchAdvFilterBtn" aria-hidden="true" title="advanced filter" onclick="' + options.objname + '.showFilter()"></i>');
+        }
 
         if (options.objname == undefined) {
             document.getElementById(options.formid).innerHTML = '<div class="alert alert-danger" role="alert">ERROR: objname param is Mandatory</div>';
@@ -3705,7 +3713,7 @@ function dymerSearch(options) {
             let idGen = new GeneratorId();
             let usePlaceholder = (myform.attr("useplaceholder") == "true") ? true : false;
             if (options.addfreesearch) {
-                let groupEl = $('<div class="grpfilter ' + options.groupfilterclass + '"><div><label class="control-label"> Search </label></div> </div>');
+                let groupEl = $('<div class="grpfilter ' + options.groupfilterclass + ' basefilter"><div><label class="control-label"> Search </label></div> </div>');
                 $(groupEl).attr('data-filterpos', -10);
                 $(groupEl).append('<input type="text" class="form-control col-12 span12" placeholder="Enter any term" name="data[_all]" searchable-override="_all" >');
                 myform_innerContainer.append(groupEl);
@@ -3799,11 +3807,15 @@ function dymerSearch(options) {
                   if (addMultiple == "true") {
                       basefilter = ' <i class="fa fa-plus filterSingRefresh" aria-hidden="true" title="add"  filter-relid="' + newId + '" filter-rel="' + filterRel + '"  filter-labeltext="' + additionalText + '" filter-label="' + filterLabel + '" filter-multiple="' + filterMultiple + '" onclick="manageDTagFilter( $(this),\'add\')"></i> ';
                   }*/
+
                 let groupEl = $('<div class="grpfilter ' + options.groupfilterclass + '"><div><label class="control-label">' + filterLabel + '</label></div>' + additionalText + ' </div>');
                 if (usePlaceholder)
                     groupEl = $('<div class="grpfilter ' + options.groupfilterclass + '">' + additionalText + ' </div>');
                 //  let ck = $('<div class="switch_container pull-right">' + basefilter + ' </div>');
                 $(groupEl).attr('data-filterpos', filterpos);
+                if (options.showFilterBtn) {
+                    $(groupEl).attr('style', "display: none;");
+                }
                 $(groupEl).append(singleEl);
                 myform_innerContainer.append(groupEl);
             });
@@ -3985,6 +3997,29 @@ function dymerSearch(options) {
             querycreator.bool.must.push(subquerycreator);
         //  console.log('querycreator', querycreator);
         switchQuery(querycreator);
+    }
+    this.showFilter = function() {
+        let myform = $("#" + options.formid + "");
+        let tp = 'base';
+        let btnAdvFilter = myform.children('.dsearchAdvFilterBtn');
+        if (btnAdvFilter.hasClass("active")) {
+            btnAdvFilter.removeClass('active');
+        } else {
+            btnAdvFilter.addClass('active');
+            tp = 'all';
+        }
+        switch (tp) {
+            case 'base':
+
+                myform.children('.grpfilter:not(.basefilter)').slideUp();
+                break;
+            case 'all':
+
+                myform.children('.grpfilter').slideDown();
+                break;
+            default:
+                break;
+        }
     }
     this.init();
 }
