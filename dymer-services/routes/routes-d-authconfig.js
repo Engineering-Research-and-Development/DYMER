@@ -122,6 +122,41 @@ router.get('/userinfo', (req, res) => {
                 // console.log('objuser', objuser);
                 return res.send(ret);
             }
+            if (authtype == "xauth") {
+                console.log("SESSIJA", req.session)
+
+                console.log("ISXAUTH")
+                var token = data.DYM;
+                if (token != undefined && token != "null" && token != null) {
+                    var decoded = JSON.parse(Buffer.from(token, 'base64').toString());
+                    objuser.email = decoded.User.email;
+                    objuser.id = decoded.User.id;
+                    objuser.extrainfo.emailAddress = decoded.User.email;
+                    if (decoded.hasOwnProperty("extrainfo")) {
+                        objuser.gid = decoded.extrainfo.groupId;
+                        //objuser.extrainfo = decoded.extrainfo;
+                        objuser.extrainfo = { ...decoded.extrainfo, ...objuser.extrainfo };
+                    }
+                    if (!(Object.entries(extradata).length === 0)) {
+                        objuser.extrainfo = { ...extradata, ...objuser.extrainfo };
+                    }
+
+                    //urs_gid = decoded.extrainfo.groupId;
+                    // if (decoded.extrainfo != undefined)
+                    //  objuser.extrainfo = decoded.extrainfo;
+                    decoded.User.roles.forEach(element => {
+                        objuser.roles.push(element);
+                    });
+                    objuser.username = decoded.User.username;
+                    objuser.extrainfo.token = decoded.access_token;
+                    objuser.extrainfo.expires = decoded.expires;
+                    objuser.extrainfo.userId = decoded.User.id;
+                }
+                ret.setMessages("User detail");
+                console.log("OBJUSER", objuser)
+                ret.setData(objuser);
+                return res.send(ret);
+            }
             if (authtype == "oidc") {
                 var urlIDM = el.prop.dymer.userInfoURL;
                 var token = data.DYMAT;
@@ -259,4 +294,159 @@ router.delete('/:id', util.checkIsAdmin, (req, res) => {
         }
     })
 });
+
+router.post('/login',
+
+    async function (req, res) {
+        var ret = new jsonResponse();
+        ret.setSuccess(false);
+        console.log('Login Request received');
+        let body = req.body;
+        let config;
+
+        // const hdymeruser = req.headers.dymeruser
+        // const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+        // console.log("DYMERUSERR", dymeruser);
+
+        const userCredentials = JSON.stringify({ name: body.name, password: body.password });
+
+        const loginHeaders = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        };
+
+        var queryFind = { host: req.headers.referer, active: true };
+        console.log("REFER in headers", req.headers.referer);
+        DymRule.find(queryFind).then((els) => {
+
+            if (els.length) {
+                config = els[0].prop;
+                console.log('el', config);
+                console.log("TOKENPR", config.tokenProvider)
+
+                axios.post(config.tokenProvider + config.accessTokenPath, userCredentials, loginHeaders)
+                    .then(token => {
+                        const getUserInfoHeaders = {
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-Auth-Token': token.headers['x-subject-token'],
+                                'X-Subject-Token': token.headers['x-subject-token']
+                            }
+                        };
+
+                        axios.get(config.tokenProvider + config.accessTokenPath, getUserInfoHeaders)
+                            .then(userInfo => {
+                                const getUserAssociatedRolesHeaders = {
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Accept': 'application/json',
+                                        'X-Auth-Token': token.headers['x-subject-token'],
+                                    }
+                                };
+
+                                axios.get(config.tokenProvider + '/v1/applications/' + config.clientId + '/users/' + userInfo.data.User.id + '/roles', getUserAssociatedRolesHeaders)
+                                
+                                    .then(userAssociatedRoles => {
+                                        let userRoles = userAssociatedRoles.data.role_user_assignments;
+                                        var userRoleNames = [];
+                                        if (userRoles != null) {
+                                            Promise.all(
+
+                                                userRoles.map(role => {
+                                                    return new Promise((resolve) => {
+                                                        axios.get(config.tokenProvider + '/v1/applications/' + config.clientId + '/roles/' + role.role_id, getUserAssociatedRolesHeaders)
+                                                            .then(user_role => {
+                                                                return new Promise(() => {
+                                                                    userRoleNames.push(user_role.data.role.name);
+                                                                    resolve()
+                                                                })
+                                                            }).catch(function (err) {
+                                                                console.log('err ars', err);
+                                                                ret.setMessages('User not allow to perform the action');
+                                                                return res.send(ret);
+                                                            })
+                                                    })
+                                                })
+                                            ).catch(function (err) {
+                                                console.log('err ars', err);
+                                                ret.setMessages('User not allow to perform the action');
+                                                return res.send(ret);
+                                            })
+                                                .then(() => {
+                                                    ret.setSuccess(true);
+                                                    ret.setMessages("Valid Credential!");
+                                                    userInfo.data.User['roles'] = userRoleNames;
+                                                    console.log("USERINFODATA", userInfo.data)
+
+                                                    const buff = Buffer.from(JSON.stringify(userInfo.data), 'utf-8');
+                                                    const base64UserInfo = buff.toString('base64');
+                                                    let response = { token: base64UserInfo }
+                                                    ret.setData
+                                                    ret.setData(response);
+                                                    // req.session.userId = userInfo.data.User.id;
+                                                    fetchCapTokens(userInfo.data, req);
+                                                    return res.send(ret);
+                                                })
+                                        }
+                                    }).catch(function (err) {
+                                        console.log('err ars', err);
+                                        ret.setMessages('User not allow to perform the action');
+                                        return res.send(ret);
+                                    })
+                            }).catch(function (err) {
+                                console.log('err ars', err);
+                                ret.setMessages('Invalid token');
+                                return res.send(ret);
+                            })
+                    }).catch(function (err) {
+                        console.log('err ars', err);
+                        ret.setMessages('Invalid grant: user credentials are invalid');
+                        return res.send(ret);
+
+                    })
+            }
+        });
+    });
+
+
+
+router.delete('/logout',
+    function (req, res) {
+        console.log("Logut called")
+        var ret = new jsonResponse();
+        ret.setSuccess(false);
+        console.log('Logout Request received');
+        let token = req.headers['x-auth-token'];
+        console.log('headerToken', token)
+        xauth.revokeToken(token).then(function (ars) {
+            console.log('User Information', ars);
+
+            let statusCode = ars;
+            if (statusCode === 204)
+                ret.setSuccess(true);
+            ret.setMessages('Succefully logout.')
+            ret.setExtraData(statusCode)
+            return res.send(ret);
+
+        })
+            .catch(function (err) {
+                console.log('err ars', err);
+                ret.setMessages('Invalid grant: Auth Token not found');
+                return res.send(ret);
+            });
+
+    })
+
+
+function fetchCapTokens(authToken, req){
+
+    console.log("FUNKCIJA", authToken);
+    // req.session.kurac = 'kurac'
+    // console.log("SESIJAJEBENA", req.session)
+
+    
+}
 module.exports = router;
