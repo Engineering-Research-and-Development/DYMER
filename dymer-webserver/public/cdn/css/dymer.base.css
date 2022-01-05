@@ -98,20 +98,37 @@
 
 .listAddEntityicon {
     position: absolute;
-    font-size: 13px;
-    left: -24px;
-    top: 6px;
+    font-size: 16px;
+    left: -17px;
+    top: 4px;
 }
 
 .listAddEntityli {
     position: relative;
     list-style: none;
-    color: #7d7d7c;
+    color: rgba(255, 255, 255, 0.8);
 }
+
+.listAddEntityli i {
+    color: rgb(255 255 255 / 31%);
+}
+
+#cont-addentity ul {
+    margin: auto;
+}
+
+/* #cont-addentity ul li:hover> i{
+    color: #ffffff !important;
+} */
 
 .listAddEntityli:hover {
     cursor: pointer;
-    color: #2d72be !important;
+    color: #ffffff !important;
+}
+
+.listAddEntityli:hover>i {
+    cursor: pointer;
+    color: #ffffff !important;
 }
 
 .rotandflip {
@@ -330,6 +347,20 @@ input:checked+.slider:before {
     border-color: #adadad;
     border-radius: unset;
     border-left: navajowhite;
+}
+
+.show .dropdown-toggle::after {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: .255em;
+    vertical-align: .255em;
+    content: "";
+    border-top: .3em solid;
+    border-right: .3em solid transparent;
+    border-bottom: 0;
+    border-left: .3em solid transparent;
+    transform: rotate(180deg);
 }
 
 .bootstrap-tagsinput {
@@ -732,3 +763,24 @@ table.dataTable tfoot td {
 .dymerSearch .control-label:first-letter {
     text-transform: uppercase;
 }
+
+.dymerSearch .dsearchAdvFilterBtn {
+    float: right;
+    color: #757575;
+    cursor: pointer;
+    position: absolute;
+    right: 24px;
+    top: 10px;
+}
+
+@media only screen and (max-width: 992px) {
+    .listAddEntityli {
+        visibility: hidden;
+    }
+    .listAddEntityicon {
+        font-size: 20px;
+        left: -23px;
+        top: 4px;
+        visibility: visible;
+        padding-left: unset;
+    }

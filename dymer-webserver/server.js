@@ -48,6 +48,14 @@ app.use(session({
 
 var recoverForms = require("./routes/formfiles");
 
+/*
+@Marko Change starts here
+*/
+var attachmentRoutes = require('./routes/attachment');
+var metricsRoutes = require('./routes/metrics');
+/*
+@Marko chagne end here
+*/
 
 var publicdemoDonwlonad = require("./routes/demodownloads");
 
@@ -311,6 +319,17 @@ app.post(util.getContextPath('webserver') + "/api/test/", loadUserInfo, (req, re
     //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
 });
 //app.use(util.getContextPath('webserver') + "/api/auth/", dauthRoutes);
+
+/*
+@Marko Change starts here
+*/
+app.use(util.getContextPath('webserver') + "/api/xauth/login", dserviceRoutes);
+app.use(util.getContextPath('webserver') + "/api/xauth/logout", loadUserInfo, dserviceRoutes);
+app.use(util.getContextPath('webserver') + "/api/attachment/", attachmentRoutes);
+app.use(util.getContextPath('webserver') + "/api/metrics/", metricsRoutes);
+/*
+@Marko chagne end here
+*/
 
 const parseToken = raw => {
     if (!raw || typeof raw !== 'string') return null;

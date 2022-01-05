@@ -93,6 +93,47 @@
                         </div>
                     </div>
                 </form>
+
+
+                <h4>X-AUTH</h4>
+                <form name="formconfigXAUTH" id="formconfigXAUTH">
+                    <input type="hidden" ng-model="configXAUTH._id">
+                    <input type="hidden" ng-model="configXAUTH.authtype">
+                    <div class="row">
+                        <div class=" col-12">
+                            <label class="text-info"> Request url </label>
+                            <div class="text-info pull-right">
+                                <input type="checkbox" ng-model="configXAUTH.active"> Enabled
+                            </div>
+                            <input type="text" class="form-control col-12" ng-model="configXAUTH.host" required>
+
+                            <label class="text-info"> X-Auth Name </label>
+                            <input type="text" class="form-control col-12" ng-model="configXAUTH.prop.xauthname">
+                        </div>
+
+                    </div><br>
+                    <h6 class="text-info text-center">X-Auth Config</h6>
+                    <div class="row">
+                        <div class=" col-12">
+                            <label class="text-info"> Token provider url </label>
+                            <input type="text" class="form-control col-12" ng-model="configXAUTH.prop.tokenProvider" required>
+                            <label class="text-info"> Access token path</label>
+                            <input type="text" class="form-control col-12" ng-model="configXAUTH.prop.accessTokenPath">
+                            <label class="text-info"> Client ID</label>
+                            <input type="text" class="form-control col-12" ng-model="configXAUTH.prop.clientId">
+                        
+                        </div>
+                    </div>
+                    <div class="row text-right ">
+                        <div class="col-12 ">
+                            <span class="btn btn-info " ng-show="!configXAUTH._id" ng-click="formconfigXAUTH.$valid && saveConfigAuthentication(configXAUTH)">Save</span>
+                            <span class="btn btn-warning " ng-show="configXAUTH._id" ng-click="formconfigXAUTH.$valid && saveConfigAuthentication(configXAUTH)">Update</span>
+                            <span class="btn btn-danger " ng-show="configXAUTH._id" ng-click="configXAUTH = {}">Cancel</span>
+                        </div>
+                    </div>
+                </form>
+
+
                 <!--<h4>Oauth 2 </h4>
                 <div class="row">
                     <div class=" col-12">

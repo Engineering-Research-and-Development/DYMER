@@ -16,60 +16,60 @@ function resetDymerStart() {
 const kmsconfig = {
     cdn: cdnurl,
     endpoints: [{
-            type: "form",
-            endpoint: serverUrl + "/api/forms/api/v1/form",
-            post: {
-                create: ""
-            }
-        },
-        {
-            type: "entity",
-            endpoint: serverUrl + "/api/entities/api/v1/entity",
-            post: {
-                search: "/_search",
-                create: ""
-            },
-            get: {
-                getbyid: "/:id"
-            },
-            put: {
-                id: "/:id"
-            },
-            patch: {
-                id: "/:id"
-            },
-            delete: {
-                id: "/:id"
-            }
-        },
-        {
-            type: "template",
-            endpoint: serverUrl + "/api/templates/api/v1/template"
-        },
-        {
-            type: "order",
-            endpoint: serverUrl + "/api/dservice/api/v1/eaggregation",
-            post: {
-                search: "/_search",
-                create: "/addToCart",
-                checkout: "/checkout",
-                remove: "/removeFromCart"
-            },
-            get: {
-                getbyid: "/:id"
-            },
-            put: {
-                id: "/checkout/:id"
-            },
-            delete: {
-                id: "/:id"
-            }
+        type: "form",
+        endpoint: serverUrl + "/api/forms/api/v1/form",
+        post: {
+            create: ""
         }
+    },
+    {
+        type: "entity",
+        endpoint: serverUrl + "/api/entities/api/v1/entity",
+        post: {
+            search: "/_search",
+            create: ""
+        },
+        get: {
+            getbyid: "/:id"
+        },
+        put: {
+            id: "/:id"
+        },
+        patch: {
+            id: "/:id"
+        },
+        delete: {
+            id: "/:id"
+        }
+    },
+    {
+        type: "template",
+        endpoint: serverUrl + "/api/templates/api/v1/template"
+    },
+    {
+        type: "order",
+        endpoint: serverUrl + "/api/dservice/api/v1/eaggregation",
+        post: {
+            search: "/_search",
+            create: "/addToCart",
+            checkout: "/checkout",
+            remove: "/removeFromCart"
+        },
+        get: {
+            getbyid: "/:id"
+        },
+        put: {
+            id: "/checkout/:id"
+        },
+        delete: {
+            id: "/:id"
+        }
+    }
     ]
 };
 
 function setCheck(senderForm) {
-    $(senderForm + ' [type="checkbox"] ').each(function() {
+    $(senderForm + ' [type="checkbox"] ').each(function () {
         checkvalue($(this));
     });
     return;
@@ -116,15 +116,15 @@ function useGritter(title, text) {
 function useAlert(id, title_msg, msg_text, success) {
     var el = $(id + ' .alertaction');
     el.removeClass("alert-success alert-danger");
-    (success) ? el.addClass("alert-success"): el.addClass("alert-danger");
-    (!title_msg) ? el.find('.msg_title').hide(): el.find('.msg_title').text(title_msg).show();
-    (!msg_text) ? el.find('.msg_txt').hide(): el.find('.msg_txt').text(msg_text).show();
+    (success) ? el.addClass("alert-success") : el.addClass("alert-danger");
+    (!title_msg) ? el.find('.msg_title').hide() : el.find('.msg_title').text(title_msg).show();
+    (!msg_text) ? el.find('.msg_txt').hide() : el.find('.msg_txt').text(msg_text).show();
     el.slideDown();
 }
 
 function check_required(senderForm) {
     var valid = true;
-    $(senderForm + " [required]").each(function() {
+    $(senderForm + " [required]").each(function () {
         var val = ($(this).val()).trim();
         if (!(val.length > 0)) {
             $(this).addClass("error_border");
@@ -137,7 +137,7 @@ function check_required(senderForm) {
 
 function check_validation(senderForm) {
     var valid = true;
-    $(senderForm + " [validation-unique]").each(function() {
+    $(senderForm + " [validation-unique]").each(function () {
         var val = ($(this).val()).trim();
         if (!(val.length > 0)) {
             $(this).addClass("error_border");
@@ -160,7 +160,7 @@ function checkSession() { //active - warned -expired
             return true;
     } catch (err) {
         console.error(err);
-    } finally {}
+    } finally { }
     return false;
 }
 
@@ -177,7 +177,7 @@ function appendFormdata(FormData, data, name) {
     //console.log("typeof data", typeof data, FormData, data, name);
     name = name || '';
     if (typeof data === 'object') {
-        $.each(data, function(index, value) {
+        $.each(data, function (index, value) {
             if (name == '') {
                 appendFormdata(FormData, value, index);
             } else {
@@ -222,7 +222,7 @@ function cloneRepeatable(elToClone) {
     ark = ark.split("@@");
     var matchname = ark[0];
     ark.shift();
-    $.each(ark, function(i, val) {
+    $.each(ark, function (i, val) {
         var cast = parseInt(val);
         if (!isNaN(cast)) {
             lastIndex = i;
@@ -233,14 +233,14 @@ function cloneRepeatable(elToClone) {
         matchname += '[' + ark[index] + ']';
     }
     (newGroup).attr("grp", matchname);
-    $.each(newGroup.find('[name^="data["]'), function(index, value) {
+    $.each(newGroup.find('[name^="data["]'), function (index, value) {
         var name = $(this).attr("name");
         var ark = replaceAll(name, '[', '@@');
         ark = replaceAll(ark, ']', '');
         ark = ark.split("@@");
         var newName = ark[0];
         ark.shift();
-        $.each(ark, function(i, val) {
+        $.each(ark, function (i, val) {
             var cast = parseInt(val);
             if (!isNaN(cast))
                 ark[i] = cast + 1;
@@ -273,7 +273,7 @@ function cloneRepeatable(elToClone) {
     newGroup.find('[fileid][attachref]').remove();
     newGroup.find('div[id^="contattach_data"]').remove();
     newGroup.insertAfter(elToClone.closest('.repeatable'));
-    setTimeout(function() {
+    setTimeout(function () {
         reindexRepeatable(matchname);
     }, 2000);
 }
@@ -281,22 +281,22 @@ function cloneRepeatable(elToClone) {
 function removeRepeatable(elToClone) {
     var toRem = elToClone.closest('.repeatable');
     var matchname = (toRem).attr('grp');
-    $(toRem.find("[fileid]")).each(function() {
+    $(toRem.find("[fileid]")).each(function () {
         appendTodeleteId($(this).attr('fileid'), $(this).attr('attachref'));
     });
-    $(toRem.find('[name^="data[relation]"]')).each(function() {
+    $(toRem.find('[name^="data[relation]"]')).each(function () {
         relChngd($(this));
     });
     (toRem).remove();
-    setTimeout(function() {
+    setTimeout(function () {
         reindexRepeatable(matchname);
     }, 2000);
 }
 
 function reindexRepeatable(matchname) {
-    $.each($("#entityForm").find('[grp="' + matchname + '"].repeatable '), function(index, value) {
+    $.each($("#entityForm").find('[grp="' + matchname + '"].repeatable '), function (index, value) {
         var act = $(this);
-        $.each((act).find('[name^="' + matchname + '"]'), function(index2, value2) {
+        $.each((act).find('[name^="' + matchname + '"]'), function (index2, value2) {
             var oldname = $(this).attr('name');
             var endname = (oldname).replace(matchname, '');
             var f1 = (endname.indexOf("]")) + 1;
@@ -309,7 +309,7 @@ function reindexRepeatable(matchname) {
                 }
             $(this).attr('name', updtname);
         });
-        $.each((act).find('[attachref^="' + matchname + '"]'), function(index2, value2) {
+        $.each((act).find('[attachref^="' + matchname + '"]'), function (index2, value2) {
             var oldname = $(this).attr('attachref');
             var endname = (oldname).replace(matchname, '');
             var f1 = (endname.indexOf("]")) + 1;
@@ -322,7 +322,7 @@ function reindexRepeatable(matchname) {
                 (oldclik).attr('onclick', newclick);
             }
         });
-        $.each((act).find('[id^="contattach_' + matchname + '"]'), function(index2, value2) {
+        $.each((act).find('[id^="contattach_' + matchname + '"]'), function (index2, value2) {
             var endname = ($(this).attr('id')).replace(matchname, '');
             var f1 = (endname.indexOf("]")) + 1;
             var res = endname.substring(f1);
@@ -336,9 +336,9 @@ function replaceAll(str, cerca, sostituisci) {
     return str.split(cerca).join(sostituisci);
 }
 //----------START Dynamic loader---------------
-var removeTempImport = function(attr) {
-    return new Promise(function(resolve, reject) {
-        document.querySelectorAll(`[${attr}]`).forEach(function(e, i) {
+var removeTempImport = function (attr) {
+    return new Promise(function (resolve, reject) {
+        document.querySelectorAll(`[${attr}]`).forEach(function (e, i) {
             var panel_link = e.getAttribute(attr);
             if (panel_link != actualTemplateType)
                 e.parentNode.removeChild(e);
@@ -396,12 +396,12 @@ class ElTemplate {
         var ret = ajax_temp_call.send();
         //	var appendfiles = new Array();
         if (ret.success) {
-            (ret.data).forEach(function(el, i) {
+            (ret.data).forEach(function (el, i) {
                 var dom_to_render = undefined;
                 var t_ar = [];
                 var indport = sourceUrl + "/";
                 //var indport = sourceUrl.substring(0, sourceUrl.indexOf('api'));
-                (el.files).forEach(function(fl, l) {
+                (el.files).forEach(function (fl, l) {
                     //dom_to_render = (fl.mimetype == "text/html") ? fl.path : dom_to_render;
                     //MArco da valutare
                     var lkpath = indport + "content/" + fl._id;
@@ -467,7 +467,7 @@ function onloadFiles(arr) {
             script.setAttribute("type", "text/css");
         }
         if (obj.extrattr != undefined) {
-            (obj.extrattr).forEach(function(af, j) {
+            (obj.extrattr).forEach(function (af, j) {
                 script.setAttribute(af.key, af.value);
             });
         }
@@ -480,7 +480,7 @@ function onloadFiles(arr) {
             return onloadFiles(arr);
         }
         if (obj.useonload) {
-            script.onload = function() {
+            script.onload = function () {
                 if (obj.callback != null) {
                     obj.callback();
                     //window[obj.callback];
@@ -540,7 +540,7 @@ function loadRequireForm() {
     if (!(ckaddimport.indexOf(group) > -1))
         arr.push(new Elfile(domtype, filename, callback, useonload, group));
     filename = kmsconfig.cdn + "js/ajaxcall.js";
-    var mycallback = function() { // Method which will display type of Animal
+    var mycallback = function () { // Method which will display type of Animal
         try {
             /*	config_postForm = {
                     url: serviceFormUrl,
@@ -598,6 +598,20 @@ const retriveVarCookie = (key) => {
     return null;
 };
 
+function getUserLocation() {
+
+    let userLocation = localStorage.getItem("userLocation");
+    if (userLocation == null) {
+        userLocation = "";
+    }
+
+    return userLocation;
+}
+
+/*
+@Marko chagne end here
+*/
+
 function setbaseEntityConfig(target) {
     var ownerUid = 0;
     var ownerGid = 0;
@@ -616,7 +630,7 @@ var listRelationForm = {};
 function hookReleationForm(item) {
     var loadedList = {};
     listRelationForm = loadedList;
-    $('.senderForm [data-torelation]').each(function(index) {
+    $('.senderForm [data-torelation]').each(function (index) {
         var rel = $(this).attr('data-torelation');
         if (loadedList[rel] == undefined) {
             var datapost = {
@@ -628,11 +642,11 @@ function hookReleationForm(item) {
     });
 }
 
-const hookReleationForm_Promise = function(item) {
-    return new Promise(function(resolve, reject) {
+const hookReleationForm_Promise = function (item) {
+    return new Promise(function (resolve, reject) {
         var loadedList = {};
         listRelationForm = loadedList;
-        $('.senderForm [data-torelation]').each(async function(index) {
+        $('.senderForm [data-torelation]').each(async function (index) {
             var rel = $(this).attr('data-torelation');
             if (loadedList[rel] == undefined) {
                 var datapost = {
@@ -648,7 +662,7 @@ const hookReleationForm_Promise = function(item) {
 
 function populateHookRelation(x, y, z, w, k, a, b, arObj2, rel) {
     listRelationForm[rel] = arObj2.data;
-    $('.senderForm [data-torelation="' + rel + '"]').each(function(inde) {
+    $('.senderForm [data-torelation="' + rel + '"]').each(function (inde) {
         var esxtraAttr = "";
         var isRequired = $(this).attr('required');
         var optionsText = $(this).attr('data-optiontext');
@@ -685,15 +699,15 @@ function populateHookRelation(x, y, z, w, k, a, b, arObj2, rel) {
         sel.append($("<option>").attr('value', "").text(""));
         if (typeof optionsText !== typeof undefined && optionsText !== false) {
             var tempArrList = [];
-            $.each(listRelationForm[rel], function(ind, value) {
+            $.each(listRelationForm[rel], function (ind, value) {
                 tempArrList.push({ "id": value._id, "txt": value[optionsText] });
             });
             var orderdList = sortByKeyAsc(tempArrList, "txt");
-            $.each(orderdList, function(ind, value) {
+            $.each(orderdList, function (ind, value) {
                 sel.append($("<option>").attr('value', value.id).text(value.txt));
             });
         } else {
-            $.each(listRelationForm[rel], function(ind, value) {
+            $.each(listRelationForm[rel], function (ind, value) {
                 sel.append($("<option>").attr('value', value._id).text(value.title));
             });
         }
@@ -701,7 +715,7 @@ function populateHookRelation(x, y, z, w, k, a, b, arObj2, rel) {
 }
 
 function sortByKeyAsc(array, key) {
-    return array.sort(function(a, b) {
+    return array.sort(function (a, b) {
         var x = a[key];
         var y = b[key];
         return ((x < y) ? -1 : ((x > y) ? 1 : 0));
@@ -731,8 +745,8 @@ function loadFilterModel(index, tagFilterObj) {
         ajax_temp_call.addparams(datapost);
     var ret = ajax_temp_call.send();
     if (ret.success) {
-        (ret.data).forEach(function(item, i) {
-            (item.files).forEach(function(fl, i) {
+        (ret.data).forEach(function (item, i) {
+            (item.files).forEach(function (fl, i) {
                 if (fl.contentType == "text/html") {
                     dom_to_render = "content/" + index + "/" + fl._id + "?dmts=2";
                 }
@@ -757,7 +771,7 @@ function loadFilterModel(index, tagFilterObj) {
         $('#d_entityfilter').append(searchIndex);
         var idGen = new GeneratorId();
         let usePlaceholder = ($('#d_entityfilter').attr("useplaceholder") == "true") ? true : false;
-        $(itemValue).find("[searchable-label]").each(function() {
+        $(itemValue).find("[searchable-label]").each(function () {
             var newId = idGen.getId();
             let filterpos = ($(this).data('filterpos') == undefined) ? 0 : $(this).data('filterpos');
             var singleEl = "";
@@ -774,7 +788,7 @@ function loadFilterModel(index, tagFilterObj) {
                 var $sel = $('<select class="form-control span12 col-12"  searchable-multiple="' + ismulti + '"  searchable-override="data[relationdymer][' + rel + ']" searchable="" searchable-label="' + $(this).attr('searchable-label') + '" name="data[relation][' + rel + '][' + inde + '][to]"  ' + esxtraAttr + '>').appendTo($(this));
                 if (usePlaceholder)
                     $sel.append($('<option value="" disabled selected>').attr('value', "").text($(this).attr('searchable-label')));
-                $.each(listToselect.data, function(ind, value) {
+                $.each(listToselect.data, function (ind, value) {
                     $sel.append($("<option>").attr('value', value._id).text(value.title));
                 });
                 $sel.attr("filter-id", newId);
@@ -819,7 +833,7 @@ function loadFilterModel(index, tagFilterObj) {
             e.stopPropagation();
         });
         var $wrapper = $('#d_entityfilter');
-        $wrapper.find('.grpfilter').sort(function(a, b) {
+        $wrapper.find('.grpfilter').sort(function (a, b) {
             return +$(a).data('filterpos') - +$(b).data('filterpos');
         }).appendTo($wrapper);
     }
@@ -855,7 +869,7 @@ function loadHtmlForm(sourceUrl, target, datapost, delaytime, action) {
     }
     if (action == "append")
         $(target).append(ret);
-    setTimeout(function() {
+    setTimeout(function () {
         //  hookReleationForm();
         hookReleationForm_Promise();
         setbaseEntityConfig(target);
@@ -864,7 +878,7 @@ function loadHtmlForm(sourceUrl, target, datapost, delaytime, action) {
 
 function getendpoint(type) {
     var ret = "";
-    (kmsconfig.endpoints).forEach(function(item, i) {
+    (kmsconfig.endpoints).forEach(function (item, i) {
         if (item.type == type)
             ret = item.endpoint;
     });
@@ -874,7 +888,7 @@ function getendpoint(type) {
 function getendpointnested(type, mod) {
     var ret = "";
     var types = type.split(".");
-    (kmsconfig.endpoints).forEach(function(item, i) {
+    (kmsconfig.endpoints).forEach(function (item, i) {
         if (item.type == types[0]) {
             ret = item.endpoint;
             if (types.length > 1) {
@@ -893,7 +907,7 @@ function loadModelListToModal(target, index, action) {
         '<div class="modal-content">' +
         '<div class="modal-header">' +
         '<button type="button" class="close" onclick="closeDymerModal(\'entityAdd\')" style="float: right;display: block;position: relative;"><span aria-hidden="true">&times;</span></button>' +
-        '<h4 class="modal-title" style="float: left;position: absolute;    margin-top: 0;">Add Entity</h4>' +
+        '<h4 class="modal-title" style="float: left;position: absolute;    margin-top: 0;"></h4>' +
         '</div>' +
         '<div class="modal-body" id="cont-module-addentity">' +
         '</div>' +
@@ -933,14 +947,14 @@ function loadModelListToModal(target, index, action) {
     var listToLoad = [];
     if (ret.success) {
         listToLoad = ret.data;
-        (ret.data).forEach(function(item, i) {
+        (ret.data).forEach(function (item, i) {
             var typeIndex = item.instance[0]["_index"];
             var dom_to_render = "content/" + typeIndex + "/";
             var old_dupd = undefined;
             listLoadedAdm[item._id] = {
                 tftemp: []
             };
-            (item.files).forEach(function(fl, i) {
+            (item.files).forEach(function (fl, i) {
                 var dupd = new Date(fl.uploadDate);
                 if (fl.contentType == "text/html") {
                     if (old_dupd == undefined) {
@@ -996,7 +1010,7 @@ function loadFormListInModal(sourceUrl, target, datapost, action) {
         '<div class="modal-content">' +
         '<div class="modal-header">' +
         '<button type="button" class="close" onclick="closeDymerModal(\'entityAdd\')"  style="float: right;display: block;position: relative;"><span aria-hidden="true">&times;</span></button>' +
-        '<h4 class="modal-title" style="float: left;position: absolute;    margin-top: 0;">Add Entity</h4>' +
+        '<h4 class="modal-title" style="float: left;position: absolute;    margin-top: 0;"></h4>' +
         '</div>' +
         '<div class="modal-body" id="cont-module-addentity">' +
         '</div>' +
@@ -1026,14 +1040,14 @@ function loadFormListInModal(sourceUrl, target, datapost, action) {
     var listToLoad = [];
     if (ret.success) {
         listToLoad = ret.data;
-        (ret.data).forEach(function(item, i) {
+        (ret.data).forEach(function (item, i) {
             console.log("itemitemitem", item);
             var dom_to_render = "content/";
             var old_dupd = undefined;
             listLoadedAdm[item._id] = {
                 tftemp: []
             };
-            (item.files).forEach(function(fl, i) {
+            (item.files).forEach(function (fl, i) {
                 var dupd = new Date(fl.uploadDate);
                 if (fl.contentType == "text/html") {
                     if (old_dupd == undefined) {
@@ -1096,13 +1110,13 @@ function loadFormList(sourceUrl, target, datapost, action) {
     var listToLoad = [];
     if (ret.success) {
         listToLoad = ret.data;
-        (ret.data).forEach(function(item, i) {
+        (ret.data).forEach(function (item, i) {
             var dom_to_render = "content/";
             var old_dupd = undefined;
             listLoadedAdm[item._id] = {
                 tftemp: []
             };
-            (item.files).forEach(function(fl, i) {
+            (item.files).forEach(function (fl, i) {
                 var dupd = new Date(fl.uploadDate);
                 if (fl.contentType == "text/html") {
                     if (old_dupd == undefined) {
@@ -1143,9 +1157,9 @@ function loadFormList(sourceUrl, target, datapost, action) {
 }
 
 function ldFormFiles(id) {
-    removeTempImport('tftemp').then(function() {
+    removeTempImport('tftemp').then(function () {
         onloadFiles((listLoadedAdm[id].tftemp).slice());
-        setTimeout(function() {
+        setTimeout(function () {
             if (typeof afterLoadForm !== "undefined") {
                 afterLoadForm();
             }
@@ -1296,7 +1310,7 @@ function loadRequireView() {
     arr.push(new Elfile(domtype, filename, mycallback, useonload));
     filename = kmsconfig.cdn + "js/handlebarshook.js";
 
-    var mycallback = function() { // Method which will display type of Animal
+    var mycallback = function () { // Method which will display type of Animal
         document.cookie = "DYMisi=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
         var temp_config_call = {
             url: serverUrl + "/api2/retriveinfo",
@@ -1441,7 +1455,7 @@ function loadRequireMap() {
     filename = kmsconfig.cdn + "js/handlebarshook.js";
     arr.push(new Elfile(domtype, filename, callback, useonload));
     filename = kmsconfig.cdn + "leaflet/plugin/markercluster/leaflet.markercluster.js";;
-    var mycallback = function() { // Method which will display type of Animal
+    var mycallback = function () { // Method which will display type of Animal
         var temp_config_call = {
             url: serverUrl + "/api2/retriveinfo",
             type: 'POST',
@@ -1463,14 +1477,14 @@ function loadRequireMap() {
 //-----------------SART ENTITY--------------
 
 function resetMapFiltered() {
-    reloadMarker(undefined).then(function(ars) {
+    reloadMarker(undefined).then(function (ars) {
         // populateMap(ars);
         //populateDT(kmsdataset);
     });
 }
 
 function getEntities2(el, senderForm, callbackfunction, callerForm, useGritter) {
-    reloadMarker(el).then(function(ars) {
+    reloadMarker(el).then(function (ars) {
         populateMap(ars);
         //populateDT(kmsdataset);
     });
@@ -1504,9 +1518,9 @@ function searchEntity(sourceUrl, target, datapost, action) {
     ajaxcall_getEntities.addcontainer_ids(senderForm);
     var ret = ajaxcall_getEntities.send();
     if (ret.success) {
-        (ret.data).forEach(function(item, i) {
+        (ret.data).forEach(function (item, i) {
             var dom_to_render = undefined;
-            (item.files).forEach(function(fl, i) {
+            (item.files).forEach(function (fl, i) {
                 dom_to_render = (fl.mimetype == "text/html") ? fl.path : dom_to_render;
             });
             dom_to_render = replaceAll(dom_to_render, '\\', '/');
@@ -1748,10 +1762,10 @@ function checkSatus(actualItem, hookCheckSatusconf) {
     switch (actualItem.properties.status) {
         case '1':
             {
-                if (hookCheckSatusconf == undefined) {} else {
+                if (hookCheckSatusconf == undefined) { } else {
                     if (hookCheckSatusconf.allstatus == true) {
                         statusDiv = 'PUBLISHED';
-                        if (hookCheckSatusconf.style == 'text') {} else
+                        if (hookCheckSatusconf.style == 'text') { } else
                             statusDiv = '<div class="span12 col-12 alert alert-info" style="text-align:center" > <b>' + statusDiv + '</b> </div>';
                     }
                 }
@@ -1763,7 +1777,7 @@ function checkSatus(actualItem, hookCheckSatusconf) {
                 if (hookCheckSatusconf == undefined) {
                     statusDiv = '<div class="span12 col-12 alert alert-info" style="text-align:center" > <b>' + statusDiv + '</b> </div>';
                 } else {
-                    if (hookCheckSatusconf.style == 'text') {} else
+                    if (hookCheckSatusconf.style == 'text') { } else
                         statusDiv = '<div class="span12 col-12 alert alert-info" style="text-align:center" > <b>' + statusDiv + '</b> </div>';
                 }
                 break;
@@ -1774,7 +1788,7 @@ function checkSatus(actualItem, hookCheckSatusconf) {
                 if (hookCheckSatusconf == undefined) {
                     statusDiv = '<div class="span12 col-12 alert alert-info" style="text-align:center"> <b>' + statusDiv + '</b> </div>';
                 } else {
-                    if (hookCheckSatusconf.style == 'text') {} else
+                    if (hookCheckSatusconf.style == 'text') { } else
                         statusDiv = '<div class="span12 col-12 alert alert-info" style="text-align:center"> <b>' + statusDiv + '</b> </div>';
                 }
                 break;
@@ -1812,7 +1826,7 @@ function kmsrenderEl(ar, rendertype) {
     $('body').showLoader();
     var target = kmsconf.target;
     actualTemplateType = rendertype;
-    removeTempImport('tftemp').then(function() {
+    removeTempImport('tftemp').then(function () {
         var action = ""; // target[rendertype].action;
         var targetId = "#noexsist"; //target[rendertype].id;
         var tid = "mll";
@@ -1837,7 +1851,7 @@ function kmsrenderEl(ar, rendertype) {
             $('body').hideLoader();
             return;
         }
-        (ar).forEach(function(item, i) {
+        (ar).forEach(function (item, i) {
             // item.cdnpath = baseurlcd;
             var tmpl = item._index + "@" + item._type;
             types.indexOf(tmpl) === -1 ? types.push(tmpl) : "";
@@ -1872,18 +1886,18 @@ function kmsrenderEl(ar, rendertype) {
                         var stone = Handlebars.compile(mytemplate)(itemToEdit);
                         $(targetId)[action](stone);
                     } else
-                        (ret.data).forEach(function(item, i) {
+                        (ret.data).forEach(function (item, i) {
                             var model_form = "";
-                            (item.files).forEach(function(fl, i) {
+                            (item.files).forEach(function (fl, i) {
                                 if (fl.contentType == "text/html") {
                                     model_form = fl.data;
                                     var stone = '<h1 class="text-info text-left">No template exists</h1> ' + model_form;;
                                     $(targetId)[action](stone);
                                     $(targetId).multidisable();
-                                    setTimeout(function() {
+                                    setTimeout(function () {
                                         duplicateRepeatable(targetId, itemToEdit);
                                     }, 1000);
-                                    setTimeout(function() {
+                                    setTimeout(function () {
                                         populateFormEdit(targetId, itemToEdit, undefined, undefined, itemToEdit);
                                         $(targetId).multidisable();
 
@@ -1904,7 +1918,7 @@ function kmsrenderEl(ar, rendertype) {
             if (action == "html")
                 $(targetId).empty();
             action = "append";
-            (ar).forEach(function(item, i) {
+            (ar).forEach(function (item, i) {
                 var tmpl = item._index + "@" + item._type;
                 var typetemplateToRender = 'fullcontent'; // (rendertype == 'fullcontent') ? 'fullcontent' : kmsconf.viewtype;
                 typetemplateToRender = 'teaser'; // (rendertype == 'fullcontent') ? 'fullcontent' : kmsconf.viewtype;
@@ -1917,7 +1931,7 @@ function kmsrenderEl(ar, rendertype) {
             });
             $('body').hideLoader();
         }
-    }).then(function(string) {
+    }).then(function (string) {
         dymerPaginatorSetReset()
     });
 }
@@ -1937,9 +1951,9 @@ function getModelEntity(el) {
         ajax_temp_call.addparams(datapost);
     var ret = ajax_temp_call.send();
     if (ret.success) {
-        (ret.data).forEach(function(item, i) {
+        (ret.data).forEach(function (item, i) {
             var model_form = "";
-            (item.files).forEach(function(fl, i) {
+            (item.files).forEach(function (fl, i) {
                 if (fl.contentType == "text/html") {
                     model_form = fl.data;
                     return model_form;
@@ -1954,7 +1968,7 @@ function getModelEntity(el) {
 async function editEntity(id) {
     var itemToEdit = actualItem;
     if (actualTemplateType == "teaserlist" || actualTemplateType == "datatable") {
-        (kmsdataset).forEach(function(el, i) {
+        (kmsdataset).forEach(function (el, i) {
             if (el._id == id) {
                 itemToEdit = el;
             }
@@ -2012,16 +2026,16 @@ async function editEntity(id) {
             $('#entityEdit .onputform').hide();
         } else {
             $('#entityEdit .onputform').show();
-            $('#entityEdit').on('hidden.bs.modal', function() {
+            $('#entityEdit').on('hidden.bs.modal', function () {
                 removeTempImport("tftemp");
                 $('#entityEdit').unbind('hidden.bs.modal');
             });
-            (ret.data).forEach(async function(item, i) {
+            (ret.data).forEach(async function (item, i) {
                 listLoadedAdm[item._id] = {
                     tftemp: []
                 };
                 var model_form = "";
-                (item.files).forEach(function(fl, i) {
+                (item.files).forEach(function (fl, i) {
                     if (fl.contentType == "text/html") {
                         model_form = fl.data;
                         // dom_to_render = (fl.mimetype == "text/html") ? fl.path : dom_to_render;
@@ -2055,7 +2069,7 @@ async function editEntity(id) {
                 // duplicateRepeatable('#entityEdit', itemToEdit);
                 // }, 10000);
                 var itemToEdit_ = Object.assign({}, itemToEdit);
-                setTimeout(function() {
+                setTimeout(function () {
                     $('#entityEdit .selectpicker').selectpicker();
                     populateFormEdit('#entityEdit', itemToEdit, undefined, undefined, itemToEdit_);
                     $('#entityEdit .modal-body').hideLoader();
@@ -2090,7 +2104,7 @@ function deleteEntity(id, indexentity) {
         itemToEdit.title;
     if (actualTemplateType == "teaserlist") {
         if (kmsdataset != undefined)
-            (kmsdataset).forEach(function(el, i) {
+            (kmsdataset).forEach(function (el, i) {
                 if (el._id == id) {
                     nameEntity = el.title;
                 }
@@ -2137,7 +2151,7 @@ function duplicateRepeatable(frm, item, basename) {
                 listRelation[value[i]._type] = [];
             listRelation[value[i]._type].push(value[i]._id);
         }
-        $(frm + ' .repeatable [data-torelation]').each(function(index) {
+        $(frm + ' .repeatable [data-torelation]').each(function (index) {
             var rel_type = $(this).attr('data-torelation');
             if (listRelation[rel_type] != undefined) {
                 var currenteDomElement = $(this).closest('.relationcontgrp.repeatable');
@@ -2152,7 +2166,7 @@ function duplicateRepeatable(frm, item, basename) {
             }
         });
     }
-    $(frm + ' .repeatable').each(function(index) {
+    $(frm + ' .repeatable').each(function (index) {
         var name = ($(this).find('[name^="data"]').prop("name"));
         if (name == undefined)
             return true;
@@ -2188,8 +2202,8 @@ function duplicateRepeatable(frm, item, basename) {
     });
 }
 
-const duplicateRepeatable_Promise = function(frm, item, basename) {
-    return new Promise(function(resolve, reject) {
+const duplicateRepeatable_Promise = function (frm, item, basename) {
+    return new Promise(function (resolve, reject) {
         var listRelation = {};
         var value = item.relations;
         if (value != undefined) {
@@ -2198,7 +2212,7 @@ const duplicateRepeatable_Promise = function(frm, item, basename) {
                     listRelation[value[i]._type] = [];
                 listRelation[value[i]._type].push(value[i]._id);
             }
-            $(frm + ' .repeatable [data-torelation]').each(function(index) {
+            $(frm + ' .repeatable [data-torelation]').each(function (index) {
                 var rel_type = $(this).attr('data-torelation');
                 if (listRelation[rel_type] != undefined) {
                     var currenteDomElement = $(this).closest('.relationcontgrp.repeatable');
@@ -2213,7 +2227,7 @@ const duplicateRepeatable_Promise = function(frm, item, basename) {
                 }
             });
         }
-        $(frm + ' .repeatable').each(function(index) {
+        $(frm + ' .repeatable').each(function (index) {
             var name = ($(this).find('[name^="data"]').prop("name"));
             if (name == undefined)
                 return true;
@@ -2307,7 +2321,7 @@ function populateFormEdit(frm, item, basename, wasarr, origitem) {
                           $(frm + vs).val(r_list[i]).attr("oldval", r_list[i]);
                       }
                   });*/
-                Object.keys(listRelation).forEach(function(k) {
+                Object.keys(listRelation).forEach(function (k) {
                     var r_list = listRelation[k];
                     let vs = '[name="data[relation][' + k + '][0][to]"]';
                     var relElement = $(vs);
@@ -2351,15 +2365,17 @@ function populateFormEdit(frm, item, basename, wasarr, origitem) {
                                 var btnDeleteFile = '<i class="fa fa-trash btn  btn-outline-danger  btn-sm  deleteItemSub" style="float: right;" aria-hidden="true" onclick="appendTodeleteId(\'' + value.id + '\',\'' + $(elPop).attr("name") + '\')"></i>';
                                 var filepathauth = createpathFile(origitem._id, value.id);
                                 if ((/\.(gif|jpg|jpeg|tiff|png)$/i).test(value.originalname)) {
-                                    previewFile = '<img src="' + filepathauth + '"  class="img-thumbnail" style="max-width:150px;max-heigth:150px"  > ';
+                                    previewFile = '<img src="' + indport + value.id + '"  class="img-thumbnail" style="max-width:150px;max-heigth:150px"  > ';
                                     elPop.before('<p fileid="' + value.id + '" style="text-align:center" attachref="' + elName + '">' + previewFile + btnDeleteFile + '<br><span>' + value.originalname + '</span></p>');
                                 } else {
-                                    previewFile = '<a href="' + filepathauth + '"  target="_blank"> <i class="fa fa-file" aria-hidden="true"></i> ' + value.originalname + '</a> ';
+                                    // previewFile = '<p> <i class="fa fa-file" aria-hidden="true"></i> ' + value.originalName + '</p> ';
+
+                                    previewFile = '<a > <i class="fa fa-file" aria-hidden="true"></i> ' + value.originalName + '</a> ';
                                     elPop.before('<p fileid="' + value.id + '"  attachref="' + elName + '"><span> ' + previewFile + '</span>' + btnDeleteFile + '</p>');
                                 }
                                 elPop.attr('onchange', 'appendTodeleteId("' + value.id + '","' + $(elPop).attr("name") + '")');
                                 var to_append = '<div style="display:none"  id="contattach_' + elName + '"> ';
-                                Object.keys(value).forEach(function(valueObjkey) {
+                                Object.keys(value).forEach(function (valueObjkey) {
                                     var attrOblName = elName + '[' + valueObjkey + ']';
                                     to_append += '<input type="hidden"  name="' + attrOblName + '" value="' + value[valueObjkey] + '">';
                                 });
@@ -2401,8 +2417,8 @@ function populateFormEdit(frm, item, basename, wasarr, origitem) {
         console.error(error);
     }
 }
-const populateFormEdit_Promise = function(frm, item, basename, wasarr) {
-    return new Promise(async function(resolve, reject) {
+const populateFormEdit_Promise = function (frm, item, basename, wasarr) {
+    return new Promise(async function (resolve, reject) {
         try {
             for (var [key, value] of Object.entries(item)) {
                 var tmp = $(frm + ' [name^="data' + basename + '[' + key + ']' + '"]');
@@ -2428,7 +2444,7 @@ const populateFormEdit_Promise = function(frm, item, basename, wasarr) {
                             listRelation[value[i]._type] = [];
                         listRelation[value[i]._type].push(value[i]._id);
                     }
-                    Object.keys(listRelation).forEach(function(k) {
+                    Object.keys(listRelation).forEach(function (k) {
                         var r_list = listRelation[k];
                         for (var i = 0; i < r_list.length; i++) {
                             var vs = ' [name="data[relation][' + k + '][' + i + '][to]"]';
@@ -2462,7 +2478,7 @@ const populateFormEdit_Promise = function(frm, item, basename, wasarr) {
                                     }
                                     elPop.attr('onchange', 'appendTodeleteId("' + value.id + '","' + $(elPop).attr("name") + '")');
                                     var to_append = '<div style="display:none"  id="contattach_' + elName + '"> ';
-                                    Object.keys(value).forEach(function(valueObjkey) {
+                                    Object.keys(value).forEach(function (valueObjkey) {
                                         var attrOblName = elName + '[' + valueObjkey + ']';
                                         to_append += '<input type="hidden"  name="' + attrOblName + '" value="' + value[valueObjkey] + '">';
                                     });
@@ -2524,7 +2540,7 @@ function getAllUrlParams(url) {
             var a = arr[i].split('=');
             // set parameter name and value (use 'true' if empty)
             var paramName = a[0];
-            var paramValue = typeof(a[1]) === 'undefined' ? true : a[1];
+            var paramValue = typeof (a[1]) === 'undefined' ? true : a[1];
             // (optional) keep case consistent
             //   paramName = paramName.toLowerCase();
             //      if (typeof paramValue === 'string') paramValue = paramValue.toLowerCase();
@@ -2595,7 +2611,7 @@ function kmsrenderdetail(_id) {
     removeTempImport('tftemp');
     var arObj = new Array();
     //console.log("kmsrenderdetail pre", arObj, templateslist);
-    (kmsdataset).forEach(function(item, i) {
+    (kmsdataset).forEach(function (item, i) {
         if (item._id == _id) {
             arObj.push(item);
             /*	obj = item;
@@ -2737,6 +2753,10 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
     var personalData3 = { "authdata": getbaseEntityConfig() };
     ajax_temp_call.addparams(personalData2);
     ajax_temp_call.addparams(personalData3);*/
+    var userLocation = {
+        "userLocation": getUserLocation()
+    }
+    ajax_temp_call.addparams(userLocation);
     var ret = ajax_temp_call.send();
     var success = ret.success;
     if (useGritter != undefined) {
@@ -2758,7 +2778,7 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
                 if (senderForm != undefined) {
                     resetContainer(senderForm[0]);
                     useAlert(senderForm[0], gr_title, gr_text, success);
-                    setTimeout(function() {
+                    setTimeout(function () {
                         $('#entityAdd').modal('hide');
                         $('#entityEdit .modal-body .contbody').empty();
                         $('#entityAdd .modal-body').empty();
@@ -2784,8 +2804,8 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
     }
     return ret;
 }
-const actionPostMultipartForm_Promise = function(type, el, datapost, senderForm, callback, callerForm, useGritter, callbackEstraData) {
-    return new Promise(function(resolve, reject) {
+const actionPostMultipartForm_Promise = function (type, el, datapost, senderForm, callback, callerForm, useGritter, callbackEstraData) {
+    return new Promise(function (resolve, reject) {
         var posturl = getendpointnested(type, 'post');
         var temp_config_call = {
             url: posturl,
@@ -2857,7 +2877,7 @@ const actionPostMultipartForm_Promise = function(type, el, datapost, senderForm,
                     if (senderForm != undefined) {
                         resetContainer(senderForm[0]);
                         useAlert(senderForm[0], gr_title, gr_text, success);
-                        setTimeout(function() {
+                        setTimeout(function () {
                             $('#entityAdd').modal('hide');
                             $('#entityEdit .modal-body .contbody').empty();
                             $('#entityAdd .modal-body').empty();
@@ -2928,6 +2948,10 @@ function actionPutMultipartForm(type, el, datapost, senderForm, callback, caller
     //Marco to delete
     /*var personalauthdata = { "authdata": getbaseEntityConfig() };
     ajax_temp_call.addparams(personalauthdata);*/
+    var userLocation = {
+        "userLocation": getUserLocation()
+    }
+    ajax_temp_call.addparams(userLocation);
     var ret = ajax_temp_call.send();
     var success = ret.success;
     if (useGritter != undefined) {
@@ -2946,12 +2970,12 @@ function actionPutMultipartForm(type, el, datapost, senderForm, callback, caller
             if (useGritter) {
                 useAlert("#entityEdit", gr_title, gr_text, success);
             }
-            setTimeout(function() {
+            setTimeout(function () {
                 $('#entityEdit').modal('hide');
                 if (actualTemplateType == "fullcontent")
                     reloadEntityEdited(actualItem);
                 if (actualTemplateType == "datatable") {
-                    setTimeout(function() {
+                    setTimeout(function () {
                         var tmp_conf = kmsconf;
                         // resetDymerStart();
                         //  generateMapDT(tmp_conf);
@@ -3040,11 +3064,11 @@ function actionPatchMultipartForm(type, el, datapost, senderForm, callback, call
             if (useGritter) {
                 useAlert(senderForm, gr_title, gr_text, success);
             }
-            setTimeout(function() {
+            setTimeout(function () {
                 if (actualTemplateType == "fullcontent")
                     reloadEntityEdited(actualItem);
                 if (actualTemplateType == "datatable") {
-                    setTimeout(function() {
+                    setTimeout(function () {
                         var tmp_conf = kmsconf;
                         // resetDymerStart();
                         //  generateMapDT(tmp_conf);
@@ -3062,7 +3086,7 @@ function actionPatchMultipartForm(type, el, datapost, senderForm, callback, call
 }
 
 function showAddEntityBindReload() {
-    setTimeout(function() {
+    setTimeout(function () {
         $('#entityAdd').modal({
             show: true,
             keyboard: false,
@@ -3078,7 +3102,7 @@ function showAddEntityBindReload() {
 }
 
 function reloadLatestRenderedList() {
-    setTimeout(function() {
+    setTimeout(function () {
         kmsdataset = undefined;
         if ($.isFunction(window.actionReloadOnCrud)) {
             actionReloadOnCrud();
@@ -3164,14 +3188,14 @@ function actionDeleteMultipartForm(type, el, datapost, senderForm, callback, cal
             $(kmsconf.target["fullcontent"].id + " [data-component-entitystatus]").remove(); //.multidisable();
             $('#deleteEdit').modal('hide');
             var new_kmsdataset = [];
-            (kmsdataset).forEach(function(el, i) {
+            (kmsdataset).forEach(function (el, i) {
                 if (el._id != elid)
                     new_kmsdataset.push(el);
             });
             kmsdataset = new_kmsdataset;
         }
         if (actualTemplateType == "datatable") {
-            setTimeout(function() {
+            setTimeout(function () {
                 var tmp_conf = kmsconf;
                 //  resetDymerStart();
                 //  generateMapDT(tmp_conf);
@@ -3240,9 +3264,9 @@ function getHtmlFormFile(sourceUrl, datapost) {
     var ret = ajax_temp_call.send();
     return ret;
 }
-let getKmsTemplateMap = function(ar, rendertype) {
-    var promise = new Promise(function(resolve, reject) {
-        removeTempImport("tftemp").then(function() {
+let getKmsTemplateMap = function (ar, rendertype) {
+    var promise = new Promise(function (resolve, reject) {
+        removeTempImport("tftemp").then(function () {
             var item = ar[0];
             var tmpl = item._index + "@" + item._type;
             var mytemplate = templateslist[tmpl]["viewtype"][rendertype];
@@ -3373,7 +3397,7 @@ function convertStructToTemplate(el, strRet, preconcat) {
 }
 
 function switchQuery(jj, el, vT) {
-    if (actualTemplateType == "fullcontent") {}
+    if (actualTemplateType == "fullcontent") { }
     var confbase_ = Object.assign({}, kmsconf);
     confbase_.query.query.query = jj;
     kmsdataset = undefined;
@@ -3427,7 +3451,7 @@ function dymerPaginatorChangePage(act_page) {
 
 function dymerPaginatorSetReset() {
     d_curpage = 1;
-    $('[d-pagegroup]').each(function(i, el) {
+    $('[d-pagegroup]').each(function (i, el) {
         if ($(this).attr('d-pagegroup') != d_curpage)
             $(this).hide();
     });
@@ -3438,9 +3462,9 @@ function refreshDTagFilter(el) {
     manageDTagFilter($('.switchfilter [filter-rel="' + el.attr('filter-rel') + '"] '), 'update');
 }
 
-function GeneratorId() {};
+function GeneratorId() { };
 GeneratorId.prototype.rand = Math.floor(Math.random() * 26) + Date.now();
-GeneratorId.prototype.getId = function() {
+GeneratorId.prototype.getId = function () {
     return this.rand++;
 };
 
@@ -3606,6 +3630,7 @@ function getFilterQueryType(filter) {
     return { addtoquery: addToQuery, filterquery: filterKey, value: filter_value, typeqr: filter_type, filter_cond: filter_condition, ismultiple: filter_multiple };
 }
 
+
 function dymerSearch(options) {
     let _this = this;
     let defaultOptions = {
@@ -3613,8 +3638,8 @@ function dymerSearch(options) {
         "groupfilterclass": "span12 col-12",
         "addfreesearch": false,
     }
-    options = {...defaultOptions, ...options };
-    this.init = function() {
+    options = { ...defaultOptions, ...options };
+    this.init = function () {
         //   console.log('options', options);
 
         if (options.objname == undefined) {
@@ -3652,7 +3677,7 @@ function dymerSearch(options) {
          this.orderElement();*/
         $('.selectpicker').selectpicker();
     }
-    this.loadFilterModel = function() {
+    this.loadFilterModel = function () {
         let index = options.filterModel;
         if (index == undefined)
             return;
@@ -3678,8 +3703,8 @@ function dymerSearch(options) {
             let myform_innerContainer = $(idcontainerfiler);
 
             let myform = $("#" + options.formid);
-            (ret.data).forEach(function(item, i) {
-                (item.files).forEach(function(fl, i) {
+            (ret.data).forEach(function (item, i) {
+                (item.files).forEach(function (fl, i) {
                     if (fl.contentType == "text/html") {
                         dom_to_render += "content/" + index + "/" + fl._id + "?dmts=2";
                     }
@@ -3710,7 +3735,7 @@ function dymerSearch(options) {
                 $(groupEl).append('<input type="text" class="form-control col-12 span12" placeholder="Enter any term" name="data[_all]" searchable-override="_all" >');
                 myform_innerContainer.append(groupEl);
             }
-            $(itemValue).find('[searchable-element="true"]').each(function() {
+            $(itemValue).find('[searchable-element="true"]').each(function () {
                 //let newId = idGen.getId();
                 let filterpos = ($(this).data('filterpos') == undefined) ? 0 : $(this).data('filterpos');
                 let singleEl = "";
@@ -3734,7 +3759,7 @@ function dymerSearch(options) {
                     let $sel = $('<select name="data[relationdymer][' + rel + ']" searchable-label="' + $(this).attr('searchable-label') + '" class="selectpicker form-control"  data-live-search="true"  ' + ismulti + ' ' + isactionsbox + ' data-selected-text-format="count"  ></select>').appendTo($(this));
                     /*if (usePlaceholder)
                         $sel.append($('<option value="" disabled selected>').attr('value', "").text($(this).attr('searchable-label')));*/
-                    $.each(listToselect.data, function(ind, value) {
+                    $.each(listToselect.data, function (ind, value) {
                         // $sel.append($("<option>").attr('value', value._id).text(value.title)); 
                         // $sel.append($("<option>").attr('data-tokens', value._id).attr('value', value.title).text(value.title));
                         $sel.append($("<option>").attr('value', value._id).text(value.title));
@@ -3758,7 +3783,7 @@ function dymerSearch(options) {
                             let $sel = $('<select name="' + nameVal + '" ' + '  searchable-label="' + $(this).attr('searchable-label') + '"  class="selectpicker form-control "  data-live-search="true" multiple ' + ismulti + ' data-selected-text-format="count"  data-actions-box="true"></select>').appendTo($(this));
                             //  $(this).addClass('selectpicker').attr('data-live-search', 'true').attr('multiple').att(ismulti);;
 
-                            $(this).find("option").each(function() {
+                            $(this).find("option").each(function () {
                                 //alert(this.text + ' ' + this.value);
                                 //  $sel.append($("<option>").attr('data-tokens', this.value).attr('value', this.text).text(this.text));
                                 $sel.append($("<option>").attr('value', this.value).text(this.text));
@@ -3811,12 +3836,12 @@ function dymerSearch(options) {
                    e.stopPropagation();
                });*/
             let $wrapper = myform_innerContainer;
-            $wrapper.find('.grpfilter').sort(function(a, b) {
+            $wrapper.find('.grpfilter').sort(function (a, b) {
                 return +$(a).data('filterpos') - +$(b).data('filterpos');
             }).appendTo($wrapper);
         }
     }
-    this.getFilterQueryType = function(filter) {
+    this.getFilterQueryType = function (filter) {
         let filter_value = filter.val();
         let filterKey = filter.attr('name');
         let filter_type = "wildcard";
@@ -3900,7 +3925,7 @@ function dymerSearch(options) {
         }
         return { addtoquery: addToQuery, filterquery: filterKey, value: filter_value, typeqr: filter_type, filter_cond: filter_condition, ismultiple: filter_multiple, 'isRelation': isRelation };
     }
-    this.search = function() {
+    this.search = function () {
         let myform = $("#" + options.formid + "");
         //let filterList = myform.serializeArray();
         let els = myform.find(':input').get();
@@ -3926,7 +3951,7 @@ function dymerSearch(options) {
         };
         subquerycreator.bool[conditionQ] = [];
         let addsubquery = false;
-        $.each(els, function() {
+        $.each(els, function () {
             if (this.name /*&& !this.disabled*/ && (this.checked || /select|input|textarea/i.test(this.nodeName) || /text|hidden|password/i.test(this.type)) && (!/file/i.test(this.type))) {
                 let val = $(this).val();
                 let addToQuery = false;
@@ -4020,7 +4045,7 @@ function switchByFilterBase() {
     };
     subquerycreator.bool[conditionQ] = [];
     let addsubquery = false;
-    $.each(els, function() {
+    $.each(els, function () {
         if (this.name /*&& !this.disabled*/ && (this.checked || /select|input|textarea/i.test(this.nodeName) || /text|hidden|password/i.test(this.type)) && (!/file/i.test(this.type))) {
             let val = $(this).val();
             let addToQuery = false;
@@ -4089,7 +4114,7 @@ function switchByFilter(cc, vType) {
     var filterList = cc.dymertagsinput('items');
     console.log('listndex', listndex);
     console.log('filterList', filterList);
-    $.each(filterList, function(k, v) {
+    $.each(filterList, function (k, v) {
         var filterKey = v.filterquery;
         var regex = /@@(\d*)@@/;
         var typeqr_ = v.typeqr;
@@ -4167,12 +4192,12 @@ function dymerFormatDate(val, format) {
         format = format.replace("ss", date.getSeconds().toString().padL(2, "0"));
     return format;
 }
-String.repeat = function(chr, count) {
+String.repeat = function (chr, count) {
     var str = "";
     for (var x = 0; x < count; x++) { str += chr };
     return str;
 }
-String.prototype.padL = function(width, pad) {
+String.prototype.padL = function (width, pad) {
     if (!width || width < 1)
         return this;
 
@@ -4182,7 +4207,7 @@ String.prototype.padL = function(width, pad) {
 
     return (String.repeat(pad, length) + this).substr(0, width);
 }
-String.prototype.padR = function(width, pad) {
+String.prototype.padR = function (width, pad) {
     if (!width || width < 1)
         return this;
     if (!pad) pad = " ";
@@ -4195,7 +4220,7 @@ String.prototype.padR = function(width, pad) {
 function sort_li(a, b) {
     return ($(b).data('ordtitle')) < ($(a).data('ordtitle')) ? 1 : -1;
 }
-Object.byString = function(o, s) {
+Object.byString = function (o, s) {
     s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
     s = s.replace(/^\./, ''); // strip a leading dot
     var a = s.split('.');

@@ -5,6 +5,8 @@ angular.module('authenticationConfigCtrl', [])
         console.log("authenticationConfigCtrl");
         $scope.configJWT = { authtype: "jwtparent" };
         $scope.configOIDC = { authtype: "oidc" };
+        $scope.configXAUTH = { authtype: "xauth" };
+
 
         function loadAllConfig() {
             $http.get(baseContextPath + '/api/dservice/api/v1/authconfig', {}).then(function(retE) {
@@ -77,6 +79,10 @@ angular.module('authenticationConfigCtrl', [])
             }
             if (tmpConf.authtype == 'oidc') {
                 $scope.configOIDC = tmpConf;
+            }
+            if (tmpConf.authtype == 'xauth') {
+                console.log("ISAUTH")
+                $scope.configXAUTH = tmpConf;
             }
 
         }
