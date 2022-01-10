@@ -4035,11 +4035,11 @@ function dymerSearch(options) {
         switch (tp) {
             case 'base':
 
-                myform.children('.grpfilter:not(.basefilter)').slideUp();
+                myform.find('.grpfilter:not(.basefilter)').slideUp();
                 break;
             case 'all':
 
-                myform.children('.grpfilter').slideDown();
+                myform.find('.grpfilter').slideDown();
                 break;
             default:
                 break;
