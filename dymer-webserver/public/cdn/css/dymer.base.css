@@ -741,3 +741,13 @@ table.dataTable tfoot td {
     right: 24px;
     top: 10px;
 }
+
+.dymerSearch .dsearchAdvOptionBtn {
+    float: right;
+    color: #757575;
+    cursor: pointer;
+    position: absolute;
+    right: 44px;
+    top: 6px;
+    z-index: 1;
+}

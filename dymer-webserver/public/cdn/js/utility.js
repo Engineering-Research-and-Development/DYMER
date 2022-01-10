@@ -3605,10 +3605,10 @@ function getFilterQueryType(filter) {
     }
     return { addtoquery: addToQuery, filterquery: filterKey, value: filter_value, typeqr: filter_type, filter_cond: filter_condition, ismultiple: filter_multiple };
 }
-
+/*
 function opencloseDSAF(el) {
     basefilter
-}
+}*/
 
 function dymerSearch(options) {
     let _this = this;
@@ -3616,7 +3616,8 @@ function dymerSearch(options) {
         "conditionQuery": "AND",
         "groupfilterclass": "span12 col-12",
         "addfreesearch": false,
-        "showFilterBtn": false
+        "showFilterBtn": false,
+        "showAdvOptionBtn": false
     }
     options = {...defaultOptions, ...options };
     this.init = function() {
@@ -3624,7 +3625,19 @@ function dymerSearch(options) {
         if (options.showFilterBtn) {
             $("#" + options.formid).append('<i class="fa fa-filter dsearchAdvFilterBtn" aria-hidden="true" title="advanced filter" onclick="' + options.objname + '.showFilter()"></i>');
         }
-
+        if (options.showAdvOptionBtn) {
+            let clsOrlink = ((options.conditionQuery).toLowerCase() == "or") ? "active" : "";
+            let clsAndlink = ((options.conditionQuery).toLowerCase() == "and") ? "active" : "";
+            let dsearchAdvOptionBtn = '<div class="dropdown show dsearchAdvOptionBtn"> ' +
+                '<i class="fa fa-cog" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                '</i>' +
+                '<div class="dropdown-menu optsconditionQuery" aria-labelledby="dropdownMenuLink">' +
+                '<a class="dropdown-item ' + clsOrlink + '" data-value="or" href="#" onclick="' + options.objname + '.setConditioQuery(\'or\')" >OR</a>' +
+                '<a class="dropdown-item ' + clsAndlink + '" data-value="and" href="#" onclick="' + options.objname + '.setConditioQuery(\'and\')"   >AND</a>' +
+                '</div>' +
+                ' </div>';
+            $("#" + options.formid).append(dsearchAdvOptionBtn);
+        }
         if (options.objname == undefined) {
             document.getElementById(options.formid).innerHTML = '<div class="alert alert-danger" role="alert">ERROR: objname param is Mandatory</div>';
             return;
@@ -3659,6 +3672,14 @@ function dymerSearch(options) {
          this.prepareControls();
          this.orderElement();*/
         $('.selectpicker').selectpicker();
+    }
+    this.setConditioQuery = function(val) {
+        options.conditionQuery = val;
+        $("#" + options.formid + ' .dsearchAdvOptionBtn .optsconditionQuery a').removeClass("active");
+        $("#" + options.formid + ' .dsearchAdvOptionBtn .optsconditionQuery a[data-value="' + val + '"]').addClass("active");
+    }
+    this.getOptions = function(val) {
+        return options;
     }
     this.loadFilterModel = function() {
         let index = options.filterModel;
@@ -3715,8 +3736,15 @@ function dymerSearch(options) {
             if (options.addfreesearch) {
                 let groupEl = $('<div class="grpfilter ' + options.groupfilterclass + ' basefilter"><div><label class="control-label"> Search </label></div> </div>');
                 $(groupEl).attr('data-filterpos', -10);
-                $(groupEl).append('<input type="text" class="form-control col-12 span12" placeholder="Enter any term" name="data[_all]" searchable-override="_all" >');
+                $(groupEl).append('<input type="text" class="form-control  " placeholder="Enter any term" name="data[_all]" searchable-override="_all" >');
+
+                //if (options.innerContainerid == options.formid) {
                 myform_innerContainer.append(groupEl);
+                //  } else {
+                //      $(groupEl).insertBefore(myform_innerContainer);
+                //  }
+
+
             }
             $(itemValue).find('[searchable-element="true"]').each(function() {
                 //let newId = idGen.getId();
@@ -4011,11 +4039,11 @@ function dymerSearch(options) {
         switch (tp) {
             case 'base':
 
-                myform.children('.grpfilter:not(.basefilter)').slideUp();
+                myform.find('.grpfilter:not(.basefilter)').slideUp();
                 break;
             case 'all':
 
-                myform.children('.grpfilter').slideDown();
+                myform.find('.grpfilter').slideDown();
                 break;
             default:
                 break;
