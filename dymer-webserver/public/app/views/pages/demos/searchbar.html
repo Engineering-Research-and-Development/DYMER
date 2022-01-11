@@ -213,6 +213,7 @@ function mainDymerView() {
         <span class="token keyword">"conditionQuery"</span>: "OR", <span class="token attr-name">// AND or OR </span> -> <span class="token tag">Not Mandatory, default value = "AND"</span>
         <span class="token keyword">"addfreesearch"</span>:true, <span class="token attr-name">// will add global search input, true/false</span> -> <span class="token tag">Not Mandatory, default value = false</span>
         <span class="token keyword">"showFilterBtn"</span>:true, <span class="token attr-name">// will add button for advanced filter, true/false</span> -> <span class="token tag">Not Mandatory, default value = false</span>
+        <span class="token keyword">"showAdvOptionBtn"</span>:true, <span class="token attr-name">// will add button for advanced option, true/false</span> -> <span class="token tag">Not Mandatory, default value = false</span>
         <span class="token keyword">"query"</span>: { <span class="token attr-name">// base query for search</span>
             "bool": {
                 "must": [{
@@ -239,7 +240,18 @@ function mainDymerView() {
     //here you can add custom filters
     &lt;/form&gt;
 </code>
+
 </pre>
+            <p>Custom Condition Query as filter
+                <pre class=" language-javascript" data-language="javascript">  <code>&lt;div class="grpfilter col-12" style="display: none;" data-filterpos="100"&gt;
+    &lt;label class="condition"&gt;Condition search&lt;/label&gt;
+    &lt;select class="selectpicker  form-control col-12 span12" onchange="dsearch.setConditioQuery(this.value)"&gt;
+        &lt;option value="or"&gt;OR&lt;/option&gt;
+        &lt;option value="and"&gt;AND&lt;/option&gt;
+    &lt;/select&gt;
+&lt;/div&gt;</code></pre>
+
+            </p>
         </div>
         <div class="card-footer ">
             <hr />
