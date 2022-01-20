@@ -1303,11 +1303,17 @@ function loadRequireView() {
     arr.push(new Elfile(domtype, filename, callback, useonload));
     filename = kmsconfig.cdn + "js/bootstrap-dymertagsinput.js";
     arr.push(new Elfile(domtype, filename, callback, false));
+    
+    group = "bootstrap";
     filename = 'https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js';
+    if (!(ckaddimport.indexOf(group) > -1))
     arr.push(new Elfile(domtype, filename, mycallback, useonload));
 
     filename = 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js';
+    if (!(ckaddimport.indexOf(group) > -1))
     arr.push(new Elfile(domtype, filename, mycallback, useonload));
+    group = "mandatory";
+
     filename = kmsconfig.cdn + "js/handlebarshook.js";
 
     var mycallback = function () { // Method which will display type of Animal
