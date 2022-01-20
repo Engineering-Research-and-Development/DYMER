@@ -1368,6 +1368,9 @@ const retriveIndex_Query_ToSearch = (rulesindexquery, obj) => {
                             rulesindexquery.query.push(element);
                             // resolve(indextosearch);
                         }
+                        if(key == "query_string"){
+                            rulesindexquery.query.push(element);
+                        }
                     }
                 }
             }
