@@ -1131,8 +1131,8 @@ router.post('/_search', (req, res) => {
         if (bridgeConf != undefined) {
             if (bridgeConf.api.tokenProvider != undefined) {
                 if (bridgeConf.api.tokenProvider.active == true) {
-                    getCapabilityTokenDEMETER(bridgeConf, "search", dymeruser.extrainfo.token, undefined, rr, userLocation).then(function (tokenResponse) {
-                        demeterExternalEntities(bridgeConf, "search", tokenResponse.data, dymeruser.extrainfo.token, undefined, rr, userLocation, undefined).then(function (callresp) {
+                    // getCapabilityTokenDEMETER(bridgeConf, "search", dymeruser.extrainfo.token, undefined, rr, userLocation).then(function (tokenResponse) {
+                        demeterExternalEntities(bridgeConf, "search", null, dymeruser.extrainfo.token, undefined, rr, userLocation, undefined).then(function (callresp) {
                             jsonMappingExternalToDymerEntity(callresp.data, bridgeConf, "search").then(function (mapdata) {
                                 let msg = (mapdata.length > 0) ? "List entities" : "Empty list";
                                 ret.setData(mapdata);
@@ -1149,7 +1149,7 @@ router.post('/_search', (req, res) => {
                             ret.setSuccess(false);
                             ret.setMessages("Entity Recovery Problem");
                             return res.send(ret);
-                        });
+                        // });
                     }).catch(function (error) {
                         console.error("ERROR | " + nameFile + '  | _search | getCapabilityTokenDEMETER:', error);
                         ret.setSuccess(false);
@@ -2244,8 +2244,8 @@ router.post('/:enttype', function (req, res) {
                             if (bridgeConf.api.tokenProvider.active == true) {
                                 globalData.data.properties.owner = { "uid": urs_uid, "gid": urs_gid }
                                 jsonMappingDymerEntityToExternal(globalData, bridgeConf, "create", req.files).then(function (mapdata) {
-                                    getCapabilityTokenDEMETER(bridgeConf, "create", dymeruser.extrainfo.token, mapdata).then(function (tokenResponse) {
-                                        demeterExternalEntities(bridgeConf, "create", tokenResponse.data, dymeruser.extrainfo.token, mapdata, undefined, undefined, req.files).then(function (callresp) {
+                                    // getCapabilityTokenDEMETER(bridgeConf, "create", dymeruser.extrainfo.token, mapdata).then(function (tokenResponse) {
+                                        demeterExternalEntities(bridgeConf, "create", null, dymeruser.extrainfo.token, mapdata, undefined, undefined, req.files).then(function (callresp) {
                                             ret.setSuccess(callresp.data.success);
                                             ret.setData(callresp.data);
                                             if (!ret.success) {
@@ -2266,7 +2266,7 @@ router.post('/:enttype', function (req, res) {
                                         ret.setSuccess(false);
                                         ret.setMessages("Capability Token Problem");
                                         return res.send(ret);
-                                    });
+                                    // });
                                 }).catch(function (error) {
                                     console.error("ERROR | " + nameFile + '  | /:enttype | create | jsonMappingDymerEntityToExternal:', error);
                                     ret.setSuccess(false);
@@ -2670,8 +2670,8 @@ router.put('/:id', (req, res) => {
                 if (bridgeConf.api.tokenProvider.active == true) {
                     globalData.data.properties.owner = { "uid": urs_uid, "gid": urs_gid }
                     jsonMappingDymerEntityToExternal(globalData, bridgeConf, "update").then(function (mapdata) {
-                        getCapabilityTokenDEMETER(bridgeConf, "update", dymeruser.extrainfo.token, mapdata).then(function (tokenResponse) {
-                            demeterExternalEntities(bridgeConf, "update", tokenResponse.data, dymeruser.extrainfo.token, mapdata, undefined, undefined, req.files).then(function (callresp) {
+                        // getCapabilityTokenDEMETER(bridgeConf, "update", dymeruser.extrainfo.token, mapdata).then(function (tokenResponse) {
+                            demeterExternalEntities(bridgeConf, "update", null, dymeruser.extrainfo.token, mapdata, undefined, undefined, req.files).then(function (callresp) {
                                 ret.setSuccess(callresp.data.success);
                                 ret.setData(callresp.data);
                                 if (!ret.success) {
@@ -2692,7 +2692,7 @@ router.put('/:id', (req, res) => {
                             ret.setSuccess(false);
                             ret.setMessages("Capability Token Problem");
                             return res.send(ret);
-                        });
+                        // });
                     }).catch(function (error) {
                         console.error("ERROR | " + nameFile + '  | /:id | put | jsonMappingDymerEntityToExternal:', error);
                         ret.setSuccess(false);
@@ -3430,8 +3430,8 @@ router.delete('/:id', (req, res) => {
             if (bridgeConf.api.tokenProvider != undefined) {
                 if (bridgeConf.api.tokenProvider.active == true) {
                     jsonMappingDymerEntityToExternal(callData, bridgeConf, "delete").then(function (mapdata) {
-                        getCapabilityTokenDEMETER(bridgeConf, "delete", dymeruser.extrainfo.token, mapdata, undefined, undefined).then(function (tokenResponse) {
-                            demeterExternalEntities(bridgeConf, "delete", tokenResponse.data, dymeruser.extrainfo.token, mapdata, undefined, undefined).then(function (callresp) {
+                        // getCapabilityTokenDEMETER(bridgeConf, "delete", dymeruser.extrainfo.token, mapdata, undefined, undefined).then(function (tokenResponse) {
+                            demeterExternalEntities(bridgeConf, "delete", null, dymeruser.extrainfo.token, mapdata, undefined, undefined).then(function (callresp) {
 
                                 ret.setSuccess(callresp.data.success);
                                 ret.setData(callresp.data);
@@ -3453,7 +3453,7 @@ router.delete('/:id', (req, res) => {
                             ret.setSuccess(false);
                             ret.setMessages("Capability Token Problem");
                             return res.send(ret);
-                        });
+                        // });
                     }).catch(function (error) {
                         console.log(nameFile + ' | delete/:id | jsonMappingDymerEntityToExternal: ', error);
                         ret.setSuccess(false);
