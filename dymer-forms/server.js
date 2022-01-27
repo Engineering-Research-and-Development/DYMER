@@ -35,6 +35,8 @@ app.use(function(req, res, next) {
 });
 
 function detectPermission(req, res, next) {
+    //  next();
+    //  return;
     /* console.log("controllo", );
      console.log("req.ip", req.ip);
      console.log("req.originalurl", req.originalurl);
@@ -55,7 +57,7 @@ function detectPermission(req, res, next) {
         dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     var urs_uid = dymeruser.id;
     var urs_gid = dymeruser.gid;
-    //console.log(nameFile + ' | detectPermission | dymeruser:', JSON.stringify(dymeruser));
+    console.log(nameFile + ' | detectPermission | dymeruser:', JSON.stringify(dymeruser));
     /*  console.log("req.cookies", req.cookies);
       const authHeader = req.headers.authorization;
       console.log("super authHeader", authHeader); //lll
@@ -92,11 +94,15 @@ function detectPermission(req, res, next) {
   
       }
   */
-    // console.log("req.path", req.path);
-    //console.log("req.method", req.method);
+    //console.log("req.path", req.path);
+    // console.log("req.method", req.method);
 
-    //console.log("req.params", req.params);
-
+    // console.log("req.params", req.params);
+    if (req.path == "/dettagliomodel") {
+        next();
+        return true;
+    }
+    // console.log("succesiva continua");
     /*  console.log("req.token", pp);*/
     //console.log("------------------");
     /*axios.post('http://localhost:8080/api/dservice/api/v1/perm/entityrole/view/index1?role[]=app-user&role[]=app-admin', {
@@ -149,7 +155,7 @@ function detectPermission(req, res, next) {
         url += index + "/";
         url += queryString;
         if (index == "") {
-            ret.setMessages("No permission");
+            ret.setMessages("No permission 3");
             res.status(200);
             ret.setSuccess(false);
             return res.send(ret);
@@ -162,14 +168,14 @@ function detectPermission(req, res, next) {
                 } else {
                     console.log(nameFile + ' | detectPermission | permission ' + act + ':', dymeruser.id, JSON.stringify(roles), JSON.stringify(response.data.data.result));
                     //console.log("stop", req.path);
-                    ret.setMessages("No permission");
+                    ret.setMessages("No permission 2");
                     res.status(200);
                     ret.setSuccess(false);
                     return res.send(ret);
                 }
             }, (error) => {
                 console.error("ERROR | " + nameFile + ' | detectPermission : ', error);
-                ret.setMessages("No permission");
+                ret.setMessages("No permission 1");
                 res.status(200);
                 ret.setSuccess(false);
                 return res.send(ret);

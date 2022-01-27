@@ -13,7 +13,10 @@
                         <h7> &nbsp;&nbsp;# Select list multiple
                         </h7>
                     </a>
-
+                    <a href="#lnksdymerelement" class="text-warning">
+                        <h7> &nbsp;&nbsp;# Element private/public
+                        </h7>
+                    </a>
                 </div>
             </div>
         </div>
@@ -69,10 +72,7 @@
                 <b>Restricted</b>: resource visibility restricted only to the current workspace members<br>
                 <b>Private</b>: visibility restricted to the resource owner<br>
                 <b>Public</b>: resource is visible also to other platform workspaces that are using the same resource model
-
-
                 <h3 class="text-success text-center" id="lnkselectlistmulti"><b>Search for snippets</b></h3>
-
                 <ul>
                     <h4 class="text-info">- Select List Multiple</h4>
                     List of attributes to use
@@ -107,6 +107,15 @@
                         &lt;/div&gt;
                     &lt;/div&gt;
                                 </span></span></code></pre>
+                </div>
+                <h3 class="text-success text-center" id="lnksdymerelement"><b>Element Public/Private</b></h3>
+                <div>
+                    Add the following attributes to the model element:
+                    <br><b> dymer-model-element="" dymer-model-visibility="private" </b>
+                    <br> the corresponding value will be visible only to authenticated users.
+                    <br>Instead
+                    <br><b> dymer-model-element="" dymer-model-visibility="public" </b>
+                    <br> the corresponding value will be visible to all users.
                 </div>
             </div>
         </div>

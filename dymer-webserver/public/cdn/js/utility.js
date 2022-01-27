@@ -1557,6 +1557,8 @@ function getrendRole(perm) {
     if (perm.edit) {
         if (perm.isowner)
             owner = '<i class="fa fa-user icon-action" title="Owner" ></i>';
+        else if (perm.isadmin)
+            owner = '<i class="fa fa-user-circle-o icon-action" title="Admin" ></i>';
         else
             owner = '<i class="fa fa-user-o icon-action" title="co-editor"  ></i>';
     }
@@ -1669,12 +1671,14 @@ function checkPermission(actualItem, act) {
     //let d_uid = retriveVarCookie("d_uid");
     let d_uid = localStorage.getItem("d_uid");
     let d_gid = localStorage.getItem("d_gid");
+    let d_rl = localStorage.getItem("d_rl");
     var entPerm = {
         isowner: false,
         view: false,
         edit: false,
         delete: false,
-        managegrant: false
+        managegrant: false,
+        isadmin: false
     };
     if (typeof d_uid == 'undefined') {
         entPerm.view = true;
@@ -1685,6 +1689,19 @@ function checkPermission(actualItem, act) {
         isiinfo = JSON.parse(atob(retriveVarCookie("DYMisi")));
     if (isiinfo != undefined && isiinfo != "null") {
         if ((isiinfo.roles).find(x => x.role == "app-admin")) {
+            entPerm.view = true;
+            entPerm.isadmin = true;
+            entPerm.edit = true;
+            entPerm.delete = true;
+            entPerm.managegrant = true;
+            return entPerm;
+        }
+    }
+    if (typeof d_rl != 'undefined') {
+        d_rl = JSON.parse(atob(d_rl));
+        if ((d_rl).find(x => x == "app-admin")) {
+            entPerm.isadmin = true;
+            entPerm.isowner = false;
             entPerm.view = true;
             entPerm.edit = true;
             entPerm.delete = true;

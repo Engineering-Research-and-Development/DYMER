@@ -1414,6 +1414,17 @@ Vvveb.Builder = {
                 var postData = new FormData();
                 appendFormdata(postData, elformdata);
                 postData.append('data[file]', new File([new Blob([s])], filename, { type: ctype }));
+
+                /* var html2 = Vvveb.Builder.getBody();
+                 var html3 = "";
+                 $(html2).find("[dymer-model-element]").each(function() {
+                     // console.log(this.outerHTML);
+                     html3 += this.outerHTML;
+                 });
+                 var json_struct = html2json(html3);
+                 var json_struct_filname = filename.split('.')[0] + ".json";
+                 postData.append('data[file]', new File([new Blob([s])], json_struct_filname, { type: "application/javascript" }));
+ */
                 url = Vvveb.pathservice + "";
                 ajax_temp_call.setdatapost(postData);
                 break;
@@ -1426,7 +1437,7 @@ Vvveb.Builder = {
                     ajax_temp_call.addparams(postData);
                     url = Vvveb.pathservice + "update";
                 } else {
-                    //         console.log("due");
+                    console.log("due");
                     url = Vvveb.pathservice + "updateAsset";
                     serializedata = false;
                     var s = this.getBody();
@@ -1435,6 +1446,28 @@ Vvveb.Builder = {
                     postData.append('data[file]', new File([new Blob([s])], filename, { type: "text/html" }));
                     postData.append('data[pageId]', Vvveb.FileManager.getCurrentPage());
                     postData.append('data[assetId]', Vvveb.FileManager.pages[pageId].html.id);
+
+                    var html2 = Vvveb.Builder.getBody();
+                    var html3 = "";
+                    $(html2).find("[dymer-model-element]").each(function() {
+                        // console.log(this.outerHTML);
+                        html3 += this.outerHTML;
+                    });
+                    var json_struct = JSON.stringify(html2json(html3));
+                    let ajax_temp_call_str = new Ajaxcall(temp_config_call);
+
+                    var postData_str = new FormData();
+
+                    postData_str.append('data[pageId]', Vvveb.FileManager.getCurrentPage());
+                    postData_str.append('data[structure]', json_struct);
+                    ajax_temp_call_str.setserializedata(false);
+                    ajax_temp_call_str.setdatapost(postData_str);
+                    ajax_temp_call_str.seturl(Vvveb.pathservice + "updatestructure");
+                    let ret_str = ajax_temp_call_str.send();
+                    console.log('ret_str', ret_str);
+
+
+
                     ajax_temp_call.setdatapost(postData);
                 }
 

@@ -129,15 +129,30 @@ var recFile = function(file_id) {
  *************************************************************************************************************
  *************************************************************************************************************
  */
-
+router.get('/dettagliomodel', [util.checkIsDymerUser], (req, res) => {
+    var ret = new jsonResponse();
+    let callData = util.getAllQuery(req);
+    let queryFind = callData.query;
+    console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
+    //let queryFind = (Object.keys(callData.query).length === 0) ? {} : JSON.parse(callData.query);
+    //let queryFind = (Object.keys(callData.query).length === 0) ? {} : callData.query;
+    Model.find(queryFind, {}, { title: 1, instance: 1, "structure": 1 }).collation({ locale: "en" }).sort({ title: +1 }).then((Models) => {
+        ret.setMessages("List");
+        ret.setData(Models);
+        return res.send(ret);
+    }).catch(function(err) {
+        console.error("ERROR | " + nameFile + ' | get | queryFind : ', err);
+    });
+});
 router.get('/', [util.checkIsDymerUser], (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
-    //console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
+    console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
     //let queryFind = (Object.keys(callData.query).length === 0) ? {} : JSON.parse(callData.query);
     //let queryFind = (Object.keys(callData.query).length === 0) ? {} : callData.query;
     Model.find(queryFind).collation({ locale: "en" }).sort({ title: +1 }).then((Models) => {
+        //   console.log('Models', Models);
         var actions = Models.map(getfilesArrays);
         var results = Promise.all(actions); // pass array of promises
         results.then(function(dat) {
@@ -322,6 +337,42 @@ router.post('/update', util.checkIsAdmin, function(req, res) {
         );
     });
 });
+router.post('/updatestructure', util.checkIsAdmin, function(req, res) {
+    var ret = new jsonResponse();
+    upload(req, res, function(err) {
+        if (err) {
+            console.error("ERROR | " + nameFile + ' | post/update | upload  : ', err);
+            ret.setMessages("Upload Error");
+            ret.setSuccess(false);
+            ret.setExtraData({ "log": error.stack });
+            return res.send(ret);
+        }
+        let callData = util.getAllQuery(req);
+        let data = callData.data;
+        console.log('data updatestructure', data);
+        var myfilter = { "_id": data.pageId };
+        let strct = JSON.parse(data.structure);
+        var myquery = {
+            "$set": {
+                'structure': strct
+            }
+        };
+        Model.updateOne(myfilter, myquery,
+            function(err, raw) {
+                if (err) {
+                    ret.setSuccess(false);
+                    console.error("ERROR | " + nameFile + ' | post/update | updateOne  : ', err);
+                    ret.setMessages("Model Error");
+                    return res.send(ret);
+                } else {
+                    console.log(nameFile + ' | post/update  |  updateOne successfully :', data.title);
+                    ret.setMessages("Model Updated");
+                    return res.send(ret);
+                }
+            }
+        );
+    });
+});
 
 router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
     var ret = new jsonResponse();
@@ -336,10 +387,19 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
         let callData = util.getAllQuery(req);
         let data = callData.data;
         var element = req.files[0];
+        var element1 = req.files[1];
+        console.log('element data', data);
+        console.log('element', req.files[0]);
+        console.log('element1', req.files[1]);
         var myfilter = { "_id": mongoose.Types.ObjectId(data.pageId) };
         var bulk = Model.collection.initializeOrderedBulkOp();
         bulk.find(myfilter).updateOne({ "$pull": { "files": mongoose.Types.ObjectId(data.assetId) } });
         bulk.find(myfilter).updateOne({ "$push": { "files": mongoose.Types.ObjectId(element.id) } });
+        /* bulk.find(myfilter).updateOne([{ "$pull": { "files": mongoose.Types.ObjectId(data.assetId) } },
+             { "$push": { "files": mongoose.Types.ObjectId(element.id) } }, 
+             { "$pull": { "files": mongoose.Types.ObjectId(data.assetId) } }, 
+             { "$push": { "files": mongoose.Types.ObjectId(element1.id) } }
+         ]);*/
         bulk.execute(function(err, result) {
             if (err) {
                 ret.setSuccess(false);
