@@ -20,6 +20,9 @@
                     <a href="#lnkmapmarker" class="text-warning">
                         <h7><i class="fa fa-circle" aria-hidden="true" style="font-size: 8px;position: relative;bottom: 2px;"></i> &nbsp;&nbsp;Map Marker</h7>
                     </a>
+                    <a href="#lnkmapsetting" class="text-warning">
+                        <h7><i class="fa fa-circle" aria-hidden="true" style="font-size: 8px;position: relative;bottom: 2px;"></i> &nbsp;&nbsp;Map Setting</h7>
+                    </a>
                 </div>
                 <a href="/demodownload/View/dymer_mapdt.html" class="btn btn-wd btn-info  float-right " target="_self">
                     <i class="fa fa-download"></i> Download Example
@@ -104,7 +107,8 @@
 
                 <p> The following is an example of how to setup a simple Dymer Viewer Map&DataTable.</p>
                 <div class="alert alert-info">
-                    <span> <i class="nc-icon nc-pin-3"></i> The entities must have a location attribute to be viewed inside the map as a marker! </span>
+                    <span> <i class="nc-icon nc-pin-3"></i> The entities must have a location attribute to be viewed
+                        inside the map as a marker! </span>
                 </div>
 
                 <pre class=" language-javascript" data-language="javascript"><code class=" language-javascript">    <span class="token function">"location": {
@@ -112,7 +116,8 @@
       "coordinates": [<span class="token keyword">"16.5058996","48.2256476"</span>]
     } </span>
 </code></pre>
-                <h4 class="text-info" id="lnkmapconfiguration"><i class="fa fa-caret-right" aria-hidden="true"></i> Configuration</h4>
+                <h4 class="text-info" id="lnkmapconfiguration"><i class="fa fa-caret-right" aria-hidden="true"></i> Configuration
+                </h4>
 
 
                 <p>Create a js function named <b>mainDymerMap()</b>, define the json that configures the Viewer and pass it in the funtion <b>generateMapDT()</b></p>
@@ -420,6 +425,36 @@ version 2</code></pre>
                     </div>
                 </div>
             </p>
+            <h4 class="text-info" id="lnkmapsetting"><i class="fa fa-caret-right" aria-hidden="true"></i> Map Setting
+            </h4>
+            <br> Add 'map' key, if it does not exist, in your json object 'jsonDymerConfig' and set your parameters
+            <pre class=" language-javascript" data-language="javascript">
+<code class=" language-javascript">map:{ 
+    setting: {
+        zoomSnap: 0.25,
+        "center": [39.4965947435828, 15.745697902296786],
+        "zoom": 6.5,
+        "maxBounds": [
+            [-135, -270],
+            [135, 270]
+        ]
+    }
+    ...
+    } </code></pre>
+            <br>below are the parameters set by default<br>
+            <pre class=" language-javascript" data-language="javascript">
+<code class=" language-javascript">  {
+        zoomSnap: 0.5,
+        "background": "osmec",
+        "center": [46.01222384063236, 21.401367187500004],
+        "zoom": 4,
+        "maxZoom": 16,
+        "minZoom": 2,
+        "maxBounds": [
+            [-135, -270],
+            [135, 270]
+        ] 
+    } </code></pre>
         </div>
 
 
