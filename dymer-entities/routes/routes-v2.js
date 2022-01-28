@@ -1151,6 +1151,7 @@ router.post('/_search', (req, res) => {
                     delete query.query.relationdymer;
                 }
             }
+
             if (!isadmin) {
                 var my_oldquery = query.query;
                 /*
@@ -1274,7 +1275,7 @@ router.post('/_search', (req, res) => {
                    console.log("unique", unique);
                    console.log("compr_struct", compr_struct);
                    console.log("resp.hits", resp.hits.hits);*/
-                //    console.log("minmodelist1", minmodelist);
+                //console.log("recoverRelation", recoverRelation);
                 if (recoverRelation == 'false' || recoverRelation == false) {
                     filertEntitiesFields(resp.hits.hits, minmodelist, hdymeruser).then(function(nlist) {
                         // console.log("prepre", nlist);
@@ -1306,7 +1307,7 @@ router.post('/_search', (req, res) => {
                                 minmodelist = cc.filter((item, pos) => cc.indexOf(item) === pos)
                             }
                         );
-                        // console.log("minmodelist2", minmodelist);
+                        //console.log("Object.keys(filterRelationDymer).length", Object.keys(filterRelationDymer).length);
                         if (Object.keys(filterRelationDymer).length > 0) {
                             var fileterdList = [];
                             meatch.forEach(element => {
@@ -1321,13 +1322,14 @@ router.post('/_search', (req, res) => {
                                 if (append)
                                     fileterdList.push(element);
                             });
-                            filertEntitiesFields(meatch, minmodelist, hdymeruser).then(function(nlist) {
+                            filertEntitiesFields(fileterdList, minmodelist, hdymeruser).then(function(nlist) {
                                 //  console.log("prepre", nlist);
+                                console.log(nameFile + ' | _search | resp filter relations:count ', nlist.length);
                                 ret.setData(nlist);
                                 return res.send(ret);
                             }).catch(function(err) {
-                                console.log(nameFile + ' | _search | resp filter relations:count ', resp.hits.hits.length);
-
+                                // console.log(nameFile + ' | _search | resp filter relations:count ', resp.hits.hits.length);
+                                console.error("ERROR | " + nameFile + '  | _search | resp filter relations:count:', err);
                             });
                             /* ret.setData(fileterdList);
                              console.log(nameFile + ' | _search | resp filter relations:count ', resp.hits.hits.length);

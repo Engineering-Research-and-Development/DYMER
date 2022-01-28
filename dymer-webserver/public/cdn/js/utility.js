@@ -3699,10 +3699,12 @@ function dymerSearch(options) {
         return options;
     }
     this.loadFilterModel = function() {
+        let d_uid = localStorage.getItem("d_uid");
+
         let index = options.filterModel;
         if (index == undefined)
             return;
-        let datapost = { "query": { "instance._index": index }, "act": "update" };
+        let datapost = { "query": { "instance._index": index }, "act": "view" };
         let sourceUrl = getendpoint('form');
         let temp_config_call = {
             url: sourceUrl,
@@ -3767,8 +3769,11 @@ function dymerSearch(options) {
                 //let newId = idGen.getId();
                 let filterpos = ($(this).data('filterpos') == undefined) ? 0 : $(this).data('filterpos');
                 let singleEl = "";
-                if ($(this).attr("data-torelation") != undefined) {
 
+                if ($(this).attr("dymer-model-visibility") == "private" && d_uid == "guest@dymer.it") {
+                    return;
+                }
+                if ($(this).attr("data-torelation") != undefined) {
                     let rel = $(this).attr('data-torelation');
                     let esxtraAttr = "";
                     let datapost = {
@@ -3781,6 +3786,10 @@ function dymerSearch(options) {
                     let isactionsbox = "";
                     if ($(this).attr('searchable-multiple') == "true") {
                         isactionsbox = 'data-actions-box="true"';
+                    }
+
+                    if (listToselect.data.length == 0) {
+                        return;
                     }
                     //  console.log('ismulti  rel', $(this).html(), $(this).attr('searchable-multiple'), ismulti);
                     // let $sel = $('<select class="form-control span12 col-12"  searchable-multiple="' + ismulti + '"  searchable-override="data[relationdymer][' + rel + ']" searchable="" searchable-label="' + $(this).attr('searchable-label') + '" name="data[relation][' + rel + '][' + inde + '][to]"  ' + esxtraAttr + '>').appendTo($(this));

@@ -151,6 +151,8 @@ function detectPermission(req, res, next) {
         // var url = 'http://localhost:5050/api/v1/perm/entityrole/';
         //    url = 'http://kms_services:5050/api/v1/perm/entityrole/';
         var url = util.getServiceUrl("dservice") + "/api/v1/perm/entityrole/";
+        console.log('queryString', queryString);
+        console.log('req.query.act', req.query.act);
         url += act + "/";
         url += index + "/";
         url += queryString;
@@ -163,7 +165,7 @@ function detectPermission(req, res, next) {
         axios.get(url)
             .then((response) => {
                 //console.log(nameFile + ' | detectPermission | permission ' + act + ':', dymeruser.id, JSON.stringify(roles), JSON.stringify(response.data.data.result));
-                if (response.data.data.result || req.query.act == "update") {
+                if (response.data.data.result || req.query.act == "update" || req.query.act == "view") {
                     next();
                 } else {
                     console.log(nameFile + ' | detectPermission | permission ' + act + ':', dymeruser.id, JSON.stringify(roles), JSON.stringify(response.data.data.result));

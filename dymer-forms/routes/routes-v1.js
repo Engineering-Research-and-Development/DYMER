@@ -82,6 +82,9 @@ var getfilesArrays = function(er) {
                 "files": dt,
                 "created": er.created
             }
+
+            if (er.structure != undefined)
+                ret_json.structure = er.structure
             resolve(ret_json);
         });
     });
@@ -152,7 +155,7 @@ router.get('/', [util.checkIsDymerUser], (req, res) => {
     //let queryFind = (Object.keys(callData.query).length === 0) ? {} : JSON.parse(callData.query);
     //let queryFind = (Object.keys(callData.query).length === 0) ? {} : callData.query;
     Model.find(queryFind).collation({ locale: "en" }).sort({ title: +1 }).then((Models) => {
-        //   console.log('Models', Models);
+        // console.log('Models', Models);
         var actions = Models.map(getfilesArrays);
         var results = Promise.all(actions); // pass array of promises
         results.then(function(dat) {
