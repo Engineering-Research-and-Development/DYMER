@@ -20,6 +20,7 @@ router.use(bodyParser.urlencoded({ extended: true }));
 var bE = require("./bridgeEntities.js");
 const { nextTick } = require('process');
 const { reject, forEach } = require('lodash');
+var _ = require('lodash');
 var FormData = require('form-data');
 const jwt = require('jsonwebtoken');
 const nameFile = path.basename(__filename);
@@ -1391,6 +1392,8 @@ var filertEntitiesFields = function(originalList, minmodelist, hdymeruser) {
             },
             data: myQueryModel
         };
+        //var rgx = /[.][0-9][.]/gm;
+        var rgx = /[0-9]/gm;
         axios(config)
             .then((respone) => {
                 let total_compr_struct = respone.data.data
@@ -1402,14 +1405,19 @@ var filertEntitiesFields = function(originalList, minmodelist, hdymeruser) {
                             let single_compr_struct_visibility = (single_compr_struct.structure.child).filter(x => x.attr['dymer-model-visibility'] == "private")
                                 //   console.log("single_compr_struct_visibility", single_compr_struct_visibility);
                             single_compr_struct_visibility.forEach(singlel => {
-                                var ark = replaceAll(singlel.attr.name, '[', '@@');
-                                ark = replaceAll(ark, ']', '');
-                                ark = ark.split("@@");
-                                ark.shift();
-                                let keydel = ark.join('.');
-                                // console.log('singlekey 222', element, keydel);
-                                if (element["_source"][keydel] != undefined && element["_source"][keydel] != null)
-                                    delete element["_source"][keydel];
+                                let ark_del = replaceAll(singlel.attr.name, '[', '["');
+                                ark_del = replaceAll(ark_del, ']', '"]');
+                                ark_del = ark_del.replace("data", '');
+                                let indexRgx = (singlel.attr.name).split("][").find(value => rgx.test(value));
+                                if (indexRgx != undefined) {
+                                    let listtest = [];
+                                    for (let index = 0; index < 10; index++) {
+                                        listtest.push(ark_del.replace('["0"]', index));
+                                    }
+                                    _.omit(element["_source"], listtest);
+                                } else {
+                                    _.unset(element["_source"], ark_del);
+                                }
                             });
                             //console.log("filertEntitiesFields 1 element", JSON.stringify(element));
                             if (element.hasOwnProperty('relations')) {
@@ -1420,13 +1428,26 @@ var filertEntitiesFields = function(originalList, minmodelist, hdymeruser) {
                                             if (single_compr_struct.hasOwnProperty('structure')) {
                                                 let single_compr_struct_visibility = (single_compr_struct.structure.child).filter(x => x.attr['dymer-model-visibility'] == "private")
                                                 single_compr_struct_visibility.forEach(singlel => {
-                                                    var ark = replaceAll(singlel.attr.name, '[', '@@');
-                                                    ark = replaceAll(ark, ']', '');
-                                                    ark = ark.split("@@");
-                                                    ark.shift();
-                                                    let keydel = ark.join('.');
-                                                    // console.log('singlekey 222', keydel);
-                                                    delete subelement["_source"][keydel];
+                                                    let ark_del = replaceAll(singlel.attr.name, '[', '["');
+                                                    ark_del = replaceAll(ark_del, ']', '"]');
+                                                    ark_del = ark_del.replace("data", '');
+                                                    let indexRgx = (singlel.attr.name).split("][").find(value => rgx.test(value));
+                                                    if (indexRgx != undefined) {
+                                                        let listtest = [];
+                                                        for (let index = 0; index < 20; index++) {
+                                                            listtest.push(ark_del.replace('["0"]', index));
+                                                        }
+                                                        _.omit(subelement["_source"], listtest);
+                                                    } else {
+                                                        _.unset(subelement["_source"], ark_del);
+                                                    }
+                                                    /* var ark = replaceAll(singlel.attr.name, '[', '@@');
+                                                     ark = replaceAll(ark, ']', '');
+                                                     ark = ark.split("@@");
+                                                     ark.shift();
+                                                     let keydel = ark.join('.');
+                                                     // console.log('singlekey 222', keydel);
+                                                     delete subelement["_source"][keydel];*/
                                                 });
                                                 //console.log("filertEntitiesFields 2 subelement", JSON.stringify(subelement));
                                                 resolve(subelement);
