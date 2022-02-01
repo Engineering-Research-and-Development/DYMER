@@ -735,6 +735,7 @@ let generateDynamicDT = function(arr) {
             ],
             data: listData,
             columns: kmsconf.dt.columns,
+			 "aaSorting":kmsconf.dt.sorting,
             orderCellsTop: true,
             /*fixedHeader: {
                 header: true,
