@@ -126,7 +126,7 @@ function check_required(senderForm) {
     var valid = true;
     $(senderForm + " [required]").each(function() {
         let val = "";
-        if ($(this).hasClass("dymerselectpicker")) {
+        if ($(this).hasClass("selectpicker")) {
             val = $(this).selectpicker('val');
         } else
             val = ($(this).val()).trim();
