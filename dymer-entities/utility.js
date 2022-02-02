@@ -18,7 +18,8 @@ const stringToUuid = (str) => {
 }
 exports.generateDymerUuid = function() {
     let ddta = new Date().getTime();
-    let input = global.dymer_uuid + ddta.toString(36).concat(Date().getTime().toString(), ddta.toString()).replace(/\./g, "");
+    let ddta2 = new Date().getTime();
+    let input = global.dymer_uuid + ddta.toString(36).concat(ddta2.toString(), ddta.toString()).replace(/\./g, "");
     let uuidtoret = stringToUuid(input);
     return uuidtoret;
 }
