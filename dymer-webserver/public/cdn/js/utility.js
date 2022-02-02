@@ -125,7 +125,11 @@ function useAlert(id, title_msg, msg_text, success) {
 function check_required(senderForm) {
     var valid = true;
     $(senderForm + " [required]").each(function() {
-        var val = ($(this).val()).trim();
+        let val = "";
+        if ($(this).hasClass("dymerselectpicker")) {
+            val = $(this).selectpicker('val');
+        } else
+            val = ($(this).val()).trim();
         if (!(val.length > 0)) {
             $(this).addClass("error_border");
             valid = false;
