@@ -1,4 +1,5 @@
 var util = require('../utility');
+
 //Marco var dymerOauth = require('./dymerOauth');
 var jsonResponse = require('../jsonResponse');
 var express = require('express');
@@ -1945,7 +1946,10 @@ function appendFormdata(FormData, data, name) {
         FormData.append(name, data);
     }
 }
+
+
 router.post('/:enttype', function(req, res) {
+
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
@@ -1995,6 +1999,7 @@ router.post('/:enttype', function(req, res) {
                     let callData = util.getAllQuery(req);
                     let instance = callData.instance;
                     let elIndex = instance.index;
+                    let elDymerUuid = instance.id;
                     let data = callData.data;
                     //External
                     var globalData = req.body;
@@ -2056,6 +2061,9 @@ router.post('/:enttype', function(req, res) {
                             data.properties.tid = "0";
                             data.properties.created = new Date().toISOString();
                             data.properties.changed = new Date().toISOString();
+                        }
+                        if (elDymerUuid == undefined) {
+                            instance.id = util.generateDymerUuid();
                         }
                         let params = (instance) ? instance : {};
                         params["body"] = data;
