@@ -70,7 +70,23 @@ Handlebars.registerHelper('DymerPaginationPageIndex', function(len, index, optio
     return (indexPage + 1);
 });
 Handlebars.registerHelper('DymerPagination', function(arr, options) {
+    let translation = {
+        first: "First",
+        prev: "Prevous",
+        next: "Next",
+        last: "Last"
+    };
     var maxelements = options.data.root.d_pagination_size;
+    let d_pagination_label = options.data.root.d_pagination_label;
+    if (d_pagination_label != undefined) {
+        let d_pagination_labels = d_pagination_label.split("|");
+        translation = {
+            first: d_pagination_labels[0],
+            prev: d_pagination_labels[1],
+            next: d_pagination_labels[2],
+            last: d_pagination_labels[3]
+        }
+    }
     var context;
     context = {
         startFromFirstPage: false,
@@ -86,21 +102,25 @@ Handlebars.registerHelper('DymerPagination', function(arr, options) {
                 isCurrent: indexPage === d_curpage,
             });
         }
-
     }
     if (indexPage < 2)
         return "";
     var pagin = '<ul class="pagination" id="dymerpaginator">';
-
-    pagin += '<li class="page-item " id="dprevpg" onclick="dymerPaginatorNextPrev(-1)"><a class="page-link" href="#">Previous</a></li>';
-    for (var i = 0; i < context.pages.length; i++) {
+    if (translation.first.length)
+        pagin += '<li class="page-item "   onclick="dymerPaginatorChangePage(1)"><a class="page-link" href="#">' + translation.first + '</a></li>';
+    if (translation.prev.length)
+        pagin += '<li class="page-item " id="dprevpg" onclick="dymerPaginatorNextPrev(-1)"><a class="page-link" href="#">' + translation.prev + '</a></li>';
+    let lngpages = context.pages.length;
+    for (var i = 0; i < lngpages; i++) {
         if (context.pages[i].isCurrent)
             pagin += '<li class="page-item active" onclick="dymerPaginatorChangePage(' + (i + 1) + ')" d-pageref="' + (i + 1) + '"><a class="page-link" href="#">' + (i + 1) + '</a></li>';
         else
             pagin += '<li class="page-item"  onclick="dymerPaginatorChangePage(' + (i + 1) + ')" d-pageref="' + (i + 1) + '"><a class="page-link" href="#">' + (i + 1) + '</a></li>';
     }
-    pagin += '<li class="page-item " id="dnextpg" onclick="dymerPaginatorNextPrev(+1)"><a class="page-link" href="#">Next</a></li>';
-
+    if (translation.next.length)
+        pagin += '<li class="page-item " id="dnextpg" onclick="dymerPaginatorNextPrev(+1)"><a class="page-link" href="#">' + translation.next + '</a></li>';
+    if (translation.last.length)
+        pagin += '<li class="page-item "  onclick="dymerPaginatorChangePage(' + lngpages + ')"><a class="page-link" href="#">' + translation.last + '</a></li>';
     pagin += '</ul>';
 
     return pagin;

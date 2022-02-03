@@ -677,7 +677,7 @@ function populateHookRelation(x, y, z, w, k, a, b, arObj2, rel) {
                 let attrismulti = $(this).attr('multiple');
                 // let ismulti = ($(this).hasAttr('data-max-options')) ? "multiple" : '';
                 let ismulti = (typeof attrismulti !== 'undefined' && attrismulti !== false) ? "multiple" : '';
-
+                //let required = ($(this).attr('required') == "true") ? ' required ' : '';
                 let livesearch = ($(this).attr('data-live-search') == "true") ? 'data-live-search="true"' : '';
                 let actionsbox = ($(this).attr('data-actions-box') == "true") ? 'data-actions-box="true"' : '';
                 let maxoptions = '';
@@ -686,7 +686,7 @@ function populateHookRelation(x, y, z, w, k, a, b, arObj2, rel) {
                     maxoptions = ($(this).attr('data-max-options') != "") ? 'data-max-options="' + $(this).attr('data-max-options') + '"' : '';
                 }
 
-                let selpk = '<select class="form-control span12 col-12 selectpicker" name="data[relation][' + rel + '][' + inde + '][to]" ' + '  searchable-label="' + label + '"  class="selectpicker form-control " searchable-override="data[relationdymer][' + rel + ']"    ' + ismulti + " " + actionsbox + " " + livesearch + " " + maxoptions + " " + ' data-selected-text-format="count"   ></select>';
+                let selpk = '<select class="form-control span12 col-12 selectpicker" name="data[relation][' + rel + '][' + inde + '][to]" ' + '  searchable-label="' + label + '"  class="selectpicker form-control " searchable-override="data[relationdymer][' + rel + ']"    ' + ismulti + " " + actionsbox + " " + livesearch + " " + maxoptions + " " + esxtraAttr + " " + ' data-selected-text-format="count"   ></select>';
                 sel = $(selpk).appendTo($(this))
             } else {
                 sel = $('<select class="form-control span12 col-12" searchable-multiple="true" searchable-override="data[relationdymer][' + rel + ']" searchable="" searchable-label="' + label + '2" name="data[relation][' + rel + '][' + inde + '][to]" onchange="relChngd($(this))" ' + esxtraAttr + '>').appendTo($(this));
@@ -3441,7 +3441,8 @@ function getMod(index, mod, veq) {
 
 function dymerPaginatorNextPrev(val) {
     var newpg = d_curpage + val;
-    var lstDpage = $("#dymerpaginator .page-item:last").prev().attr('d-pageref');
+    //var lstDpage = $("#dymerpaginator .page-item:last").prev().attr('d-pageref');
+    var lstDpage = $("#dymerpaginator .page-item[d-pageref]:last").attr('d-pageref');
     if (newpg > 0 && newpg <= lstDpage && d_curpage != newpg) {
         dymerPaginatorChangePage(newpg);
     }

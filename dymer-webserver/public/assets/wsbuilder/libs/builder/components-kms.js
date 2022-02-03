@@ -68,9 +68,9 @@ Vvveb.Components.add("dymer/kmsgeopoint", {
         '<div data-component-geopoint class="form-group  ">' +
         //"<div>" +
         '<input type="hidden" class= "form-control" name="data[location][type]" value="Point">' +
-        '<label class="kms-title-label">Latitudine</label>' +
-        '<input type="number" class="form-control" name="data[location][coordinates][0]">' +
         '<label class="kms-title-label">Longitude</label>' +
+        '<input type="number" class="form-control" name="data[location][coordinates][0]">' +
+        '<label class="kms-title-label">Latitudine</label>' +
         '<input type="number" class="form-control" name="data[location][coordinates][1]">' +
         //  "</div>" +
         '</div>' +
