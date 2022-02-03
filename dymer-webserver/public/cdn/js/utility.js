@@ -128,13 +128,22 @@ function check_required(senderForm) {
         let val = "";
         if ($(this).hasClass("selectpicker")) {
             val = $(this).selectpicker('val');
-        } else
+            if (!(val.length > 0)) {
+                $(this).closest(".bootstrap-select").children('.dropdown-toggle').addClass("error_border");
+                valid = false;
+            } else
+                $(this).closest(".bootstrap-select").children('.dropdown-toggle').removeClass("error_border");
+        } else {
+
             val = ($(this).val()).trim();
-        if (!(val.length > 0)) {
-            $(this).addClass("error_border");
-            valid = false;
-        } else
-            $(this).removeClass("error_border");
+            if (!(val.length > 0)) {
+                $(this).addClass("error_border");
+                valid = false;
+            } else
+                $(this).removeClass("error_border");
+        }
+
+
     });
     return valid;
 }

@@ -718,7 +718,7 @@ table.dataTable tfoot td {
 }
 
 .bootstrap-select button.dropdown-toggle {
-    border-color: #ced4da !important;
+    border-color: #ced4da;
     border-style: solid;
     background-color: #fff;
 }
