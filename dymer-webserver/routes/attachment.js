@@ -4,7 +4,7 @@ var router = express.Router();
 const axios = require('axios');
 const bodyParser = require("body-parser");
 
-// const rrmApi = process.env.RRM_API;
+const rrmApi = process.env.RRM_API;
 
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({
@@ -12,15 +12,10 @@ router.use(bodyParser.urlencoded({
     limit: '100MB'
 }));
 
-let localhost = 'http://localhost:17100';
-let engCloud = 'https://deh-demeter.eng.it/pep-proxy';
-let rrmApi = 'https://acs.bse.h2020-demeter-cloud.eu:1029';
-
-
 
 const options = {
-    target: localhost,
-    changeOrigin: true, 
+    target: rrmApi,
+    changeOrigin: true,
     toProxy: true,
     pathRewrite: {
         '^/api/attachment/downloadContent': '/api/v1/attachment/download',

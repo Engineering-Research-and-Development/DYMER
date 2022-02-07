@@ -58,6 +58,7 @@ var metricsRoutes = require('./routes/metrics');
 */
 
 var publicdemoDonwlonad = require("./routes/demodownloads");
+const { off } = require("process");
 
 app.use(express.static(__dirname + '/public'));
 //app.use(express.static(__dirname + global.gConfig.services.webserver["context-path"] + 'public'));

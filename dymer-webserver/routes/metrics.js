@@ -7,8 +7,8 @@ const axios = require('axios');
 const bodyParser = require("body-parser");
 const { response } = require('express');
 
-// const rrmApi = process.env.RRM_API;
-// const acsServer = process.env.ACS_SERVER;
+const rrmApi = process.env.RRM_API;
+const acsServer = process.env.ACS_SERVER;
 
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({
@@ -17,50 +17,115 @@ router.use(bodyParser.urlencoded({
 }));
 
 
-// let rrmApi = 'http://localhost:17100';
-// let rrmApi = 'https://deh-demeter.eng.it/pep-proxy';
-let acsServer = 'https://acs.bse.h2020-demeter-cloud.eu:3030';
-let rrmApi = 'https://acs.bse.h2020-demeter-cloud.eu:1029';
-
 router.get('/', (req, res) => {
 
     var ret = new jsonResponse();
-
     let authToken = req.headers['x-subject-token']
-    getCapabilityTokenDEMETER('', authToken).then(function (tokenResponse) {
-        pepRrmApi('', authToken, tokenResponse.data).then(function (callresp) {
+    var url_dservice = util.getServiceUrl("dservice");
+    var ownerUrl = url_dservice + "/api/v1/sessions/findByAccessToken/" + authToken;
 
-            ret.setSuccess(callresp.data.success);
-            ret.setData(callresp.data.data);
-            if (!ret.success) {
-                ret.setMessages(callresp.data.extraData.message)
-                ret.setExtraData(callresp.data.extraData)
-            } else {
-                ret.setMessages(callresp.data.message);
+    axios.get(ownerUrl).then(session => {
+        console.log("SESIJA1", session.data)
+        if (session.data.data[0] != null) {
+            if (session.data.data[0].session.extraData != undefined) {
+                if (session.data.data[0].session.extraData.getAllMetricsCapToken != undefined) {
+                    const getAllMetricsCapToken = JSON.parse(session.data.data[0].session.extraData.getAllMetricsCapToken);
+                    getMetricsFromRRM('', authToken, getAllMetricsCapToken).then(function (callresp) {
+
+                        ret.setSuccess(callresp.data.success);
+                        ret.setData(callresp.data.data);
+                        if (!ret.success) {
+                            ret.setMessages(callresp.data.extraData.message)
+                            ret.setExtraData(callresp.data.extraData)
+                        } else {
+                            ret.setMessages(callresp.data.message);
+                        }
+                        return res.send(ret);
+
+                    }).catch(function (error) {
+                        console.log(error);
+                        ret.setSuccess(false);
+                        ret.setMessages("Get all user Metrics Problem");
+                        return res.send(ret);
+
+                    });
+
+                }
+                else {
+                    getMetricsCapabilityToken('', authToken).then(function (tokenResponse) {
+                        getMetricsFromRRM('', authToken, tokenResponse.data).then(function (callresp) {
+
+                            ret.setSuccess(callresp.data.success);
+                            ret.setData(callresp.data.data);
+                            if (!ret.success) {
+                                ret.setMessages(callresp.data.extraData.message)
+                                ret.setExtraData(callresp.data.extraData)
+                            } else {
+                                ret.setMessages(callresp.data.message);
+                            }
+                            return res.send(ret);
+
+                        }).catch(function (error) {
+                            console.log(error);
+                            ret.setSuccess(false);
+                            ret.setMessages("Get all user Metrics Problem");
+                            return res.send(ret);
+
+                        });
+                    }).catch(function (error) {
+                        console.log(error);
+                        ret.setSuccess(false);
+                        ret.setMessages("Get all user Metrics Problem");
+                        return res.send(ret);
+
+                    });
+                }
             }
-            return res.send(ret);
+        } else {
+            getMetricsCapabilityToken('', authToken).then(function (tokenResponse) {
+                getMetricsFromRRM('', authToken, tokenResponse.data).then(function (callresp) {
 
-        }).catch(function (error) {
-            console.log(error);
-            ret.setSuccess(false);
-            ret.setMessages("Get all user Metrics Problem");
-            return res.send(ret);
+                    ret.setSuccess(callresp.data.success);
+                    ret.setData(callresp.data.data);
+                    if (!ret.success) {
+                        ret.setMessages(callresp.data.extraData.message)
+                        ret.setExtraData(callresp.data.extraData)
+                    } else {
+                        ret.setMessages(callresp.data.message);
+                    }
+                    return res.send(ret);
 
-        });
-    })
+                }).catch(function (error) {
+                    console.log(error);
+                    ret.setSuccess(false);
+                    ret.setMessages("Get all user Metrics Problem");
+                    return res.send(ret);
 
+                });
+            }).catch(function (error) {
+                console.log(error);
+                ret.setSuccess(false);
+                ret.setMessages("Get all user Metrics Problem");
+                return res.send(ret);
+
+            });
+        }
+
+    }).catch(function (error) {
+        // handle error
+        console.error("GET external error", error);
+        reject("ERROR:" + ownerUrl + " external error=" + error)
+    });
 });
 
 router.get('/containerid/:id', (req, res) => {
 
     var ret = new jsonResponse();
-
     let authToken = req.headers['x-subject-token']
-
     let url = '/containerId/' + req.params.id;
 
-    getCapabilityTokenDEMETER(url, authToken).then(function (response) {
-        pepRrmApi(url, authToken, response.data).then(function (callresp) {
+    getMetricsCapabilityToken(url, authToken).then(function (response) {
+        getMetricsFromRRM(url, authToken, response.data).then(function (callresp) {
 
             ret.setSuccess(callresp.data.success);
             ret.setData(callresp.data.data);
@@ -86,12 +151,11 @@ router.get('/containerid/:id', (req, res) => {
 router.get('/rrmid/:id', (req, res) => {
 
     var ret = new jsonResponse();
-
     let authToken = req.headers['x-subject-token']
-
     let url = '/rrmId/' + req.params.id + '?deh=true';
-    getCapabilityTokenDEMETER(url, authToken).then(function (response) {
-        pepRrmApi(url, authToken, response.data).then(function (callresp) {
+
+    getMetricsCapabilityToken(url, authToken).then(function (response) {
+        getMetricsFromRRM(url, authToken, response.data).then(function (callresp) {
 
             ret.setSuccess(callresp.data.success);
             ret.setData(callresp.data.data);
@@ -131,6 +195,8 @@ router.post('/getCapToken',
         getCapabilityTokenAttachment(body.accessToken).then(function (tokenResponse) {
             const buff = Buffer.from(JSON.stringify(tokenResponse.data), 'utf-8');
             const base64AttachmentToken = buff.toString('base64');
+            ret.setSuccess(true);
+            ret.setMessages("Attachment Cap. Token Fetched");
             let response = { token: base64AttachmentToken }
             ret.setData(response);
             return res.send(ret);
@@ -144,8 +210,9 @@ router.post('/getCapToken',
     });
 
 
+
 //This is path, this MUST be fixed in next release
-const pepRrmApi = (url, authToken, capToken) => {
+const getMetricsFromRRM = (url, authToken, capToken) => {
 
 
     const headers = {
@@ -173,8 +240,6 @@ const pepRrmApi = (url, authToken, capToken) => {
     })
 }
 
-
-//This is path, this MUST be fixed in next release
 const getCapabilityTokenAttachment = (accessToken) => {
     return new Promise((resolve, reject) => {
 
@@ -195,10 +260,9 @@ const getCapabilityTokenAttachment = (accessToken) => {
 
 
 
-//This is path, this MUST be fixed in next release
-const getCapabilityTokenDEMETER = (url, authToken) => {
+const getMetricsCapabilityToken = (url, authToken) => {
     return new Promise((resolve, reject) => {
-       
+
         let config = {
             headers: {
                 'Content-Type': 'application/json',
