@@ -1131,7 +1131,7 @@ router.post('/_search', (req, res) => {
         if (bridgeConf != undefined) {
             if (bridgeConf.api.tokenProvider != undefined) {
                 if (bridgeConf.api.tokenProvider.active == true) {
-                    getCapabilityTokenDEMETER(bridgeConf, "search", dymeruser.extrainfo.token, undefined, rr, userLocation).then(function (tokenResponse) {
+                    getCapabilityTokenDEMETER(bridgeConf, "search", dymeruser, undefined, rr, userLocation).then(function (tokenResponse) {
                         demeterExternalEntities(bridgeConf, "search", tokenResponse.data, dymeruser.extrainfo.token, undefined, rr, userLocation, undefined).then(function (callresp) {
                             jsonMappingExternalToDymerEntity(callresp.data, bridgeConf, "search").then(function (mapdata) {
                                 let msg = (mapdata.length > 0) ? "List entities" : "Empty list";
@@ -1158,8 +1158,6 @@ router.post('/_search', (req, res) => {
                     });;
                 }
             }
-
-
             else {
 
                 bridgeEsternalEntities(bridgeConf, "search", undefined, rr).then(function (callresp) {
@@ -1368,7 +1366,7 @@ const retriveIndex_Query_ToSearch = (rulesindexquery, obj) => {
                             rulesindexquery.query.push(element);
                             // resolve(indextosearch);
                         }
-                        if(key == "query_string"){
+                        if (key == "query_string") {
                             rulesindexquery.query.push(element);
                         }
                     }
@@ -1656,9 +1654,11 @@ const bridgeEsternalEntities = (objconf, callkey, datatosend, reqConfig, files) 
 }
 
 const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfig, userLocation) => {
+
+    var url_dservice = util.getServiceUrl("dservice");
+    var ownerUrl = url_dservice + "/api/v1/sessions/findByAccessToken/" + token.extrainfo.token;
+
     return new Promise((resolve, reject) => {
-
-
         var resourceUrl;
         var tokenProviderUrl = objconf.api.tokenProvider.host;
 
@@ -1733,7 +1733,7 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
                         reHeader = reHeader.replace('*TO*', '').replace('*TO*', '').replace('*TO*', '').replace('*TO*', '')
 
                         let rawBody = {
-                            token: token,
+                            token: token.extrainfo.token,
                             ac: objconf.api[callkey].method,
                             de: resourceUrl,
                             re: reHeader
@@ -1741,17 +1741,57 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
 
                         let body = JSON.stringify(rawBody);
 
-                        axios.post(tokenProviderUrl, body, config).then(resp => {
-                            resolve(resp);
-                        }).catch(function (error) {
-                            // handle error
-                            console.log(error);
-                            reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
-                        });
-                    } else {
+                        if (reHeader === '/api/v1/resources/search?owner=' + token.id && objconf.api[callkey].method === 'GET') {
+                            console.log("KURCINAAA")
 
+                            axios.get(ownerUrl).then(session => {
+                                console.log("SESIJA1", session.data)
+                                if (session.data.data[0] != null) {
+                                    if (session.data.data[0].session.extraData != undefined) {
+
+                                        if (session.data.data[0].session.extraData.getMyResourcesCapToken != undefined) {
+                                            const getMyResourcesCapToken = { data: JSON.parse(session.data.data[0].session.extraData.getMyResourcesCapToken) };
+                                            resolve(getMyResourcesCapToken);
+                                        }
+                                    } else {
+                                        axios.post(tokenProviderUrl, body, config).then(resp => {
+                                            resolve(resp);
+                                        }).catch(function (error) {
+                                            // handle error
+                                            console.log(error);
+                                            reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
+                                        });
+                                    }
+                                }
+                                else {
+                                    axios.post(tokenProviderUrl, body, config).then(resp => {
+                                        resolve(resp);
+                                    }).catch(function (error) {
+                                        // handle error
+                                        console.log(error);
+                                        reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
+                                    });
+                                }
+
+                            }).catch(function (error) {
+                                // handle error
+                                console.error("GET external error", error);
+                                reject("ERROR:" + ownerUrl + " external error=" + error)
+                            });
+                        }
+                        else {
+
+                            axios.post(tokenProviderUrl, body, config).then(resp => {
+                                resolve(resp);
+                            }).catch(function (error) {
+                                // handle error
+                                console.log(error);
+                                reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
+                            });
+                        }
+                    } else {
                         let rawBody = {
-                            token: token,
+                            token: token.extrainfo.token,
                             ac: objconf.api[callkey].method,
                             de: resourceUrl,
                             re: stringTemplateParser(objconf.api[callkey].path, datatosend)
@@ -1759,29 +1799,66 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
 
                         let body = JSON.stringify(rawBody);
 
-                        axios.post(tokenProviderUrl, body, config).then(resp => {
-                            resolve(resp);
-                        }).catch(function (error) {
-                            // handle error
-                            console.log(error);
-                            reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
-                        });
+                        if (reHeader === '/api/v1/resources' && objconf.api[callkey].method === 'GET') {
+                            axios.get(ownerUrl).then(session => {
+                                console.log("SESIJA2", session.data)
+                                if (session.data.data[0] != null) {
+                                    if (session.data.data[0].session.extraData != undefined) {
+                                        if (session.data.data[0].session.extraData.getAllResourcesCapToken != undefined) {
+                                            const getAllResourcesCapToken = { data: JSON.parse(session.data.data[0].session.extraData.getAllResourcesCapToken) };
+                                            resolve(getAllResourcesCapToken);
+                                        }
+                                    } else {
+                                        axios.post(tokenProviderUrl, body, config).then(resp => {
+                                            resolve(resp);
+                                        }).catch(function (error) {
+                                            // handle error
+                                            console.log(error);
+                                            reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
+                                        });
+                                    }
+                                }
+                                else {
+                                    axios.post(tokenProviderUrl, body, config).then(resp => {
+                                        resolve(resp);
+                                    }).catch(function (error) {
+                                        // handle error
+                                        console.log(error);
+                                        reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
+                                    });
+                                }
+
+                            }).catch(function (error) {
+                                // handle error
+                                console.error("GET external error", error);
+                                reject("ERROR:" + ownerUrl + " external error=" + error)
+                            });
+                        }
+                        else {
+                            axios.post(tokenProviderUrl, body, config).then(resp => {
+                                resolve(resp);
+                            }).catch(function (error) {
+                                // handle error
+                                console.log(error);
+                                reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
+                            });
+                        }
                     }
                 }).catch(function (error) {
                     // handle error
                     console.error("jsonMapping bridgeEsternalEntities error", error);
 
                 });
+
             } else {
                 let rawBody = {
-                    token: token,
+                    token: token.extrainfo.token,
                     ac: objconf.api[callkey].method,
                     de: resourceUrl,
                     re: stringTemplateParser(objconf.api[callkey].path, datatosend)
                 }
 
                 let body = JSON.stringify(rawBody);
-                console.log('body pre call-a drugi prvi else', body);
 
                 axios.post(tokenProviderUrl, body, config).then(resp => {
                     resolve(resp);
@@ -1794,27 +1871,57 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
         } else {
 
             let rawBody = {
-                token: token,
+                token: token.extrainfo.token,
                 ac: objconf.api[callkey].method,
                 de: resourceUrl,
                 re: stringTemplateParser(objconf.api[callkey].path, datatosend)
             }
 
             let body = JSON.stringify(rawBody);
-            console.log('body pre call-a drugi drugi else', body);
+            if (rawBody.re === '/api/v1/resources' && objconf.api[callkey].method === 'POST') {
+                axios.get(ownerUrl).then(session => {
+                    if (session.data.data[0] != null) {
+                        if (session.data.data[0].session.extraData != undefined) {
+                            if (session.data.data[0].session.extraData.createResourceCapToken != undefined) {
+                                const createResourceCapToken = { data: JSON.parse(session.data.data[0].session.extraData.createResourceCapToken) };
+                                resolve(createResourceCapToken);
+                            }
+                        } else {
+                            axios.post(tokenProviderUrl, body, config).then(resp => {
+                                resolve(resp);
+                            }).catch(function (error) {
+                                // handle error
+                                console.log(error);
+                                reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
+                            });
+                        }
+                    }
+                    else {
+                        axios.post(tokenProviderUrl, body, config).then(resp => {
+                            resolve(resp);
+                        }).catch(function (error) {
+                            // handle error
+                            console.log(error);
+                            reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
+                        });
+                    }
 
-            axios.post(tokenProviderUrl, body, config).then(resp => {
-                resolve(resp);
-            }).catch(function (error) {
-                // handle error
-                console.log(error);
-                reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
-            });
+                }).catch(function (error) {
+                    // handle error
+                    console.error("GET external error", error);
+                    reject("ERROR:" + ownerUrl + " external error=" + error)
+                });
+            }
+            else {
+                axios.post(tokenProviderUrl, body, config).then(resp => {
+                    resolve(resp);
+                }).catch(function (error) {
+                    // handle error
+                    console.log(error);
+                    reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
+                });
+            }
         }
-
-
-        //Promenjivo
-
     });
 }
 
@@ -1945,7 +2052,7 @@ const demeterExternalEntities = (objconf, callkey, capToken, authToken, datatose
                         gridFSBucket.delete(mongoose.Types.ObjectId(fl.id)).then(() => {
                             console.log("Deleted " + fl.filename);
                         }).catch(function (err) {
-                            console.log('Caught an error in delete Attachments inoltro!');
+                            console.log('Caught an error in delete images inoltro!');
                         });
                     }).catch(function (err) {
                         console.log("err_a");
@@ -2244,7 +2351,7 @@ router.post('/:enttype', function (req, res) {
                             if (bridgeConf.api.tokenProvider.active == true) {
                                 globalData.data.properties.owner = { "uid": urs_uid, "gid": urs_gid }
                                 jsonMappingDymerEntityToExternal(globalData, bridgeConf, "create", req.files).then(function (mapdata) {
-                                    getCapabilityTokenDEMETER(bridgeConf, "create", dymeruser.extrainfo.token, mapdata).then(function (tokenResponse) {
+                                    getCapabilityTokenDEMETER(bridgeConf, "create", dymeruser, mapdata).then(function (tokenResponse) {
                                         demeterExternalEntities(bridgeConf, "create", tokenResponse.data, dymeruser.extrainfo.token, mapdata, undefined, undefined, req.files).then(function (callresp) {
                                             ret.setSuccess(callresp.data.success);
                                             ret.setData(callresp.data);
@@ -2670,7 +2777,7 @@ router.put('/:id', (req, res) => {
                 if (bridgeConf.api.tokenProvider.active == true) {
                     globalData.data.properties.owner = { "uid": urs_uid, "gid": urs_gid }
                     jsonMappingDymerEntityToExternal(globalData, bridgeConf, "update").then(function (mapdata) {
-                        getCapabilityTokenDEMETER(bridgeConf, "update", dymeruser.extrainfo.token, mapdata).then(function (tokenResponse) {
+                        getCapabilityTokenDEMETER(bridgeConf, "update", dymeruser, mapdata).then(function (tokenResponse) {
                             demeterExternalEntities(bridgeConf, "update", tokenResponse.data, dymeruser.extrainfo.token, mapdata, undefined, undefined, req.files).then(function (callresp) {
                                 ret.setSuccess(callresp.data.success);
                                 ret.setData(callresp.data);
@@ -3430,7 +3537,7 @@ router.delete('/:id', (req, res) => {
             if (bridgeConf.api.tokenProvider != undefined) {
                 if (bridgeConf.api.tokenProvider.active == true) {
                     jsonMappingDymerEntityToExternal(callData, bridgeConf, "delete").then(function (mapdata) {
-                        getCapabilityTokenDEMETER(bridgeConf, "delete", dymeruser.extrainfo.token, mapdata, undefined, undefined).then(function (tokenResponse) {
+                        getCapabilityTokenDEMETER(bridgeConf, "delete", dymeruser, mapdata, undefined, undefined).then(function (tokenResponse) {
                             demeterExternalEntities(bridgeConf, "delete", tokenResponse.data, dymeruser.extrainfo.token, mapdata, undefined, undefined).then(function (callresp) {
 
                                 ret.setSuccess(callresp.data.success);
