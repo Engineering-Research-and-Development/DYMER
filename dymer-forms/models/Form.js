@@ -22,6 +22,7 @@ mongoose.model("Form", {
         _index: String,
         _type: String
     }],
+    structure: { type: Object },
     files: [mongoose.Schema.Types.ObjectId],
     properties: {
         created: {

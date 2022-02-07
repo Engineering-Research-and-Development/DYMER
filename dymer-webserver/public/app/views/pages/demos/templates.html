@@ -116,6 +116,8 @@
  <span class="token function">{{<span>/each</span>}}</span>
  &lt;div data-component-dpagination="" class="row pagination" d-pagination-size="6"&gt;<span class="token function">{{<span>DymerPagination this</span>}}</span>&lt;/div&gt;
 </code></pre>
+                <h5>Paginator label</h5> sets the "d_pagination_label" variable as an array of joined pipe strings corresponding to the buttons First|Prevous|Next|Last<br> ex {{setVariable "d_pagination_label" "Prima|Prossima|Precedente|Ultima"}}
+                <br>to not display the button omit the string between the pipes<br> {{setVariable "d_pagination_label" "|Next|Prev|"}}. <br> if the variable is not set, the following tuple "First|Prevous|Next|Last" will be used
                 <h4 class="text-info" id="lnktemplatesetvariable"><i class="fa fa-caret-right" aria-hidden="true"></i> Set Variable
                 </h4>
                 <pre class=" language-javascript" data-language="javascript"><code class=" language-javascript"><span class="token function">{{<span>setVariable "your_variable_name" your_value</span>}}</span><br>Example:<br><span class="token function">{{<span>setVariable "d_pagination_size" 6</span>}}</span>

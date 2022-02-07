@@ -186,11 +186,12 @@ app.post('/api2/retriveinfo', loadUserInfo, (req, res, next) => {
     //   console.log("retriveinfo req.isAuthenticated()", req.isAuthenticated());
     const authHeader = req.headers.authorization;
     var obj_isi = {};
-
+    let dr_value = new Buffer(JSON.stringify(dymeruser.roles)).toString("base64");
     var objuser = {
         "d_uid": dymeruser.id,
         "d_appuid": dymeruser.app_id,
-        "d_gid": dymeruser.gid
+        "d_gid": dymeruser.gid,
+        "d_rl": dr_value
     };
     console.log("api retriveinfo", JSON.stringify(objuser));
     res.send(objuser);

@@ -1,4 +1,5 @@
 var util = require('../utility');
+
 //Marco var dymerOauth = require('./dymerOauth');
 var jsonResponse = require('../jsonResponse');
 var express = require('express');
@@ -20,6 +21,7 @@ router.use(bodyParser.urlencoded({ extended: true }));
 var bE = require("./bridgeEntities.js");
 const { nextTick } = require('process');
 const { reject, forEach } = require('lodash');
+var _ = require('lodash');
 var FormData = require('form-data');
 const jwt = require('jsonwebtoken');
 const nameFile = path.basename(__filename);
@@ -230,15 +232,15 @@ function checkRelation(params, elIndex, elId) {
     for (var myKey in params) {
         let _id2_list = [];
         for (var elre in params[myKey]) {
-            console.log('params[myKey]', params[myKey]);
+            // console.log('params[myKey]', params[myKey]);
             let _id2 = params[myKey][elre].to;
             if (Array.isArray(_id2)) {
                 _id2_list = params[myKey][elre].to;
             } else {
                 _id2_list.push(_id2);
             }
-            console.log('_id2', _id2);
-            console.log('myKey', myKey, elre);
+            //  console.log('_id2', _id2);
+            // console.log('myKey', myKey, elre);
             let qparams = {};
             qparams["index"] = "entity_relation";
             qparams["type"] = "entity_relation";
@@ -1188,6 +1190,7 @@ router.post('/_search', (req, res) => {
                     delete query.query.relationdymer;
                 }
             }
+
             if (!isadmin) {
                 var my_oldquery = query.query;
                 /*
@@ -1269,8 +1272,13 @@ router.post('/_search', (req, res) => {
             params["sort"] = ["title.keyword:asc"];
             params["body"] = query;
             params["body"].size = 10000;
+            console.log('source', source);
+
+            //    params["_source_includes"] = ["*"];
+            //   params["_source_excludes"] = ["description"];
             console.log(nameFile + ' | _search | params:', JSON.stringify(params));
-            client.search(params).then(function (resp) {
+
+            client.search(params).then(function(resp) {
                 if (err) {
                     console.error("ERROR | " + nameFile + '  | _search | search:', err);
                     ret.setSuccess(false);
@@ -1282,20 +1290,63 @@ router.post('/_search', (req, res) => {
                 ret.setMessages(msg);
                 if (resp.hits.total == 0)
                     return res.send(ret);
+                const unique = [...new Set((resp.hits.hits).map(item => item._index))];
+
+
+                //      var urlmodel = util.getServiceUrl("form") + "/api/v1/form/dettagliomodel";
+                //  var urlmodel =   "http://localhost:8080/api/v1/form/";
+                //         var myQueryModel = { "query": { "instance._index": unique } };
+                let minmodelist = [];
+                minmodelist = unique;
+                /*  var config = {
+                      method: 'get',
+                      url: urlmodel,
+                      headers: {
+                          'dymeruser': hdymeruser,
+                          "Referer": "http://localhost/",
+                          'Content-Type': 'application/json',
+                      },
+                      data: myQueryModel
+                  };
+                  axios(config)
+                      .then((respone) => {*/
+                /*   let compr_struct = respone.data.data[0].structure;
+                   console.log("unique", unique);
+                   console.log("compr_struct", compr_struct);
+                   console.log("resp.hits", resp.hits.hits);*/
+                //console.log("recoverRelation", recoverRelation);
                 if (recoverRelation == 'false' || recoverRelation == false) {
-                    for (var i = 0; i < resp.hits.hits.length; i++) {
-                        var source = resp.hits.hits[i]._source;
-                        delete resp.hits.hits[i]._source;
-                        for (var key in source) {
-                            resp.hits.hits[i][key] = source[key];
+                    filertEntitiesFields(resp.hits.hits, minmodelist, hdymeruser).then(function(nlist) {
+                        // console.log("prepre", nlist);
+                        //  ret.setData(nlist);
+                        //  return res.send(ret);
+
+                        for (var i = 0; i < nlist.length; i++) {
+                            var source = nlist[i]._source;
+                            delete nlist[i]._source;
+                            for (var key in source) {
+                                nlist[i][key] = source[key];
+                            }
                         }
-                    }
-                    ret.setData(resp.hits.hits);
-                    //console.log(nameFile + ' | _search | resp no relations:', JSON.stringify(resp.hits.hits));
-                    console.log(nameFile + ' | _search | resp no relations: count ', resp.hits.hits.length);
-                    return res.send(ret);
+                        ret.setData(nlist);
+                        //console.log(nameFile + ' | _search | resp no relations:', JSON.stringify(resp.hits.hits));
+                        console.log(nameFile + ' | _search | resp no relations: count ', resp.hits.hits.length);
+                        return res.send(ret);
+
+                    }).catch(function(err) {
+                        console.error("ERROR | " + nameFile + '  | _search | checkUnionRelation:', err);
+                    });
+
                 } else {
-                    checkUnionRelation(resp.hits.hits).then(function (meatch) {
+                    checkUnionRelation(resp.hits.hits).then(function(meatch) {
+
+                        (meatch).map(item => item.relations).filter(
+                            function(thing, i, arr) {
+                                let cc = [...minmodelist, ...new Set((thing).map(item => item._index))];
+                                minmodelist = cc.filter((item, pos) => cc.indexOf(item) === pos)
+                            }
+                        );
+                        //console.log("Object.keys(filterRelationDymer).length", Object.keys(filterRelationDymer).length);
                         if (Object.keys(filterRelationDymer).length > 0) {
                             var fileterdList = [];
                             meatch.forEach(element => {
@@ -1310,19 +1361,45 @@ router.post('/_search', (req, res) => {
                                 if (append)
                                     fileterdList.push(element);
                             });
-                            ret.setData(fileterdList);
-                            console.log(nameFile + ' | _search | resp filter relations:count ', resp.hits.hits.length);
-                            return res.send(ret);
+                            filertEntitiesFields(fileterdList, minmodelist, hdymeruser).then(function(nlist) {
+                                //  console.log("prepre", nlist);
+                                console.log(nameFile + ' | _search | resp filter relations:count ', nlist.length);
+                                ret.setData(nlist);
+                                return res.send(ret);
+                            }).catch(function(err) {
+                                // console.log(nameFile + ' | _search | resp filter relations:count ', resp.hits.hits.length);
+                                console.error("ERROR | " + nameFile + '  | _search | resp filter relations:count:', err);
+                            });
+                            /* ret.setData(fileterdList);
+                             console.log(nameFile + ' | _search | resp filter relations:count ', resp.hits.hits.length);
+                             return res.send(ret);*/
                         } else {
-                            ret.setData(meatch);
+                            // ret.setData(meatch);
+                            // console.log("resp.hits.hits", meatch)
+                            //   const uniqueRel = (meatch).map(item => item.relations);
+
+                            //console.log(' minmodelist ', minmodelist);
                             console.log(nameFile + ' | _search | resp no detect relations:count ', resp.hits.hits.length);
-                            return res.send(ret);
+
+                            filertEntitiesFields(meatch, minmodelist, hdymeruser).then(function(nlist) {
+                                //  console.log("prepre", nlist);
+                                ret.setData(nlist);
+                                return res.send(ret);
+                            }).catch(function(err) {
+                                console.error("ERROR | " + nameFile + '  | _search | checkUnionRelation:', err);
+                            });
+                            //   return res.send(ret);
                         }
                     }).catch(function (err) {
                         console.error("ERROR | " + nameFile + '  | _search | checkUnionRelation:', err);
                     });
                 }
-            }).catch(function (error) {
+
+                // })
+
+
+
+            }).catch(function(error) {
                 ret.setMessages("Search Error");
                 ret.setSuccess(false);
                 ret.setExtraData({ "log": error });
@@ -1331,6 +1408,131 @@ router.post('/_search', (req, res) => {
         }
     });
 });
+var filertEntitiesFields = function(originalList, minmodelist, hdymeruser) {
+    return new Promise(function(resolve, reject) {
+        let dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+        //  console.log('originalList', originalList);
+        if (dymeruser.roles.length > 1) {
+            // console.log('filertEntitiesFields resolve >1');
+            return resolve(originalList);
+
+        }
+        //  console.log('filertEntitiesFields resolve >1---continua');
+        var urlmodel = util.getServiceUrl("form") + "/api/v1/form/dettagliomodel";
+        var myQueryModel = { "query": { "instance._index": minmodelist } };
+        var config = {
+            method: 'get',
+            url: urlmodel,
+            headers: {
+                'dymeruser': hdymeruser,
+                "Referer": "http://localhost/",
+                'Content-Type': 'application/json',
+            },
+            data: myQueryModel
+        };
+        //var rgx = /[.][0-9][.]/gm;
+        var rgx = /[0-9]/gm;
+        axios(config)
+            .then((respone) => {
+                let total_compr_struct = respone.data.data
+                    // console.log("total_compr_struct", total_compr_struct);
+                Promise.all(originalList.map(function(element) {
+                    return new Promise(function(resolve, reject) {
+                        let single_compr_struct = ((total_compr_struct).find(x => (x.instance).find(y => y._index == element._index)));
+                        if (single_compr_struct.hasOwnProperty('structure')) {
+                            let single_compr_struct_visibility = (single_compr_struct.structure.child).filter(x => x.attr['dymer-model-visibility'] == "private")
+                                //   console.log("single_compr_struct_visibility", single_compr_struct_visibility);
+                            single_compr_struct_visibility.forEach(singlel => {
+                                let ark_del = replaceAll(singlel.attr.name, '[', '["');
+                                ark_del = replaceAll(ark_del, ']', '"]');
+                                ark_del = ark_del.replace("data", '');
+                                let indexRgx = (singlel.attr.name).split("][").find(value => rgx.test(value));
+                                if (indexRgx != undefined) {
+                                    let listtest = [];
+                                    for (let index = 0; index < 10; index++) {
+                                        listtest.push(ark_del.replace('["0"]', index));
+                                    }
+                                    _.omit(element["_source"], listtest);
+                                } else {
+                                    _.unset(element["_source"], ark_del);
+                                }
+                            });
+                            //console.log("filertEntitiesFields 1 element", JSON.stringify(element));
+                            if (element.hasOwnProperty('relations')) {
+                                Promise.all((element.relations).map(function(subelement) {
+                                        return new Promise(function(resolve, reject) {
+                                            let single_compr_struct = ((total_compr_struct).find(x => (x.instance).find(y => y._index == subelement._index)));
+                                            //console.log('subelement single_compr_struct', single_compr_struct, subelement);
+                                            if (single_compr_struct.hasOwnProperty('structure')) {
+                                                let single_compr_struct_visibility = (single_compr_struct.structure.child).filter(x => x.attr['dymer-model-visibility'] == "private")
+                                                single_compr_struct_visibility.forEach(singlel => {
+                                                    let ark_del = replaceAll(singlel.attr.name, '[', '["');
+                                                    ark_del = replaceAll(ark_del, ']', '"]');
+                                                    ark_del = ark_del.replace("data", '');
+                                                    let indexRgx = (singlel.attr.name).split("][").find(value => rgx.test(value));
+                                                    if (indexRgx != undefined) {
+                                                        let listtest = [];
+                                                        for (let index = 0; index < 20; index++) {
+                                                            listtest.push(ark_del.replace('["0"]', index));
+                                                        }
+                                                        _.omit(subelement["_source"], listtest);
+                                                    } else {
+                                                        _.unset(subelement["_source"], ark_del);
+                                                    }
+                                                    /* var ark = replaceAll(singlel.attr.name, '[', '@@');
+                                                     ark = replaceAll(ark, ']', '');
+                                                     ark = ark.split("@@");
+                                                     ark.shift();
+                                                     let keydel = ark.join('.');
+                                                     // console.log('singlekey 222', keydel);
+                                                     delete subelement["_source"][keydel];*/
+                                                });
+                                                //console.log("filertEntitiesFields 2 subelement", JSON.stringify(subelement));
+                                                resolve(subelement);
+                                            } else {
+                                                //console.log("filertEntitiesFields 2.1 subelement", JSON.stringify(subelement));
+                                                resolve(subelement);
+                                            }
+                                        }).catch(function(err) {
+                                            reject([]);
+                                            console.error("ERROR | " + nameFile + ' | filertEntitiesFields subelement | promise  : ', err);
+                                        });
+                                    }))
+                                    .then(function(data) {
+                                        //  console.log("filertEntitiesFields 3", JSON.stringify(data));
+                                        resolve(data);
+                                        //   return (data)
+                                        // resolve(returnList);
+                                    }).catch(function(err) {
+                                        reject([]);
+                                        console.error("ERROR | " + nameFile + ' | filertEntitiesFields | promise.all  : ', err);
+                                    });
+                            } else {
+                                //console.log("filertEntitiesFields 2.1 subelement", JSON.stringify(subelement));
+                                resolve(element);
+                            }
+                        } else {
+                            //console.log("filertEntitiesFields 2.1 subelement", JSON.stringify(subelement));
+                            resolve(element);
+                        }
+                    }).catch(function(err) {
+                        reject([]);
+                        console.error("ERROR | " + nameFile + ' | filertEntitiesFields | promise  : ', err);
+                    });
+                })).then(function(data) {
+                    //console.log("filertEntitiesFields 4", data);
+                    return resolve(originalList);
+                }).catch(function(err) {
+                    reject([]);
+                    console.error("ERROR | " + nameFile + ' | filertEntitiesFields | promise.all  : ', err);
+                });
+            });
+    }).catch(function(err) {
+        reject([]);
+        console.error("ERROR | " + nameFile + ' | filertEntitiesFields | promise  : ', err);
+    });
+}
+
 const retriveIndex_Query_ToSearch = (rulesindexquery, obj) => {
     //  var indextosearch = (typeof indextosearch === 'undefined') ? [] : indextosearch;
     if (typeof obj === 'object') {
@@ -2279,7 +2481,10 @@ function appendFormdata(FormData, data, name) {
         FormData.append(name, data);
     }
 }
-router.post('/:enttype', function (req, res) {
+
+
+router.post('/:enttype', function(req, res) {
+
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
@@ -2329,6 +2534,7 @@ router.post('/:enttype', function (req, res) {
                     let callData = util.getAllQuery(req);
                     let instance = callData.instance;
                     let elIndex = instance.index;
+                    let elDymerUuid = instance.id;
                     let data = callData.data;
                     //External
                     var globalData = req.body;
@@ -2429,6 +2635,9 @@ router.post('/:enttype', function (req, res) {
                             data.properties.created = new Date().toISOString();
                             data.properties.changed = new Date().toISOString();
                         }
+                        if (elDymerUuid == undefined) {
+                            instance.id = util.generateDymerUuid();
+                        }
                         let params = (instance) ? instance : {};
                         params["body"] = data;
                         // params["body"].size = 10000;
@@ -2502,7 +2711,7 @@ router.put('/update/:id', (req, res) => {
     let rfrom = (req.headers["reqfrom"]).replace("http://", "").replace("https://", "").replace("/", "");
     //var url = util.getServiceUrl("dservice") + "/api/dservice/api/v1/fwadapter/configs";
     var url = util.getServiceUrl("dservice") + "/api/v1/fwadapter/configs";
-    '/api/dservice/api/v1/fwadapter/configs'
+    //   '/api/dservice/api/v1/fwadapter/configs'
     // axios.post(url_dservice + '/api/v1/servicehook/checkhook', { data: postObj, "extraInfo": extraInfo }, {
     //     headers: headers
     //  })
@@ -3757,7 +3966,7 @@ function checkServiceHook(EventSource, objSend, extraInfo, req) {
     logger.info(nameFile + ' | checkServiceHook | url_dservice,EventSource,objSend: ' + url_dservice + ' , ' + EventSource + ' , ' + JSON.stringify(objSend));
     console.log(nameFile + ' | checkServiceHook | url_dservice,EventSource: ', url_dservice, EventSource);
     console.log(nameFile + ' | checkServiceHook | objSend: ', JSON.stringify(objSend));
-    console.log(nameFile + ' | checkServiceHook | reqfrom: ', req.headers);
+    console.log(nameFile + ' | checkServiceHook | reqfrom: ', JSON.stringify(req.headers));
     const headers = {
         'reqfrom': req.headers["reqfrom"]
     }

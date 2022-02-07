@@ -124,13 +124,26 @@ function useAlert(id, title_msg, msg_text, success) {
 
 function check_required(senderForm) {
     var valid = true;
-    $(senderForm + " [required]").each(function () {
-        var val = ($(this).val()).trim();
-        if (!(val.length > 0)) {
-            $(this).addClass("error_border");
-            valid = false;
-        } else
-            $(this).removeClass("error_border");
+    $(senderForm + " [required]").each(function() {
+        let val = "";
+        if ($(this).hasClass("selectpicker")) {
+            val = $(this).selectpicker('val');
+            if (!(val.length > 0)) {
+                $(this).closest(".bootstrap-select").children('.dropdown-toggle').addClass("error_border");
+                valid = false;
+            } else
+                $(this).closest(".bootstrap-select").children('.dropdown-toggle').removeClass("error_border");
+        } else {
+
+            val = ($(this).val()).trim();
+            if (!(val.length > 0)) {
+                $(this).addClass("error_border");
+                valid = false;
+            } else
+                $(this).removeClass("error_border");
+        }
+
+
     });
     return valid;
 }
@@ -678,7 +691,7 @@ function populateHookRelation(x, y, z, w, k, a, b, arObj2, rel) {
                 let attrismulti = $(this).attr('multiple');
                 // let ismulti = ($(this).hasAttr('data-max-options')) ? "multiple" : '';
                 let ismulti = (typeof attrismulti !== 'undefined' && attrismulti !== false) ? "multiple" : '';
-
+                //let required = ($(this).attr('required') == "true") ? ' required ' : '';
                 let livesearch = ($(this).attr('data-live-search') == "true") ? 'data-live-search="true"' : '';
                 let actionsbox = ($(this).attr('data-actions-box') == "true") ? 'data-actions-box="true"' : '';
                 let maxoptions = '';
@@ -687,7 +700,7 @@ function populateHookRelation(x, y, z, w, k, a, b, arObj2, rel) {
                     maxoptions = ($(this).attr('data-max-options') != "") ? 'data-max-options="' + $(this).attr('data-max-options') + '"' : '';
                 }
 
-                let selpk = '<select class="form-control span12 col-12 selectpicker" name="data[relation][' + rel + '][' + inde + '][to]" ' + '  searchable-label="' + label + '"  class="selectpicker form-control " searchable-override="data[relationdymer][' + rel + ']"    ' + ismulti + " " + actionsbox + " " + livesearch + " " + maxoptions + " " + ' data-selected-text-format="count"   ></select>';
+                let selpk = '<select class="form-control span12 col-12 selectpicker" name="data[relation][' + rel + '][' + inde + '][to]" ' + '  searchable-label="' + label + '"  class="selectpicker form-control " searchable-override="data[relationdymer][' + rel + ']"    ' + ismulti + " " + actionsbox + " " + livesearch + " " + maxoptions + " " + esxtraAttr + " " + ' data-selected-text-format="count"   ></select>';
                 sel = $(selpk).appendTo($(this))
             } else {
                 sel = $('<select class="form-control span12 col-12" searchable-multiple="true" searchable-override="data[relationdymer][' + rel + ']" searchable="" searchable-label="' + label + '2" name="data[relation][' + rel + '][' + inde + '][to]" onchange="relChngd($(this))" ' + esxtraAttr + '>').appendTo($(this));
@@ -1577,6 +1590,8 @@ function getrendRole(perm) {
     if (perm.edit) {
         if (perm.isowner)
             owner = '<i class="fa fa-user icon-action" title="Owner" ></i>';
+        else if (perm.isadmin)
+            owner = '<i class="fa fa-user-circle-o icon-action" title="Admin" ></i>';
         else
             owner = '<i class="fa fa-user-o icon-action" title="co-editor"  ></i>';
     }
@@ -1689,12 +1704,14 @@ function checkPermission(actualItem, act) {
     //let d_uid = retriveVarCookie("d_uid");
     let d_uid = localStorage.getItem("d_uid");
     let d_gid = localStorage.getItem("d_gid");
+    let d_rl = localStorage.getItem("d_rl");
     var entPerm = {
         isowner: false,
         view: false,
         edit: false,
         delete: false,
-        managegrant: false
+        managegrant: false,
+        isadmin: false
     };
     if (typeof d_uid == 'undefined') {
         entPerm.view = true;
@@ -1705,6 +1722,19 @@ function checkPermission(actualItem, act) {
         isiinfo = JSON.parse(atob(retriveVarCookie("DYMisi")));
     if (isiinfo != undefined && isiinfo != "null") {
         if ((isiinfo.roles).find(x => x.role == "app-admin")) {
+            entPerm.view = true;
+            entPerm.isadmin = true;
+            entPerm.edit = true;
+            entPerm.delete = true;
+            entPerm.managegrant = true;
+            return entPerm;
+        }
+    }
+    if (typeof d_rl != 'undefined') {
+        d_rl = JSON.parse(atob(d_rl));
+        if ((d_rl).find(x => x == "app-admin")) {
+            entPerm.isadmin = true;
+            entPerm.isowner = false;
             entPerm.view = true;
             entPerm.edit = true;
             entPerm.delete = true;
@@ -3441,7 +3471,8 @@ function getMod(index, mod, veq) {
 
 function dymerPaginatorNextPrev(val) {
     var newpg = d_curpage + val;
-    var lstDpage = $("#dymerpaginator .page-item:last").prev().attr('d-pageref');
+    //var lstDpage = $("#dymerpaginator .page-item:last").prev().attr('d-pageref');
+    var lstDpage = $("#dymerpaginator .page-item[d-pageref]:last").attr('d-pageref');
     if (newpg > 0 && newpg <= lstDpage && d_curpage != newpg) {
         dymerPaginatorChangePage(newpg);
     }
@@ -3635,10 +3666,10 @@ function getFilterQueryType(filter) {
     }
     return { addtoquery: addToQuery, filterquery: filterKey, value: filter_value, typeqr: filter_type, filter_cond: filter_condition, ismultiple: filter_multiple };
 }
-
+/*
 function opencloseDSAF(el) {
     basefilter
-}
+}*/
 
 function dymerSearch(options) {
     let _this = this;
@@ -3646,7 +3677,8 @@ function dymerSearch(options) {
         "conditionQuery": "AND",
         "groupfilterclass": "span12 col-12",
         "addfreesearch": false,
-        "showFilterBtn": false
+        "showFilterBtn": false,
+        "showAdvOptionBtn": false
     }
     options = { ...defaultOptions, ...options };
     this.init = function () {
@@ -3654,7 +3686,19 @@ function dymerSearch(options) {
         if (options.showFilterBtn) {
             $("#" + options.formid).append('<i class="fa fa-filter dsearchAdvFilterBtn" aria-hidden="true" title="advanced filter" onclick="' + options.objname + '.showFilter()"></i>');
         }
-
+        if (options.showAdvOptionBtn) {
+            let clsOrlink = ((options.conditionQuery).toLowerCase() == "or") ? "active" : "";
+            let clsAndlink = ((options.conditionQuery).toLowerCase() == "and") ? "active" : "";
+            let dsearchAdvOptionBtn = '<div class="dropdown show dsearchAdvOptionBtn"> ' +
+                '<i class="fa fa-cog" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                '</i>' +
+                '<div class="dropdown-menu optsconditionQuery" aria-labelledby="dropdownMenuLink">' +
+                '<a class="dropdown-item ' + clsOrlink + '" data-value="or" href="#" onclick="' + options.objname + '.setConditioQuery(\'or\')" >OR</a>' +
+                '<a class="dropdown-item ' + clsAndlink + '" data-value="and" href="#" onclick="' + options.objname + '.setConditioQuery(\'and\')"   >AND</a>' +
+                '</div>' +
+                ' </div>';
+            $("#" + options.formid).append(dsearchAdvOptionBtn);
+        }
         if (options.objname == undefined) {
             document.getElementById(options.formid).innerHTML = '<div class="alert alert-danger" role="alert">ERROR: objname param is Mandatory</div>';
             return;
@@ -3690,11 +3734,21 @@ function dymerSearch(options) {
          this.orderElement();*/
         $('.selectpicker').selectpicker();
     }
-    this.loadFilterModel = function () {
+    this.setConditioQuery = function(val) {
+        options.conditionQuery = val;
+        $("#" + options.formid + ' .dsearchAdvOptionBtn .optsconditionQuery a').removeClass("active");
+        $("#" + options.formid + ' .dsearchAdvOptionBtn .optsconditionQuery a[data-value="' + val + '"]').addClass("active");
+    }
+    this.getOptions = function(val) {
+        return options;
+    }
+    this.loadFilterModel = function() {
+        let d_uid = localStorage.getItem("d_uid");
+
         let index = options.filterModel;
         if (index == undefined)
             return;
-        let datapost = { "query": { "instance._index": index }, "act": "update" };
+        let datapost = { "query": { "instance._index": index }, "act": "view" };
         let sourceUrl = getendpoint('form');
         let temp_config_call = {
             url: sourceUrl,
@@ -3745,15 +3799,25 @@ function dymerSearch(options) {
             if (options.addfreesearch) {
                 let groupEl = $('<div class="grpfilter ' + options.groupfilterclass + ' basefilter"><div><label class="control-label"> Search </label></div> </div>');
                 $(groupEl).attr('data-filterpos', -10);
-                $(groupEl).append('<input type="text" class="form-control col-12 span12" placeholder="Enter any term" name="data[_all]" searchable-override="_all" >');
+                $(groupEl).append('<input type="text" class="form-control  " placeholder="Enter any term" name="data[_all]" searchable-override="_all" >');
+
+                //if (options.innerContainerid == options.formid) {
                 myform_innerContainer.append(groupEl);
+                //  } else {
+                //      $(groupEl).insertBefore(myform_innerContainer);
+                //  }
+
+
             }
             $(itemValue).find('[searchable-element="true"]').each(function () {
                 //let newId = idGen.getId();
                 let filterpos = ($(this).data('filterpos') == undefined) ? 0 : $(this).data('filterpos');
                 let singleEl = "";
-                if ($(this).attr("data-torelation") != undefined) {
 
+                if ($(this).attr("dymer-model-visibility") == "private" && d_uid == "guest@dymer.it") {
+                    return;
+                }
+                if ($(this).attr("data-torelation") != undefined) {
                     let rel = $(this).attr('data-torelation');
                     let esxtraAttr = "";
                     let datapost = {
@@ -3766,6 +3830,10 @@ function dymerSearch(options) {
                     let isactionsbox = "";
                     if ($(this).attr('searchable-multiple') == "true") {
                         isactionsbox = 'data-actions-box="true"';
+                    }
+
+                    if (listToselect.data.length == 0) {
+                        return;
                     }
                     //  console.log('ismulti  rel', $(this).html(), $(this).attr('searchable-multiple'), ismulti);
                     // let $sel = $('<select class="form-control span12 col-12"  searchable-multiple="' + ismulti + '"  searchable-override="data[relationdymer][' + rel + ']" searchable="" searchable-label="' + $(this).attr('searchable-label') + '" name="data[relation][' + rel + '][' + inde + '][to]"  ' + esxtraAttr + '>').appendTo($(this));

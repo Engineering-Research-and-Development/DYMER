@@ -749,7 +749,7 @@ table.dataTable tfoot td {
 }
 
 .bootstrap-select button.dropdown-toggle {
-    border-color: #ced4da !important;
+    border-color: #ced4da;
     border-style: solid;
     background-color: #fff;
 }
@@ -784,4 +784,13 @@ table.dataTable tfoot td {
         visibility: visible;
         padding-left: unset;
     }
+}
+.dymerSearch .dsearchAdvOptionBtn {
+    float: right;
+    color: #757575;
+    cursor: pointer;
+    position: absolute;
+    right: 44px;
+    top: 6px;
+    z-index: 1;
 }

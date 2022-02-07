@@ -3,11 +3,26 @@ require("./config/config.js");
 let serviceTemplateUrl = "http://localhost:4545/";
 let serviceFormUrl = "http://localhost:4747/"; */
 var jsonResponse = require('./jsonResponse');
+exports.getDymerUuid = function() {
+    return global.dymer_uuid;
+};
 exports.getServiceUrl = function(typeServ) {
     let url = global.totalConfig.services[typeServ].protocol + "://" + global.totalConfig.services[typeServ].ip + ':' + global.totalConfig.services[typeServ].port;
     return url;
 };
-
+const stringToUuid = (str) => {
+    str = str.replace('-', '');
+    return 'xxxxxxxx-xxxx-4xxx-xxxx-xxxxxxxxxxxx'.replace(/[x]/g, function(c, p) {
+        return str[p % str.length];
+    });
+}
+exports.generateDymerUuid = function() {
+    let ddta = new Date().getTime();
+    let ddta2 = new Date().getTime();
+    let input = global.dymer_uuid + ddta.toString(36).concat(ddta2.toString(), ddta.toString()).replace(/\./g, "");
+    let uuidtoret = stringToUuid(input);
+    return uuidtoret;
+}
 exports.getContextPath = function(typeServ) {
     let cpath = global.globConfig.services[typeServ]["context-path"];
     if (cpath == undefined)

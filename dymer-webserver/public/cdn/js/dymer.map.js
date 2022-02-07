@@ -214,11 +214,12 @@ let generateDynamicMap = function() {
             //animateAddingMarkers :true,
             //	zoomToBoundsOnClick: true
         });
+
         //	var map = new L.Map('mymap');
         //map.getCenter()
         //map.getZoom();
-
-        map = new L.map('dynamicMAP', {
+        const defaultMapSetting = {
+            zoomSnap: 0.5,
             "background": "osmec",
             "center": [46.01222384063236, 21.401367187500004],
             "zoom": 4,
@@ -232,7 +233,43 @@ let generateDynamicMap = function() {
                 // 	fullscreenControlOptions: {
                 //	position: 'topleft'
                 // 	}
-        });
+        };
+        let new_mapsetting = {};
+        var mapStyle = 'classic';
+        if (kmsconf.map != undefined) {
+            if (kmsconf.map.style != undefined) {
+                mapStyle = kmsconf.map.style;
+            }
+            if (kmsconf.map.setting != undefined) {
+                new_mapsetting = kmsconf.map.setting;
+            }
+        }
+
+        const mapsetting = {
+            ...defaultMapSetting,
+            ...new_mapsetting,
+        };
+        if (kmsconf.map != undefined) {
+            kmsconf.map.setting = mapsetting;
+        } else {
+            kmsconf["map"] = { setting: mapsetting }
+        }
+        map = new L.map('dynamicMAP', mapsetting);
+        /* map = new L.map('dynamicMAP', {
+             "background": "osmec",
+             "center": [46.01222384063236, 21.401367187500004],
+             "zoom": 4,
+             "maxZoom": 16,
+             "minZoom": 2,
+             "maxBounds": [
+                 [-135, -270],
+                 [135, 270]
+             ],
+             fullscreenControl: true
+                 // 	fullscreenControlOptions: {
+                 //	position: 'topleft'
+                 // 	}
+         });*/
         L.control.fullscreen({
             position: 'topleft', // change the position of the button can be topleft, topright, bottomright or bottomleft, defaut topleft
             title: 'Show me the fullscreen !', // change the title of the button, default Full Screen
@@ -252,11 +289,7 @@ let generateDynamicMap = function() {
         elPageScreen.style.display = "none";
         elZoomIn.style.display = "none";
         elZoomOut.style.display = "none";
-        var mapStyle = 'classic';
-        if (kmsconf.map != undefined)
-            if (kmsconf.map.style != undefined) {
-                mapStyle = kmsconf.map.style;
-            }
+
         switch (mapStyle) {
             case 'classic':
                 var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -354,21 +387,20 @@ let generateDynamicMap = function() {
                 position: 'topleft'
             },
             addHooks: function() {
-                map.setView([46.01222384063236, 21.401367187500004], 4);
+                sidebar.hide();
+                map.setView(kmsconf.map.setting.center, kmsconf.map.setting.zoom);
+                // map.setView([46.01222384063236, 21.401367187500004], 4);
             }
         });
         var CustomActionFullScreen = L.Toolbar2.Action.extend({
             options: {
                 toolbarIcon: {
                     html: '<i class="fa fa-arrows-alt leatooltip" data-original-title="Full screen"></i><i class="fa fa-compress hide_el leatooltip" data-original-title="Exit Full screen"></i>',
-
                     className: "btn_full_screen "
                 }
             },
             addHooks: function() {
                 toggleWiewNext($(".btn_full_screen"));
-
-
                 //$("#divEagleFilter").addClass("fixedmapfilter");
                 elFullScreen.click(); //setAttribute("id", "id_you_like");//.click();
                 let goFull = fullScreenApi.isFullScreen();
@@ -417,7 +449,6 @@ let generateDynamicMap = function() {
             addHooks: function() {
                 $("#dynamicDT_wrapper").clone().appendTo("#sidebar");
                 $('.leaflet-sidebar').addClass("tableOpen");
-
                 sidebar.toggle();
             }
         });
@@ -426,8 +457,6 @@ let generateDynamicMap = function() {
             options: {
                 toolbarIcon: {
                     html: '<i class="fa fa-expand leatooltip" data-original-title="Full page screen"></i><i class="fa fa-compress leatooltip hide_el " data-original-title="Exit Full screen"></i>',
-
-
                     className: "btn_mini_screen "
                 }
             },
@@ -706,6 +735,7 @@ let generateDynamicDT = function(arr) {
             ],
             data: listData,
             columns: kmsconf.dt.columns,
+			 "aaSorting":kmsconf.dt.sorting,
             orderCellsTop: true,
             /*fixedHeader: {
                 header: true,
