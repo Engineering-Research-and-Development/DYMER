@@ -26,7 +26,7 @@ var FormData = require('form-data');
 const jwt = require('jsonwebtoken');
 const nameFile = path.basename(__filename);
 const https = require('https');
-
+const rrmApi = process.env.RRM_API;
 const logger = require('./dymerlogger');
 var db;
 var storage;
