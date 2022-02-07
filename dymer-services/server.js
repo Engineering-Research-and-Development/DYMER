@@ -1,10 +1,10 @@
+
 var jsonResponse = require('./jsonResponse');
 const express = require("express");
 //process.env.NODE_ENV = "development";
 //process.env.TYPE_SERV = "dservice";
 const path = require("path");
 const util = require("./utility");
-var cors = require('cors');
 const bodyParser = require("body-parser");
 const app = express();
 require("./config/config.js");
@@ -13,6 +13,43 @@ app.use(bodyParser.urlencoded({
     extended: false,
     limit: '100MB'
 }));
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
+const { v4: uuidv4 } = require('uuid');
+
+app.use(cookieParser());
+
+var store = new MongoDBStore(
+    {
+        uri: 'mongodb://localhost:27017/dservice?connectTimeoutMS=10',
+        databaseName: 'dservice',
+        collection: 'sessionsmodels'
+    },
+    function (error) {
+    });
+
+store.on('error', function (error) {
+    console.log("SESSION STORE PROBLEM", error)
+});
+
+app.use(session({
+    genid: function (req) {
+        console.log('session id created');
+        return uuidv4();
+    },
+    secret: 'thisShouldBeLongAndSecret',
+    resave: true,
+    saveUninitialized: false,
+    store: store,
+    name: "sessionCookie",
+    cookie: {
+        path: '/',
+        secure: false,
+        maxAge: 59 * 60 * 1000
+    },
+}));
+
 /*app.all('/', function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
@@ -32,8 +69,10 @@ var routes_dymer_permission = require('./routes/routes-d-perm');
 var publicRoutes = require('./routes/publicfiles');
 var routes_dymer_configtool = require('./routes/routes-d-configtool');
 var routes_dymer_authconfig = require('./routes/routes-d-authconfig');
+var routes_dymer_sessions = require('./routes/routes-d-sessions');
+
 //app.use(cors());
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
     res.header("Access-Control-Allow-Headers", "X-Requested-With,Content-Type,Cache-Control");
@@ -55,6 +94,8 @@ app.use(util.getContextPath('dservice') + '/api/v1/perm', routes_dymer_permissio
 //app.use(util.getContextPath('dservice') + '/api/v1/importp4t', routes_dymer_importp4t);
 app.use(util.getContextPath('dservice') + '/api/v1/configtool', routes_dymer_configtool);
 app.use(util.getContextPath('dservice') + '/api/v1/authconfig', routes_dymer_authconfig);
+app.use(util.getContextPath('dservice') + '/api/v1/sessions', routes_dymer_sessions);
+
 app.get("/*", (req, res) => {
     var ret = new jsonResponse();
     ret.setMessages("Api error 404");

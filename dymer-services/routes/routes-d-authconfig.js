@@ -1,3 +1,5 @@
+
+
 var jsonResponse = require('../jsonResponse');
 var util = require('../utility');
 //var FormData = require('form-data');
@@ -14,11 +16,17 @@ var jsonParser = bodyParser.json();
 require("../models/permission/DymerAuthenticationRule");
 const DymRule = mongoose.model("DymerAuthenticationRule");
 const axios = require('axios');
+const session = require('express-session');
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({
     extended: false,
     limit: '100MB'
 }));
+
+
+const capManagerApi = process.env.CAP_MANAGER_API;
+const rrmApi = process.env.RRM_API;
+
 /*
 const mongoURI = util.mongoUrlForm();
 console.log(nameFile + ' | mongoURI :', JSON.stringify(mongoURI));
@@ -104,10 +112,10 @@ router.get('/userinfo', (req, res) => {
                     if (decoded.hasOwnProperty("extrainfo")) {
                         objuser.gid = decoded.extrainfo.groupId;
                         //objuser.extrainfo = decoded.extrainfo;
-                        objuser.extrainfo = {...decoded.extrainfo, ...objuser.extrainfo };
+                        objuser.extrainfo = { ...decoded.extrainfo, ...objuser.extrainfo };
                     }
                     if (!(Object.entries(extradata).length === 0)) {
-                        objuser.extrainfo = {...extradata, ...objuser.extrainfo };
+                        objuser.extrainfo = { ...extradata, ...objuser.extrainfo };
                     }
                     //urs_gid = decoded.extrainfo.groupId;
                     // if (decoded.extrainfo != undefined)
@@ -170,7 +178,7 @@ router.get('/userinfo', (req, res) => {
                 };
                 if (token != undefined && token != "null" && token != null) {
                     axios(config)
-                        .then(function(response) {
+                        .then(function (response) {
                             //console.log(response.data);
                             response.data.roles.forEach(element => {
                                 objuser.roles.push(element.name);
@@ -182,13 +190,13 @@ router.get('/userinfo', (req, res) => {
                             objuser.username = response.data.username;
                             objuser.extrainfo.emailAddress = response.data.email;
                             if (!(Object.entries(extradata).length === 0)) {
-                                objuser.extrainfo = {...extradata, ...objuser.extrainfo };
+                                objuser.extrainfo = { ...extradata, ...objuser.extrainfo };
                             }
                             ret.setMessages("User detail");
                             ret.setData(objuser);
                             return res.send(ret);
                         })
-                        .catch(function(error) {
+                        .catch(function (error) {
                             console.error(error);
                             var token = data.DYM;
                             var decoded = JSON.parse(Buffer.from(token, 'base64').toString());
@@ -228,7 +236,7 @@ router.get('/userinfo', (req, res) => {
     })
 });
 
-router.post('/', util.checkIsAdmin, function(req, res) {
+router.post('/', util.checkIsAdmin, function (req, res) {
     //router.post('/', function(req, res) {
     let id = req.params.id;
     let callData = util.getAllQuery(req);
@@ -262,7 +270,7 @@ router.put('/:id', util.checkIsAdmin, (req, res) => {
     };
     console.log(nameFile + ' | put/:id | id,query : ', id, JSON.stringify(req.body));
     DymRule.updateOne(myfilter, req.body,
-        function(err, raw) {
+        function (err, raw) {
             if (err) {
                 ret.setSuccess(false);
                 console.error(err);
@@ -296,8 +304,7 @@ router.delete('/:id', util.checkIsAdmin, (req, res) => {
 });
 
 router.post('/login',
-
-    async function (req, res) {
+    function (req, res) {
         var ret = new jsonResponse();
         ret.setSuccess(false);
         console.log('Login Request received');
@@ -339,63 +346,70 @@ router.post('/login',
 
                         axios.get(config.tokenProvider + config.accessTokenPath, getUserInfoHeaders)
                             .then(userInfo => {
-                                const getUserAssociatedRolesHeaders = {
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'Accept': 'application/json',
-                                        'X-Auth-Token': token.headers['x-subject-token'],
+                                getAllResorucesCapToken(userInfo.data, req).then(function (resp) {
+                                    if (req.session.extraData != undefined) {
+                                        req.session.extraData.getAllResourcesCapToken = JSON.stringify(resp.data);
+                                    } else {
+                                        req.session.extraData = { getAllResourcesCapToken: JSON.stringify(resp.data) };
                                     }
-                                };
+                                    req.session.save();
+                                     fetchCapTokens(userInfo.data, req)
+                                    const getUserAssociatedRolesHeaders = {
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'Accept': 'application/json',
+                                            'X-Auth-Token': token.headers['x-subject-token'],
+                                        }
+                                    };
 
-                                axios.get(config.tokenProvider + '/v1/applications/' + config.clientId + '/users/' + userInfo.data.User.id + '/roles', getUserAssociatedRolesHeaders)
-                                
-                                    .then(userAssociatedRoles => {
-                                        let userRoles = userAssociatedRoles.data.role_user_assignments;
-                                        var userRoleNames = [];
-                                        if (userRoles != null) {
-                                            Promise.all(
+                                    axios.get(config.tokenProvider + '/v1/applications/' + config.clientId + '/users/' + userInfo.data.User.id + '/roles', getUserAssociatedRolesHeaders)
 
-                                                userRoles.map(role => {
-                                                    return new Promise((resolve) => {
-                                                        axios.get(config.tokenProvider + '/v1/applications/' + config.clientId + '/roles/' + role.role_id, getUserAssociatedRolesHeaders)
-                                                            .then(user_role => {
-                                                                return new Promise(() => {
-                                                                    userRoleNames.push(user_role.data.role.name);
-                                                                    resolve()
+                                        .then(userAssociatedRoles => {
+                                            let userRoles = userAssociatedRoles.data.role_user_assignments;
+                                            var userRoleNames = [];
+                                            if (userRoles != null) {
+                                                Promise.all(
+
+                                                    userRoles.map(role => {
+                                                        return new Promise((resolve) => {
+                                                            axios.get(config.tokenProvider + '/v1/applications/' + config.clientId + '/roles/' + role.role_id, getUserAssociatedRolesHeaders)
+                                                                .then(user_role => {
+                                                                    return new Promise(() => {
+                                                                        userRoleNames.push(user_role.data.role.name);
+                                                                        resolve()
+                                                                    })
+                                                                }).catch(function (err) {
+                                                                    console.log('err ars', err);
+                                                                    ret.setMessages('User not allow to perform the action');
+                                                                    return res.send(ret);
                                                                 })
-                                                            }).catch(function (err) {
-                                                                console.log('err ars', err);
-                                                                ret.setMessages('User not allow to perform the action');
-                                                                return res.send(ret);
-                                                            })
+                                                        })
                                                     })
-                                                })
-                                            ).catch(function (err) {
-                                                console.log('err ars', err);
-                                                ret.setMessages('User not allow to perform the action');
-                                                return res.send(ret);
-                                            })
-                                                .then(() => {
-                                                    ret.setSuccess(true);
-                                                    ret.setMessages("Valid Credential!");
-                                                    userInfo.data.User['roles'] = userRoleNames;
-                                                    console.log("USERINFODATA", userInfo.data)
-
-                                                    const buff = Buffer.from(JSON.stringify(userInfo.data), 'utf-8');
-                                                    const base64UserInfo = buff.toString('base64');
-                                                    let response = { token: base64UserInfo }
-                                                    ret.setData
-                                                    ret.setData(response);
-                                                    // req.session.userId = userInfo.data.User.id;
-                                                    fetchCapTokens(userInfo.data, req);
+                                                ).catch(function (err) {
+                                                    console.log('err ars', err);
+                                                    ret.setMessages('User not allow to perform the action');
                                                     return res.send(ret);
                                                 })
-                                        }
-                                    }).catch(function (err) {
-                                        console.log('err ars', err);
-                                        ret.setMessages('User not allow to perform the action');
-                                        return res.send(ret);
-                                    })
+                                                    .then(() => {
+                                                        ret.setSuccess(true);
+                                                        ret.setMessages("Valid Credential!");
+                                                        userInfo.data.User['roles'] = userRoleNames;
+
+                                                        const buff = Buffer.from(JSON.stringify(userInfo.data), 'utf-8');
+                                                        const base64UserInfo = buff.toString('base64');
+                                                        let response = { token: base64UserInfo }
+                                                        ret.setData
+                                                        ret.setData(response);
+
+                                                        return res.send(ret);
+                                                    })
+                                            }
+                                        })
+                                }).catch(function (err) {
+                                    console.log('err ars', err);
+                                    ret.setMessages('User not allow to perform the action');
+                                    return res.send(ret);
+                                })
                             }).catch(function (err) {
                                 console.log('err ars', err);
                                 ret.setMessages('Invalid token');
@@ -408,7 +422,9 @@ router.post('/login',
 
                     })
             }
+
         });
+
     });
 
 
@@ -441,12 +457,164 @@ router.delete('/logout',
     })
 
 
-function fetchCapTokens(authToken, req){
+function fetchCapTokens(authToken, req) {
 
-    console.log("FUNKCIJA", authToken);
-    // req.session.kurac = 'kurac'
-    // console.log("SESIJAJEBENA", req.session)
+    getCapabilityTokenDEMETER('getMyResources', req, '', authToken)
+    getCapabilityTokenDEMETER('getMetrics', req, '', authToken);
+    getCapabilityTokenDEMETER('createResource', req, '', authToken)
 
-    
+
 }
+
+const getAllResorucesCapToken = (accessToken, req) => {
+
+
+    req.session.accessToken = accessToken.access_token;
+    req.session.save();
+    return new Promise((resolve, reject) => {
+
+        const postHeaders = {
+            'Content-Type': 'application/json',
+        };
+   
+
+        let getAllResources = {
+            token: accessToken.access_token,
+            ac: "GET",
+            de: rrmApi,
+            re: '/api/v1/resources'
+        }
+
+        let body = JSON.stringify(getAllResources);
+
+        axios.post(capManagerApi, body, postHeaders).then(resp => {
+
+
+            resolve(resp);
+        }).catch(function (error) {
+            // handle error
+            console.log(error);
+            reject("ERROR:" + " external error=" + error.response.status)
+        });
+    })
+};
+
+//This is path, this MUST be fixed in next release
+async function getCapabilityTokenDEMETER(capTokenName, req, url, authToken) {
+
+    let config = {
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    }
+
+
+ 
+    let getAllResources = {
+        token: authToken.access_token,
+        ac: "GET",
+        de: rrmApi,
+        re: '/api/v1/resources'
+    }
+
+    let getMyResources = {
+        token: authToken.access_token,
+        ac: "GET",
+        de: rrmApi,
+        re: '/api/v1/resources/search?owner=' + authToken.User.id
+    }
+
+    let createResource = {
+        token: authToken.access_token,
+        ac: "POST",
+        de: rrmApi,
+        re: '/api/v1/resources'
+    }
+
+    let getMetrics = {
+        token: authToken.access_token,
+        ac: "GET",
+        de: rrmApi,
+        re: '/api/v1/metrics'
+    }
+
+
+    if (capTokenName === 'getAllResources') {
+
+        let body = JSON.stringify(getAllResources);
+
+        axios.post(capManagerApi, body, config).then(resp => {
+
+            console.log("GET ALL Resources Cap. Token", JSON.stringify(resp.data))
+            if (req.session.extraData != undefined) {
+                req.session.extraData.getAllResourcesCapToken = JSON.stringify(resp.data);
+            } else {
+                req.session.extraData = { getAllResourcesCapToken: JSON.stringify(resp.data) };
+            }
+            req.session.save();
+        }).catch(function (error) {
+            // handle error
+            console.log(error);
+        });
+
+    }
+
+    if (capTokenName === 'getMyResources') {
+
+        let body = JSON.stringify(getMyResources);
+
+        await axios.post(capManagerApi, body, config).then(resp => {
+            console.log("GET MY Resources Cap. Token", JSON.stringify(resp.data))
+
+            if (req.session.extraData != undefined) {
+                req.session.extraData.getMyResourcesCapToken = JSON.stringify(resp.data);
+            } else {
+                req.session.extraData = { getMyResourcesCapToken: JSON.stringify(resp.data) };
+            } req.session.save();
+        }).catch(function (error) {
+            // handle error
+            console.log(error);
+        });
+
+    }
+
+    if (capTokenName === 'createResource') {
+
+        let body = JSON.stringify(createResource);
+
+        await axios.post(capManagerApi, body, config).then(resp => {
+            console.log("GET Create Resources Cap. Token", JSON.stringify(resp.data))
+
+            if (req.session.extraData != undefined) {
+                req.session.extraData.createResourceCapToken = JSON.stringify(resp.data);
+            } else {
+                req.session.extraData = { createResourceCapToken: JSON.stringify(resp.data) };
+            } req.session.save();
+        }).catch(function (error) {
+            // handle error
+            console.log(error);
+        });
+
+    }
+
+    if (capTokenName === 'getMetrics') {
+
+        let body = JSON.stringify(getMetrics);
+
+        await axios.post(capManagerApi, body, config).then(resp => {
+            console.log("GET Metrics Resources Cap. Token", JSON.stringify(resp.data))
+
+            if (req.session.extraData != undefined) {
+                req.session.extraData.getAllMetricsCapToken = JSON.stringify(resp.data);
+            } else {
+                req.session.extraData = { getAllMetricsCapToken: JSON.stringify(resp.data) };
+            } req.session.save();
+        }).catch(function (error) {
+            // handle error
+            console.log(error);
+        });
+
+    }
+};
+
 module.exports = router;
