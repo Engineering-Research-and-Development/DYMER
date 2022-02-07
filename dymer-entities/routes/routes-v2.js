@@ -1278,7 +1278,7 @@ router.post('/_search', (req, res) => {
             //   params["_source_excludes"] = ["description"];
             console.log(nameFile + ' | _search | params:', JSON.stringify(params));
 
-            client.search(params).then(function(resp) {
+            client.search(params).then(function (resp) {
                 if (err) {
                     console.error("ERROR | " + nameFile + '  | _search | search:', err);
                     ret.setSuccess(false);
@@ -1316,7 +1316,7 @@ router.post('/_search', (req, res) => {
                    console.log("resp.hits", resp.hits.hits);*/
                 //console.log("recoverRelation", recoverRelation);
                 if (recoverRelation == 'false' || recoverRelation == false) {
-                    filertEntitiesFields(resp.hits.hits, minmodelist, hdymeruser).then(function(nlist) {
+                    filertEntitiesFields(resp.hits.hits, minmodelist, hdymeruser).then(function (nlist) {
                         // console.log("prepre", nlist);
                         //  ret.setData(nlist);
                         //  return res.send(ret);
@@ -1333,15 +1333,15 @@ router.post('/_search', (req, res) => {
                         console.log(nameFile + ' | _search | resp no relations: count ', resp.hits.hits.length);
                         return res.send(ret);
 
-                    }).catch(function(err) {
+                    }).catch(function (err) {
                         console.error("ERROR | " + nameFile + '  | _search | checkUnionRelation:', err);
                     });
 
                 } else {
-                    checkUnionRelation(resp.hits.hits).then(function(meatch) {
+                    checkUnionRelation(resp.hits.hits).then(function (meatch) {
 
                         (meatch).map(item => item.relations).filter(
-                            function(thing, i, arr) {
+                            function (thing, i, arr) {
                                 let cc = [...minmodelist, ...new Set((thing).map(item => item._index))];
                                 minmodelist = cc.filter((item, pos) => cc.indexOf(item) === pos)
                             }
@@ -1361,12 +1361,12 @@ router.post('/_search', (req, res) => {
                                 if (append)
                                     fileterdList.push(element);
                             });
-                            filertEntitiesFields(fileterdList, minmodelist, hdymeruser).then(function(nlist) {
+                            filertEntitiesFields(fileterdList, minmodelist, hdymeruser).then(function (nlist) {
                                 //  console.log("prepre", nlist);
                                 console.log(nameFile + ' | _search | resp filter relations:count ', nlist.length);
                                 ret.setData(nlist);
                                 return res.send(ret);
-                            }).catch(function(err) {
+                            }).catch(function (err) {
                                 // console.log(nameFile + ' | _search | resp filter relations:count ', resp.hits.hits.length);
                                 console.error("ERROR | " + nameFile + '  | _search | resp filter relations:count:', err);
                             });
@@ -1381,11 +1381,11 @@ router.post('/_search', (req, res) => {
                             //console.log(' minmodelist ', minmodelist);
                             console.log(nameFile + ' | _search | resp no detect relations:count ', resp.hits.hits.length);
 
-                            filertEntitiesFields(meatch, minmodelist, hdymeruser).then(function(nlist) {
+                            filertEntitiesFields(meatch, minmodelist, hdymeruser).then(function (nlist) {
                                 //  console.log("prepre", nlist);
                                 ret.setData(nlist);
                                 return res.send(ret);
-                            }).catch(function(err) {
+                            }).catch(function (err) {
                                 console.error("ERROR | " + nameFile + '  | _search | checkUnionRelation:', err);
                             });
                             //   return res.send(ret);
@@ -1399,7 +1399,7 @@ router.post('/_search', (req, res) => {
 
 
 
-            }).catch(function(error) {
+            }).catch(function (error) {
                 ret.setMessages("Search Error");
                 ret.setSuccess(false);
                 ret.setExtraData({ "log": error });
@@ -1408,8 +1408,8 @@ router.post('/_search', (req, res) => {
         }
     });
 });
-var filertEntitiesFields = function(originalList, minmodelist, hdymeruser) {
-    return new Promise(function(resolve, reject) {
+var filertEntitiesFields = function (originalList, minmodelist, hdymeruser) {
+    return new Promise(function (resolve, reject) {
         let dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
         //  console.log('originalList', originalList);
         if (dymeruser.roles.length > 1) {
@@ -1435,13 +1435,13 @@ var filertEntitiesFields = function(originalList, minmodelist, hdymeruser) {
         axios(config)
             .then((respone) => {
                 let total_compr_struct = respone.data.data
-                    // console.log("total_compr_struct", total_compr_struct);
-                Promise.all(originalList.map(function(element) {
-                    return new Promise(function(resolve, reject) {
+                // console.log("total_compr_struct", total_compr_struct);
+                Promise.all(originalList.map(function (element) {
+                    return new Promise(function (resolve, reject) {
                         let single_compr_struct = ((total_compr_struct).find(x => (x.instance).find(y => y._index == element._index)));
                         if (single_compr_struct.hasOwnProperty('structure')) {
                             let single_compr_struct_visibility = (single_compr_struct.structure.child).filter(x => x.attr['dymer-model-visibility'] == "private")
-                                //   console.log("single_compr_struct_visibility", single_compr_struct_visibility);
+                            //   console.log("single_compr_struct_visibility", single_compr_struct_visibility);
                             single_compr_struct_visibility.forEach(singlel => {
                                 let ark_del = replaceAll(singlel.attr.name, '[', '["');
                                 ark_del = replaceAll(ark_del, ']', '"]');
@@ -1459,51 +1459,51 @@ var filertEntitiesFields = function(originalList, minmodelist, hdymeruser) {
                             });
                             //console.log("filertEntitiesFields 1 element", JSON.stringify(element));
                             if (element.hasOwnProperty('relations')) {
-                                Promise.all((element.relations).map(function(subelement) {
-                                        return new Promise(function(resolve, reject) {
-                                            let single_compr_struct = ((total_compr_struct).find(x => (x.instance).find(y => y._index == subelement._index)));
-                                            //console.log('subelement single_compr_struct', single_compr_struct, subelement);
-                                            if (single_compr_struct.hasOwnProperty('structure')) {
-                                                let single_compr_struct_visibility = (single_compr_struct.structure.child).filter(x => x.attr['dymer-model-visibility'] == "private")
-                                                single_compr_struct_visibility.forEach(singlel => {
-                                                    let ark_del = replaceAll(singlel.attr.name, '[', '["');
-                                                    ark_del = replaceAll(ark_del, ']', '"]');
-                                                    ark_del = ark_del.replace("data", '');
-                                                    let indexRgx = (singlel.attr.name).split("][").find(value => rgx.test(value));
-                                                    if (indexRgx != undefined) {
-                                                        let listtest = [];
-                                                        for (let index = 0; index < 20; index++) {
-                                                            listtest.push(ark_del.replace('["0"]', index));
-                                                        }
-                                                        _.omit(subelement["_source"], listtest);
-                                                    } else {
-                                                        _.unset(subelement["_source"], ark_del);
+                                Promise.all((element.relations).map(function (subelement) {
+                                    return new Promise(function (resolve, reject) {
+                                        let single_compr_struct = ((total_compr_struct).find(x => (x.instance).find(y => y._index == subelement._index)));
+                                        //console.log('subelement single_compr_struct', single_compr_struct, subelement);
+                                        if (single_compr_struct.hasOwnProperty('structure')) {
+                                            let single_compr_struct_visibility = (single_compr_struct.structure.child).filter(x => x.attr['dymer-model-visibility'] == "private")
+                                            single_compr_struct_visibility.forEach(singlel => {
+                                                let ark_del = replaceAll(singlel.attr.name, '[', '["');
+                                                ark_del = replaceAll(ark_del, ']', '"]');
+                                                ark_del = ark_del.replace("data", '');
+                                                let indexRgx = (singlel.attr.name).split("][").find(value => rgx.test(value));
+                                                if (indexRgx != undefined) {
+                                                    let listtest = [];
+                                                    for (let index = 0; index < 20; index++) {
+                                                        listtest.push(ark_del.replace('["0"]', index));
                                                     }
-                                                    /* var ark = replaceAll(singlel.attr.name, '[', '@@');
-                                                     ark = replaceAll(ark, ']', '');
-                                                     ark = ark.split("@@");
-                                                     ark.shift();
-                                                     let keydel = ark.join('.');
-                                                     // console.log('singlekey 222', keydel);
-                                                     delete subelement["_source"][keydel];*/
-                                                });
-                                                //console.log("filertEntitiesFields 2 subelement", JSON.stringify(subelement));
-                                                resolve(subelement);
-                                            } else {
-                                                //console.log("filertEntitiesFields 2.1 subelement", JSON.stringify(subelement));
-                                                resolve(subelement);
-                                            }
-                                        }).catch(function(err) {
-                                            reject([]);
-                                            console.error("ERROR | " + nameFile + ' | filertEntitiesFields subelement | promise  : ', err);
-                                        });
-                                    }))
-                                    .then(function(data) {
+                                                    _.omit(subelement["_source"], listtest);
+                                                } else {
+                                                    _.unset(subelement["_source"], ark_del);
+                                                }
+                                                /* var ark = replaceAll(singlel.attr.name, '[', '@@');
+                                                 ark = replaceAll(ark, ']', '');
+                                                 ark = ark.split("@@");
+                                                 ark.shift();
+                                                 let keydel = ark.join('.');
+                                                 // console.log('singlekey 222', keydel);
+                                                 delete subelement["_source"][keydel];*/
+                                            });
+                                            //console.log("filertEntitiesFields 2 subelement", JSON.stringify(subelement));
+                                            resolve(subelement);
+                                        } else {
+                                            //console.log("filertEntitiesFields 2.1 subelement", JSON.stringify(subelement));
+                                            resolve(subelement);
+                                        }
+                                    }).catch(function (err) {
+                                        reject([]);
+                                        console.error("ERROR | " + nameFile + ' | filertEntitiesFields subelement | promise  : ', err);
+                                    });
+                                }))
+                                    .then(function (data) {
                                         //  console.log("filertEntitiesFields 3", JSON.stringify(data));
                                         resolve(data);
                                         //   return (data)
                                         // resolve(returnList);
-                                    }).catch(function(err) {
+                                    }).catch(function (err) {
                                         reject([]);
                                         console.error("ERROR | " + nameFile + ' | filertEntitiesFields | promise.all  : ', err);
                                     });
@@ -1515,19 +1515,19 @@ var filertEntitiesFields = function(originalList, minmodelist, hdymeruser) {
                             //console.log("filertEntitiesFields 2.1 subelement", JSON.stringify(subelement));
                             resolve(element);
                         }
-                    }).catch(function(err) {
+                    }).catch(function (err) {
                         reject([]);
                         console.error("ERROR | " + nameFile + ' | filertEntitiesFields | promise  : ', err);
                     });
-                })).then(function(data) {
+                })).then(function (data) {
                     //console.log("filertEntitiesFields 4", data);
                     return resolve(originalList);
-                }).catch(function(err) {
+                }).catch(function (err) {
                     reject([]);
                     console.error("ERROR | " + nameFile + ' | filertEntitiesFields | promise.all  : ', err);
                 });
             });
-    }).catch(function(err) {
+    }).catch(function (err) {
         reject([]);
         console.error("ERROR | " + nameFile + ' | filertEntitiesFields | promise  : ', err);
     });
@@ -1955,14 +1955,15 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
                                             const getMyResourcesCapToken = { data: JSON.parse(session.data.data[0].session.extraData.getMyResourcesCapToken) };
                                             resolve(getMyResourcesCapToken);
                                         }
-                                    } else {
-                                        axios.post(tokenProviderUrl, body, config).then(resp => {
-                                            resolve(resp);
-                                        }).catch(function (error) {
-                                            // handle error
-                                            console.log(error);
-                                            reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
-                                        });
+                                        else {
+                                            axios.post(tokenProviderUrl, body, config).then(resp => {
+                                                resolve(resp);
+                                            }).catch(function (error) {
+                                                // handle error
+                                                console.log(error);
+                                                reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
+                                            });
+                                        }
                                     }
                                 }
                                 else {
@@ -2010,14 +2011,15 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
                                             const getAllResourcesCapToken = { data: JSON.parse(session.data.data[0].session.extraData.getAllResourcesCapToken) };
                                             resolve(getAllResourcesCapToken);
                                         }
-                                    } else {
-                                        axios.post(tokenProviderUrl, body, config).then(resp => {
-                                            resolve(resp);
-                                        }).catch(function (error) {
-                                            // handle error
-                                            console.log(error);
-                                            reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
-                                        });
+                                        else {
+                                            axios.post(tokenProviderUrl, body, config).then(resp => {
+                                                resolve(resp);
+                                            }).catch(function (error) {
+                                                // handle error
+                                                console.log(error);
+                                                reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
+                                            });
+                                        }
                                     }
                                 }
                                 else {
@@ -2088,14 +2090,15 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
                                 const createResourceCapToken = { data: JSON.parse(session.data.data[0].session.extraData.createResourceCapToken) };
                                 resolve(createResourceCapToken);
                             }
-                        } else {
-                            axios.post(tokenProviderUrl, body, config).then(resp => {
-                                resolve(resp);
-                            }).catch(function (error) {
-                                // handle error
-                                console.log(error);
-                                reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
-                            });
+                            else {
+                                axios.post(tokenProviderUrl, body, config).then(resp => {
+                                    resolve(resp);
+                                }).catch(function (error) {
+                                    // handle error
+                                    console.log(error);
+                                    reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
+                                });
+                            }
                         }
                     }
                     else {
@@ -2483,7 +2486,7 @@ function appendFormdata(FormData, data, name) {
 }
 
 
-router.post('/:enttype', function(req, res) {
+router.post('/:enttype', function (req, res) {
 
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser;
