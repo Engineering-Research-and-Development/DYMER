@@ -17,6 +17,10 @@
                         <h7> &nbsp;&nbsp;# Element private/public
                         </h7>
                     </a>
+                    <a href="#lnksdymervalidation" class="text-warning">
+                        <h7> &nbsp;&nbsp;# Form validation
+                        </h7>
+                    </a>
                 </div>
             </div>
         </div>
@@ -117,6 +121,29 @@
                     <br><b> dymer-model-element="" dymer-model-visibility="public" </b>
                     <br> the corresponding value will be visible to all users.
                 </div>
+                <h3 class="text-success text-center" id="lnksdymervalidation"><b>Element Public/Private</b></h3>
+                <div>
+                    Add class needs-validation and attribute novalidate in your model form, if they do not exist
+                    <pre class=" language-javascript" data-language="javascript"><code class=" language-javascript"><span class="token tag"> &lt;form id="entityForm" class="senderForm  needs-validation" novalidate=""&gt;&lt;/form&gt;</span></code></pre>
+                    <br>for each element in you want to display error messages, add this div with class invalid-feedbach
+                    <pre class=" language-javascript" data-language="javascript"><code class=" language-javascript"><span class="token tag">&lt;div class="invalid-feedback"&gt;test invalid&lt;/div&gt;</span></span></code></pre>
+                    <br>for each element in you want to a custom validate, add attribute dymer-element-validation="your_function_name"
+                    <br> your_function must be return true/false.
+                    <br> Ex
+                    <pre class=" language-javascript" data-language="javascript"><code class=" language-javascript"><span class="token tag">&lt;textarea dymer-model-element="" dymer-model-visibility="private" dymer-element-validation="testdescr" type="textarea"
+            class="form-control  col-12 span12" name="data[description]" minlength="10" maxlength="20"&gt;&lt;/textarea&gt;
+
+function testdescr(el){
+    if(el.val().length >12){
+        return true;
+    }else{
+        return false;
+    }
+}
+    </span></code></pre>
+
+                </div>
+
             </div>
         </div>
         <div class="card-footer ">
