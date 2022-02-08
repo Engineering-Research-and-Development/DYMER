@@ -222,6 +222,11 @@ Handlebars.registerHelper('EntityStatus', function(obj, hookCheckSatusconf, obj2
 Handlebars.registerHelper('cdnpath', function(block) {
     return (kmsconfig.cdn).replace('public/cdn/', "");; //just return global variable value
 });
+
+Handlebars.registerHelper('json', function(context) {
+    return JSON.stringify(context);
+});
+
 //plugin per abilitare e disabilitare un intero form,utilile per le chiamate ajax
 (function($) {
     $.fn.extend({
