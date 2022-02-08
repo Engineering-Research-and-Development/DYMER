@@ -1,0 +1,82 @@
+version: "3.3"
+
+services:
+  mongodb:
+    hostname: mongodb
+    image: mongo:3.6.9
+    volumes:
+      - ./mongo_data_dir:/data/db
+
+  elasticsearch:
+    hostname: elasticsearch
+    image: elasticsearch:6.5.1
+    environment:
+      - discovery.type=single-node
+      - discovery.zen.minimum_master_nodes=1
+      - thread_pool.search.queue_size=1000
+      - thread_pool.search.size=30
+      - thread_pool.search.min_queue_size=2000
+      - thread_pool.search.max_queue_size=5000
+      - thread_pool.search.auto_queue_frame_size=5000
+      - thread_pool.search.target_response_time=1s
+      - cluster.routing.allocation.disk.threshold_enabled=false
+    volumes:
+      - ./elastic_data_dir:/usr/share/elasticsearch/data
+
+  dymer_entities:
+    hostname: kms_entities
+    image: demeterengteam/dymer_entities:20220208
+    environment:
+      - RRM_API=https://deh-demeter.eng.it/pep-proxy
+      # - NODE_VERSION=17.0.1
+      - NODE_ENV=production
+    depends_on:
+      - elasticsearch
+
+  dymer_forms:
+    hostname: kms_forms
+    image: demeterengteam/dymer_forms:20220208
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - mongodb
+
+  dymer_services:
+    hostname: kms_services
+    image: demeterengteam/dymer_services:20220208
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - mongodb
+
+  dymer_templates:
+    hostname: kms_templates
+    image: demeterengteam/dymer_templates:20220208
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - mongodb
+
+  dymer_webserver:
+    hostname: kms_webserver
+    image: demeterengteam/dymer_webserver:20220208
+    ports:
+      - published: 8888
+        target: 8080
+    environment:
+      - DYMER_CONTEXT_PATH=${DYMER_CONTEXT_PATH}
+        #            - http_proxy=
+        #            - https_proxy=
+      - no_proxy=deh-demeter.eng.it
+      - RRM_API=https://deh-demeter.eng.it/pep-proxy
+      - ACS_SERVER=https://acs.bse.h2020-demeter-cloud.eu:3030
+      - CAP_MANAGER_API=https://acs.bse.h2020-demeter-cloud.eu:3030
+      - NODE_ENV=production
+      # - NODE_VERSION=17.0.1
+
+#################################################
+
+volumes:
+  mongo_data_dir:
+  elastic_data_dir:
+
