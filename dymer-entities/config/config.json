@@ -58,20 +58,20 @@
                     "entity": {
                         "type": "elastichsearch",
                         "protocol": "http",
-                        "ip": "localhost",
+                        "ip": "elasticsearch",
                         "port": 9200
                     },
                     "files": {
                         "type": "mongodb",
                         "protocol": "http",
-                        "ip": "127.0.0.1",
+                        "ip": "mongodb",
                         "port": 27017,
                         "index_ref": "entity"
                     },
                     "entitiesbridge": {
                         "type": "mongodb",
                         "protocol": "http",
-                        "ip": "127.0.0.1",
+                        "ip": "mongodb",
                         "port": 27017,
                         "index_ref": "entity"
                     }
@@ -79,8 +79,13 @@
             },
             "dservice": {
                 "protocol": "http",
-                "ip": "127.0.0.1",
+                "ip": "kms_services",
                 "port": 5050
+            },
+            "form": {
+                "protocol": "http",
+                "ip": "kms_forms",
+                "port": 4747
             }
         }
     }

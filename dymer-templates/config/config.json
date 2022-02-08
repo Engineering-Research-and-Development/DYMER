@@ -32,7 +32,7 @@
                 "ip_port": "localhost:4545",
                 "repository": {
                     "protocol": "http",
-                    "ip": "127.0.0.1",
+                    "ip": "mongodb",
                     "port": 27017,
                     "index_ref": "templates"
                 }

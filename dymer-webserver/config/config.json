@@ -45,28 +45,28 @@
                 "ip": "localhost",
                 "port": 8080,
                 "context-path": "",
-                "adminUser": "admin",
-                "adminPass": "dymer",
+                "adminUser": "demeteradmin",
+                "adminPass": "2sAKvA!20",
                 "idp": []
             },
             "entity": {
                 "protocol": "http",
-                "ip": "localhost",
+                "ip": "kms_entities",
                 "port": 1358
             },
             "template": {
                 "protocol": "http",
-                "ip": "localhost",
+                "ip": "kms_templates",
                 "port": 4545
             },
             "form": {
                 "protocol": "http",
-                "ip": "localhost",
+                "ip": "kms_forms",
                 "port": 4747
             },
             "dservice": {
                 "protocol": "http",
-                "ip": "localhost",
+                "ip": "kms_services",
                 "port": 5050
             }
         }

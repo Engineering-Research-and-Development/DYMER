@@ -45,7 +45,7 @@
                 "ip_port": "127.0.0.1:5050",
                 "repository": {
                     "protocol": "http",
-                    "ip": "127.0.0.1",
+                    "ip": "mongodb",
                     "port": 27017,
                     "index_ref": "dservice"
                 }
@@ -54,7 +54,7 @@
                 "app_name": "webserver",
                 "app_desc": "dymer webserver",
                 "protocol": "http",
-                "ip": "127.0.0.1",
+                "ip": "kms_webserver",
                 "port": 8080
             },
             "opnsearch": {
