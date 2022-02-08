@@ -17,6 +17,11 @@ router.use(bodyParser.urlencoded({
 }));
 
 
+// // let rrmApi = 'http://localhost:17100';
+// // let rrmApi = 'https://deh-demeter.eng.it/pep-proxy';
+// let acsServer = 'https://acs.bse.h2020-demeter-cloud.eu:3030';
+// let rrmApi = 'https://acs.bse.h2020-demeter-cloud.eu:1029';
+
 router.get('/', (req, res) => {
 
     var ret = new jsonResponse();

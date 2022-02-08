@@ -12,10 +12,15 @@ router.use(bodyParser.urlencoded({
     limit: '100MB'
 }));
 
+// // let localhost = 'http://localhost:17100';
+// let engCloud = 'https://deh-demeter.eng.it/pep-proxy';
+// let rrmApi = 'https://acs.bse.h2020-demeter-cloud.eu:1029';
+
+
 
 const options = {
     target: rrmApi,
-    changeOrigin: true,
+    changeOrigin: true, 
     toProxy: true,
     pathRewrite: {
         '^/api/attachment/downloadContent': '/api/v1/attachment/download',

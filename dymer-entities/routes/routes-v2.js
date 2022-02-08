@@ -1944,10 +1944,7 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
                         let body = JSON.stringify(rawBody);
 
                         if (reHeader === '/api/v1/resources/search?owner=' + token.id && objconf.api[callkey].method === 'GET') {
-                            console.log("KURCINAAA")
-
                             axios.get(ownerUrl).then(session => {
-                                console.log("SESIJA1", session.data)
                                 if (session.data.data[0] != null) {
                                     if (session.data.data[0].session.extraData != undefined) {
 

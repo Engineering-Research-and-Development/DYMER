@@ -20,9 +20,11 @@ const { v4: uuidv4 } = require('uuid');
 
 app.use(cookieParser());
 
+const mongoURI = util.mongoUrlForm();
+
 var store = new MongoDBStore(
     {
-        uri: 'mongodb://localhost:27017/dservice?connectTimeoutMS=10',
+        uri: mongoURI + '?connectTimeoutMS=10',
         databaseName: 'dservice',
         collection: 'sessionsmodels'
     },

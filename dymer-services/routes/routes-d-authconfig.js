@@ -27,6 +27,8 @@ router.use(bodyParser.urlencoded({
 const capManagerApi = process.env.CAP_MANAGER_API;
 const rrmApi = process.env.RRM_API;
 
+// const rrmApi = 'https://acs.bse.h2020-demeter-cloud.eu:1029';
+// const capManagerApi = 'https://acs.bse.h2020-demeter-cloud.eu:3030'
 /*
 const mongoURI = util.mongoUrlForm();
 console.log(nameFile + ' | mongoURI :', JSON.stringify(mongoURI));
