@@ -1767,18 +1767,19 @@ function checkPermission(actualItem, act) {
             return entPerm;
         }
     }
-    if (typeof d_rl != 'undefined') {
-        d_rl = JSON.parse(atob(d_rl));
-        if ((d_rl).find(x => x == "app-admin")) {
-            entPerm.isadmin = true;
-            entPerm.isowner = false;
-            entPerm.view = true;
-            entPerm.edit = true;
-            entPerm.delete = true;
-            entPerm.managegrant = true;
-            return entPerm;
+    if (d_rl != null)
+        if (typeof d_rl != 'undefined') {
+            d_rl = JSON.parse(atob(d_rl));
+            if ((d_rl).find(x => x == "app-admin")) {
+                entPerm.isadmin = true;
+                entPerm.isowner = false;
+                entPerm.view = true;
+                entPerm.edit = true;
+                entPerm.delete = true;
+                entPerm.managegrant = true;
+                return entPerm;
+            }
         }
-    }
     if (act == 'create') {
         entPerm.view = true;
         entPerm.edit = true;
