@@ -76,7 +76,7 @@ app.use(util.getContextPath('webserver') + "/public/", publicRoutes);
 app.use(util.getContextPath('webserver') + "/app/", appRoutes);
 app.use(util.getContextPath('webserver') + "/api/portalwebpage/", dohtmlpage);
 
-app.get('/api2/retriveinfoidpadmin', (req, res, next) => {
+app.get(util.getContextPath('webserver') + '/api2/retriveinfoidpadmin', (req, res, next) => {
     if (true) {
         //      console.log("retriveinfo.AAAAAAAAAAAAAAA", pp);
         var objuser = {
@@ -109,7 +109,7 @@ app.get('/api2/retriveinfoidpadmin', (req, res, next) => {
     // res.send(req.session.passport.user);
 
 });
-app.get('/api2/retriveinfoidp', (req, res, next) => {
+app.get(util.getContextPath('webserver') + '/api2/retriveinfoidp', (req, res, next) => {
 
     //   console.log("--------INIZIO retriveinfoIDP--------------");
     //   console.log("retriveinfo", req.session);
@@ -162,7 +162,7 @@ app.get('/api2/retriveinfoidp', (req, res, next) => {
     // res.send(req.session.passport.user);
 
 });
-app.post('/api2/retriveinfo', loadUserInfo, (req, res, next) => {
+app.post(util.getContextPath('webserver') + '/api2/retriveinfo', loadUserInfo, (req, res, next) => {
     //   res.send({ "ttttttt": "rrrrrrrrr" });
 
     // console.log("retriveinfo", req.headers);
