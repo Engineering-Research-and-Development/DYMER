@@ -1,5 +1,6 @@
-let serverUrl = "";
+var serverUrl = "";
 let cdnurl = "";
+let csd = "";
 
 function preloadKmsView() {
 
@@ -13,9 +14,9 @@ function preloadKmsView() {
     // parser.href = libraryurl;
     var n = libraryurl.indexOf("/public/cdn/");
     serverUrl = libraryurl.substring(0, n);
+    csd = serverUrl;
     //serverUrl = parser.protocol + "//" + parser.host;
     cdnurl = serverUrl + "/public/cdn/";
-
     var script = document.createElement("script");
     script.setAttribute("type", "text/javascript");
     script.setAttribute("data-senna-off", "true");

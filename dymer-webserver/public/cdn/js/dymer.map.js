@@ -1,5 +1,6 @@
 let serverUrl = "";
 let cdnurl = "";
+let csd = "";
 //let serverUrl = "http://localhost:8080/public/cdn/";
 //var markers, map, elFullScreen, elPageScreen, kmsconf,  sidebar, kmsdataset, kmsDT, templateslist;
 var markers, map, elFullScreen, elPageScreen, sidebar, kmsDT;
@@ -12,6 +13,7 @@ function preloadKmsMap() {
     //var n = libraryurl.indexOf("/public/cdn/");
     var n = libraryurl.indexOf("/public/cdn/");
     serverUrl = libraryurl.substring(0, n);
+    csd = serverUrl;
     //serverUrl = parser.protocol + "//" + parser.host;
     // cdnurl = serverUrl + "/public/cdn/";
     cdnurl = serverUrl + "/public/cdn/";
@@ -735,7 +737,7 @@ let generateDynamicDT = function(arr) {
             ],
             data: listData,
             columns: kmsconf.dt.columns,
-			 "aaSorting":kmsconf.dt.sorting,
+            "aaSorting": kmsconf.dt.sorting,
             orderCellsTop: true,
             /*fixedHeader: {
                 header: true,

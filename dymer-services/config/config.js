@@ -20,3 +20,8 @@ global.gConfig = environmentConfig;
 global.globConfig = finalConfig;
 // log global.gConfig
 //console.log(`global.gConfig: ${JSON.stringify(global.gConfig, undefined, global.gConfig.json_indentation)}`);
+
+if (process.env.DYMER_CONTEXT_PATH) {
+    global.gConfig.services["webserver"]["context-path"] = process.env.DYMER_CONTEXT_PATH;
+    console.log('Changed webserver context-path -> ' + global.gConfig.services["webserver"]["context-path"]);
+}

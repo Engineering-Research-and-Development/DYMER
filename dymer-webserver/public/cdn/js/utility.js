@@ -1356,10 +1356,10 @@ function loadRequireView() {
     filename = kmsconfig.cdn + "js/bootstrap-dymertagsinput.js";
     arr.push(new Elfile(domtype, filename, callback, false));
     filename = 'https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js';
-    arr.push(new Elfile(domtype, filename, mycallback, useonload));
+    arr.push(new Elfile(domtype, filename, callback, useonload));
 
     filename = 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js';
-    arr.push(new Elfile(domtype, filename, mycallback, useonload));
+    arr.push(new Elfile(domtype, filename, callback, useonload));
 
     /*filename = kmsconfig.cdn + "js/validate-forms.js";
     arr.push(new Elfile(domtype, filename, mycallback, useonload));*/
@@ -1367,9 +1367,10 @@ function loadRequireView() {
     filename = kmsconfig.cdn + "js/handlebarshook.js";
 
     var mycallback = function() { // Method which will display type of Animal
+
         document.cookie = "DYMisi=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
         var temp_config_call = {
-            url: serverUrl + "/api2/retriveinfo",
+            url: csd + "/api2/retriveinfo",
             type: 'POST',
             addDataBody: false
         };
@@ -1513,7 +1514,7 @@ function loadRequireMap() {
     filename = kmsconfig.cdn + "leaflet/plugin/markercluster/leaflet.markercluster.js";;
     var mycallback = function() { // Method which will display type of Animal
         var temp_config_call = {
-            url: serverUrl + "/api2/retriveinfo",
+            url: csd + "/api2/retriveinfo",
             type: 'POST',
             addDataBody: false
         };
@@ -1521,7 +1522,12 @@ function loadRequireMap() {
         ajax_temp_call.flush();
         var ret = ajax_temp_call.send();
         for (const [key, value] of Object.entries(ret)) {
-            localStorage.setItem(key, value);
+            if (key == "DYMisi")
+                document.cookie = "DYMisi=" + value;
+            else {
+                localStorage.removeItem(key);
+                localStorage.setItem(key, value);
+            }
         }
         mainMapOnLoad();
     };
