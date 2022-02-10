@@ -122,6 +122,45 @@ function useAlert(id, title_msg, msg_text, success) {
     el.slideDown();
 }
 
+function check_dymer_validform(senderForm) { //aaaaa
+    //console.log("senderForm", senderForm);
+    var valid = false;
+    let formid = senderForm[0].replace("#", "");
+    // var forms = document.getElementById(formid).querySelectorAll('.needs-validation');
+    var form = document.getElementById(formid);
+    //var forms = document.querySelectorAll('.needs-validation')
+    // Loop over them and prevent submission
+    if (!form.checkValidity()) {
+        valid = false;
+        $(senderForm[0]).find("[dymer-element-validation]").each(function() {
+            let call_fn = $(this).attr("dymer-element-validation");
+            let elvalid = window[call_fn]($(this));
+            if (!elvalid)
+                $(this).addClass("is-invalid");
+            else
+                $(this).removeClass("is-invalid");
+        });
+        event.preventDefault()
+        event.stopPropagation()
+            //return false;
+    } else {
+        valid = true;
+        $(senderForm[0]).find("[dymer-element-validation]").each(function() {
+            let call_fn = $(this).attr("dymer-element-validation");
+            let elvalid = window[call_fn]($(this));
+            valid = (elvalid == true && valid == true);
+            if (!elvalid) {
+                $(this).addClass("is-invalid");
+                return false;
+            } else {
+                $(this).removeClass("is-invalid");
+            }
+        });
+    }
+    form.classList.add('was-validated')
+    return valid;
+}
+
 function check_required(senderForm) {
     var valid = true;
     $(senderForm + " [required]").each(function() {
@@ -179,6 +218,16 @@ function checkSession() { //active - warned -expired
 
 function resetContainer(el) {
     $(el)[0].reset();
+
+    $(el).find('.alertaction').slideUp();
+    $(el).removeClass('was-validated');
+    $(el).find('.is-invalid').removeClass('is-invalid');
+    $(el).find(".selectpicker").each(function() {
+        $(this).val('').selectpicker("refresh");
+    });
+    $(el).find(".repeatable:not(.first-repeatable) .act-remove").each(function() {
+        removeRepeatable($(this));
+    });
     /*	var par = $(el).find(
                 "input[type!='hidden']");
         $(par).each(function() {
@@ -1204,8 +1253,12 @@ function actionEventPostMultipartForm(type, el, senderForm, callbackfunction, ca
     var complete = false;
     var gr_title = "";
     var gr_text = "Please fill out all required fields";
-    if (senderForm != undefined)
-        complete = check_required(senderForm);
+    if (senderForm != undefined) {
+        // complete = check_required(senderForm);
+        complete = check_dymer_validform(senderForm);
+
+    }
+
     if (!complete) {
         if (callerForm != undefined)
             $(callerForm).hideLoader();
@@ -1332,7 +1385,7 @@ function loadRequireView() {
     var mycallback = function () { // Method which will display type of Animal
         document.cookie = "DYMisi=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
         var temp_config_call = {
-            url: serverUrl + "/api2/retriveinfo",
+            url: csd + "/api2/retriveinfo",
             type: 'POST',
             addDataBody: false
         };
@@ -1476,7 +1529,7 @@ function loadRequireMap() {
     filename = kmsconfig.cdn + "leaflet/plugin/markercluster/leaflet.markercluster.js";;
     var mycallback = function () { // Method which will display type of Animal
         var temp_config_call = {
-            url: serverUrl + "/api2/retriveinfo",
+            url: csd + "/api2/retriveinfo",
             type: 'POST',
             addDataBody: false
         };
@@ -1484,7 +1537,12 @@ function loadRequireMap() {
         ajax_temp_call.flush();
         var ret = ajax_temp_call.send();
         for (const [key, value] of Object.entries(ret)) {
-            localStorage.setItem(key, value);
+            if (key == "DYMisi")
+                document.cookie = "DYMisi=" + value;
+            else {
+                localStorage.removeItem(key);
+                localStorage.setItem(key, value);
+            }
         }
         mainMapOnLoad();
     };
@@ -1730,18 +1788,19 @@ function checkPermission(actualItem, act) {
             return entPerm;
         }
     }
-    if (typeof d_rl != 'undefined') {
-        d_rl = JSON.parse(atob(d_rl));
-        if ((d_rl).find(x => x == "app-admin")) {
-            entPerm.isadmin = true;
-            entPerm.isowner = false;
-            entPerm.view = true;
-            entPerm.edit = true;
-            entPerm.delete = true;
-            entPerm.managegrant = true;
-            return entPerm;
+    if (d_rl != null)
+        if (typeof d_rl != 'undefined') {
+            d_rl = JSON.parse(atob(d_rl));
+            if ((d_rl).find(x => x == "app-admin")) {
+                entPerm.isadmin = true;
+                entPerm.isowner = false;
+                entPerm.view = true;
+                entPerm.edit = true;
+                entPerm.delete = true;
+                entPerm.managegrant = true;
+                return entPerm;
+            }
         }
-    }
     if (act == 'create') {
         entPerm.view = true;
         entPerm.edit = true;
@@ -2039,8 +2098,10 @@ async function editEntity(id) {
         '</div>' +
         '<div class="modal-footer">' +
         //'<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>' +
+        //'<button type="button" class="btn btn-default" onclick="resetContainer(\'#entityEdit form\')">Reset</button>' +
         '<button type="button" class="btn btn-default" onclick="closeDymerModal(\'entityEdit\')">Close</button>' +
         '<button type="button" class="btn btn-primary onputform" onclick="actionPutMultipartForm(\'entity\',undefined,undefined, \'#entityEdit form\',undefined,undefined,true)">Save changes</button>' +
+        //'<button type="button" class="btn btn-primary onputform" onclick="actionPutMultipartForm(\'entity\',undefined,undefined, undefined,undefined,undefined,true)">Save changes</button>' +
         '</div>' +
         '</div>' +
         '</div>' +
@@ -2765,7 +2826,8 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
     var gr_text = "Please fill out all required fields";
     if (senderForm != undefined) {
         //console.log("senderForm != undefined", senderForm != undefined);
-        complete = check_required(senderForm);
+        //  complete = check_required(senderForm);
+        complete = check_dymer_validform(senderForm);
     }
     if (!complete) {
         if (useGritter) {
@@ -2866,8 +2928,10 @@ const actionPostMultipartForm_Promise = function (type, el, datapost, senderForm
         var gr_title = "";
         var gr_text = "Please fill out all required fields";
         if (senderForm != undefined) {
-            console.log("senderForm != undefined", senderForm != undefined);
-            complete = check_required(senderForm);
+            // console.log("senderForm != undefined", senderForm != undefined);
+            // complete = check_required(senderForm);
+            complete = check_dymer_validform(senderForm);
+
         }
         if (!complete) {
             if (useGritter) {
@@ -2968,8 +3032,12 @@ function actionPutMultipartForm(type, el, datapost, senderForm, callback, caller
     }
     var gr_title = "";
     var gr_text = "Please fill out all required fields";
-    if (senderForm != undefined)
-        complete = check_required(senderForm);
+    if (senderForm != undefined) {
+        // complete = check_required(senderForm);
+        let idformvalidate = $(senderForm).attr("id");
+        complete = check_dymer_validform([idformvalidate]);
+    }
+
     if (!complete) {
         if (callerForm != undefined)
             $(callerForm).hideLoader();
@@ -3054,8 +3122,11 @@ function actionPatchMultipartForm(type, el, datapost, senderForm, callback, call
     }
     var gr_title = "";
     var gr_text = "Please fill out all required fields";
-    if (senderForm != undefined)
-        complete = check_required(senderForm);
+    if (senderForm != undefined) {
+        //  complete = check_required(senderForm);
+        complete = check_dymer_validform(senderForm);
+    }
+
     if (!complete) {
         if (callerForm != undefined)
             $(callerForm).hideLoader();
@@ -3192,8 +3263,11 @@ function actionDeleteMultipartForm(type, el, datapost, senderForm, callback, cal
     var gr_title = "";
     var gr_title = "";
     var gr_text = "Please fill out all required fields";
-    if (senderForm != undefined)
-        complete = check_required(senderForm);
+    if (senderForm != undefined) {
+        //   complete = check_required(senderForm);
+        complete = check_dymer_validform(senderForm);
+    }
+
     if (!complete) {
         if (callerForm != undefined)
             $(callerForm).hideLoader();

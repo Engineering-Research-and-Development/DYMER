@@ -1,5 +1,5 @@
 <h1 class="text-center">{{titolo}}</h1>
-<form id="entityForm" class="senderForm">
+<form id="entityForm" class="senderForm needs-validation" novalidate="">
     <input name="instance[index]" type="hidden" value="{{instance}}">
     <input name="instance[type]" type="hidden" value="{{instance}}">
     <div class="rendered-form">
@@ -43,6 +43,7 @@
             <div class="msg_txt"></div>
         </div>
         <div class="text-right actionsAddEntity">
+            <span type="button" id="btnCloseDymerModal" class="btn btn-default" onclick="resetContainer('#entityAdd form')">Reset</span>
             <span type="button" id="btnCloseDymerModal" class="btn btn-default" onclick="closeDymerModal('entityAdd')">Close</span>
             <span class="btn btn-info pull-right" id="btnAddDymerModal" onclick="actionPostMultipartForm('entity/{{instance}}', $(this),undefined, undefined,undefined,undefined,true)">Submit</span>
         </div>
