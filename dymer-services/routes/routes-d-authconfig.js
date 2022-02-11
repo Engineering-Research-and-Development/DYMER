@@ -24,7 +24,7 @@ router.use(bodyParser.urlencoded({
 }));
 
 
-const capManagerApi = process.env.CAP_MANAGER_API;
+const capManagerApi = process.env.ACS_SERVER;
 const rrmApi = process.env.RRM_API;
 
 // const rrmApi = 'https://acs.bse.h2020-demeter-cloud.eu:1029';
