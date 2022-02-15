@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   next();
 });*/
-const portExpress = global.gConfig.port;
+const portExpress = global.configService.port;
 var routes = require('./routes/routes-v1');
 var routes_dymer_openness = require('./routes/routes-d-opn-v1');
 var routes_dymer_fwadapter = require('./routes/routes-d-fwadapter-v1');
@@ -64,5 +64,5 @@ app.get("/*", (req, res) => {
 });
 //module.exports = app;
 app.listen(portExpress, () => {
-    console.log("Up and running-- this is " + global.gConfig.app_name + " service on port:" + global.gConfig.port + " context-path:" + util.getContextPath('dservice'));
+    console.log("Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path:" + util.getContextPath('dservice'));
 });

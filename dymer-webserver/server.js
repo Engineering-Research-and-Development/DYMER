@@ -2,11 +2,10 @@
 //const Keycloak = require('keycloak-connect');
 const express = require("express");
 var url = require("url");
-//process.env.NODE_ENV = "development";
 require("./config/config.js");
 const util = require("./utility");
 const app = express();
-const portExpress = global.gConfig.services.webserver.port; //context-path
+const portExpress = global.configService.port; //context-path
 const bodyParser = require("body-parser");
 const path = require('path');
 const fs = require('fs');
@@ -387,13 +386,13 @@ if (util.ishttps('webserver')) {
         cert: fs.readFileSync(path.join(__dirname, 'ssl', 'server.crt'))
     };
     https.createServer(Httpsoptions, app).listen(portExpress, () => {
-        console.log("Up and running-- this is " + global.gConfig.services.webserver.protocol + " " + global.gConfig.services.webserver.app_name + " service on port:" + global.gConfig.services.webserver.port + " context-path:" + util.getContextPath('webserver'));
+        console.log("Up and running-- this is " + global.configService.protocol + " " + global.configService.app_name + " service on port:" + global.configService.port + " context-path:" + util.getContextPath('webserver'));
         // console.log(`${global.gConfig.services.webserver.port} listening on port ${global.gConfigt}`);
     });
 } else {
     app.listen(portExpress, () => {
-        console.log("Up and running-- this is " + global.gConfig.services.webserver.protocol + " " +
-            global.gConfig.services.webserver.app_name + " service on port:" + global.gConfig.services.webserver.port + " context-path:" + util.getContextPath('webserver'));
+        console.log("Up and running-- this is " + global.configService.protocol + " " +
+            global.configService.app_name + " service on port:" + global.configService.port + " context-path:" + util.getContextPath('webserver'));
         // console.log(`${global.gConfig.services.webserver.port} listening on port ${global.gConfigt}`);
     });
 }

@@ -1,16 +1,46 @@
 exports.getContextPath = function(typeServ) {
-    let cpath = global.totalConfig.services[typeServ]["context-path"];
+    let cpath = global.gConfig.services[typeServ]["context-path"];
     if (cpath == undefined)
         cpath = "";
     return cpath;
 };
-exports.mongoUrlTemplate = function(el) {
-    let url = "mongodb://" + global.gConfig.repository.ip + ':' + global.gConfig.repository.port + "/" + global.gConfig.repository.index_ref;
+exports.getServiceUrl = function(typeServ) {
+    let url = global.gConfig.services[typeServ].protocol + "://" + global.gConfig.services[typeServ].ip + ':' + global.gConfig.services[typeServ].port;
+    // url += this.getContextPath(typeServ);
     return url;
+};
+exports.getbasehUrl = function() {
+    let url = global.configService.repository.protocol + "://" + global.configService.repository.ip + ':' + global.configService.repository.port;
+    //  console.log('url1', url);
+    return url;
+};
+exports.mongoUrlFiles = function(el) {
+    let url = "mongodb://" + global.configService.repository.files.ip + ':' + global.configService.repository.files.port + "/" + global.configService.repository.files.index_ref;
+    return url;
+};
+exports.elastichUrl = function(el) {
+    let url = global.configService.repository.entity.protocol + "://" + global.configService.repository.entity.ip + ':' + global.configService.repository.entity.port + "/" + el.index + "/" + el.type;
+    //  console.log('url2', url);
+    return url;
+};
+exports.mongoUrlBase = function() {
+    let url = "mongodb://" + global.configService.repository.ip + ':' + global.configService.repository.port + "/";
+    return url;
+};
+exports.mongoUrl = function(el) {
+    let url = "mongodb://" + global.configService.repository.ip + ':' + global.configService.repository.port + "/" + global.configService.repository.index_ref;
+    return url;
+};
+exports.mongoUrlEntitiesBridge = function() {
+    let url = "mongodb://" + global.configService.repository.entitiesbridge.ip + ':' + global.configService.repository.entitiesbridge.port + "/" + global.configService.repository.entitiesbridge.index_ref;
+    return url;
+};
+exports.getServiceConfig = function(typeServ) {
+    let cnf = global.gConfig.services[typeServ];
+    return cnf;
 };
 
 function isEmpty(obj) {
-    // console.log('isEmpty(obj)', obj);
     for (var key in obj) {
         if (typeof(obj[key]) == 'object')
             return false;
@@ -21,47 +51,43 @@ function isEmpty(obj) {
     }
     return true;
 }
+/*
+function isEmpty(obj) {
+    console.log('isEmpty(obj)', obj, typeof(obj));
+    for (var key in obj) {
+        console.log('key', key, obj[key]);
+        if (typeof(obj[key]) == 'object')
+            return false;
+        else {
+            if (obj.hasOwnProperty(key))
+                return false;
+        }
+    }
+    return true;
+}*/
+
 exports.getAllQuery = function(req) {
 
     let obj = { "query": {} };
     let body = req.body;
     let params = req.params;
     let query = req.query;
-    // console.log("req", req);
-    //console.log("req route", req.route );
-    // console.log("req get", req.route.methods.get);
-    //   console.log("req post", req.route.methods.post);
-    //console.log("body", body, typeof(body));
-    //console.log("params", params, typeof(params));
-    //console.log("query", query.query, typeof(query));
+    /* console.log('body', body);
+     console.log('params', params);
+     console.log('query', query);*/
     if (!isEmpty(body))
         Object.assign(obj, body);
     if (!isEmpty(params)) {
         Object.assign(obj, params);
-        //Object.assign(obj.query, params); 
+        //Object.assign(obj.query, params);
     }
     if (!isEmpty(query)) {
         if (typeof(query.query) == 'string')
             query.query = JSON.parse(query.query);
-        // Object.assign(obj.query, query);
-
-        //    console.log("queryobj", obj, query.query);
         Object.assign(obj, query.query);
     }
-
+    //  console.log("obj", obj );
     return obj;
-    /* let obj = {};
-     let body = req.body;
-     let params = req.params;
-     let query = req.query;
-     if (!isEmpty(body))
-         if (!isEmpty(body.query))
-             Object.assign(obj, body.query);
-     if (!isEmpty(params))
-         Object.assign(obj, params);
-     if (!isEmpty(query))
-         Object.assign(obj, query);
-     return obj;*/
 }
 exports.convertBodyQuery = function(req) {
     var obj = {}
@@ -127,5 +153,14 @@ exports.checkIsAdmin = function(req, res, next) {
         // res.status(200);
         ret.setSuccess(false);
         return res.send(ret);
+    }
+}
+exports.getDymerUser = function(req, res, next) {
+    const hdymeruser = req.headers.dymeruser;
+    if (hdymeruser == undefined) {
+        return null;
+    } else {
+        const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+        return dymeruser;
     }
 }

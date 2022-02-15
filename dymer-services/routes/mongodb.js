@@ -1,6 +1,6 @@
 var util = require('../utility');
 const mongoose = require("mongoose");
-const mongoURI = util.mongoUrlForm();
+const mongoURI = util.mongoUrl();
 var db;
 mongoose
     .connect(mongoURI, {

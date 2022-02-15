@@ -52,12 +52,14 @@
                 "app_desc": "dymer entity",
                 "protocol": "http",
                 "ip": "localhost",
+                "context-path": "",
                 "port": 1358,
                 "ip_port": "localhost:1358",
                 "repository": {
                     "entity": {
                         "type": "elastichsearch",
                         "protocol": "http",
+                        "context-path": "",
                         "ip": "localhost",
                         "port": 9200
                     },
@@ -79,6 +81,7 @@
             },
             "dservice": {
                 "protocol": "http",
+                "context-path": "",
                 "ip": "127.0.0.1",
                 "port": 5050
             }
