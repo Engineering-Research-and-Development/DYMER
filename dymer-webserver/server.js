@@ -12,7 +12,7 @@ const fs = require('fs');
 const https = require('https');
 const morgan = require('morgan');
 const cors = require('cors');
-//USO OIDC 
+//USO OIDC  
 //var passport = require('passport')
 //const router=express.Router();
 //const appRoutes=require('./app/routes/api')(router);

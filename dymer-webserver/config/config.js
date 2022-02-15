@@ -9,7 +9,7 @@ const typeService = "webserver"; //process.env.TYPE_SERV;
 console.log('process.env.NODE_ENV', process.env.NODE_ENV);
 console.log('process.env.DYMER_CONTEXT_PATH', process.env.DYMER_CONTEXT_PATH);
 if (process.env.DYMER_CONTEXT_PATH != undefined) {
-    config[environment].services[typeService]["context-path"] = "/" + process.env.DYMER_CONTEXT_PATH;
+    config[environment].services[typeService]["context-path"] = process.env.DYMER_CONTEXT_PATH;
     console.log('Changed webserver context-path -> ', config[environment].services[typeService]["context-path"]);
 }
 const environmentConfig = config[environment];
