@@ -123,8 +123,10 @@ function useAlert(id, title_msg, msg_text, success) {
 }
 
 function check_dymer_validform(senderForm) { //aaaaa
-    //console.log("senderForm", senderForm);
+    //console.log("inizia validazionesenderForm", senderForm);
     var valid = false;
+    if (!senderForm[0].startsWith("#"))
+        senderForm[0] = "#" + senderForm[0];
     let formid = senderForm[0].replace("#", "");
     // var forms = document.getElementById(formid).querySelectorAll('.needs-validation');
     var form = document.getElementById(formid);
