@@ -28,8 +28,8 @@ services:
     image: demeterengteam/dymer_entities:20220210
     environment:
       - RRM_API=${RRM_API}
-      # - NODE_VERSION=17.0.1
-      - NODE_ENV=production
+      - DYMER_UUID=${DYMER_UUID}
+      - NODE_ENV=${NODE_ENV}
     depends_on:
       - elasticsearch
 
@@ -37,7 +37,7 @@ services:
     hostname: kms_forms
     image: demeterengteam/dymer_forms:20220210
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=${NODE_ENV}
     depends_on:
       - mongodb
 
@@ -45,7 +45,7 @@ services:
     hostname: kms_services
     image: demeterengteam/dymer_services:20220210
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=${NODE_ENV}
       - RRM_API=${RRM_API}
       - ACS_SERVER=${ACS_SERVER}
     depends_on:
@@ -55,7 +55,7 @@ services:
     hostname: kms_templates
     image: demeterengteam/dymer_templates:20220210
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=${NODE_ENV}
     depends_on:
       - mongodb
 
@@ -67,14 +67,9 @@ services:
         target: 8080
     environment:
       - DYMER_CONTEXT_PATH=${DYMER_CONTEXT_PATH}
-      - DYMER_UUID=${DYMER_UUID}
-        #            - http_proxy=
-        #            - https_proxy=
-      - no_proxy=deh-demeter.eng.it
       - RRM_API=${RRM_API}
       - ACS_SERVER=${ACS_SERVER}
-      - NODE_ENV=production
-      # - NODE_VERSION=17.0.1
+      - NODE_ENV=${NODE_ENV}
 
       #################################################
 
