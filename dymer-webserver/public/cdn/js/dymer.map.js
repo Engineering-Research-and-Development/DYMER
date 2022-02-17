@@ -690,6 +690,9 @@ let generateDynamicDT = function(arr) {
             // console.log("listData", listData);
         }
 
+        let dtorder = [0, 'asc'];
+        if (kmsconf.dt.sorting != undefined)
+            dtorder = kmsconf.dt.sorting;
 
         // console.log("listData1", listData);
         kmsDT = $('#dynamicDT').DataTable({
@@ -737,7 +740,7 @@ let generateDynamicDT = function(arr) {
             ],
             data: listData,
             columns: kmsconf.dt.columns,
-            "aaSorting": kmsconf.dt.sorting,
+            "order": dtorder,
             orderCellsTop: true,
             /*fixedHeader: {
                 header: true,
@@ -745,105 +748,6 @@ let generateDynamicDT = function(arr) {
             },*/
             initComplete: function(settings, json) {
                 afterTableInitialization(this);
-                /*   $('#dynamicDT_wrapper').append('<div class="row col-12"><i id="icnsdownload" class="fas fa-download" onclick="$(\'#contDwnlBtn\').toggle();"></i><span id="contDwnlBtn" style="display: none;"></span></div>');
-                   $("#dynamicDT_filter").prepend('<i id="icnsHideShow" class="fas fa-th-list" onclick="$(\'#cntbtnactdeact\').toggle();"></i>');
-                   $(".export-btn-tbl").appendTo("#contDwnlBtn");
-
-                   $('#dynamicDT_wrapper  .dt-buttons').after('<div id="cntbtnactdeact" style="display: none;"></div> ');
-                   $('#dynamicDT ').append($('<tfoot><tr class="d_table_filer"></tr></tfoot>'));
-                   var self_ = this;
-                   $('#dynamicDT thead tr:eq(0)').after('<tr class="d_table_filer"></tr>');
-                   self_.api().columns().every(function(index) {
-                       $('#dynamicDT thead tr:eq(1)').append('<th dtabindex="' + index + '"></th>');
-                       $('#dynamicDT tfoot tr:eq(0)').append('<th dtabindex="' + index + '"></th>');
-                       var column = this;
-                       var title = $(column.header()).text();
-                       //   console.log('nnn', index, $('#dynamicDT thead tr:eq(0) th:nth-child(' + index + ')').attr('class'));
-                       //  console.log('nnn', index, $(column.header()).attr('class'));
-                       var hdclass = $(column.header()).attr('class');
-                       //  var noFilt = $('#dynamicDT thead tr:eq(0) th:nth-child(' + column.index() + ')').attr('class');
-                       var extfiltra = "";
-                       if (hdclass != undefined) {
-                           if (hdclass.indexOf("noautofilter") != -1)
-                               extfiltra = " hide d-none";
-                       }
-                       var onlyDateSearch = false;
-                       if (hdclass != undefined) {
-                           if (hdclass.indexOf("onlyDateSearch") != -1)
-                               onlyDateSearch = true;
-                       }
-                       //console.log('column().footer()', column.footer());
-                       // console.log('column().header()', column.header());
-                       //     console.log('column().index()', column.index());
-                       //   console.log('column().visible()', column.visible());
-
-                       //console.log('table.column( idx ).header() ', column.header());
-                       var isvisible = (column.visible()) ? "checked" : "";
-                       if (!column.visible()) {
-                           $('[dtabindex="' + column.index() + '"]').hide();
-                       }
-                       var ck = '<span class="clact_deact " data-ordtitle="' + title + '"><span class="clname"> <i class="fa fa-circle small" aria-hidden="true"></i> ' +
-                           title + '</span><label class="switch switchfilter " ><input type="checkbox" data-column="' + index + '" class="toggle-vis" ' + isvisible +
-                           '> <span class="slider round"></span>  </label></span>';
-
-                       if (title != "") {
-                           var inpt = $('<input type="text" placeholder=" ' + title + '" class="column_search ' + extfiltra + '" />')
-                               .appendTo($("#dynamicDT thead tr:eq(1) th").eq(index).empty())
-                               .on('keyup', function() {
-                                   var val = $(this).val();
-                                   column
-                                       .search(val)
-                                       .draw();
-                               });
-
-                           $('#cntbtnactdeact').append(ck);
-                           $("#cntbtnactdeact .clact_deact").sort(sort_li).appendTo('#cntbtnactdeact ');
-
-                           var select = $('<select class="form-control_ select2 ' + extfiltra + ' " data-placeholder="Filter"><option value="">' + title + '</option></select>')
-                               .appendTo($("#dynamicDT tfoot tr:eq(0) th").eq(index).empty())
-                               .on('change', function() {
-                                   var val = $(this).val();
-                                   if (val === "\\(Blank\\)")
-                                       column
-                                       .search('^$', true, false)
-                                       .draw();
-                                   else
-                                       column
-                                       .search(val)
-                                       .draw();
-                               }); //.after('<div class="">' + title + '</div>');
-
-                           column.data().unique().sort().each(function(d, j) {
-                               if (typeof d_dt_functions !== "undefined") {
-                                   if (d_dt_functions[title] !== undefined) {
-                                       d = d_dt_functions[title](d);
-                                   }
-                               }
-                               if (typeof d !== 'object') {
-                                   if (d) {
-                                       var mar_dim_f = 100;
-                                       var value_sel = d.replace(/<(?:.|\n)*?>/gm, '');
-                                       var value_sel_text = value_sel;
-                                       if (value_sel.length > mar_dim_f) {
-                                           value_sel = value_sel.substr(0, mar_dim_f - 1);
-                                           value_sel_text = value_sel + ' &hellip;';
-
-                                       }
-                                       if (onlyDateSearch) {
-                                           value_sel_text = (value_sel_text.split(" "))[0];
-                                           value_sel = (value_sel.split(" "))[0];
-                                       }
-
-                                       if (!select.children().filter(function() { return $(this).val() == value_sel; }).length)
-                                           select.append('<option value="' + value_sel + '">' + value_sel_text + '</option>');
-                                   } else {
-                                       select.append('<option value="\\(Blank\\)">Blank</option>');
-                                   }
-                               }
-                           });
-                       }
-
-                   });*/
             }
         });
         $('.toggle-vis').on('change', function(e) {

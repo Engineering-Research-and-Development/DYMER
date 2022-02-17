@@ -92,7 +92,7 @@ function pushrunJobs() {
                 countstop++;
                 console.log("countstop", countstop);
                 console.log("a2", element.title, new Date().toLocaleString());
-                let urlToInvocke = util.getServiceUrl('webserver') + '/api/dservice/api/v1/import/fromdymer/' + key
+                let urlToInvocke = util.getServiceUrl('webserver') + util.getContextPath('webserver') + '/api/dservice/api/v1/import/fromdymer/' + key
                 axios.get(urlToInvocke).then(resp => {
 
                     console.log("invoco super", key);
@@ -225,7 +225,7 @@ router.get('/fromjson', (req, res) => {
         } //throw err;
         let list = JSON.parse(data);
         let lista = list["Portfolio"];
-        var pt = util.getServiceUrl('webserver') + "/api/entities/api/v1/entity/_search";
+        var pt = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/_search";
         const originalrelquery = "dih";
         const newentityType = "service";
         var query = {
@@ -467,16 +467,16 @@ const removeDir = function(path) {
 }
 
 function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action) {
-    var posturl = util.getServiceUrl('webserver') + "/api/entities/api/v1/entity/" + index;
+    var posturl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/" + index;
     if (action == "put")
-        posturl = util.getServiceUrl('webserver') + "/api/entities/api/v1/entity/" + el.instance.id;
+        posturl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/" + el.instance.id;
     var formdata = new FormData();
     let arrlistFiles = [];
     let dest = 'tempfolder';
     const dir = dest + "/" + el.instance.id;
     checkFilesFormdata(arrlistFiles, el);
     let requests = arrlistFiles.map((fl) => {
-        let url = util.getServiceUrl('webserver') + "/api/entities/api/v1/entity/contentfile/" + el.instance.id + "/" + fl.id;
+        let url = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/contentfile/" + el.instance.id + "/" + fl.id;
         url += "?tkdym=" + DYM;
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
@@ -563,7 +563,7 @@ router.get('/fromdymer/:id', (req, res) => {
     DymRule.find(myfilter).then((els) => {
         let crnrule = els[0];
         var pt_external = crnrule.sourcepath; //"http://localhost:8080/api/entities/api/v1/entity/_search";
-        var pt_internal = util.getServiceUrl('webserver') + "/api/entities/api/v1/entity/_search";
+        var pt_internal = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/_search";
         const originalrelquery = crnrule.sourceindex; //."";
         const newentityType = crnrule.targetindex; //"";
         const targetprefix = (crnrule.targetprefix == undefined) ? "" : crnrule.targetprefix;

@@ -19,8 +19,8 @@ router.use(bodyParser.urlencoded({ extended: true }));
 router.post('/authenticate', function(req, res) {
     var username = req.body.username;
     var password = req.body.password;
-    var _username = global.gConfig.services["webserver"]['adminUser'];
-    var _password = global.gConfig.services["webserver"]['adminPass'];
+    var _username = global.configService['adminUser'];
+    var _password = global.configService['adminPass'];
     //console.log('_username', _username, username);
     // console.log('_username', username);
     /* if (_username == undefined || _password == undefined) {

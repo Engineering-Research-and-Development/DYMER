@@ -10,14 +10,15 @@ const app = express();
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
 var cookieParser = require('cookie-parser');
-const nameFile = path.basename(__filename);
 require("./config/config.js");
+const nameFile = path.basename(__filename);
+
 /*app.all('/', function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   next();
 });*/
-const portExpress = global.gConfig.port;
+const portExpress = global.configService.port;
 var routes = require('./routes/routes-v1');
 var publicRoutes = require('./routes/publicfiles');
 //app.use(cors());
@@ -197,5 +198,5 @@ app.get(util.getContextPath('form') + "/*", (req, res) => {
 });
 //module.exports = app;
 app.listen(portExpress, () => {
-    console.log("Up and running-- this is " + global.gConfig.app_name + " service on port:" + global.gConfig.port + " context-path :" + util.getContextPath('form'));
+    console.log("Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path :" + util.getContextPath('form'));
 });

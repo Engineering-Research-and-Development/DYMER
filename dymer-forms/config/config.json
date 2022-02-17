@@ -31,6 +31,7 @@
                 "app_desc": "dymer models",
                 "protocol": "http",
                 "ip": "localhost",
+                "context-path": "",
                 "port": 4747,
                 "ip_port": "localhost:4747",
                 "repository": {
@@ -42,6 +43,7 @@
             },
             "dservice": {
                 "protocol": "http",
+                "context-path": "",
                 "ip": "kms_services",
                 "port": 5050
             }

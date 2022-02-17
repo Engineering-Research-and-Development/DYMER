@@ -7,7 +7,7 @@ const path = require("path");
 const util = require("./utility");
 const bodyParser = require("body-parser");
 const app = express();
-const portExpress = global.gConfig.port;
+const portExpress = global.configService.port;
 var routes = require('./routes/routes-v1');
 var publicRoutes = require('./routes/publicfiles');
 /*app.use(function(req, res, next) {
@@ -27,5 +27,5 @@ app.get(util.getContextPath('template') + "/*", (req, res) => {
 });
 //module.exports = app;
 app.listen(portExpress, () => {
-    console.log("Up and running-- this is " + global.gConfig.app_name + " service on port:" + global.gConfig.port + " context-path: " + util.getContextPath('template'));
+    console.log("Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + util.getContextPath('template'));
 });

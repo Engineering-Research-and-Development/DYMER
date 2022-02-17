@@ -593,7 +593,7 @@ Vvveb.Builder = {
 
     /* controls */
     loadControlGroups: function() {
-        console.log('Vvveb.editorType', Vvveb.editorType);
+        //console.log('Vvveb.editorType', Vvveb.editorType);
         componentsList = $("#components-list");
         componentsList.empty();
         var item = {},
@@ -1898,7 +1898,7 @@ Vvveb.Gui = {
                     // url: "",
                     posturl: "",
                 };
-                console.log('Vvveb.editorType', Vvveb.editorType);
+                //console.log('Vvveb.editorType', Vvveb.editorType);
                 if (Vvveb.editorType == "templates") {
                     datapost.viewtype = [{
                         rendertype: viewtype
@@ -2236,7 +2236,7 @@ Vvveb.FileManager = {
                     $('#filemanager .tree li[data-page="' + name + '"]').remove();
                     $('#message-modal').modal().find(".modal-body").html("Delete successfully! ");
                     if (name == Vvveb.FileManager.getCurrentPage())
-                        $('#iframe-wrapper iframe').attr('src', 'about:none');
+                        $('#iframe-wrapper iframe').attr('src', 'about:blank');
                 } else
                     $('#message-modal').modal().find(".modal-body").html("Error: Delete without success! ");
 

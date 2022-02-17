@@ -10,7 +10,7 @@ const util = require("./utility");
 //var elastic = require('elasticsearch');  
 //const bodyParser = require("body-parser");
 const app = express();
-const portExpress = global.gConfig.port; //4646;
+const portExpress = global.configService.port; //4646;
 //const axios = require("axios");
 
 /*app.use(bodyParser.json());
@@ -126,5 +126,5 @@ app.get(util.getContextPath('entity') + "/*", (req, res) => {
     return res.send(ret);
 });
 app.listen(portExpress, () => {
-    console.log("Up and running-- this is " + global.gConfig.app_name + " service on port:" + global.gConfig.port + " context-path: " + util.getContextPath('entity'));
+    console.log("Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + util.getContextPath('entity'));
 });

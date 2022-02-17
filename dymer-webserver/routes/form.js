@@ -36,27 +36,27 @@ router.use('*', async(req, res, next) => {
 
 
 const jsonPlaceholderProxy = createProxyMiddleware({
-  target: util.getServiceUrl("form"),
-  changeOrigin: true, // proxy websockets
-  ws: true,
-  onProxyReq: (proxyReq, req) => {
+    target: util.getServiceUrl("form"),
+    changeOrigin: true, // proxy websockets
+    ws: true,
+    onProxyReq: (proxyReq, req) => {
 
-      //   console.log("proxyReq");
-      //    console.log('UUUUUUUU: ', req.path, req.session)
-      //    console.log('Cookies: ', req.cookies)
-  },
-  pathRewrite: function(path, req) {
-      path = path.replace(util.getContextPath('webserver'), util.getContextPath('form'));
-      path = path.replace("/api/forms", "");
-      return path;
+        //   console.log("proxyReq");
+        //    console.log('UUUUUUUU: ', req.path, req.session)
+        //    console.log('Cookies: ', req.cookies)
+    },
+    pathRewrite: function(path, req) {
+        path = path.replace(util.getContextPath('webserver'), util.getContextPath('form'));
+        path = path.replace("/api/forms", "");
+        return path;
 
-  }
+    }
 
 });
 router.use(
-      jsonPlaceholderProxy
+    jsonPlaceholderProxy
 );
- 
+
 /*
 router.use(proxy(util.getServiceUrl("form"), {
   proxyReqPathResolver: function (req) {

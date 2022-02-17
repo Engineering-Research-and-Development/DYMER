@@ -6,12 +6,13 @@
                 "app_name": "dservice",
                 "app_desc": "dymer services",
                 "protocol": "http",
-                "ip": "127.0.0.1",
+                "ip": "localhost",
+                "context-path": "/production",
                 "port": 5050,
-                "ip_port": "127.0.0.1:5050",
+                "ip_port": "localhost:5050",
                 "repository": {
                     "protocol": "http",
-                    "ip": "127.0.0.1",
+                    "ip": "localhost",
                     "port": 27017,
                     "index_ref": "dservice"
                 }
@@ -19,8 +20,9 @@
             "webserver": {
                 "app_name": "webserver",
                 "app_desc": "dymer webserver",
+                "context-path": "",
                 "protocol": "http",
-                "ip": "127.0.0.1",
+                "ip": "localhost",
                 "port": 8080
             },
             "opnsearch": {
@@ -39,10 +41,11 @@
             "dservice": {
                 "app_name": "dservice",
                 "app_desc": "dymer services",
+                "context-path": "",
                 "protocol": "http",
-                "ip": "127.0.0.1",
+                "ip": "localhost",
                 "port": 5050,
-                "ip_port": "127.0.0.1:5050",
+                "ip_port": "localhost:5050",
                 "repository": {
                     "protocol": "http",
                     "ip": "mongodb",

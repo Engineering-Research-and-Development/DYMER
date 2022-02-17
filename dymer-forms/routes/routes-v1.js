@@ -22,7 +22,7 @@ var db;
 var gridFSBucket;
 var storage;
 var upload;
-const mongoURI = util.mongoUrlForm();
+const mongoURI = util.mongoUrl();
 
 console.log(nameFile + ' | mongoURI :', JSON.stringify(mongoURI));
 mongoose

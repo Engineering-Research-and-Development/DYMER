@@ -19,7 +19,7 @@ router.use(bodyParser.urlencoded({ extended: true }));
 const Template = mongoose.model("Template");
 var gridFSBucket;
 var db;
-const mongoURI = util.mongoUrlTemplate();
+const mongoURI = util.mongoUrl();
 console.log(nameFile + ' | mongoURI :', JSON.stringify(mongoURI));
 mongoose
     .connect(mongoURI, {
@@ -94,6 +94,7 @@ var getfilesArrays = function(er) {
 }
 var recFile = function(file_id) {
     return new Promise(function(resolve, reject) {
+        //console.log('file_id', file_id);
         //  gridFSBucket.openDownloadStream(file_id);
         db.collection('fs.files').findOne(file_id._id, function(err, filedata) {
             var chunks = [];
@@ -139,14 +140,16 @@ router.get('/', (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
-    //console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
+    console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
     Template.find(queryFind).collation({ locale: "en" }).sort({ title: +1 }).then((templates) => {
+        //Template.find(queryFind).then((templates) => {
+        // console.log('dat', JSON.stringify(templates));
         var actions = templates.map(getfilesArrays);
         var results = Promise.all(actions); // pass array of promises
         results.then(function(dat) {
             ret.setMessages("List");
             ret.setData(dat);
-            // console.log('dat', dat);
+            //  console.log('dat', JSON.stringify(dat));
             return res.send(ret);
         })
     }).catch(function(err) {
@@ -156,7 +159,7 @@ router.get('/', (req, res) => {
 
 router.get('/content/:fileid', function(req, res, next) {
     var file_id = req.params.fileid;
-    // console.log(nameFile + ' | get/content/:fileid |  fileid :', file_id);
+    console.log(nameFile + ' | get/content/:fileid |  fileid :', file_id);
     if (!isValidObjectId(file_id)) {
         res.write('');
         res.end();
@@ -164,6 +167,7 @@ router.get('/content/:fileid', function(req, res, next) {
     }
     recFile(mongoose.Types.ObjectId(file_id))
         .then(function(result) {
+            console.log(nameFile + ' | get/content/:fileid |  fileid :', result);
             res.setHeader('Content-type', result.contentType);
             res.setHeader('Content-disposition', 'filename=' + result.filename);
             res.charset = 'utf-8';

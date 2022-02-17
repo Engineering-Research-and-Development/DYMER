@@ -7,57 +7,80 @@ let mongoUrlForm="mongodb://192.168.99.100:27017/form";*/
 let mongoUrlFormFile = "mongodb://192.168.99.100:27017/formsFile";
 var jsonResponse = require('./jsonResponse');
 
-exports.getServiceUrl = function(typeServ) {
-    let url = global.totalConfig.services[typeServ].protocol + "://" + global.totalConfig.services[typeServ].ip + ':' + global.totalConfig.services[typeServ].port;
-    return url;
-};
-
 exports.getContextPath = function(typeServ) {
-    let cpath = global.totalConfig.services[typeServ]["context-path"];
+    let cpath = global.gConfig.services[typeServ]["context-path"];
     if (cpath == undefined)
         cpath = "";
     return cpath;
 };
+exports.getServiceUrl = function(typeServ) {
+    let url = global.gConfig.services[typeServ].protocol + "://" + global.gConfig.services[typeServ].ip + ':' + global.gConfig.services[typeServ].port;
+    // url += this.getContextPath(typeServ);
+    return url;
+};
+exports.getbasehUrl = function() {
+    let url = global.configService.repository.protocol + "://" + global.configService.repository.ip + ':' + global.configService.repository.port;
+    //  console.log('url1', url);
+    return url;
+};
+exports.mongoUrlFiles = function(el) {
+    let url = "mongodb://" + global.configService.repository.files.ip + ':' + global.configService.repository.files.port + "/" + global.configService.repository.files.index_ref;
+    return url;
+};
 exports.elastichUrl = function(el) {
-    let url =
-        global.gConfig.repository.ip_port + "/" + el.index + "/" + el.type;
+    let url = global.configService.repository.entity.protocol + "://" + global.configService.repository.entity.ip + ':' + global.configService.repository.entity.port + "/" + el.index + "/" + el.type;
+    //  console.log('url2', url);
     return url;
 };
-exports.mongoUrlFormFile = function(el) {
-    let url = mongoUrlFormFile + "";
+exports.mongoUrlBase = function() {
+    let url = "mongodb://" + global.configService.repository.ip + ':' + global.configService.repository.port + "/";
     return url;
 };
-exports.mongoUrlForm = function(el) {
-    let url = "mongodb://" + global.gConfig.repository.ip + ':' + global.gConfig.repository.port + "/" + global.gConfig.repository.index_ref;
+exports.mongoUrl = function(el) {
+    let url = "mongodb://" + global.configService.repository.ip + ':' + global.configService.repository.port + "/" + global.configService.repository.index_ref;
     return url;
 };
-/*function isEmpty(obj) {
-    for(var key in obj) {
-        if(obj.hasOwnProperty(key))
+exports.mongoUrlEntitiesBridge = function() {
+    let url = "mongodb://" + global.configService.repository.entitiesbridge.ip + ':' + global.configService.repository.entitiesbridge.port + "/" + global.configService.repository.entitiesbridge.index_ref;
+    return url;
+};
+exports.getServiceConfig = function(typeServ) {
+    let cnf = global.gConfig.services[typeServ];
+    return cnf;
+};
+
+function isEmpty(obj) {
+    for (var key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
             return false;
+        }
     }
     return true;
-}*/
+}
+/*
 function isEmpty(obj) {
-    //  console.log('isEmpty(obj)',obj);
+    console.log('isEmpty(obj)', obj, typeof(obj));
     for (var key in obj) {
+        console.log('key', key, obj[key]);
         if (typeof(obj[key]) == 'object')
             return false;
         else {
             if (obj.hasOwnProperty(key))
                 return false;
         }
-
     }
     return true;
-}
+}*/
+
 exports.getAllQuery = function(req) {
 
     let obj = { "query": {} };
     let body = req.body;
     let params = req.params;
     let query = req.query;
-
+    /* console.log('body', body);
+     console.log('params', params);
+     console.log('query', query);*/
     if (!isEmpty(body))
         Object.assign(obj, body);
     if (!isEmpty(params)) {
@@ -65,14 +88,12 @@ exports.getAllQuery = function(req) {
         //Object.assign(obj.query, params);
     }
     if (!isEmpty(query)) {
-        // Object.assign(obj.query, query);
         if (typeof(query.query) == 'string')
             query.query = JSON.parse(query.query);
         Object.assign(obj, query);
     }
-
+    //  console.log("obj", obj );
     return obj;
-
 }
 exports.convertBodyQuery = function(req) {
     var obj = {}
@@ -115,7 +136,7 @@ exports.stringAsKey = function(obj, arrkey, element) {
 exports.checkIsDymerUser = function(req, res, next) {
     const hdymeruser = req.headers.dymeruser;
     if (hdymeruser == undefined) {
-        console.log(nameFile + ' | checkUser | No permission:', req.originalUrl, req.method, req.url);
+        console.log('checkUser | No permission:', req.originalUrl, req.method, req.url);
         var ret = new jsonResponse();
         ret.setMessages("No permission");
         // res.status(200);
@@ -125,7 +146,6 @@ exports.checkIsDymerUser = function(req, res, next) {
         next();
     }
 }
-
 exports.checkIsAdmin = function(req, res, next) {
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
@@ -133,11 +153,20 @@ exports.checkIsAdmin = function(req, res, next) {
     if ((dymeruser.roles.indexOf("app-admin") > -1)) {
         next();
     } else {
-        console.log(nameFile + ' | checkIsAdmin | No permission:', dymeruser.id, req.originalUrl, req.method, req.url);
+        console.log('checkIsAdmin | No permission:', dymeruser.id, req.originalUrl, req.method, req.url);
         var ret = new jsonResponse();
         ret.setMessages("No permission");
         // res.status(200);
         ret.setSuccess(false);
         return res.send(ret);
+    }
+}
+exports.getDymerUser = function(req, res, next) {
+    const hdymeruser = req.headers.dymeruser;
+    if (hdymeruser == undefined) {
+        return null;
+    } else {
+        const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+        return dymeruser;
     }
 }

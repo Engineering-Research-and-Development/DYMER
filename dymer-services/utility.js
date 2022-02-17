@@ -6,67 +6,81 @@ let serviceEntityUrl="http://localhost:1358/";
 let mongoUrlForm="mongodb://192.168.99.100:27017/form";*/
 //let mongoUrlFormFile = "mongodb://192.168.99.100:27017/formsFile";
 var jsonResponse = require('./jsonResponse');
+
 exports.getContextPath = function(typeServ) {
-    let cpath = global.globConfig.services[typeServ]["context-path"];
+    let cpath = global.gConfig.services[typeServ]["context-path"];
     if (cpath == undefined)
         cpath = "";
     return cpath;
 };
-exports.elastichUrl = function(el) {
-    let url =
-        global.gConfig.repository.ip_port + "/" + el.index + "/" + el.type;
-    return url;
-};
-/*exports.mongoUrlFormFile = function(el) {
-    let url = mongoUrlFormFile + "";
-    return url;
-};*/
-exports.mongoUrlBase = function(el) {
-    let url = "mongodb://" + global.gConfig.repository.ip + ':' + global.gConfig.repository.port + "/";
-    return url;
-};
-exports.mongoUrlForm = function(el) {
-    let url = "mongodb://" + global.gConfig.repository.ip + ':' + global.gConfig.repository.port + "/" + global.gConfig.repository.index_ref;
-    return url;
-};
 exports.getServiceUrl = function(typeServ) {
-    let url = global.globConfig.services[typeServ].protocol + "://" + global.globConfig.services[typeServ].ip + ':' + global.globConfig.services[typeServ].port;
-
+    let url = global.gConfig.services[typeServ].protocol + "://" + global.gConfig.services[typeServ].ip + ':' + global.gConfig.services[typeServ].port;
+    // url += this.getContextPath(typeServ);
+    return url;
+};
+exports.getbasehUrl = function() {
+    let url = global.configService.repository.protocol + "://" + global.configService.repository.ip + ':' + global.configService.repository.port;
+    //  console.log('url1', url);
+    return url;
+};
+exports.mongoUrlFiles = function(el) {
+    let url = "mongodb://" + global.configService.repository.files.ip + ':' + global.configService.repository.files.port + "/" + global.configService.repository.files.index_ref;
+    return url;
+};
+exports.elastichUrl = function(el) {
+    let url = global.configService.repository.entity.protocol + "://" + global.configService.repository.entity.ip + ':' + global.configService.repository.entity.port + "/" + el.index + "/" + el.type;
+    //  console.log('url2', url);
+    return url;
+};
+exports.mongoUrlBase = function() {
+    let url = "mongodb://" + global.configService.repository.ip + ':' + global.configService.repository.port + "/";
+    return url;
+};
+exports.mongoUrl = function(el) {
+    let url = "mongodb://" + global.configService.repository.ip + ':' + global.configService.repository.port + "/" + global.configService.repository.index_ref;
+    return url;
+};
+exports.mongoUrlEntitiesBridge = function() {
+    let url = "mongodb://" + global.configService.repository.entitiesbridge.ip + ':' + global.configService.repository.entitiesbridge.port + "/" + global.configService.repository.entitiesbridge.index_ref;
     return url;
 };
 exports.getServiceConfig = function(typeServ) {
-
-    var cnf = global.globConfig.services[typeServ];
-
+    let cnf = global.gConfig.services[typeServ];
     return cnf;
 };
-/*function isEmpty(obj) {
-    for(var key in obj) {
-        if(obj.hasOwnProperty(key))
+
+function isEmpty(obj) {
+    for (var key in obj) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
             return false;
+        }
     }
     return true;
-}*/
+}
+/*
 function isEmpty(obj) {
-    //console.log('isEmpty(obj)', obj);
+    console.log('isEmpty(obj)', obj, typeof(obj));
     for (var key in obj) {
+        console.log('key', key, obj[key]);
         if (typeof(obj[key]) == 'object')
             return false;
         else {
             if (obj.hasOwnProperty(key))
                 return false;
         }
-
     }
     return true;
-}
+}*/
+
 exports.getAllQuery = function(req) {
 
     let obj = { "query": {} };
     let body = req.body;
     let params = req.params;
     let query = req.query;
-
+    /* console.log('body', body);
+     console.log('params', params);
+     console.log('query', query);*/
     if (!isEmpty(body))
         Object.assign(obj, body);
     if (!isEmpty(params)) {
@@ -145,5 +159,14 @@ exports.checkIsAdmin = function(req, res, next) {
         // res.status(200);
         ret.setSuccess(false);
         return res.send(ret);
+    }
+}
+exports.getDymerUser = function(req, res, next) {
+    const hdymeruser = req.headers.dymeruser;
+    if (hdymeruser == undefined) {
+        return null;
+    } else {
+        const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+        return dymeruser;
     }
 }

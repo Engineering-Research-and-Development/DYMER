@@ -13,7 +13,7 @@ exports.serviceEntityUrl = function ( ) {
 */
 exports.getServiceUrl = function(typeServ) {
     let url = global.gConfig.services[typeServ].protocol + "://" + global.gConfig.services[typeServ].ip + ':' + global.gConfig.services[typeServ].port;
-
+    // url += this.getContextPath(typeServ);
     return url;
 };
 exports.ishttps = function(typeServ) {
@@ -25,7 +25,7 @@ exports.ishttps = function(typeServ) {
 
 };
 exports.getContextPath = function(typeServ) {
-    let cpath = global.totalConfig.services[typeServ]["context-path"];
+    let cpath = global.gConfig.services[typeServ]["context-path"];
     // let cpath = global.gConfig.services[typeServ]["context-path"];
     if (cpath == undefined)
         cpath = "";
