@@ -44,6 +44,10 @@ exports.mongoUrlEntitiesBridge = function() {
     let url = "mongodb://" + global.configService.repository.entitiesbridge.ip + ':' + global.configService.repository.entitiesbridge.port + "/" + global.configService.repository.entitiesbridge.index_ref;
     return url;
 };
+exports.mongoUrlForm = function(el) {
+    let url = "mongodb://" + global.configService.repository.ip + ':' + global.configService.repository.port + "/" + global.configService.repository.index_ref;
+    return url;
+};
 exports.getServiceConfig = function(typeServ) {
     let cnf = global.gConfig.services[typeServ];
     return cnf;

@@ -7,20 +7,14 @@ const axios = require('axios');
 const bodyParser = require("body-parser");
 const { response } = require('express');
 
-const rrmApi = process.env.RRM_API;
-const acsServer = process.env.ACS_SERVER;
+const rrmApi = process.env.RRM_API || 'https://acs.bse.h2020-demeter-cloud.eu:1029';
+const acsServer = process.env.ACS_SERVER || 'https://acs.bse.h2020-demeter-cloud.eu:3030';
 
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({
     extended: false,
     limit: '100MB'
 }));
-
-
-// // let rrmApi = 'http://localhost:17100';
-// // let rrmApi = 'https://deh-demeter.eng.it/pep-proxy';
-// let acsServer = 'https://acs.bse.h2020-demeter-cloud.eu:3030';
-// let rrmApi = 'https://acs.bse.h2020-demeter-cloud.eu:1029';
 
 router.get('/', (req, res) => {
 

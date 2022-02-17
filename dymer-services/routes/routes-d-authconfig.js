@@ -24,11 +24,9 @@ router.use(bodyParser.urlencoded({
 }));
 
 
-const capManagerApi = process.env.ACS_SERVER;
-const rrmApi = process.env.RRM_API;
+const acsServer = process.env.ACS_SERVER || 'https://acs.bse.h2020-demeter-cloud.eu:3030';
+const rrmApi = process.env.RRM_API || 'https://acs.bse.h2020-demeter-cloud.eu:1029';
 
-// const rrmApi = 'https://acs.bse.h2020-demeter-cloud.eu:1029';
-// const capManagerApi = 'https://acs.bse.h2020-demeter-cloud.eu:3030'
 /*
 const mongoURI = util.mongoUrlForm();
 console.log(nameFile + ' | mongoURI :', JSON.stringify(mongoURI));
@@ -489,7 +487,7 @@ const getAllResorucesCapToken = (accessToken, req) => {
 
         let body = JSON.stringify(getAllResources);
 
-        axios.post(capManagerApi, body, postHeaders).then(resp => {
+        axios.post(acsServer, body, postHeaders).then(resp => {
 
 
             resolve(resp);
@@ -545,7 +543,7 @@ async function getCapabilityTokenDEMETER(capTokenName, req, url, authToken) {
 
         let body = JSON.stringify(getAllResources);
 
-        axios.post(capManagerApi, body, config).then(resp => {
+        axios.post(acsServer, body, config).then(resp => {
 
             console.log("GET ALL Resources Cap. Token", JSON.stringify(resp.data))
             if (req.session.extraData != undefined) {
@@ -565,7 +563,7 @@ async function getCapabilityTokenDEMETER(capTokenName, req, url, authToken) {
 
         let body = JSON.stringify(getMyResources);
 
-        await axios.post(capManagerApi, body, config).then(resp => {
+        await axios.post(acsServer, body, config).then(resp => {
             console.log("GET MY Resources Cap. Token", JSON.stringify(resp.data))
 
             if (req.session.extraData != undefined) {
@@ -584,7 +582,7 @@ async function getCapabilityTokenDEMETER(capTokenName, req, url, authToken) {
 
         let body = JSON.stringify(createResource);
 
-        await axios.post(capManagerApi, body, config).then(resp => {
+        await axios.post(acsServer, body, config).then(resp => {
             console.log("GET Create Resources Cap. Token", JSON.stringify(resp.data))
 
             if (req.session.extraData != undefined) {
@@ -603,7 +601,7 @@ async function getCapabilityTokenDEMETER(capTokenName, req, url, authToken) {
 
         let body = JSON.stringify(getMetrics);
 
-        await axios.post(capManagerApi, body, config).then(resp => {
+        await axios.post(acsServer, body, config).then(resp => {
             console.log("GET Metrics Resources Cap. Token", JSON.stringify(resp.data))
 
             if (req.session.extraData != undefined) {

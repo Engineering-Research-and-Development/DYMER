@@ -8,7 +8,6 @@
                 "protocol": "http",
                 "ip": "localhost",
                 "port": 4545,
-
                 "ip_port": "localhost:4545",
                 "repository": {
                     "protocol": "http",
