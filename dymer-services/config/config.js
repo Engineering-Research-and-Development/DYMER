@@ -8,6 +8,11 @@ const environment = process.env.NODE_ENV || 'development';
 const typeService = 'dservice'; // process.env.TYPE_SERV;
 //const environmentConfig = (typeService != undefined) ? config[environment]['services'][typeService] : config[environment];
 //if (process.env.DYMER_CONTEXT_PATH != undefined) {
+if (process.env.DYMER_CONTEXT_PATH != undefined) {
+    //config[environment].services["webserver"]["context-path"] = "/" + process.env.DYMER_CONTEXT_PATH;
+    config[environment].services["webserver"]["context-path"] = process.env.DYMER_CONTEXT_PATH;
+
+}
 if (process.env.DYMER_CONTEXT_PATH != undefined) { //marco to set before commit
     //config[environment].services["webserver"]["context-path"]= process.env.DYMER_CONTEXT_PATH; 
     //console.log('Changed webserver context-path -> ', config[environment].services["webserver"]["context-path"]);
