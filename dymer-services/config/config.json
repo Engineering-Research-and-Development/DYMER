@@ -58,7 +58,7 @@
                 "app_desc": "dymer webserver",
                 "context-path": "",
                 "protocol": "http",
-                "ip": "kms_webserver",
+                "ip": "dymer_webserver",
                 "port": 8080
             },
             "opnsearch": {

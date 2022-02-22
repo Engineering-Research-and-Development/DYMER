@@ -82,12 +82,12 @@
             "dservice": {
                 "protocol": "http",
                 "context-path": "",
-                "ip": "kms_services",
+                "ip": "dymer_services",
                 "port": 5050
             },
             "form": {
                 "protocol": "http",
-                "ip": "kms_forms",
+                "ip": "dymer_forms",
                 "port": 4747
             }
         }

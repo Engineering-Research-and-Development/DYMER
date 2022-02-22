@@ -51,26 +51,26 @@
             },
             "entity": {
                 "protocol": "http",
-                "ip": "kms_entities",
+                "ip": "dymer_entities",
                 "context-path": "",
                 "port": 1358
             },
             "template": {
                 "protocol": "http",
-                "ip": "kms_templates",
+                "ip": "dymer_templates",
                 "context-path": "",
                 "port": 4545
             },
             "form": {
                 "protocol": "http",
                 "context-path": "",
-                "ip": "kms_forms",
+                "ip": "dymer_forms",
                 "port": 4747
             },
             "dservice": {
                 "protocol": "http",
                 "context-path": "",
-                "ip": "kms_services",
+                "ip": "dymer_services",
                 "port": 5050
             }
         }

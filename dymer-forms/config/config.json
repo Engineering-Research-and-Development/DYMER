@@ -44,7 +44,7 @@
             "dservice": {
                 "protocol": "http",
                 "context-path": "",
-                "ip": "kms_services",
+                "ip": "dymer_services",
                 "port": 5050
             }
         }
