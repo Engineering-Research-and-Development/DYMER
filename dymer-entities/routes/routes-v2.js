@@ -2482,6 +2482,74 @@ function appendFormdata(FormData, data, name) {
     }
 }
 
+router.post('/rate', (req, res) => {
+
+    var ret = new jsonResponse();
+
+    let reqBody = req.body;
+
+    const hdymeruser = req.headers.dymeruser;
+    const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+    console.log(nameFile + ' | rate | dymeruser:', JSON.stringify(dymeruser));
+
+    // //production
+    // var agent = new https.Agent({
+    //     // rejectUnauthorized: false
+    //     ca: fs.readFileSync('./ssl/ACS_CA.pem'),
+    //     keepAlive: false
+    //     // ca: fs.readFileSync('ca.pem') 
+    // });
+
+
+    let tokenProviderUrl = "https://acs.bse.h2020-demeter-cloud.eu:3030"
+    let config = {
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    }
+
+    // // let deBodyProd = "https://acs.bse.h2020-demeter-cloud.eu:1029";
+    // let deBodyEng = "https://deh-demeter.eng.it/pep-proxy";
+    //     let deBodyLocal = "http://localhost:17100";
+
+    let reBody = '/api/v1/resources/:id/rate'
+    reBody = reBody.replace(':id', reqBody.elid)
+
+    let rawBody = {
+        token: dymeruser.extrainfo.token,
+        ac: "POST",
+        de: rrmApi,
+        re: reBody
+    }
+
+    let body = JSON.stringify(rawBody);
+
+    axios.post(tokenProviderUrl, body, config).then(capToken => {
+
+        console.log('CAPTOKEN+++', capToken.data)
+        let url = rrmApi + reBody
+        let config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-auth-token': JSON.stringify(capToken.data),
+                'x-subject-token': dymeruser.extrainfo.token
+            }
+        }
+        axios.post(url, reqBody.rating, { headers: config.headers }).then(resp => {
+            ret.setMessages("DEH Resource rated sucessfully, average rating is: " + resp.data.data.rating);
+            return res.send(ret);
+        }).catch(function (error) {
+            // handle error
+            console.error("GET external error", error.response.status);
+        });
+    }).catch(function (error) {
+        console.error("err", error);
+        ret.setSuccess(false);
+        ret.setExtraData({ log: error.message });
+        ret.setMessages("Entity " + error.displayName);
+        return res.send(ret);
+    });
+});
 
 router.post('/:enttype', function (req, res) {
 
@@ -3875,89 +3943,6 @@ router.delete('/:id', (req, res) => {
         }
     });
 });
-
-router.post('/rate', (req, res) => {
-
-    var ret = new jsonResponse();
-
-    let reqBody = req.body;
-    let my_xauth_token = reqBody.token;
-    let userInfo;
-
-    console.log('TOKEN==', my_xauth_token)
-
-    if (my_xauth_token != '') {
-
-        let buff = Buffer.from(my_xauth_token, 'base64');
-
-        userInfo = JSON.parse(buff.toString('utf-8'));
-
-        console.log('budd', userInfo)
-
-        token = userInfo.access_token;
-
-        console.log('accessToken', token);
-
-    }
-
-    //production
-    var agent = new https.Agent({
-        // rejectUnauthorized: false
-        ca: fs.readFileSync('./ssl/ACS_CA.pem'),
-        keepAlive: false
-        // ca: fs.readFileSync('ca.pem') 
-    });
-
-
-    let tokenProviderUrl = "https://acs.bse.h2020-demeter-cloud.eu:3030"
-    let config = {
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    }
-
-    // let deBodyProd = "https://acs.bse.h2020-demeter-cloud.eu:1029";
-    // let deBodyEng = "https://deh-demeter.eng.it/pep-proxy";
-
-    let reBody = '/api/v1/resources/:id/rate'
-    reBody = reBody.replace(':id', reqBody.elid)
-
-    let rawBody = {
-        token: token,
-        ac: "POST",
-        de: rrmApi,
-        re: reBody
-    }
-
-    let body = JSON.stringify(rawBody);
-
-    axios.post(tokenProviderUrl, body, config).then(capToken => {
-
-        console.log('CAPTOKEN+++', capToken.data)
-        let url = rrmApi + reBody
-        let config = {
-            headers: {
-                'Content-Type': 'application/json',
-                'x-auth-token': JSON.stringify(capToken.data),
-                'x-subject-token': userInfo.access_token
-            }
-        }
-        axios.post(url, reqBody.rating, { headers: config.headers }).then(resp => {
-            ret.setMessages("DEH Resource rated sucessfully, average rating is: " + resp.data.data.rating);
-            return res.send(ret);
-        }).catch(function (error) {
-            // handle error
-            console.error("GET external error", error.response.status);
-        });
-    }).catch(function (error) {
-        console.error("err", error);
-        ret.setSuccess(false);
-        ret.setExtraData({ log: error.message });
-        ret.setMessages("Entity " + error.displayName);
-        return res.send(ret);
-    });
-});
-
 
 //inoltro al microservizio dservice
 function checkServiceHook(EventSource, objSend, extraInfo, req) {
