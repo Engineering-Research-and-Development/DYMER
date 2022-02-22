@@ -25,7 +25,7 @@ router.use(bodyParser.urlencoded({
 
 
 const acsServer = process.env.ACS_SERVER || 'https://acs.bse.h2020-demeter-cloud.eu:3030';
-const rrmApi = process.env.RRM_API || 'https://acs.bse.h2020-demeter-cloud.eu:1029';
+const rrmApi = process.env.RRM_API || 'https://deh-demeter.eng.it/pep-proxy';
 
 /*
 const mongoURI = util.mongoUrlForm();
