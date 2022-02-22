@@ -3756,18 +3756,50 @@ function getFilterQueryType(filter) {
 function opencloseDSAF(el) {
     basefilter
 }*/
+function mergeDeep(...objects) {
+    const isObject = obj => obj && typeof obj === 'object';
+
+    return objects.reduce((prev, obj) => {
+        Object.keys(obj).forEach(key => {
+            const pVal = prev[key];
+            const oVal = obj[key];
+
+            if (Array.isArray(pVal) && Array.isArray(oVal)) {
+                prev[key] = pVal.concat(...oVal);
+            } else if (isObject(pVal) && isObject(oVal)) {
+                prev[key] = mergeDeep(pVal, oVal);
+            } else {
+                prev[key] = oVal;
+            }
+        });
+
+        return prev;
+    }, {});
+}
 
 function dymerSearch(options) {
     let _this = this;
     let defaultOptions = {
-        "conditionQuery": "AND",
-        "groupfilterclass": "span12 col-12",
-        "addfreesearch": false,
-        "showFilterBtn": false,
-        "showAdvOptionBtn": false
-    }
-    options = { ...defaultOptions, ...options };
-    this.init = function () {
+            "conditionQuery": "AND",
+            "groupfilterclass": "span12 col-12",
+            "addfreesearch": false,
+            "showFilterBtn": false,
+            "showAdvOptionBtn": false,
+            "translations": {
+                und: {
+                    freesearch: {
+                        label: "Search",
+                        placeholder: "Enter any term"
+                    },
+                    submit: {
+                        text: "SEARCH"
+                    }
+                }
+            }
+        }
+        //options = {...defaultOptions, ...options };
+    options = mergeDeep(defaultOptions, options);
+    this.init = function() {
         //   console.log('options', options);
         if (options.showFilterBtn) {
             $("#" + options.formid).append('<i class="fa fa-filter dsearchAdvFilterBtn" aria-hidden="true" title="advanced filter" onclick="' + options.objname + '.showFilter()"></i>');
@@ -3805,7 +3837,7 @@ function dymerSearch(options) {
 
         }
 
-        $("#" + options.formid).append('<span   class="btn btn-primary btn-block" onclick="' + options.objname + '.search()">SEARCH</span>');
+        $("#" + options.formid).append('<span   class="btn btn-primary btn-block" onclick="' + options.objname + '.search()">' + options.translations.und.submit.text + '</span>');
         window[options.objname] = options.objname;
         /* document.querySelector(options.container).className += " too-slide-slider-container";
          document.querySelectorAll(options.slidesClass).forEach((slide, index) => {
@@ -3883,9 +3915,9 @@ function dymerSearch(options) {
             let idGen = new GeneratorId();
             let usePlaceholder = (myform.attr("useplaceholder") == "true") ? true : false;
             if (options.addfreesearch) {
-                let groupEl = $('<div class="grpfilter ' + options.groupfilterclass + ' basefilter"><div><label class="control-label"> Search </label></div> </div>');
+                let groupEl = $('<div class="grpfilter ' + options.groupfilterclass + ' basefilter"><div><label class="control-label"> ' + options.translations.und.freesearch.label + ' </label></div> </div>');
                 $(groupEl).attr('data-filterpos', -10);
-                $(groupEl).append('<input type="text" class="form-control  " placeholder="Enter any term" name="data[_all]" searchable-override="_all" >');
+                $(groupEl).append('<input type="text" class="form-control  " placeholder="' + options.translations.und.freesearch.placeholder + '" name="data[_all]" searchable-override="_all" >');
 
                 //if (options.innerContainerid == options.formid) {
                 myform_innerContainer.append(groupEl);

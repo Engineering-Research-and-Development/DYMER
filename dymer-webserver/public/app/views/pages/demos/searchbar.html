@@ -214,6 +214,17 @@ function mainDymerView() {
         <span class="token keyword">"addfreesearch"</span>:true, <span class="token attr-name">// will add global search input, true/false</span> -> <span class="token tag">Not Mandatory, default value = false</span>
         <span class="token keyword">"showFilterBtn"</span>:true, <span class="token attr-name">// will add button for advanced filter, true/false</span> -> <span class="token tag">Not Mandatory, default value = false</span>
         <span class="token keyword">"showAdvOptionBtn"</span>:true, <span class="token attr-name">// will add button for advanced option, true/false</span> -> <span class="token tag">Not Mandatory, default value = false</span>
+        <span class="token keyword">"translations"</span>: { <span class="token attr-name">// with the following structure, you can translate the individual entries</span> -> <span class="token tag">Not Mandatory, default value = as reported</span>
+                "und": {
+                    "freesearch": {
+                        "label": "Search",
+                        "placeholder": "Enter any term"
+                    },
+                    "submit": {
+                        "text": "SEARCH"
+                    }
+                }
+            },
         <span class="token keyword">"query"</span>: { <span class="token attr-name">// base query for search</span>
             "bool": {
                 "must": [{
