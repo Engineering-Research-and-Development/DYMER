@@ -226,7 +226,7 @@ var ret = '';
     var args = [],
         options = arguments[arguments.length - 1];
     if (hookCheckSatusconf != undefined) {
-        if (hookCheckSatusconf.name == "EntityStatus")
+        if (hookCheckSatusconf.name == "EntityStatusTwo")
             hookCheckSatusconf = undefined;
     }
      console.log('obj', obj);
@@ -249,9 +249,9 @@ var ret = '';
             //editBtn += '<div class="col-12 text-right" >';
             // editBtn +='';
             if (perm.delete)
-                editBtn += '<span class="text-danger actionDymerItem" style="cursor:pointer" onclick="deleteEntity(\'' + obj._id + '\', \'' + obj._index + '\'  )"><i class="fa fa-trash" aria-hidden="true"></i> Delete </span> ';
+                editBtn += '<a href="#" class="actionDymerItem fixedDelete" style="cursor:pointer" onclick="deleteEntity(\'' + obj._id + '\', \'' + obj._index + '\'  )"><b><i class="fa fa-trash" aria-hidden="true"></i></b> <span>Delete </span></a> ';
             if (perm.edit) {
-                 editBtn += '<span class="text-info  actionDymerItem" style="cursor:pointer" onclick="editEntity(\'' + obj._id + '\')"><i class="fa fa-pencil" aria-hidden="true"></i> Edit </span> ';
+                 editBtn += '<a href="#" class="actionDymerItem fixedEdit" style="cursor:pointer" onclick="editEntity(\'' + obj._id + '\')"> <b> <i class="fa fa-pencil" aria-hidden="true"></i></b> <span>Edit </span> </a>';
             }
             //editBtn += '<span id="closeButtonItem" style="cursor:pointer" class="closeButton  btn-listdymer " onclick="drawEntities(jsonConfig)"> <i class="fa fa-window-close-o" aria-hidden="true"></i> Close </span>';
 
@@ -262,15 +262,15 @@ var ret = '';
 
     if (perm.view){
        if (actualTemplateType=='fullcontent'){
-         editBtn+=' <span id="closeButtonItem" style="cursor:pointer" class="closeButton  btn-listdymer actionDymerItem"  onclick="showDatasetContainer();drawEntities(jsonConfig);"> <i class="fa fa-window-close-o" aria-hidden="true"></i> Close </span>'; 
+         editBtn+='<a href="#" class="actionDymerItem fixedClose" style="cursor:pointer" id="closeButtonItem" onclick="showDatasetContainer();drawEntities(jsonConfig);" > <b><i class="fa fa-window-close-o" aria-hidden="true"></i> </b>  <span> Close </span></a>'; 
        }
     }
 
-    var closeBtn='<span id="closeButtonItem" class="actionDymerItem  btn-listdymer " onclick="drawEntities(jsonConfig)"> <i class="fa fa-times-circle" aria-hidden="true"></i> Close </span>';	
+    var closeBtn='<span id="closeButtonItem" class="actionDymerItem  btn-listdymer " onclick="drawEntities(jsonConfig)"> <i class="fa fa-times-circle" aria-hidden="true"></i> Close </span></a>';	
 
     if (owner != '' || visibility != '')
-         owner = '<span class="actionDymerItem">' + owner + "&nbsp;" + visibility + '</span>';
-    ret ='<div class="col-12 text-right dotItems">'+ status + owner + editBtn +'</div>';
+         owner = '<a href="#" class="fixOwner"><b>' + owner + "&nbsp;" + visibility + '</b><span>Ownership</span></a>';
+    ret ='<div class=" text-right dotItems">'+ status + owner + editBtn +'</div>';
 
     return ret;
 });
