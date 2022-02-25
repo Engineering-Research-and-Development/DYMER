@@ -7,7 +7,7 @@ const axios = require('axios');
 const bodyParser = require("body-parser");
 const { response } = require('express');
 
-const rrmApi = process.env.RRM_API || 'https://deh-demeter.eng.it/pep-proxy';
+const rrmApi = process.env.RRM_API || 'https://acs.bse.h2020-demeter-cloud.eu:1029';
 const acsServer = process.env.ACS_SERVER || 'https://acs.bse.h2020-demeter-cloud.eu:3030';
 
 router.use(bodyParser.json());

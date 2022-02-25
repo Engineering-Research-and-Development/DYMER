@@ -4,7 +4,7 @@ var router = express.Router();
 const axios = require('axios');
 const bodyParser = require("body-parser");
 
-const rrmApi = process.env.RRM_API || 'https://deh-demeter.eng.it/pep-proxy';
+const rrmApi = process.env.RRM_API || 'https://acs.bse.h2020-demeter-cloud.eu:1029';
 const dymerContextPath = process.env.DYMER_CONTEXT_PATH || ''
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({
