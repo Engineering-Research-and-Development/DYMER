@@ -219,6 +219,58 @@ Handlebars.registerHelper('EntityStatus', function(obj, hookCheckSatusconf, obj2
         }*/
     return ret;
 });
+
+
+Handlebars.registerHelper('EntityStatusTwo', function(obj, hookCheckSatusconf, obj2) {
+var ret = '';
+    var args = [],
+        options = arguments[arguments.length - 1];
+    if (hookCheckSatusconf != undefined) {
+        if (hookCheckSatusconf.name == "EntityStatusTwo")
+            hookCheckSatusconf = undefined;
+    }
+     
+    var perm = checkPermission(obj);
+    var status = checkSatus(obj, hookCheckSatusconf);
+    var visibility = checkVisibility(obj);
+    var getrole = getrendRole(perm);
+    var editBtn = '';
+    var owner = getrole;
+
+    //  console.log('options perm', perm);
+
+    if (perm.delete || perm.edit) {
+        if (actualTemplateType == 'fullcontent') {
+            //editBtn += '<div class="col-12 text-right" >';
+            // editBtn +='';
+            if (perm.delete)
+                editBtn += '<a href="#" class="actionDymerItem fixedDelete" style="cursor:pointer" onclick="deleteEntity(\'' + obj._id + '\', \'' + obj._index + '\'  )"><b><i class="fa fa-trash" aria-hidden="true"></i></b> <span>Delete </span></a> ';
+            if (perm.edit) {
+                 editBtn += '<a href="#" class="actionDymerItem fixedEdit" style="cursor:pointer" onclick="editEntity(\'' + obj._id + '\')"> <b> <i class="fa fa-pencil" aria-hidden="true"></i></b> <span>Edit </span> </a>';
+            }
+            //editBtn += '<span id="closeButtonItem" style="cursor:pointer" class="closeButton  btn-listdymer " onclick="drawEntities(jsonConfig)"> <i class="fa fa-window-close-o" aria-hidden="true"></i> Close </span>';
+
+        }
+
+    }
+
+
+    if (perm.view){
+       if (actualTemplateType=='fullcontent'){
+         editBtn+='<a href="#" class="actionDymerItem fixedClose" style="cursor:pointer" id="closeButtonItem" onclick="showDatasetContainer();drawEntities(jsonConfig);" > <b><i class="fa fa-window-close-o" aria-hidden="true"></i> </b>  <span> Close </span></a>'; 
+       }
+    }
+
+    var closeBtn='<span id="closeButtonItem" class="actionDymerItem  btn-listdymer " onclick="drawEntities(jsonConfig)"> <i class="fa fa-times-circle" aria-hidden="true"></i> Close </span></a>';	
+
+    if (owner != '' || visibility != '')
+         owner = '<a href="#" class="fixOwner"><b>' + owner + "&nbsp;" + visibility + '</b><span>Ownership</span></a>';
+    ret ='<div class=" text-right dotItems">'+ status + owner + editBtn +'</div>';
+
+    return ret;
+});
+
+
 Handlebars.registerHelper('cdnpath', function(block) {
     return (kmsconfig.cdn).replace('public/cdn/', "");; //just return global variable value
 });
