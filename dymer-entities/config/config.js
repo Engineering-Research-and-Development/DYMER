@@ -15,6 +15,7 @@ const enviConfig = config[environment];
 const finalConfig = _.merge(defaultConfig, enviConfig);
 global.dymer_uuid = dymer_uuid;
 global.totalConfig = config[environment];*/
+global.dymer_uuid = dymer_uuid;
 const environmentConfig = config[environment];
 const finalConfig = _.merge(defaultConfig, environmentConfig);
 global.gConfig = finalConfig;
