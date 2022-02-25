@@ -229,12 +229,7 @@ var ret = '';
         if (hookCheckSatusconf.name == "EntityStatusTwo")
             hookCheckSatusconf = undefined;
     }
-     console.log('obj', obj);
-        console.log('obj1', hookCheckSatusconf);
-      console.log('obj2', obj2);
-        console.log('arguments', arguments, arguments.length);
-       console.log('options', options);
-          console.log('actualTemplateType', actualTemplateType); 
+     
     var perm = checkPermission(obj);
     var status = checkSatus(obj, hookCheckSatusconf);
     var visibility = checkVisibility(obj);
