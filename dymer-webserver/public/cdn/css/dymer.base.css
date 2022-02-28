@@ -201,6 +201,10 @@
     background-image: none;
 }
 
+.senderForm.needs-validation .bootstrap-select .selectpicker+.dropdown-toggle.bs-invalid:focus {
+    outline: none !important;
+}
+
 
 /*
 .senderForm.was-validated input:focus:invalid:focus,

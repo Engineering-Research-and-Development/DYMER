@@ -132,16 +132,27 @@ function check_dymer_validform(senderForm) { //aaaaa
     var form = document.getElementById(formid);
     //var forms = document.querySelectorAll('.needs-validation')
     // Loop over them and prevent submission
+    let firstFocusEl = undefined;
     if (!form.checkValidity()) {
         valid = false;
+
         $(senderForm[0]).find("[dymer-element-validation]").each(function() {
             let call_fn = $(this).attr("dymer-element-validation");
             let elvalid = window[call_fn]($(this));
-            if (!elvalid)
+            if (!elvalid) {
                 $(this).addClass("is-invalid");
-            else
+                firstFocusEl = (firstFocusEl == undefined) ? $(this) : firstFocusEl;
+            } else {
                 $(this).removeClass("is-invalid");
+            }
+
         });
+        /*   if (firstFocusEl != undefined) {
+           firstFocusEl.focus();
+       }*/
+        // console.log("first", $(form).find(":invalid").first());
+        // console.log("form", $($(form).find(":invalid").first()).index());
+        $(form).find(":invalid").first().focus();
         event.preventDefault()
         event.stopPropagation()
             //return false;
@@ -152,13 +163,18 @@ function check_dymer_validform(senderForm) { //aaaaa
             let elvalid = window[call_fn]($(this));
             valid = (elvalid == true && valid == true);
             if (!elvalid) {
+                firstFocusEl = (firstFocusEl == undefined) ? $(this) : firstFocusEl;
                 $(this).addClass("is-invalid");
+                if (firstFocusEl != undefined) {
+                    firstFocusEl.focus();
+                }
                 return false;
             } else {
                 $(this).removeClass("is-invalid");
             }
         });
     }
+
     form.classList.add('was-validated')
     return valid;
 }
