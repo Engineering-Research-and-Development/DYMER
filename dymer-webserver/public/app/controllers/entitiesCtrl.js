@@ -87,7 +87,12 @@ angular.module('entitiesControllers', [])
             console.log(response.status);
         });
         $scope.RenderEntity = function(el, index) {
-            //     console.log('elel', el);
+            //console.log('el.properties', el.properties.owner.uid, el.properties.owner.gid);
+
+
+            document.getElementsByName("data[id]")[0].value = el._id;
+            document.getElementsByName("data[properties][owner][uid]")[0].value = el.properties.owner.uid;
+            document.getElementsByName("data[properties][owner][gid]")[0].value = el.properties.owner.gid;
             $scope.entityuid = el.properties.owner.uid;
             $scope.entitygid = el.properties.owner.gid;
             $scope.entityEid = el._id;
