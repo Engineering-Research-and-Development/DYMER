@@ -8,6 +8,8 @@ var cors = require('cors');
 const bodyParser = require("body-parser");
 const app = express();
 require("./config/config.js");
+const nameFile = path.basename(__filename);
+const logger = require('./routes/dymerlogger');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: false,
@@ -55,8 +57,33 @@ app.use(util.getContextPath('dservice') + '/api/v1/perm', routes_dymer_permissio
 //app.use(util.getContextPath('dservice') + '/api/v1/importp4t', routes_dymer_importp4t);
 app.use(util.getContextPath('dservice') + '/api/v1/configtool', routes_dymer_configtool);
 app.use(util.getContextPath('dservice') + '/api/v1/authconfig', routes_dymer_authconfig);
+app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
+    var ret = new jsonResponse();
+    var filetype = req.params.filetype;
+    //const dymeruser = util.getDymerUser(req, res);
+
+    logger.flushfile(filetype);
+    // logger.i
+    ret.setSuccess(true);
+    ret.setMessages("Deleted");
+    return res.send(ret);
+});
+
+app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
+    var filetype = req.params.filetype;
+    //console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
+    return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
+});
+app.get(util.getContextPath('dservice') + '/checkservice', util.checkIsAdmin, (req, res) => {
+    var ret = new jsonResponse();
+    ret.setMessages("Service is up");
+    res.status(200);
+    ret.setSuccess(true);
+    return res.send(ret);
+});
 app.get("/*", (req, res) => {
     var ret = new jsonResponse();
+    logger.error(nameFile + ' | /* Api error 404  :' + req.path);
     ret.setMessages("Api error 404");
     res.status(404);
     ret.setSuccess(false);
@@ -64,5 +91,7 @@ app.get("/*", (req, res) => {
 });
 //module.exports = app;
 app.listen(portExpress, () => {
+    //logger.flushAllfile();
+    logger.info(nameFile + " | Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + util.getContextPath('dservice'));
     console.log("Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path:" + util.getContextPath('dservice'));
 });

@@ -14,7 +14,7 @@ const { GridFsStorage } = require('multer-gridfs-storage');
 const nameFile = path.basename(__filename);
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
-
+const logger = require('./dymerlogger');
 const Model = mongoose.model("Form");
 
 //const mongoURI = util.mongoUrlForm();
@@ -25,6 +25,7 @@ var upload;
 const mongoURI = util.mongoUrl();
 
 console.log(nameFile + ' | mongoURI :', JSON.stringify(mongoURI));
+logger.info(nameFile + " | mongoURI: " + JSON.stringify(mongoURI));
 mongoose
     .connect(mongoURI, {
         // useCreateIndex: true,
@@ -33,6 +34,7 @@ mongoose
     })
     .then(x => {
         console.log(nameFile + ` | Connected to Mongo! Database name: "${x.connections[0].name}"`);
+        logger.info(nameFile + ` | Connected to Mongo! Database name: "${x.connections[0].name}"`);
         db = x.connections[0].db;
         //console.log(x.connections[0].db);
         gridFSBucket = new mongoose.mongo.GridFSBucket(x.connections[0].db, {
@@ -54,7 +56,40 @@ mongoose
     })
     .catch(err => {
         console.error("ERROR | " + nameFile + ` | Error connecting to mongo! Database name: "${mongoURI}"`, err);
+        logger.error(nameFile + ` | Error connecting to mongo! Database name: "${mongoURI}" ` + err);
     });
+
+
+router.get('/mongostate', (req, res) => {
+    let ret = new jsonResponse();
+    let dbState = [{
+            value: 0,
+            label: "Disconnected",
+            css: "text-danger"
+        },
+        {
+            value: 1,
+            label: "Connected",
+            css: "text-success"
+        },
+        {
+            value: 2,
+            label: "Connecting",
+            css: "text-info"
+        },
+        {
+            value: 3,
+            label: "Disconnecting",
+            css: "text-warning"
+        }
+    ];
+    let mongostate = mongoose.connection.readyState;
+    ret.setMessages("Mongodb state");
+    ret.setData(dbState.find(f => f.value == mongostate));
+    res.status(200);
+    ret.setSuccess(true);
+    return res.send(ret);
+});
 
 /*
  *************************************************************************************************************
@@ -120,6 +155,7 @@ var recFile = function(file_id) {
         });
     }).catch(function(err) {
         console.error("ERROR | " + nameFile + ' | recFile  : ', err);
+        logger.error(nameFile + ' | recFile  : ' + err);
     });
 }
 
@@ -136,7 +172,8 @@ router.get('/dettagliomodel', [util.checkIsDymerUser], (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
-    console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
+    //console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
+    logger.info(nameFile + '  | get/dettagliomodel | queryFind:' + JSON.stringify(queryFind));
     //let queryFind = (Object.keys(callData.query).length === 0) ? {} : JSON.parse(callData.query);
     //let queryFind = (Object.keys(callData.query).length === 0) ? {} : callData.query;
     Model.find(queryFind, {}, { title: 1, instance: 1, "structure": 1 }).collation({ locale: "en" }).sort({ title: +1 }).then((Models) => {
@@ -145,13 +182,15 @@ router.get('/dettagliomodel', [util.checkIsDymerUser], (req, res) => {
         return res.send(ret);
     }).catch(function(err) {
         console.error("ERROR | " + nameFile + ' | get | queryFind : ', err);
+        logger.error(nameFile + ' | get/dettagliomodel | queryFind : ' + err);
     });
 });
 router.get('/', [util.checkIsDymerUser], (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
-    console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
+    //console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
+    logger.info(nameFile + ' | get | queryFind: ' + JSON.stringify(queryFind));
     //let queryFind = (Object.keys(callData.query).length === 0) ? {} : JSON.parse(callData.query);
     //let queryFind = (Object.keys(callData.query).length === 0) ? {} : callData.query;
     Model.find(queryFind).collation({ locale: "en" }).sort({ title: +1 }).then((Models) => {
@@ -165,6 +204,7 @@ router.get('/', [util.checkIsDymerUser], (req, res) => {
         })
     }).catch(function(err) {
         console.error("ERROR | " + nameFile + ' | get | queryFind : ', err);
+        logger.error(nameFile + ' | get | queryFind : ' + err);
     });
 });
 
@@ -183,6 +223,7 @@ router.get('/content/:entype/:fileid', function(req, res, next) {
         })
         .catch(function(err) {
             console.error("ERROR | " + nameFile + ' | get/content/:entype/:fileid  : ', err);
+            logger.error(nameFile + ' | get/content/:entype/:fileid : ' + err);
         });
 });
 
@@ -191,6 +232,7 @@ router.post('/', util.checkIsAdmin, function(req, res) {
     upload(req, res, function(err) {
         if (err) {
             console.error("ERROR | " + nameFile + ' | post | upload  : ', err);
+            logger.error(nameFile + ' | post | upload  : ' + err);
             ret.setMessages("Upload Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -212,7 +254,8 @@ router.post('/', util.checkIsAdmin, function(req, res) {
         }
         var mod = new Model(newObj);
         mod.save().then((el) => {
-            console.log(nameFile + ' | post |  saved successfully :', JSON.stringify(newObj));
+            //console.log(nameFile + ' | post |  saved successfully :', JSON.stringify(newObj));
+            logger.info(nameFile + ' | post |  saved successfully :' + JSON.stringify(newObj));
             ret.setMessages("Model uploaded successfully");
             /*  ret.addData(el);
               return res.send(ret);*/
@@ -231,6 +274,7 @@ router.post('/', util.checkIsAdmin, function(req, res) {
         }).catch((err) => {
             if (err) {
                 console.error("ERROR | " + nameFile + ' | post | save  : ', err);
+                logger.error(nameFile + ' | post | save  :' + err);
                 ret.setMessages("Post error");
                 ret.setSuccess(false);
                 ret.setExtraData({ "log": err.stack });
@@ -245,6 +289,7 @@ router.post('/create', util.checkIsAdmin, function(req, res) {
     upload(req, res, function(err) {
         if (err) {
             console.error("ERROR | " + nameFile + ' | post/create | upload  : ', err);
+            logger.error(nameFile + ' | post/create | upload  : ' + err);
             ret.setMessages("Upload Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -254,13 +299,15 @@ router.post('/create', util.checkIsAdmin, function(req, res) {
         let data = callData.data;
         var mod = new Model(data);
         mod.save().then((el) => {
-            console.log(nameFile + ' | post/create  |  saved successfully :', JSON.stringify(data));
+            //console.log(nameFile + ' | post/create  |  saved successfully :', JSON.stringify(data));
+            logger.info(nameFile + ' | post/create  |  saved successfully :' + JSON.stringify(data));
             ret.setMessages("Model uploaded successfully");
             ret.addData(el);
             return res.send(ret);
         }).catch((err) => {
             if (err) {
                 console.error("ERROR | " + nameFile + ' | post/create | save  : ', err);
+                logger.error(nameFile + ' | post/create | save  : ' + err);
                 ret.setMessages("Post error");
                 ret.setSuccess(false);
                 ret.setExtraData({ "log": err.stack });
@@ -275,6 +322,7 @@ router.post('/addAsset', util.checkIsAdmin, function(req, res) {
     upload(req, res, function(err) {
         if (err) {
             console.error("ERROR | " + nameFile + ' | post/addAsset | upload  : ', err);
+            logger.error(nameFile + ' | post/addAsset | upload  : ' + err);
             ret.setMessages("Upload Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": error.stack });
@@ -290,12 +338,13 @@ router.post('/addAsset', util.checkIsAdmin, function(req, res) {
             function(err, raw) {
                 if (err) {
                     console.error("ERROR | " + nameFile + ' | post/addAsset | updateOne  : ', err);
+                    logger.error(nameFile + ' | post/addAsset | updateOne  : ' + err);
                     ret.setSuccess(false);
-                    console.log('Error log: ' + err)
                     ret.setMessages("Model Error");
                     return res.send(ret);
                 } else {
-                    console.log(nameFile + ' | post/addAsset  |  updateOne successfully :', JSON.stringify(updateData));
+                    //console.log(nameFile + ' | post/addAsset  |  updateOne successfully :', JSON.stringify(updateData));
+                    logger.info(nameFile + ' | post/addAsset  |  updateOne successfully :' + JSON.stringify(updateData));
                     ret.addData(updateData);
                     ret.setMessages("Model Updated");
                     return res.send(ret);
@@ -310,6 +359,7 @@ router.post('/update', util.checkIsAdmin, function(req, res) {
     upload(req, res, function(err) {
         if (err) {
             console.error("ERROR | " + nameFile + ' | post/update | upload  : ', err);
+            logger.error(nameFile + ' | post/update | upload  : ' + err);
             ret.setMessages("Upload Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": error.stack });
@@ -329,10 +379,12 @@ router.post('/update', util.checkIsAdmin, function(req, res) {
                 if (err) {
                     ret.setSuccess(false);
                     console.error("ERROR | " + nameFile + ' | post/update | updateOne  : ', err);
+                    logger.error(nameFile + ' | post/update | updateOne  : ' + err);
                     ret.setMessages("Model Error");
                     return res.send(ret);
                 } else {
-                    console.log(nameFile + ' | post/update  |  updateOne successfully :', data.title);
+                    //console.log(nameFile + ' | post/update  |  updateOne successfully :', data.title);
+                    logger.info(nameFile + ' | post/update  |  updateOne successfully :' + data.title);
                     ret.setMessages("Model Updated");
                     return res.send(ret);
                 }
@@ -344,7 +396,8 @@ router.post('/updatestructure', util.checkIsAdmin, function(req, res) {
     var ret = new jsonResponse();
     upload(req, res, function(err) {
         if (err) {
-            console.error("ERROR | " + nameFile + ' | post/update | upload  : ', err);
+            console.error("ERROR | " + nameFile + ' | post/updatestructure |   : ', err);
+            logger.error(nameFile + ' | post/updatestructure |   : ' + err);
             ret.setMessages("Upload Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": error.stack });
@@ -352,7 +405,7 @@ router.post('/updatestructure', util.checkIsAdmin, function(req, res) {
         }
         let callData = util.getAllQuery(req);
         let data = callData.data;
-        console.log('data updatestructure', data);
+        logger.info(nameFile + '| post/updatestructure | data:' + JSON.stringify(data));
         var myfilter = { "_id": data.pageId };
         let strct = JSON.parse(data.structure);
         var myquery = {
@@ -364,11 +417,13 @@ router.post('/updatestructure', util.checkIsAdmin, function(req, res) {
             function(err, raw) {
                 if (err) {
                     ret.setSuccess(false);
-                    console.error("ERROR | " + nameFile + ' | post/update | updateOne  : ', err);
+                    console.error("ERROR | " + nameFile + ' | post/updatestructure | updateOne  : ', err);
+                    logger.error(nameFile + ' | post/updatestructure | updateOne  : ' + err);
                     ret.setMessages("Model Error");
                     return res.send(ret);
                 } else {
-                    console.log(nameFile + ' | post/update  |  updateOne successfully :', data.title);
+                    //console.log(nameFile + ' | post/updatestructure  |  updateOne successfully :', data.title);
+                    logger.info(nameFile + ' | post/updatestructure  |  updateOne successfully :' + data.title);
                     ret.setMessages("Model Updated");
                     return res.send(ret);
                 }
@@ -382,6 +437,7 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
     upload(req, res, function(err) {
         if (err) {
             console.error("ERROR | " + nameFile + ' | post/updateAsset | upload  : ', err);
+            logger.error(nameFile + ' | post/updateAsset | upload  : ' + err);
             ret.setMessages("Upload Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": error.stack });
@@ -391,9 +447,10 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
         let data = callData.data;
         var element = req.files[0];
         var element1 = req.files[1];
-        console.log('element data', data);
-        console.log('element', req.files[0]);
-        console.log('element1', req.files[1]);
+        logger.info(nameFile + '| post/updateAsset | data :' + JSON.stringify(data));
+        //  console.log('element data', data);
+        //console.log('element', req.files[0]);
+        // console.log('element1', req.files[1]);
         var myfilter = { "_id": mongoose.Types.ObjectId(data.pageId) };
         var bulk = Model.collection.initializeOrderedBulkOp();
         bulk.find(myfilter).updateOne({ "$pull": { "files": mongoose.Types.ObjectId(data.assetId) } });
@@ -407,10 +464,12 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
             if (err) {
                 ret.setSuccess(false);
                 console.error("ERROR | " + nameFile + ' | post/updateAsset | execute  : ', err);
+                logger.error(nameFile + ' | post/updateAsset | execute  : ' + err);
                 ret.setMessages("Model Error");
                 return res.send(ret);
             } else {
                 //console.log(nameFile + ' | post/updateAsset  |  execute :', data.assetId);
+                logger.info(nameFile + '| post/updateAsset | execute :' + data.assetId);
                 gridFSBucket.delete(mongoose.Types.ObjectId(data.assetId)).then(() => {
                     ret.setMessages("Model Updated");
                     ret.setExtraData({ newAssetId: element.id });
@@ -418,6 +477,7 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
                 }).catch(function(err) {
                     ret.setSuccess(false);
                     console.error("ERROR | " + nameFile + ' | post/updateAsset | delete  : ', err);
+                    logger.error(nameFile + ' | post/updateAsset | delete  : ' + err);
                     ret.setMessages("Model Error");
                     return res.send(ret);
                 });
@@ -435,11 +495,13 @@ router.delete('/:id', util.checkIsAdmin, (req, res) => {
             gridFSBucket.delete(mongoose.Types.ObjectId(file._id));
         });
         ret.setMessages("Element deleted");
-        console.log(nameFile + ' | delete/:id  | findOneAndDelete successfully :', JSON.stringify(myfilter));
+        //console.log(nameFile + ' | delete/:id  | findOneAndDelete successfully :', JSON.stringify(myfilter));
+        logger.info(nameFile + ' | delete/:id  | findOneAndDelete successfully :' + JSON.stringify(myfilter));
         return res.send(ret);
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + ' | delete/:id  : ', err);
+            logger.error(nameFile + ' | delete/:id  : ' + err);
             ret.setMessages("Delete Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -459,11 +521,13 @@ router.delete('/:id/:fid', util.checkIsAdmin, (req, res) => {
             if (err) {
                 ret.setSuccess(false);
                 console.error("ERROR | " + nameFile + ' | delete/:id/:fid | updateOne : ', err);
+                logger.error(nameFile + ' | delete/:id/:fid | updateOne : ' + err);
                 ret.setMessages("Model Error");
                 return res.send(ret);
             } else {
                 gridFSBucket.delete(mongoose.Types.ObjectId(fid)).then(() => {
-                    console.log(nameFile + ' | delete/:id/:fid  | delete successfully :', fid);
+                    // console.log(nameFile + ' | delete/:id/:fid  | delete successfully :', fid);
+                    logger.info(nameFile + ' | delete/:id/:fid  | deleted successfully :' + fid);
                     return res.send(ret);
                 });
             }

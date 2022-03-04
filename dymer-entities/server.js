@@ -12,7 +12,9 @@ const util = require("./utility");
 const app = express();
 const portExpress = global.configService.port; //4646;
 //const axios = require("axios");
-
+const path = require('path');
+const nameFile = path.basename(__filename);
+const logger = require('./routes/dymerlogger');
 /*app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));*/
 var routes = require('./routes/routes-v2');
@@ -109,7 +111,30 @@ function detectPermission(req, res, next) {
        }
    */
 }
+app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
+    var ret = new jsonResponse();
+    var filetype = req.params.filetype;
+    const dymeruser = util.getDymerUser(req, res);
+    const dymerextrainfo = dymeruser.extrainfo;
+    logger.flushfile(filetype);
 
+    ret.setSuccess(true);
+    ret.setMessages("Deleted");
+    return res.send(ret);
+});
+
+app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
+    var filetype = req.params.filetype;
+    console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
+    return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
+});
+app.get(util.getContextPath('entity') + '/checkservice', util.checkIsAdmin, (req, res) => {
+    var ret = new jsonResponse();
+    ret.setMessages("Service is up");
+    res.status(200);
+    ret.setSuccess(true);
+    return res.send(ret);
+});
 app.use(util.getContextPath('entity') + "/api/v1/entity/uploads/", publicRoutes);
 app.use(util.getContextPath('entity') + '/api/v1/entity', routes);
 //app.use(util.getContextPath('entity') + '/api/endpointtest', routestest);
@@ -126,5 +151,7 @@ app.get(util.getContextPath('entity') + "/*", (req, res) => {
     return res.send(ret);
 });
 app.listen(portExpress, () => {
+    //logger.flushAllfile();
+    logger.info(nameFile + " | Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + util.getContextPath('entity'));
     console.log("Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + util.getContextPath('entity'));
 });

@@ -56,7 +56,7 @@
     <script src="public/app/controllers/permissionCtrl.js"></script>
     <script src="public/app/controllers/authenticationConfigCtrl.js"></script>
     <script src="public/app/controllers/importcronjobCtrl.js"></script>
-
+    <script src="public/app/controllers/mclgsCtrl.js"></script>
 
     <link href="public/assets/css/paper-dashboard.css" rel="stylesheet" />
     <link href="public/assets/css/json-viewer.css" rel="stylesheet">
@@ -84,11 +84,19 @@
             <div class="sidebar-wrapper">
                 <ul class="nav">
                     <li class="active ">
-                        <a href="dashboard">
+                        <a href="dashboard" class="haschild">
                             <i class="nc-icon nc-chart-bar-32"></i>
                             <p>Dashboard</p>
                         </a>
-
+                        <div class=" kmssublist">
+                            <ul class="">
+                                <li class="  ">
+                                    <a href="mclgs"><i class="nc-icon nc-paper"></i>
+                                        <p>Logs</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
 
                     <li>

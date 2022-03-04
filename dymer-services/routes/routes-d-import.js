@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const path = require('path');
 const nameFile = path.basename(__filename);
 const mongoose = require("mongoose");
+const logger = require('./dymerlogger');
 require('./mongodb.js');
 const axios = require('axios');
 const fs = require('fs');
@@ -90,12 +91,13 @@ function pushrunJobs() {
             var key = (element._id).toString();
             manager.add(key, element.time, () => {
                 countstop++;
-                console.log("countstop", countstop);
-                console.log("a2", element.title, new Date().toLocaleString());
+                logger.info(nameFile + ' | pushrunJobs | countstop :' + countstop + " " + element.title);
+                //console.log("countstop", countstop);
+                //console.log("a2", element.title, new Date().toLocaleString());
                 let urlToInvocke = util.getServiceUrl('webserver') + util.getContextPath('webserver') + '/api/dservice/api/v1/import/fromdymer/' + key
                 axios.get(urlToInvocke).then(resp => {
-
-                    console.log("invoco super", key);
+                    logger.info(nameFile + ' | invoco super :' + key);
+                    //console.log("invoco super", key);
                 });
             });
             manager.start(key);
@@ -110,11 +112,12 @@ function stopAndRestartAll() {
 }
 
 function stopJob(campaignId) {
-    console.log("provo a terminare");
+    // console.log("provo a terminare");
     /*loblist[index].stop();*/
     manager.stop(campaignId)
         /* job.stop();*/
-    console.log("ho terminato il processo");
+        // console.log("ho terminato il processo");
+    logger.info(nameFile + ' | stopJob :' + campaignId);
 }
 
 router.post('/cronjob/:id?', util.checkIsAdmin, function(req, res) {
@@ -130,6 +133,7 @@ router.post('/cronjob/:id?', util.checkIsAdmin, function(req, res) {
             function(err, raw) {
                 if (err) {
                     ret.setSuccess(false);
+                    logger.error(nameFile + ' | post/cronjob/:id? | updateOne :' + err);
                     console.error("ERROR | " + nameFile + " | post/cronjob/:id? | updateOne :", err);
                     ret.setMessages("Model Error");
                     return res.send(ret);
@@ -150,6 +154,7 @@ router.post('/cronjob/:id?', util.checkIsAdmin, function(req, res) {
             return res.send(ret);
         }).catch((err) => {
             if (err) {
+                logger.error(nameFile + ' | post/cronjob/:id? | create: ' + err);
                 console.error("ERROR | " + nameFile + " | post/cronjob/:id? | create: ", err);
                 ret.setMessages("Post error");
                 ret.setSuccess(false);
@@ -161,8 +166,9 @@ router.post('/cronjob/:id?', util.checkIsAdmin, function(req, res) {
     }
 });
 router.put('/cronjob/:id', util.checkIsAdmin, (req, res) => {
-    console.log("Put cronjob Roles");
+    //console.log("Put cronjob Roles");
     let id = req.params.id;
+    logger.info(nameFile + ' | put/cronjob/:id   :' + id);
     let callData = util.getAllQuery(req);
     //let data = callData.data;
     let data = req.body;
@@ -177,6 +183,7 @@ router.put('/cronjob/:id', util.checkIsAdmin, (req, res) => {
             if (err) {
                 ret.setSuccess(false);
                 console.error("ERROR | " + nameFile + " | put/cronjob/:id? | updateOne :", err);
+                logger.error(nameFile + ' | put/cronjob/:id? | updateOne : ' + err);
                 ret.setMessages("Element Error");
                 return res.send(ret);
             } else {
@@ -199,6 +206,7 @@ router.delete('/cronjob/:id', util.checkIsAdmin, (req, res) => {
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + " | delete/cronjob/:id? | findOneAndDelete :", err);
+            logger.error(nameFile + ' | delete/cronjob/:id? | findOneAndDelete : ' + err);
             ret.setMessages("Delete Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -216,11 +224,13 @@ router.get('/fromjson', (req, res) => {
     var filename = callData.filename;
     var entityType = callData.type;
     var listTopost = [];
-    console.log(nameFile + ' | get/fromjson | import : ', filename);
+    //console.log(nameFile + ' | get/fromjson | import : ', filename);
+    logger.info(nameFile + '| get/fromjson | import :' + filename);
     //http://localhost:8080/api/dservice/api/v1/import/fromjson?filename=AIREGIO_ServicePortfolio_onlinePortal.json.js&type=organization
     fs.readFile('importfile/' + filename, (err, data) => {
         if (err) {
             console.error("ERROR | " + nameFile + " | get/fromjson  :", err);
+            logger.error(nameFile + ' | get/fromjson | get/fromjson  : ' + err);
             return res.send(ret);
         } //throw err;
         let list = JSON.parse(data);
@@ -325,7 +335,7 @@ router.get('/fromjson', (req, res) => {
                         "id": element["owner"],
                         "app_id": "",
                         "email": element["owner"],
-                        "username": "frastefa frastefa"
+                        "username": element["owner"]
                     };
                     let userinfo_objJsonStr = JSON.stringify(userinfo);
                     let userinfo_objJsonB64 = Buffer.from(userinfo_objJsonStr).toString("base64");
@@ -334,7 +344,8 @@ router.get('/fromjson', (req, res) => {
                 });
                 listTopost.forEach(function(obj, index) {
                     setTimeout(function() {
-                        console.log("import timeout axios", index);
+                        //  console.log("import timeout axios", index);
+                        logger.info(nameFile + ' get/fromjson | import timeout axios :' + index + " " + JSON.stringify(obj.data));
                         postMyData(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA);
                     }, 1000 * (index + 1));
                 });
@@ -342,6 +353,7 @@ router.get('/fromjson', (req, res) => {
             })
             .catch(error => {
                 console.error("ERROR | " + nameFile + " | get/fromjson ", error);
+                logger.error(nameFile + ' | get/fromjson : ' + error);
             });
     });
 });
@@ -426,6 +438,7 @@ function postMyData(el, index, DYM, DYM_EXTRA) {
     axios(config)
         .then(function(updatedEl) {}).catch(function(error) {
             console.log("Error__________", error);
+            logger.error(nameFile + ' | postMyData : ' + error);
         });
 
 }
@@ -444,6 +457,7 @@ var downloadFile = function(url, dest, filename) {
         })
     }).catch(function(err) {
         console.error("ERROR | " + nameFile + " | downloadFile ", err);
+        logger.error(nameFile + ' | downloadFile : ' + err);
     });
 }
 const removeDir = function(path) {
@@ -463,6 +477,7 @@ const removeDir = function(path) {
         }
     } else {
         console.error("ERROR | " + nameFile + " | Directory path not found ", path);
+        logger.error(nameFile + ' | removeDir | Directory path not found  : ' + path);
     }
 }
 
@@ -487,11 +502,13 @@ function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action) {
         }).catch(function(err) {
             console.log("err_a");
             console.log(err);
+            logger.error(nameFile + ' | postMyDataAndFiles | downloadFile : ' + err);
         });
     })
     Promise.all(requests).then(() => {
         appendFormdataFiles(formdata, el, '', dir + "/");
-        console.log("Promesse tutte eseguite");
+        //console.log("Promesse tutte eseguite");
+        logger.info(nameFile + ' | postMyDataAndFiles | Promesse tutte eseguite  ');
         var config = {
             method: action,
             url: posturl,
@@ -510,6 +527,7 @@ function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action) {
                     // fs.rmdirSync(dir, { recursive: true });
                 }
             }).catch(function(error) {
+                logger.error(nameFile + ' | postMyDataAndFiles | axios post : ' + error);
                 console.log("Error__________", error);
             });
     });
@@ -681,6 +699,7 @@ router.get('/fromdymer/:id', (req, res) => {
                                     /*continuo il flusso da qua */
                                 }).catch(error => {
                                     console.error("ERROR | " + nameFile + " | get/fromdymer/:id ", id, error);
+                                    logger.error(nameFile + " | get/fromdymer/:id " + id + " " + error);
                                     ret.setSuccess(false);
                                     ret.setMessages("ax error");
                                     return res.send(ret);
@@ -736,27 +755,31 @@ router.get('/fromdymer/:id', (req, res) => {
                                 if (sameid) {
                                     objToPost.data.instance.id = targetprefix + element._id;
                                 }
-                                console.log(nameFile + " | get/fromdymer/:id | dateExt > dateInt,aggiungo", JSON.stringify(objToPost));
+                                // console.log(nameFile + " | get/fromdymer/:id | dateExt > dateInt,aggiungo", JSON.stringify(objToPost));
+                                logger.info(nameFile + ' | get/fromdymer/:id | dateExt > dateInt,aggiungo :' + JSON.stringify(objToPost));
                                 listTopost.push(objToPost);
                             } else {
                                 let dateExt = new Date(element._source.properties.changed);
                                 let dateInt = new Date(elfinded._source.properties.changed);
                                 if (dateExt > dateInt) {
                                     //add put
-                                    console.log(nameFile + " | get/fromdymer/:id | dateExt > dateInt,aggiorno", JSON.stringify(objToPost));
+                                    //console.log(nameFile + " | get/fromdymer/:id | dateExt > dateInt,aggiorno", JSON.stringify(objToPost));
+                                    logger.info(nameFile + ' | get/fromdymer/:id | dateExt > dateInt,aggiorno :' + JSON.stringify(objToPost));
                                     listToput.push(objToPost);
                                 }
                             }
                         });
                         listTopost.forEach(function(obj, index) {
                             setTimeout(function() {
-                                console.log(nameFile + " | get/fromdymer/:id | import timeout axios post ", index);
+                                //console.log(nameFile + " | get/fromdymer/:id | import timeout axios post ", index);
+                                logger.info(nameFile + ' | get/fromdymer/:id | import timeout axios post' + index + " " + JSON.stringify(obj.data));
                                 postMyDataAndFiles(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA, "post");
                             }, 1000 * (index + 1));
                         });
                         listToput.forEach(function(obj, index) {
                             setTimeout(function() {
-                                console.log(nameFile + " | get/fromdymer/:id | import timeout axios put ", index);
+                                //console.log(nameFile + " | get/fromdymer/:id | import timeout axios put ", index);
+                                logger.info(nameFile + ' | get/fromdymer/:id | import timeout axios put' + index + " " + JSON.stringify(obj.data));
                                 postMyDataAndFiles(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA, "put");
                             }, 1000 * (index + 1));
                         });
@@ -764,6 +787,7 @@ router.get('/fromdymer/:id', (req, res) => {
                     })
                     .catch(error => {
                         console.error("ERROR | " + nameFile + " | get/fromdymer/:id | post ", error);
+                        logger.error(nameFile + ' | get/fromdymer/:id | post ' + error);
                         ret.setSuccess(false);
                         ret.setMessages("ax error");
                         return res.send(ret);
@@ -772,6 +796,7 @@ router.get('/fromdymer/:id', (req, res) => {
             })
             .catch(error => {
                 console.error("ERROR | " + nameFile + "| get/fromdymer/:id | post axios", error);
+                logger.error(nameFile + '| get/fromdymer/:id | post axios ' + error);
                 ret.setSuccess(false);
                 ret.setMessages("ax error");
                 return res.send(ret);
@@ -779,6 +804,7 @@ router.get('/fromdymer/:id', (req, res) => {
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + "| get/fromdymer/:id | find", error);
+            logger.error(nameFile + '| get/fromdymer/:id | find ' + error);
             ret.setMessages("find Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });

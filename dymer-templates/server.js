@@ -8,6 +8,8 @@ const util = require("./utility");
 const bodyParser = require("body-parser");
 const app = express();
 const portExpress = global.configService.port;
+const nameFile = path.basename(__filename);
+const logger = require('./routes/dymerlogger');
 var routes = require('./routes/routes-v1');
 var publicRoutes = require('./routes/publicfiles');
 /*app.use(function(req, res, next) {
@@ -15,11 +17,35 @@ var publicRoutes = require('./routes/publicfiles');
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });*/
+
+app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
+    var ret = new jsonResponse();
+    var filetype = req.params.filetype;
+    logger.flushfile(filetype);
+    // logger.i
+    ret.setSuccess(true);
+    ret.setMessages("Deleted");
+    return res.send(ret);
+});
+
+app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
+    var filetype = req.params.filetype;
+    //console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
+    return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
+});
+app.get(util.getContextPath('template') + '/checkservice', util.checkIsAdmin, (req, res) => {
+    var ret = new jsonResponse();
+    ret.setMessages("Service is up");
+    res.status(200);
+    ret.setSuccess(true);
+    return res.send(ret);
+});
 app.use(util.getContextPath('template') + "/api/v1/template/uploads/", publicRoutes);
 app.use(util.getContextPath('template') + '/api/v1/template', routes);
 app.get(util.getContextPath('template') + "/*", (req, res) => {
     var ret = new jsonResponse();
     //console.error('ERROR |  /* : ', "Api error 404", req.path);
+    logger.error(nameFile + ' | /* Api error 404  :' + req.path);
     ret.setMessages("Api error 404");
     res.status(404);
     ret.setSuccess(false);
@@ -27,5 +53,7 @@ app.get(util.getContextPath('template') + "/*", (req, res) => {
 });
 //module.exports = app;
 app.listen(portExpress, () => {
+    //logger.flushAllfile();
+    logger.info(nameFile + " | Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + util.getContextPath('template'));
     console.log("Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + util.getContextPath('template'));
 });

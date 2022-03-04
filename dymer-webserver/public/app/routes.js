@@ -18,6 +18,10 @@ function config($routeProvider, $locationProvider) {
             templateUrl: site_prefix + "/public/app/views/pages/dashboard.html",
             controller: "dashController"
         })
+        .when(site_prefix + "/mclgs", {
+            templateUrl: site_prefix + "/public/app/views/pages/dash/mclgs.html",
+            controller: "mclgsController"
+        })
         .when(site_prefix + "/tester", {
             templateUrl: site_prefix + "/public/app/views/pages/tester/test.html"
         })

@@ -48,6 +48,7 @@ router.post('/setConfig', util.checkIsAdmin, function(req, res) {
                 if (err) {
                     ret.setSuccess(false);
                     console.error("ERROR | " + nameFile + " | post/setConfig | updateOne :", err);
+                    logger.error(nameFile + ' | post/setConfig | updateOne : ' + err);
                     ret.setMessages("Model Error");
                     return res.send(ret);
                 } else {
@@ -65,6 +66,7 @@ router.post('/setConfig', util.checkIsAdmin, function(req, res) {
         }).catch((err) => {
             if (err) {
                 console.error("ERROR | " + nameFile + " | post/setConfig | save :", err);
+                logger.error(nameFile + ' | post/setConfig | save : ' + err);
                 ret.setMessages("Post error");
                 ret.setSuccess(false);
                 ret.setExtraData({ "log": err.stack });
@@ -79,7 +81,8 @@ router.get('/configs', (req, res) => {
     let callData = util.getAllQuery(req);
     let data = callData.data;
     let queryFind = callData.query;
-    console.log("fwadapter | configs :", JSON.stringify(queryFind));
+    //console.log("fwadapter | configs :", JSON.stringify(queryFind));
+    logger.info(nameFile + ' | get/configs :' + JSON.stringify(queryFind));
     FwadapterConfig.find(queryFind).then((els) => {
             ret.setMessages("List");
             ret.setData(els);
@@ -87,6 +90,7 @@ router.get('/configs', (req, res) => {
         }).catch((err) => {
             if (err) {
                 console.error("ERROR | " + nameFile + " | get/configs :", err);
+                logger.error(nameFile + ' | get/configs :' + err);
                 ret.setMessages("Get error");
                 ret.setSuccess(false);
                 ret.setExtraData({ "log": err.stack });
@@ -106,6 +110,7 @@ router.post('/listener', function(req, res) {
     //console.log("INFO | " + nameFile + " | headers :", req.headers);
     //console.log("INFO | " + nameFile + " | typeaction :", eventSource[1]);
     console.log("INFO | " + nameFile + " | obj :", data.obj);
+    logger.info(nameFile + ' | post/listener    :' + JSON.stringify(data.obj));
     //console.log("INFO | " + nameFile + " | extraInfo :", extraInfo);
     let rfrom = (req.headers["reqfrom"]).replace("http://", "").replace("https://", "").replace("/", "");
     postfwadapter(eventSource[1], data.obj, extraInfo.extrainfo, rfrom);
@@ -187,7 +192,8 @@ function postfwadapter(typeaction, obj, extraInfo, rfrom) {
                     /* objToAssett["_index"] = index;
                      objToAssett["_type"] = index;
                      objToAssett["_id"] = obj._id;*/
-                    console.log(nameFile + ' | pre postfwadapter |' + JSON.stringify(objToAssett));
+                    // console.log(nameFile + ' | pre postfwadapter |' + JSON.stringify(objToAssett));
+                    logger.info(nameFile + ' | pre postfwadapter | objToAssett :' + JSON.stringify(objToAssett));
                     var ref = undefined;
                     if (objToAssett.properties.status == 1) {
                         if (objToAssett.hasOwnProperty("relation")) {
@@ -251,6 +257,7 @@ function callFwAdapter(el, index, DYM, DYM_EXTRA, action, conf) {
         }).catch(function(err) {
             console.log("err_a");
             console.log(err);
+            logger.error(nameFile + ' | callFwAdapter err_a: ' + err);
         });
     })
 
@@ -280,6 +287,7 @@ function callFwAdapter(el, index, DYM, DYM_EXTRA, action, conf) {
                     // fs.rmdirSync(dir, { recursive: true });
                 }
             }).catch(function(error) {
+                logger.error(nameFile + ' |callFwAdapter Error____ : ' + error);
                 console.log("Error__________", error);
             });
     });
@@ -302,6 +310,7 @@ const removeDir = function(path) {
         }
     } else {
         console.error("ERROR | " + nameFile + " | Directory path not found ", path);
+        logger.error(nameFile + '  | Directory path not found  ' + path);
     }
 }
 
@@ -363,6 +372,7 @@ var downloadFile = function(url, dest, filename) {
         })
     }).catch(function(err) {
         console.error("ERROR | " + nameFile + " | downloadFile ", err);
+        logger.error(nameFile + ' | downloadFile : ' + err);
     });
 }
 

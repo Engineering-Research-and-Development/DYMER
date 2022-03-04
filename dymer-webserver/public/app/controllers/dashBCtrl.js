@@ -13,7 +13,7 @@ angular.module('dashCtrl', [])
             localStorage.setItem('d_gid', retE.data.d_gid);
         })
         var listEntities = [];
-        console.log('baseContextPath', baseContextPath + '/api/entities/api/v1/entity/allstats');
+        //console.log('baseContextPath', baseContextPath + '/api/entities/api/v1/entity/allstats');
         $http.get(baseContextPath + '/api/entities/api/v1/entity/allstats', {
 
         }).then(function(retE) {

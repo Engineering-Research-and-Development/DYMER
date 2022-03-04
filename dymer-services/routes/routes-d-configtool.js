@@ -9,6 +9,7 @@ var express = require('express');
 const bodyParser = require("body-parser");
 const path = require('path');
 const nameFile = path.basename(__filename);
+const logger = require('./dymerlogger')
 const mongoose = require("mongoose");
 require('./mongodb.js');
 var router = express.Router();
@@ -64,6 +65,7 @@ router.post('/setConfig', util.checkIsAdmin, function(req, res) {
             function(err, raw) {
                 if (err) {
                     ret.setSuccess(false);
+                    logger.error(nameFile + ' | post/setConfig | update : ' + err);
                     console.error("ERROR | " + nameFile + " | post/setConfig | update ", err);
                     ret.setMessages("Model Error");
                     return res.send(ret);
@@ -84,6 +86,7 @@ router.post('/setConfig', util.checkIsAdmin, function(req, res) {
         }).catch((err) => {
             if (err) {
                 console.error("ERROR | " + nameFile + " | post/setConfig | create ", err);
+                logger.error(nameFile + ' | post/setConfig | create : ' + err);
                 ret.setMessages("Post error");
                 ret.setSuccess(false);
                 ret.setExtraData({ "log": err.stack });
@@ -114,6 +117,7 @@ router.post('/addconfig', util.checkIsAdmin, function(req, res) {
         return res.send(ret);
     }).catch((err) => {
         if (err) {
+            logger.error(nameFile + ' | post/addconfig | create : ' + err);
             console.error("ERROR | " + nameFile + " | post/addconfig | create ", err);
             ret.setMessages("Post error");
             ret.setSuccess(false);
@@ -293,6 +297,7 @@ router.get('/renderpage/:id', function(req, res) {
         res.send(baseHTML);
     }).catch((err) => {
         if (err) {
+            logger.error(nameFile + ' |  get/renderpage/:id  : ' + err);
             console.error("ERROR | " + nameFile + " |  get/renderpage/:id ", err);
             ret.setMessages("Post error");
             ret.setSuccess(false);
@@ -371,7 +376,8 @@ function findRuleConfig(queryFind, res) {
         return res.send(ret);
     }).catch((err) => {
         if (err) {
-            console.error("ERROR | " + nameFile + " |findRuleConfig ", err);
+            logger.error(nameFile + ' | findRuleConfig : ' + err);
+            console.error("ERROR | " + nameFile + " | findRuleConfig ", err);
             ret.setMessages("Get error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -396,6 +402,7 @@ router.delete('/configrule/:id', util.checkIsAdmin, (req, res) => {
         return res.send(ret);
     }).catch((err) => {
         if (err) {
+            logger.error(nameFile + ' | delete  : ' + err);
             console.error("ERROR | " + nameFile + " | delete ", err);
             ret.setMessages("Delete Error");
             ret.setSuccess(false);
@@ -416,7 +423,8 @@ router.post('/listener', function(req, res) {
         "_index": data.obj._index,
         "_type": data.obj._type
     };
-    console.log(nameFile + ' | post/listener | queryFind : ', JSON.stringify(queryFind));
+    //console.log(nameFile + ' | post/listener | queryFind : ', JSON.stringify(queryFind));
+    logger.info(nameFile + ' | post/listener | queryFind : :' + JSON.stringify(queryFind));
     OpnSearchRule.find(queryFind).then((els) => {
         ret.setMessages("List");
         ret.setData(els);
@@ -428,6 +436,7 @@ router.post('/listener', function(req, res) {
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + " | post/listener ", err);
+            logger.error(nameFile + '| post/listener ' + err);
             ret.setMessages("Get error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });

@@ -1,6 +1,8 @@
 // requires
 const _ = require('lodash');
-
+const path = require('path');
+const nameFile = path.basename(__filename);
+const logger = require('../routes/dymerlogger');
 // module variables
 const config = require('./config.json');
 const defaultConfig = config.development;
@@ -27,5 +29,6 @@ global.configService = finalConfig['services'][typeService];
 //global.gConfig = environmentConfig;
 //global.globConfig = finalConfig;
 console.log('config.js | config :', JSON.stringify(finalConfig));
+logger.info(nameFile + ' | config :' + JSON.stringify(finalConfig));
 // log global.gConfig
 //console.log(`global.gConfig: ${JSON.stringify(global.gConfig, undefined, global.gConfig.json_indentation)}`);

@@ -12,7 +12,7 @@ const axios = require('axios');
 var cookieParser = require('cookie-parser');
 require("./config/config.js");
 const nameFile = path.basename(__filename);
-
+const logger = require('./routes/dymerlogger');
 /*app.all('/', function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
@@ -58,7 +58,8 @@ function detectPermission(req, res, next) {
         dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     var urs_uid = dymeruser.id;
     var urs_gid = dymeruser.gid;
-    console.log(nameFile + ' | detectPermission | dymeruser:', JSON.stringify(dymeruser));
+    logger.info(nameFile + ' | detectPermission | dymeruser:' + JSON.stringify(dymeruser));
+    //  console.log(nameFile + ' | detectPermission | dymeruser:', JSON.stringify(dymeruser));
     /*  console.log("req.cookies", req.cookies);
       const authHeader = req.headers.authorization;
       console.log("super authHeader", authHeader); //lll
@@ -152,8 +153,9 @@ function detectPermission(req, res, next) {
         // var url = 'http://localhost:5050/api/v1/perm/entityrole/';
         //    url = 'http://kms_services:5050/api/v1/perm/entityrole/';
         var url = util.getServiceUrl("dservice") + "/api/v1/perm/entityrole/";
-        console.log('queryString', queryString);
-        console.log('req.query.act', req.query.act);
+        //  console.log('queryString', queryString);
+        //  console.log('req.query.act', req.query.act);
+        logger.info(nameFile + ' | detectPermission | queryString,req.query.act:' + queryString + " " + req.query.act);
         url += act + "/";
         url += index + "/";
         url += queryString;
@@ -167,9 +169,11 @@ function detectPermission(req, res, next) {
             .then((response) => {
                 //console.log(nameFile + ' | detectPermission | permission ' + act + ':', dymeruser.id, JSON.stringify(roles), JSON.stringify(response.data.data.result));
                 if (response.data.data.result || req.query.act == "update" || req.query.act == "view") {
+                    logger.info(nameFile + ' | detectPermission | YES permission ' + act + ': user = ' + dymeruser.id + " , roles = " + JSON.stringify(roles) + " , permissions = " + JSON.stringify(response.data.data.result));
                     next();
                 } else {
-                    console.log(nameFile + ' | detectPermission | permission ' + act + ':', dymeruser.id, JSON.stringify(roles), JSON.stringify(response.data.data.result));
+                    logger.info(nameFile + ' | detectPermission | NO permission ' + act + ': user = ' + dymeruser.id + " , roles = " + JSON.stringify(roles) + " , permissions = " + JSON.stringify(response.data.data.result));
+                    // console.log(nameFile + ' | detectPermission | permission ' + act + ':', dymeruser.id, JSON.stringify(roles), JSON.stringify(response.data.data.result));
                     //console.log("stop", req.path);
                     ret.setMessages("No permission 2");
                     res.status(200);
@@ -177,7 +181,8 @@ function detectPermission(req, res, next) {
                     return res.send(ret);
                 }
             }, (error) => {
-                console.error("ERROR | " + nameFile + ' | detectPermission : ', error);
+                logger.error(nameFile + ' | detectPermission  :' + error);
+                // console.error("ERROR | " + nameFile + ' | detectPermission : ', error);
                 ret.setMessages("No permission 1");
                 res.status(200);
                 ret.setSuccess(false);
@@ -185,12 +190,34 @@ function detectPermission(req, res, next) {
             });
     }
 }
+app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
+    var ret = new jsonResponse();
+    var filetype = req.params.filetype;
+    logger.flushfile(filetype);
+    // logger.i
+    ret.setSuccess(true);
+    ret.setMessages("Deleted");
+    return res.send(ret);
+});
 
+app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
+    var filetype = req.params.filetype;
+    //console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
+    return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
+});
+app.get(util.getContextPath('form') + '/checkservice', util.checkIsAdmin, (req, res) => {
+    var ret = new jsonResponse();
+    ret.setMessages("Service is up");
+    res.status(200);
+    ret.setSuccess(true);
+    return res.send(ret);
+});
 app.use(util.getContextPath('form') + "/api/v1/form/uploads/", publicRoutes);
 app.use(util.getContextPath('form') + '/api/v1/form', detectPermission, routes);
 app.get(util.getContextPath('form') + "/*", (req, res) => {
     var ret = new jsonResponse();
-    console.error('ERROR | /* : ', "Api error 404", req.path);
+    //console.error('ERROR | /* : ', "Api error 404", req.path);
+    logger.error(nameFile + ' | /* Api error 404  :' + req.path);
     ret.setMessages("Api error 404");
     res.status(404);
     ret.setSuccess(false);
@@ -198,5 +225,7 @@ app.get(util.getContextPath('form') + "/*", (req, res) => {
 });
 //module.exports = app;
 app.listen(portExpress, () => {
+    //logger.flushAllfile();
+    logger.info(nameFile + " | Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + util.getContextPath('form'));
     console.log("Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path :" + util.getContextPath('form'));
 });

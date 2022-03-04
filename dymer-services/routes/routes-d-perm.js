@@ -9,6 +9,7 @@ var express = require('express');
 const bodyParser = require("body-parser");
 const path = require('path');
 const nameFile = path.basename(__filename);
+const logger = require('./dymerlogger');
 const mongoose = require("mongoose");
 require('./mongodb.js');
 var router = express.Router();
@@ -61,6 +62,37 @@ mongoose
     "extraData": {}
 }
 */
+
+router.get('/mongostate', [util.checkIsDymerUser], (req, res) => {
+    let ret = new jsonResponse();
+    let dbState = [{
+            value: 0,
+            label: "Disconnected",
+            css: "text-danger"
+        },
+        {
+            value: 1,
+            label: "Connected",
+            css: "text-success"
+        },
+        {
+            value: 2,
+            label: "Connecting",
+            css: "text-info"
+        },
+        {
+            value: 3,
+            label: "Disconnecting",
+            css: "text-warning"
+        }
+    ];
+    let mongostate = mongoose.connection.readyState;
+    ret.setMessages("Mongodb state");
+    ret.setData(dbState.find(f => f.value == mongostate));
+    res.status(200);
+    ret.setSuccess(true);
+    return res.send(ret);
+});
 router.get('/entityrole/:act/:index', (req, res) => {
     let act = req.params.act; //azione da passare
     let index = req.params.index; //indice per cercare
@@ -71,9 +103,9 @@ router.get('/entityrole/:act/:index', (req, res) => {
     var retData = { result: false };
     var message = "Permission denied";
     var queryFind = { role: { $in: req.query.role } };
-    console.log(nameFile + ' | get/entityrole/:act/:index | queryFind : ', act, index, JSON.stringify(queryFind));
+    logger.info(nameFile + ' | get/entityrole/:act/:index | queryFind : ' + act + " , " + index + " , " + JSON.stringify(queryFind));
     DymRule.find(queryFind).then((els) => {
-        console.log(nameFile + ' | get/entityrole/:act/:index | DymRule : ', JSON.stringify(els));
+        logger.info(nameFile + ' | get/entityrole/:act/:index | DymRule : ' + JSON.stringify(els));
         if (els.length > 0) {
             els.forEach(el => {
                 if ((el.perms.entities[act]) != undefined) {
@@ -90,6 +122,7 @@ router.get('/entityrole/:act/:index', (req, res) => {
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + " | get/entityrole/:act/:index|find  ", JSON.stringify(queryFind), err);
+            logger.error(nameFile + ' | get/entityrole/:act/:index|find   : ' + JSON.stringify(queryFind) + " " + +err);
             ret.setMessages("Get error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -128,6 +161,7 @@ router.get('/permbyroles', (req, res) => {
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + " | get/permbyroles  ", err);
+            logger.error(nameFile + ' | get/permbyroles ' + err);
             ret.setMessages("Get error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -147,6 +181,7 @@ router.get('/', (req, res) => {
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + " | get  ", err);
+            logger.error(nameFile + ' | get : ' + err);
             ret.setMessages("Get error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -163,11 +198,12 @@ router.post('/:id?', util.checkIsAdmin, function(req, res) {
     var ret = new jsonResponse();
     if (id != undefined) {
         var myfilter = { "_id": mongoose.Types.ObjectId(id) };
-        console.log(nameFile + ' | post | updateOne : ', JSON.stringify(myfilter));
+        logger.info(nameFile + ' | post | updateOne : ' + JSON.stringify(myfilter));
         DymRule.updateOne(myfilter, data,
             function(err, raw) {
                 if (err) {
                     console.error("ERROR | " + nameFile + " | post | updateOne ", err);
+                    logger.error(nameFile + ' | post | updateOne  : ' + err);
                     ret.setSuccess(false);
                     ret.setMessages("Model Error");
                     return res.send(ret);
@@ -180,7 +216,7 @@ router.post('/:id?', util.checkIsAdmin, function(req, res) {
         );
     } else {
         var mod = new DymRule(data);
-        console.log(nameFile + ' | post | create : ', JSON.stringify(data));
+        logger.info(nameFile + ' | post | create : ' + JSON.stringify(data));
         mod.save().then((el) => {
             ret.setMessages("Config created successfully");
             ret.addData(el);
@@ -188,6 +224,7 @@ router.post('/:id?', util.checkIsAdmin, function(req, res) {
         }).catch((err) => {
             if (err) {
                 console.error("ERROR | " + nameFile + " | post | create ", err);
+                logger.error(nameFile + ' | post | create  : ' + err);
                 ret.setMessages("Post error");
                 ret.setSuccess(false);
                 ret.setExtraData({ "log": err.stack });
@@ -206,6 +243,7 @@ router.delete('/:id', util.checkIsAdmin, (req, res) => {
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + " | delete ", id, err);
+            logger.error(nameFile + ' | delete : ' + id + " " + err);
             ret.setMessages("Delete Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });

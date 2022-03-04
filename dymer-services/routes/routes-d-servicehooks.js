@@ -6,6 +6,7 @@ var express = require('express');
 const bodyParser = require("body-parser");
 const path = require('path');
 const nameFile = path.basename(__filename);
+const logger = require('./dymerlogger');
 const mongoose = require("mongoose");
 require('./mongodb.js');
 var router = express.Router();
@@ -56,6 +57,7 @@ router.post('/addhook', util.checkIsAdmin, function(req, res) {
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + " | post/addhook | save :", err);
+            logger.error(nameFile + ' | post/addhook | save : ' + err);
             ret.setMessages("Post error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -78,6 +80,7 @@ function findHook(queryFind, res) {
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + " | findHook :", err);
+            logger.error(nameFile + ' | findHook : ' + err);
             ret.setMessages("Get error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -95,6 +98,7 @@ router.delete('/hook/:id', util.checkIsAdmin, (req, res) => {
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + " | delete/hook/:id | id :", id, err);
+            logger.error(nameFile + " | delete/hook/:id | id :" + id + " , " + err);
             ret.setMessages("Delete Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -115,27 +119,32 @@ router.post('/checkhook', function(req, res) {
         "eventType": eventSource
     };
     var wbsUrl = util.getServiceUrl('webserver');
-    console.log("chekkkk", JSON.stringify(queryFind));
+    //console.log("chekkkk", JSON.stringify(queryFind));
+    logger.info(nameFile + ' | post/checkhook :' + JSON.stringify(queryFind));
     const headers = {
         'reqfrom': req.headers["reqfrom"]
     }
     HookModel.find(queryFind).then((els) => {
         els.forEach(el => {
-            console.log("chekkkk el", JSON.stringify(el));
+            // console.log("chekkkk el", JSON.stringify(el));
+            logger.info(nameFile + ' | post/checkhook | HookModel: chek el' + JSON.stringify(el));
             var pt = wbsUrl + el.service.servicePath;
             axios.post(pt, { 'data': data, "extraInfo": extraInfo }, {
                     headers: headers
                 }).then(response => {
                     // console.log("checkhook resp axios ", response);
-                    console.log(nameFile + " | post/checkhook | inoltro | response :", response);
+                    // console.log(nameFile + " | post/checkhook | inoltro | response :", response);
+                    logger.info(nameFile + '| post/checkhook | inoltro | response ' + JSON.stringify(response));
                 })
                 .catch(error => {
                     console.log("ERROR | " + nameFile + " | post/checkhook | pt,data, extraInfo :", pt, data, extraInfo, error);
+                    logger.error(nameFile + ' | post/checkhook | pt,data, extraInfo : ' + pt + " , " + JSON.stringify(data) + " , " + JSON.stringify(extraInfo) + " , " + error);
                 });
         });
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + " | find | queryFind :", JSON.stringify(queryFind), err);
+            logger.error(nameFile + '  | find | queryFind : ' + JSON.stringify(queryFind) + " , " + error);
         }
     })
 });

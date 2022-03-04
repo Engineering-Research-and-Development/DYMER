@@ -7,6 +7,7 @@ var router = express.Router();
 const bodyParser = require("body-parser");
 const path = require('path');
 const nameFile = path.basename(__filename);
+const logger = require('./dymerlogger');
 const axios = require('axios');
 const multer = require('multer');
 const mongoose = require("mongoose");
