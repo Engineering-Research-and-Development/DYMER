@@ -178,7 +178,7 @@ router.delete('/rule/:id', util.checkIsAdmin, (req, res) => {
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + " | delete/rule/:id :", id, err);
-            logger.error(nameFile + ' | delete/rule/:id : ' + id + " " + +err);
+            logger.error(nameFile + ' | delete/rule/:id : ' + id + " " + err);
             ret.setMessages("Delete Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });

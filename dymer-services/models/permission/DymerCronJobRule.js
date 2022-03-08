@@ -18,6 +18,10 @@ mongoose.model("DymerCronJobRule", {
         type: String,
         require: true
     },
+    apisearchpath: {
+        type: String,
+        require: true
+    },
     sourceindex: {
         type: String,
         require: true

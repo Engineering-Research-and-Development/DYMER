@@ -1029,8 +1029,10 @@ router.get('/contentfile/:entityid/:fileid', function(req, res, next) {
         if ((respCheck["hits"].hits).length > 0) {
             var checkElemPerm = respCheck["hits"].hits[0]._source.properties;
             haspermissionGrants(dymeruser, checkElemPerm).then(function(listperm) {
-                    //console.log(nameFile + ' | contentfile | permission view:', entityid, file_id, dymeruser.id, listperm.data.view);
-                    //console.log(nameFile + ' | contentfile | listpermission:', JSON.stringify(listperm), JSON.stringify(dymeruser));
+                    // console.log(nameFile + ' | contentfile | permission view:', entityid, file_id, dymeruser.id, listperm.data.view);
+                    //   console.log(nameFile + ' | contentfile | listpermission:', JSON.stringify(listperm), JSON.stringify(dymeruser));
+                    logger.info(nameFile + ' | contentfile | permission view:' + entityid + " , " + file_id + " , " + dymeruser.id + " , " + listperm.data.view);
+                    logger.info(nameFile + ' | contentfile | listpermission:' + JSON.stringify(listperm) + " , " + JSON.stringify(dymeruser));
                     if (listperm.data.view) {
                         recFile(mongoose.Types.ObjectId(file_id))
                             .then(function(result) {
@@ -3462,7 +3464,7 @@ function checkServiceHook(EventSource, objSend, extraInfo, req) {
                         logger.info(nameFile + ' | checkServiceHook | insert axios.post: ' + response);
                     })
                     .catch(error => {
-                        logger.error("ERROR | " + nameFile + ' | checkServiceHook | insert axios.post: ', error);
+                        logger.error("ERROR | " + nameFile + ' | checkServiceHook | insert axios.post: ' + error);
                         console.error("ERROR | " + nameFile + ' | checkServiceHook | insert axios.post: ', error);
                     });
                 //   });

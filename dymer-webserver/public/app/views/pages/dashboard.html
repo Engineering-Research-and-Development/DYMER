@@ -133,7 +133,7 @@
 
                         </thead>
                         <tbody>
-                            <tr ng-repeat="el in ListEntities  ">
+                            <tr ng-repeat="el in ListEntities  | orderBy:'index'">
                                 <td>
                                     {{ el.index }}
                                 </td>
@@ -197,7 +197,7 @@
 
                         </thead>
                         <tbody>
-                            <tr ng-repeat="el in ListEntities  ">
+                            <tr ng-repeat="el in ListEntities | orderBy:'index' ">
                                 <td>
                                     {{ el.index }} ( {{ el.model.title }} )
                                 </td>

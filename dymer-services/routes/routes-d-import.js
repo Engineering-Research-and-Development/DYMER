@@ -481,7 +481,7 @@ const removeDir = function(path) {
     }
 }
 
-function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action) {
+function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action, fileurl) {
     var posturl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/" + index;
     if (action == "put")
         posturl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/" + el.instance.id;
@@ -491,13 +491,17 @@ function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action) {
     const dir = dest + "/" + el.instance.id;
     checkFilesFormdata(arrlistFiles, el);
     let requests = arrlistFiles.map((fl) => {
-        let url = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/contentfile/" + el.instance.id + "/" + fl.id;
+        let url = fileurl + "/api/entities/api/v1/entity/contentfile/" + el.instance.id + "/" + fl.id;
         url += "?tkdym=" + DYM;
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
         }
         let fname = fl.filename;
+        //   console.log('fname', fname);
+        //    console.log('url', url);
         return downloadFile(url, dir, fname).then(function(result) {
+            //logger.error(nameFile + ' test | postMyDataAndFiles | downloadFile : ');
+            console.log('downloadFile', fname, result);
             // form.append('file', fs.readFileSync(dest), fname);
         }).catch(function(err) {
             console.log("err_a");
@@ -519,6 +523,9 @@ function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action) {
             },
             data: formdata
         };
+        // console.log(nameFile + ' | callFwAdapter | invio, ad adapter | conf : ' + JSON.stringify(conf));
+        //console.log(nameFile + ' | callFwAdapter | invio, ad adapter | el : ' + action + "-" + posturl + "-" + JSON.stringify(el));
+
         axios(config)
             .then(function(updatedEl) {
                 if (fs.existsSync(dir)) {
@@ -580,8 +587,9 @@ router.get('/fromdymer/:id', (req, res) => {
     var myfilter = { "_id": id };
     DymRule.find(myfilter).then((els) => {
         let crnrule = els[0];
-        var pt_external = crnrule.sourcepath; //"http://localhost:8080/api/entities/api/v1/entity/_search";
+        var pt_external = crnrule.sourcepath + crnrule.apisearchpath; //"http://localhost:8080/api/entities/api/v1/entity/_search";
         var pt_internal = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/_search";
+        const fileurl = crnrule.sourcepath; //"http://195.201.83.104"
         const originalrelquery = crnrule.sourceindex; //."";
         const newentityType = crnrule.targetindex; //"";
         const targetprefix = (crnrule.targetprefix == undefined) ? "" : crnrule.targetprefix;
@@ -627,32 +635,32 @@ router.get('/fromdymer/:id', (req, res) => {
                         listaRel.forEach(element => {
                             element._source.properties.ipsource = pt_external;
                             //dih
-                            let isdih = false;
-                            if (originalrelquery == "businessservice") {
-                                element._source.category = "Business";
-                                isdih = true;
-                            }
-                            if (originalrelquery == "dataservices") {
-                                element._source.category = "Data";
-                                isdih = true;
-                            }
-                            if (originalrelquery == "ecosystemservice") {
-                                element._source.category = "Ecosystem";
-                                isdih = true;
-                            }
-                            if (originalrelquery == "skillservice") {
-                                element._source.category = "Skill";
-                                isdih = true;
-                            }
-                            if (originalrelquery == "technologyservices") {
-                                element._source.category = "Technology";
-                                isdih = true;
-                            }
-                            if (isdih) {
-                                var relToSearch = element.relations;
-                                let elRelfinded = relToSearch.find((el) => el._index == "project");
-                                let id_R = elRelfinded._id;
-                            }
+                            /*  let isdih = false;
+                              if (originalrelquery == "businessservice") {
+                                  element._source.category = "Business";
+                                  isdih = true;
+                              }
+                              if (originalrelquery == "dataservices") {
+                                  element._source.category = "Data";
+                                  isdih = true;
+                              }
+                              if (originalrelquery == "ecosystemservice") {
+                                  element._source.category = "Ecosystem";
+                                  isdih = true;
+                              }
+                              if (originalrelquery == "skillservice") {
+                                  element._source.category = "Skill";
+                                  isdih = true;
+                              }
+                              if (originalrelquery == "technologyservices") {
+                                  element._source.category = "Technology";
+                                  isdih = true;
+                              }
+                              if (isdih) {
+                                  var relToSearch = element.relations;
+                                  let elRelfinded = relToSearch.find((el) => el._index == "project");
+                                  let id_R = elRelfinded._id;
+                              }*/
                             //fine dih
                             let elfinded = listaInt.find((el) => el._id == targetprefix + element._id);
                             if (importRelations) {
@@ -675,7 +683,7 @@ router.get('/fromdymer/:id', (req, res) => {
                                 }
                             }
                             /* dih add relation to initiatives */
-                            if (isdih) {
+                            /*if (isdih) {
                                 if (!element.hasOwnProperty("relation")) {
                                     element.relation = {};
                                 }
@@ -696,7 +704,7 @@ router.get('/fromdymer/:id', (req, res) => {
                                         }];
                                     }
                                     element._source.relation = element.relation;
-                                    /*continuo il flusso da qua */
+                                    //continuo il flusso da qua 
                                 }).catch(error => {
                                     console.error("ERROR | " + nameFile + " | get/fromdymer/:id ", id, error);
                                     logger.error(nameFile + " | get/fromdymer/:id " + id + " " + error);
@@ -704,7 +712,7 @@ router.get('/fromdymer/:id', (req, res) => {
                                     ret.setMessages("ax error");
                                     return res.send(ret);
                                 });
-                            }
+                            }*/
                             /*fine dih end rel initiatives */
                             var singleEntity = {
                                 "instance": {
@@ -773,14 +781,14 @@ router.get('/fromdymer/:id', (req, res) => {
                             setTimeout(function() {
                                 //console.log(nameFile + " | get/fromdymer/:id | import timeout axios post ", index);
                                 logger.info(nameFile + ' | get/fromdymer/:id | import timeout axios post' + index + " " + JSON.stringify(obj.data));
-                                postMyDataAndFiles(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA, "post");
+                                postMyDataAndFiles(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA, "post", fileurl);
                             }, 1000 * (index + 1));
                         });
                         listToput.forEach(function(obj, index) {
                             setTimeout(function() {
                                 //console.log(nameFile + " | get/fromdymer/:id | import timeout axios put ", index);
                                 logger.info(nameFile + ' | get/fromdymer/:id | import timeout axios put' + index + " " + JSON.stringify(obj.data));
-                                postMyDataAndFiles(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA, "put");
+                                postMyDataAndFiles(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA, "put", fileurl);
                             }, 1000 * (index + 1));
                         });
                         //    return res.send(ret);

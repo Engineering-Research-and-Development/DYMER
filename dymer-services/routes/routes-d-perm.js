@@ -122,7 +122,7 @@ router.get('/entityrole/:act/:index', (req, res) => {
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + " | get/entityrole/:act/:index|find  ", JSON.stringify(queryFind), err);
-            logger.error(nameFile + ' | get/entityrole/:act/:index|find   : ' + JSON.stringify(queryFind) + " " + +err);
+            logger.error(nameFile + ' | get/entityrole/:act/:index|find   : ' + JSON.stringify(queryFind) + " " + err);
             ret.setMessages("Get error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });

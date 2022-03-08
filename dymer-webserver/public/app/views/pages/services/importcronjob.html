@@ -15,38 +15,45 @@
                     <input type="hidden" ng-model="configCONJOB.authtype">
                     <div class="row">
                         <div class=" col-12">
-                             
-                            <div class="form-group"> 
+
+                            <div class="form-group">
                                 <div class="text-info pull-right">
                                     <input type="checkbox" ng-model="configCONJOB.active"> Enabled
                                 </div>
-                            </div> 
+                            </div>
                             <div class="form-group">
                                 <label class="text-info"> Title *</label>
-                            <input type="text" class="form-control col-12" ng-model="configCONJOB.title" required>
-                            </div>        
-                            <div class="form-group">  <label class="text-info"> Cron Pattern <a href="http://crontab.org/" target="_blank"><i
-                                        class="fa fa-external-link-square" aria-hidden="true"></i></a> </label>
-                            <input type="text" class="form-control col-12" ng-model="configCONJOB.time">
-                           </div>
-                           
+                                <input type="text" class="form-control col-12" ng-model="configCONJOB.title" required>
+                            </div>
+                            <div class="form-group"> <label class="text-info"> Cron Pattern <a
+                                        href="http://crontab.org/" target="_blank"><i class="fa fa-external-link-square"
+                                            aria-hidden="true"></i></a> </label>
+                                <input type="text" class="form-control col-12" ng-model="configCONJOB.time">
+                            </div>
+
                             <div class="form-group">
-                                 <label class="text-info"> Source path *</label>
-                            <input type="text" class="form-control col-12" ng-model="configCONJOB.sourcepath" required>
-                          </div>
-                         <div class="form-group">
-                                  <label class="text-info"> Source index *</label>
-                             
-                            <input type="text" class="form-control col-12" ng-model="configCONJOB.sourceindex" required>
-                           </div>
+                                <label class="text-info"> Source path *</label>
+                                <input type="text" class="form-control col-12" ng-model="configCONJOB.sourcepath" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="text-info"> Source api search path *
+                                </label><small style="color: #8c8985;"> (/api/entities/api/v1/entity/_search)</small>
+                                <input type="text" class="form-control col-12" ng-model="configCONJOB.apisearchpath" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="text-info"> Source index *</label>
+
+                                <input type="text" class="form-control col-12" ng-model="configCONJOB.sourceindex" required>
+                            </div>
                             <div class="form-group"> <label class="text-info"> Target index *</label>
-                            <input type="text" class="form-control col-12" ng-model="configCONJOB.targetindex" required>
-                           </div>
-                           
-                            <div class="form-group"> 
-                                 <label class="text-info"> Prefix target id</label><small style="color: #8c8985;"> (add a
-                                prefix to the ids)</small>
-                            <input type="text" class="form-control col-12" ng-model="configCONJOB.targetprefix">
+                                <input type="text" class="form-control col-12" ng-model="configCONJOB.targetindex" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="text-info"> Prefix target id</label><small style="color: #8c8985;"> (add a
+                                    prefix to the ids)</small>
+                                <input type="text" class="form-control col-12" ng-model="configCONJOB.targetprefix">
                             </div>
                             <!-- <div>
                                 <div>Test analizza <span class="btn " ng-click="loadrelcont">test</span></div>
@@ -67,18 +74,19 @@
 
                             <div class="form-group">
                                 <span class="text-info ">
-                                     <input type="checkbox" ng-model="configCONJOB.sameid">
+                                    <input type="checkbox" ng-model="configCONJOB.sameid">
                                     Import the same id </span><small style="color: #8c8985;">(Pay attention! use this
                                     setting if you want to clone / migrate the entities in the same dymer, after manual
                                     cloning
-                                    remember to delete the index and the enities from the dashnoard <i class="fa fa-scissors  flushAction" title="Delete Index and all entities"></i>.
+                                    remember to delete the index and the enities from the dashnoard <i
+                                        class="fa fa-scissors  flushAction" title="Delete Index and all entities"></i>.
                                     if there are multiple dymer sources an id conflict
                                     could occur)</small>
                             </div>
 
 
                             <div class="form-group"><span class="text-info ">
-                                <input type="checkbox" ng-model="configCONJOB.importrelation">
+                                    <input type="checkbox" ng-model="configCONJOB.importrelation">
                                     Import relations </span><small style="color: #8c8985;">(only the first level of
                                     relations will be imported
                                     not the entities)</small>
@@ -147,7 +155,7 @@
                                 {{ el.time }}
                             </td>
                             <td style="max-width: 100px;">
-                                {{ el.sourcepath }}
+                                {{ el.sourcepath }}{{ el.apisearchpath }}
                             </td>
                             <td style="max-width: 100px;">
                                 {{ el.sourceindex }}->{{ el.targetindex }}
