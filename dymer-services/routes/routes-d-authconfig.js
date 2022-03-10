@@ -103,15 +103,15 @@ router.get('/userinfo', (req, res) => {
                     // console.log('decoded', decoded);
                     objuser.email = decoded.email;
                     objuser.id = decoded.email;
-                    objuser.extrainfo.emailAddress = decoded.email;
                     if (decoded.hasOwnProperty("extrainfo")) {
                         objuser.gid = decoded.extrainfo.groupId;
                         //objuser.extrainfo = decoded.extrainfo;
-                        objuser.extrainfo = {...decoded.extrainfo, ...objuser.extrainfo };
+                        objuser.extrainfo = {...objuser.extrainfo, ...decoded.extrainfo };
                     }
                     if (!(Object.entries(extradata).length === 0)) {
-                        objuser.extrainfo = {...extradata, ...objuser.extrainfo };
+                        objuser.extrainfo = {...objuser.extrainfo, ...extradata.extrainfo };
                     }
+                    objuser.extrainfo.emailAddress = decoded.email;
                     //urs_gid = decoded.extrainfo.groupId;
                     // if (decoded.extrainfo != undefined)
                     //  objuser.extrainfo = decoded.extrainfo;
@@ -148,28 +148,35 @@ router.get('/userinfo', (req, res) => {
                             objuser.id = response.data.email;
                             objuser.d_appuid = response.data.app_id;
                             objuser.username = response.data.username;
-                            objuser.extrainfo.emailAddress = response.data.email;
+
                             if (!(Object.entries(extradata).length === 0)) {
-                                objuser.extrainfo = {...extradata, ...objuser.extrainfo };
+                                objuser.extrainfo = {
+                                    ...objuser.extrainfo,
+                                    ...extradata.extrainfo
+                                };
                             }
+                            objuser.extrainfo.emailAddress = response.data.email;
                             ret.setMessages("User detail");
                             ret.setData(objuser);
                             return res.send(ret);
                         })
                         .catch(function(error) {
                             console.error(error);
-                            logger.error(nameFile + ' | /userinfo | updateOne : ' + error);
-                            var token = data.DYM;
-                            var decoded = JSON.parse(Buffer.from(token, 'base64').toString());
-                            objuser.email = decoded.email;
-                            objuser.id = decoded.email;
-                            //urs_gid = decoded.extrainfo.groupId;
-                            objuser.extrainfo.emailAddress = decoded.email;
-                            objuser.extrainfo = decoded.extrainfo;
-                            decoded.roles.forEach(element => {
-                                objuser.roles.push(element.role);
-                            });
-                            objuser.username = decoded.username;
+                            logger.error(nameFile + ' | /userinfo oidc error | updateOne : ' + error);
+                            /* var token = data.DYM;
+                             var decoded = JSON.parse(Buffer.from(token, 'base64').toString());
+                             objuser.email = decoded.email;
+                             objuser.id = decoded.email;
+                             //urs_gid = decoded.extrainfo.groupId;
+                             objuser.extrainfo.emailAddress = decoded.email;
+                             objuser.extrainfo = decoded.extrainfo;
+                             decoded.roles.forEach(element => {
+                                 objuser.roles.push(element.role);
+                             });
+                             objuser.username = decoded.username;
+                             ret.setMessages("User detail");
+                             ret.setData(objuser);
+                             return res.send(ret);*/
                             ret.setMessages("User detail");
                             ret.setData(objuser);
                             return res.send(ret);

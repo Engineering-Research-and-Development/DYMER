@@ -18,6 +18,17 @@ var debug = winston.createLogger({
     new (winston.transports.File)({ filename: './logs/debug.log', level: 'debug' }),
     new (winston.transports.Console)({ level: 'debug' })
 ]*/
+let infoLog = [
+    new(winston.transports.File)({ filename: './logs/info.log', level: 'info' })
+];
+let loggerdebug = process.env.DYMER_LOGGER;
+//loggerdebug = "true";
+if (loggerdebug != undefined && (loggerdebug == 'true' || loggerdebug == true)) {
+    infoLog = [
+        new(winston.transports.File)({ filename: './logs/info.log', level: 'info' }),
+        new(winston.transports.Console)({ level: 'info' })
+    ]
+}
 var info = winston.createLogger({
     levels: {
         info: 1
@@ -28,9 +39,7 @@ var info = winston.createLogger({
         }),
         winston.format.printf(info => `${info.level}: ${[info.timestamp]}: ${info.message}`),
     ),
-    transports: [
-        new(winston.transports.File)({ filename: './logs/info.log', level: 'info' })
-    ]
+    transports: infoLog
 });
 /*
  transports: [

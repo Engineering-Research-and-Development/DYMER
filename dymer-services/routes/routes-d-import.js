@@ -594,6 +594,7 @@ router.get('/fromdymer/:id', (req, res) => {
         const newentityType = crnrule.targetindex; //"";
         const targetprefix = (crnrule.targetprefix == undefined) ? "" : crnrule.targetprefix;
         let importRelations = (crnrule.importrelation == undefined) ? false : crnrule.importrelation;
+
         let sameid = (crnrule.sameid == undefined) ? false : crnrule.sameid;
         var query = {
             "query": {
@@ -663,25 +664,29 @@ router.get('/fromdymer/:id', (req, res) => {
                               }*/
                             //fine dih
                             let elfinded = listaInt.find((el) => el._id == targetprefix + element._id);
+                            console.log('importRelations', importRelations);
+                            console.log('element', element);
+                            console.log('elfinded', elfinded);
                             if (importRelations) {
                                 if (element.hasOwnProperty("relations")) {
                                     if (element.relations.length > 0)
-                                        element.relation = {};
+                                        element._source.relation = {};
                                     element.relations.forEach(entityrelation => {
                                         let indexentrel = entityrelation._index;
                                         let identrel = entityrelation._id;
-                                        if (element.relation.hasOwnProperty(indexentrel)) {
-                                            element.relation[indexentrel].push({
+                                        if (element._source.relation.hasOwnProperty(indexentrel)) {
+                                            element._source.relation[indexentrel].push({
                                                 "to": identrel
                                             });
                                         } else {
-                                            element.relation[indexentrel] = [{
+                                            element._source.relation[indexentrel] = [{
                                                 "to": identrel
                                             }];
                                         }
                                     });
                                 }
                             }
+                            console.log('element aftewr rel', element);
                             /* dih add relation to initiatives */
                             /*if (isdih) {
                                 if (!element.hasOwnProperty("relation")) {
@@ -782,14 +787,14 @@ router.get('/fromdymer/:id', (req, res) => {
                                 //console.log(nameFile + " | get/fromdymer/:id | import timeout axios post ", index);
                                 logger.info(nameFile + ' | get/fromdymer/:id | import timeout axios post' + index + " " + JSON.stringify(obj.data));
                                 postMyDataAndFiles(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA, "post", fileurl);
-                            }, 1000 * (index + 1));
+                            }, 2000 * (index + 1));
                         });
                         listToput.forEach(function(obj, index) {
                             setTimeout(function() {
                                 //console.log(nameFile + " | get/fromdymer/:id | import timeout axios put ", index);
                                 logger.info(nameFile + ' | get/fromdymer/:id | import timeout axios put' + index + " " + JSON.stringify(obj.data));
                                 postMyDataAndFiles(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA, "put", fileurl);
-                            }, 1000 * (index + 1));
+                            }, 1500 * (index + 1));
                         });
                         //    return res.send(ret);
                     })
