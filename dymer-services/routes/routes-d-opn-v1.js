@@ -201,7 +201,7 @@ router.post('/listener', function(req, res) {
     OpnSearchRule.find(queryFind).then((els) => {
         ret.setMessages("List");
         ret.setData(els);
-        postAssettOpenness(eventSource[1], data.obj, els[0], extraInfo.extrainfo);
+        postAssettOpenness(eventSource[1], data.obj, els[0], extraInfo);
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + " | post/listener :", err);
