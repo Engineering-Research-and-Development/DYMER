@@ -113,7 +113,7 @@ router.post('/listener', function(req, res) {
     logger.info(nameFile + ' | post/listener    :' + JSON.stringify(data.obj));
     //console.log("INFO | " + nameFile + " | extraInfo :", extraInfo);
     let rfrom = (req.headers["reqfrom"]).replace("http://", "").replace("https://", "").replace("/", "");
-    postfwadapter(eventSource[1], data.obj, extraInfo.extrainfo, rfrom);
+    postfwadapter(eventSource[1], data.obj, extraInfo, rfrom);
 });
 
 function postfwadapter(typeaction, obj, extraInfo, rfrom) {

@@ -3283,7 +3283,7 @@ router.delete('/:id', (req, res) => {
     if (dymerextrainfo != undefined)
         urs_gid = dymerextrainfo.groupId;
     //console.log(nameFile + ' | delete/:id | dymeruser:', JSON.stringify(dymeruser));
-    logger.info(nameFile + ' | delete/:id | dymeruser :' + JSON.stringify(queryFind));
+    logger.info(nameFile + ' | delete/:id | dymeruser :' + JSON.stringify(dymeruser));
     upload(req, res, function(err) {
         if (err) {
             console.error("ERROR | " + nameFile + ' | delete/:id :', err);
@@ -3364,7 +3364,7 @@ router.delete('/:id', (req, res) => {
                     client.delete(params, function(err, resp, status) {
                         if (err) {
                             console.error("ERROR | " + nameFile + ' | delete/:id | delete :', err);
-                            logger.error(nameFile + ' | delete/:id | delete: ' + error);
+                            logger.error(nameFile + ' | delete/:id | delete: ' + err);
                             ret.setSuccess(false);
                             ret.setExtraData({ "log": err.message });
                             ret.setMessages("Error delete");

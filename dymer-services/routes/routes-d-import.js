@@ -580,6 +580,117 @@ var objectToFormData = function(obj, form, namespace) {
     }
     return fd;
 };
+router.get('/updategeo/:entype', (req, res) => {
+    logger.info(nameFile + '| get/updategeo');
+    var entype = req.params.entype;
+    var ret = new jsonResponse();
+    const originalrelquery = entype;
+    var pt = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/_search";
+    var listGeo = [];
+    var query = {
+        "query": {
+            "query": {
+                "bool": {
+                    "must": [{
+                        "term": {
+                            "_index": originalrelquery
+                        }
+                    }]
+                }
+            }
+        }
+    };
+
+    axios.post(pt, query).then(response => {
+            const listaRel = response.data.data;
+            listaRel.forEach(element => {
+                if (element._source.hasOwnProperty("location")) {
+                    if (element._source.location.hasOwnProperty("coordinates"))
+                        if (element._source.location.coordinates.length == 2) {
+                            let tmpcoord0 = element._source.location.coordinates[1];
+                            let tmpcoord1 = element._source.location.coordinates[0];
+                            var singleEntity = {
+                                "data": {
+                                    "location": {
+                                        "coordinates": [tmpcoord0, tmpcoord1]
+                                    }
+                                }
+                            };
+                            var extrainfo = {
+                                "extrainfo": {
+                                    "companyId": "20097",
+                                    "groupId": "20121",
+                                    "cms": "lfr",
+                                    "userId": element._source.properties.owner["uid"],
+                                    "virtualhost": "localhost"
+                                }
+                            };
+                            let extrainfo_objJsonStr = JSON.stringify(extrainfo);
+                            let extrainfo_objJsonB64 = Buffer.from(extrainfo_objJsonStr).toString("base64");
+                            var userinfo = {
+                                "isGravatarEnabled": false,
+                                "authorization_decision": "",
+                                "roles": [{
+                                        "role": "User",
+                                        "id": "20109"
+                                    },
+                                    {
+                                        "role": "app-admin",
+                                        "id": "20110"
+                                    }
+                                ],
+                                "app_azf_domain": "",
+                                "id": element._source.properties.owner["uid"],
+                                "app_id": "",
+                                "email": element._source.properties.owner["uid"],
+                                "username": element._source.properties.owner["uid"]
+                            };
+                            let userinfo_objJsonStr = JSON.stringify(userinfo);
+                            let userinfo_objJsonB64 = Buffer.from(userinfo_objJsonStr).toString("base64");
+                            var objToPost = { 'id': element._id, 'data': singleEntity, 'DYM': userinfo_objJsonB64, 'DYM_EXTRA': extrainfo_objJsonB64 };
+                            listGeo.push(objToPost);
+                            logger.info("coord 0" + element._source.location.coordinates[0] + " coord 1" + element._source.location.coordinates[1]);
+                            console.log("coord 0: " + element._source.location.coordinates[0] + " coord 1: " + element._source.location.coordinates[1]);
+                            // console.log("element:",element);
+                        }
+                }
+            });
+            const basepatchurl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/";
+            listGeo.forEach(function(obj, index) {
+                setTimeout(function() {
+                    var formdata = new FormData();
+                    appendFormdata(formdata, obj.data);
+                    var patchurl = basepatchurl + obj.id;
+                    //  console.log("import timeout axios", index);
+                    logger.info(nameFile + ' | /updategeo/:entype | import timeout axios :' + index + " " + JSON.stringify(obj.data));
+                    // var posturl = "http://195.201.83.104/api/entities/api/v1/entity/" + obj.id;
+                    console.log("formdata", formdata);
+                    var config = {
+                        method: 'patch',
+                        url: patchurl,
+                        headers: {
+                            ...formdata.getHeaders(),
+                            'Authorization': `Bearer ${obj.DYM}`,
+                            'extrainfo': `${obj.DYM_EXTRA}`,
+                        },
+                        data: formdata
+                    };
+                    axios(config)
+                        .then(function(updatedEl) {}).catch(function(error) {
+                            console.log("Error__________", error);
+                            logger.error(nameFile + '| /updategeo/:entype | postMyData : ' + error);
+                        });
+
+
+                }, 1000 * (index + 1));
+            });
+            return res.send(ret);
+        })
+        .catch(error => {
+            console.error("ERROR | " + nameFile + " | get/updategeo ", error);
+            logger.error(nameFile + ' | get/updategeo : ' + error);
+        });
+});
 // '/api/dservice/api/v1/import/fromdymer'
 router.get('/fromdymer/:id', (req, res) => {
     var ret = new jsonResponse();
