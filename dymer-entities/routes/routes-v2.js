@@ -3069,7 +3069,7 @@ router.patch('/:id', async(req, res, next) => {
                         harpermEdit = true;
                     }
                     // console.log(nameFile + ' | patch/:id | dymeruser.id, id,permission patch:', dymeruser.id, id, harpermEdit);
-                    logger.info(nameFile + ' | patch/:id | dymeruser.id, id,permission patch:' + Jdymeruser.id + " , " + id + " , " + harpermEdit);
+                    logger.info(nameFile + ' | patch/:id | dymeruser.id, id,permission patch:' + dymeruser.id + " , " + id + " , " + harpermEdit);
                     if (harpermEdit) {
                         client.update({
                             id: id,
