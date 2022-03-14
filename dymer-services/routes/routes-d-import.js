@@ -1,6 +1,7 @@
 var util = require('../utility');
 var jsonResponse = require('../jsonResponse');
 var http = require('http');
+var https = require('https');
 var express = require('express');
 const FormData = require('form-data')
 const bodyParser = require("body-parser");
@@ -444,7 +445,7 @@ function postMyData(el, index, DYM, DYM_EXTRA) {
 }
 var downloadFile = function(url, dest, filename) {
     return new Promise(function(resolve, reject) {
-        http.get(url, (res) => {
+        https.get(url, (res) => {
             // Image will be stored at this path
             //const path = `${__dirname}../importfile/img.jpeg`;
             const path = `${dest}/${filename}`;
