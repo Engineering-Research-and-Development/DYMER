@@ -3465,10 +3465,11 @@ router.patch('/:id', async(req, res, next) => {
                     let harpermEdit = false;
                     if (checkElemPerm.owner.uid == urs_uid || isadmin)
                         harpermEdit = true;
-                    if ((checkElemPerm.grant.update.uid).find(x => x == urs_uid)) {
-                        harpermEdit = true;
-                    }
-                    // console.log(nameFile + ' | patch/:id | dymeruser.id, id,permission patch:', dymeruser.id, id, harpermEdit);
+                    if (checkElemPerm.hasOwnProperty("grant"))
+                        if ((checkElemPerm.grant.update.uid).find(x => x == urs_uid)) {
+                            harpermEdit = true;
+                        }
+                        // console.log(nameFile + ' | patch/:id | dymeruser.id, id,permission patch:', dymeruser.id, id, harpermEdit);
                     logger.info(nameFile + ' | patch/:id | dymeruser.id, id,permission patch:' + dymeruser.id + " , " + id + " , " + harpermEdit);
                     if (harpermEdit) {
                         client.update({
