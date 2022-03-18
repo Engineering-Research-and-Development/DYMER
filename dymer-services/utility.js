@@ -9,6 +9,8 @@ var jsonResponse = require('./jsonResponse');
 const path = require("path");
 const nameFile = path.basename(__filename);
 const logger = require('./routes/dymerlogger');
+const http = require('http');
+
 exports.getContextPath = function(typeServ) {
     let cpath = global.gConfig.services[typeServ]["context-path"];
     if (cpath == undefined)

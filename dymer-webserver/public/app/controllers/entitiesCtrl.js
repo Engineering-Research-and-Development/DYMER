@@ -122,6 +122,7 @@ angular.module('entitiesControllers', [])
             //el.created = new Date();
             drawEntities(callconf);
             $scope.objChanged = el.properties.changed;
+            $scope.detailObj = el;
 
         };
         $scope.numberOfPages = function() {

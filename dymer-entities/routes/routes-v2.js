@@ -312,6 +312,81 @@ function checkRelation(params, elIndex, elId) {
     // console.log('checkRelation', params, elIndex);
     // console.log(nameFile + ' | checkRelation | params:', JSON.stringify(params), elIndex);
     logger.info(nameFile + ' | checkRelation | params :' + JSON.stringify(params) + " , " + elIndex);
+    let datasetRel = [];
+
+    for (var myKey in params) {
+        let _id2_list = [];
+        for (var elre in params[myKey]) {
+            // console.log('params[myKey]', params[myKey]);
+            let _id2 = params[myKey][elre].to;
+            if (Array.isArray(_id2)) {
+                _id2_list = params[myKey][elre].to;
+            } else {
+                _id2_list.push(_id2);
+            }
+            //  console.log('_id2', _id2);
+            // console.log('myKey', myKey, elre);
+
+            _id2_list.forEach(singleId2 => {
+                if (singleId2 != "")
+                    datasetRel.push({
+                        _index1: elIndex,
+                        "_id1": _id1,
+                        "_id2": singleId2,
+                        _index2: myKey
+                    });
+                //console.log("avvio controllo", qparams, JSON.stringify(qparams)); 
+            });
+
+        }
+    }
+    let qparams = {};
+    qparams["index"] = "entity_relation";
+    qparams["type"] = "entity_relation";
+    qparams["body"] = {
+        "bool": {
+            "should": [{
+                    "bool": {
+                        "must": [{
+                                "match": {
+                                    "_id1": _id1
+                                }
+                            },
+                            {
+                                "match": {
+                                    "_index1": elIndex
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "bool": {
+                        "must": [{
+                                "match": {
+                                    "_id2": _id1
+                                }
+                            },
+                            {
+                                "match": {
+                                    "_index2": elIndex
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    };
+    controlAndCreateRel_V2(qparams, datasetRel);
+    return true;
+}
+
+function checkRelation_original(params, elIndex, elId) {
+    var _id1 = elId;
+    // console.log('checkRelation', params, elIndex);
+    // console.log(nameFile + ' | checkRelation | params:', JSON.stringify(params), elIndex);
+    logger.info(nameFile + ' | checkRelation | params :' + JSON.stringify(params) + " , " + elIndex);
     for (var myKey in params) {
         let _id2_list = [];
         for (var elre in params[myKey]) {
@@ -388,12 +463,9 @@ function checkRelation(params, elIndex, elId) {
                         }
                         //console.log("avvio controllo", qparams, JSON.stringify(qparams));
                     controlAndCreateRel(qparams, newRel);
+
                 }
             });
-
-
-
-
         }
     }
     return true;
@@ -405,8 +477,54 @@ function checkRelation(params, elIndex, elId) {
     next();
 });*/
 
+function controlAndCreateRel_V2(qparams, datasetRel) {
+    var parm = qparams;
+    // client.indices.exists({ index: "entity_relation" }, function(err_, resp_, status_) {
+    //      if (status_ == 200) {
+    //  client.indices.exists({ index: "entity_relation" }).then((isExists) => {
+    client.indices.exists({ index: "entity_relation" }, function(err_, resp_, status_) {
+        if (status_ == 200) {
+            //  if (isExists) { // 
+            client.search(parm, function(err, resp, status) {
+                //console.log("controlAndCreateRel list", resp, JSON.stringify(qparams));
+                if (resp.hits == undefined) {
+                    //console.log("CREO resp.hits == undefined");
+                    createRelationV2(datasetRel);
+                } else {
+                    //console.log("CREO resp.hits != undefined");
+                    logger.info(nameFile + ' | controlAndCreateRel | CREO resp.hits != undefined  ');
+                    var exs = false;
+                    //console.log("controlAndCreateRel resp.hits riga 319", resp.hits);
+                    var filterdatasetRel = datasetRel.filter(function(o1) {
+                        // if match found return false
+                        return !resp["hits"].some(function(o2) {
+                            if ((o1["_id2"] == o2["_source"]["_id1"] && o1["_index2"] == o2["_source"]["_index1"]) || (o1["_id2"] == o2["_source"]["_id2"] && o1["_index2"] == o2["_source"]["_index2"])) {
+                                return true;
+                            } else return false;
+                        });
+                    });
+                    createRelationV2(filterdatasetRel);
+                }
+            }, function(err) {
+                //console.log('Error controlAndCreateRel search');
+                console.trace(err.message);
+                logger.error(nameFile + ' | controlAndCreateReld | search : ' + err);
+            });
+        } else {
+            console.log('NON ESISTE');
+            createRelationV2(datasetRel);
+            /* let params = { index: "entity_relation", type: "entity_relation" };
+             params["body"] = {};
+             datasetRel.forEach(element => {
+                 createRelation(element);
+             });*/
 
-function controlAndCreateRel(qparams, newRel) {
+        }
+
+    });
+}
+
+function controlAndCreateRel_original(qparams, newRel) {
     var parm = qparams;
     // client.indices.exists({ index: "entity_relation" }, function(err_, resp_, status_) {
     //      if (status_ == 200) {
@@ -545,6 +663,54 @@ function deleteRelation(_id1, _id2) {
 }
 
 function deleteRelationByIndex(index) {
+    let qrdelete = {
+        "query": {
+            "bool": {
+                "should": [{
+                        "bool": {
+                            "must": [{
+                                "match": {
+                                    "_index1": index
+                                }
+                            }]
+                        }
+                    },
+                    {
+                        "bool": {
+                            "must": [{
+                                "match": {
+                                    "_index2": index
+                                }
+                            }]
+                        }
+                    }
+                ],
+                "minimum_should_match": 1
+            }
+        }
+    };
+
+    client.indices.exists({ index: "entity_relation" }, function(err_, resp_, status_) {
+        if (status_ == 200) {
+            client.deleteByQuery({
+                index: 'entity_relation',
+                body: qrdelete,
+                timeout: "5m"
+            }, function(err, resp, status) {
+                if (err) {
+                    logger.error(nameFile + ' | deleteRelationByIndex | delete index:' + index + " , " + err);
+                    console.error("ERROR | " + nameFile + ' | deleteRelationByIndex | delete:', err);
+                } else {
+                    logger.info(nameFile + ' | deleteRelationByIndex index:' + index);
+                }
+            });
+
+        } else
+            return true;
+    });
+}
+
+function deleteRelationByIndex_original(index) {
     let params = { index: "entity_relation" };
     params["body"] = {
         "query": {
@@ -603,6 +769,60 @@ function deleteRelationByIndex(index) {
 }
 //toDelete
 function deleteRelationOneEntity(_id1) {
+    let params = { index: "entity_relation" };
+    let qrdelete = {
+        "query": {
+            "bool": {
+                "should": [{
+                        "bool": {
+                            "must": [{
+                                "match": {
+                                    "_id1": _id1
+                                }
+                            }]
+                        }
+                    },
+                    {
+                        "bool": {
+                            "must": [{
+                                "match": {
+                                    "_id2": _id1
+                                }
+                            }]
+                        }
+                    }
+                ],
+                "minimum_should_match": 1
+            }
+        }
+    };
+    params["body"].size = 10000;
+    client.indices.exists({ index: "entity_relation" }).then((isExists) => {
+        if (isExists) {
+            client.deleteByQuery({
+                index: 'entity_relation',
+                body: qrdelete,
+                timeout: "5m"
+            }, function(err, resp, status) {
+                if (err) {
+                    logger.error(nameFile + ' | deleteRelationOneEntity | delete :' + err);
+                    console.error("ERROR | " + nameFile + ' | deleteRelationOneEntity | delete:', err);
+                } else {
+                    logger.info(nameFile + ' | deleteRelationOneEntity :' + index);
+                }
+            });
+            return true;
+        } else {
+
+            return false;
+        }
+    }).catch((err) => {
+        console.log(err);
+        logger.error(nameFile + ' | deleteRelationOneEntity   : ' + err);
+    });
+}
+
+function deleteRelationOneEntity_original(_id1) {
     let params = { index: "entity_relation" };
     params["body"] = {
         "query": {
@@ -674,6 +894,67 @@ function deleteRelationOneEntity(_id1) {
 }
 
 function deleteRelationOneEntityAndIndex(_id, _index) {
+    let params = { index: "entity_relation" };
+    let qrdelete = {
+        "query": {
+            "bool": {
+                "should": [{
+                        "bool": {
+                            "must": [{
+                                "match": {
+                                    "_id1": _id
+                                }
+                            }, {
+                                "match": {
+                                    "_index1": _index
+                                }
+                            }]
+                        }
+                    },
+                    {
+                        "bool": {
+                            "must": [{
+                                "match": {
+                                    "_id2": _id
+                                }
+                            }, {
+                                "match": {
+                                    "_index2": _index
+                                }
+                            }]
+                        }
+                    }
+                ]
+            }
+        }
+    };
+    client.indices.exists({ index: "entity_relation" }).then((isExists) => {
+        if (isExists) {
+            client.deleteByQuery({
+                index: 'entity_relation',
+                body: qrdelete,
+                timeout: "5m"
+            }, function(err, resp, status) {
+                if (err) {
+                    logger.error(nameFile + ' | deleteRelationOneEntityAndIndex | delete :' + _index + " , " + _id + " , " + err);
+                    console.error("ERROR | " + nameFile + ' | deleteRelationOneEntityAndIndex | delete _index, _id:', _index, _id, err);
+                } else {
+                    logger.info(nameFile + ' | deleteRelationOneEntityAndIndex :' + _index + " , " + _id);
+                }
+            });
+
+            return true;
+        } else {
+
+            return false;
+        }
+    }).catch((err) => {
+        console.log(err);
+        logger.error(nameFile + ' | deleteRelationOneEntityAndIndex exists: ' + err);
+    });
+}
+
+function deleteRelationOneEntityAndIndex_original(_id, _index) {
     let params = { index: "entity_relation" };
     params["body"] = {
         "query": {
@@ -750,10 +1031,50 @@ function deleteRelationOneEntityAndIndex(_id, _index) {
     });
 }
 
+async function createRelationV2(dataset) {
+    //   let params = { index: "entity_relation", type: "entity_relation" };
+    //   params["body"] = newRel;
+    //  params["refresh"] = true;
+    if (dataset.length > 0) {
+
+
+        const body = dataset.flatMap(doc => [{ index: { "_index": 'entity_relation', "_type": 'entity_relation' } }, doc])
+            //const { body: bulkResponse } = await client.bulk({ refresh: true, body })
+        const bulkResponse = await client.bulk({ refresh: true, body })
+        if (bulkResponse.errors) {
+            const erroredDocuments = []
+                // The items array has the same order of the dataset we just indexed.
+                // The presence of the `error` key indicates that the operation
+                // that we did for the document has failed.
+            bulkResponse.items.forEach((action, i) => {
+                const operation = Object.keys(action)[0]
+                if (action[operation].error) {
+                    erroredDocuments.push({
+                        // If the status is 429 it means that you can retry the document,
+                        // otherwise it's very likely a mapping error, and you should
+                        // fix the document before to try it again.
+                        status: action[operation].status,
+                        error: action[operation].error,
+                        operation: body[i * 2],
+                        document: body[i * 2 + 1]
+                    })
+                }
+            })
+            console.log(erroredDocuments)
+            console.error("ERROR | " + nameFile + ' | createRelationV2  : ', erroredDocuments);
+            logger.error(nameFile + ' | createRelationV2:' + erroredDocuments);
+        } else {
+            logger.info(nameFile + ' | createRelationV2 | success:' + JSON.stringify(dataset));
+        }
+    } else {
+        logger.info(nameFile + ' | createRelationV2 | no relation deteced:');
+    }
+}
+
 function createRelation(newRel) {
     let params = { index: "entity_relation", type: "entity_relation" };
     params["body"] = newRel;
-    params["refresh"] = true;
+    //  params["refresh"] = true;
     logger.info(nameFile + ' | createRelation | success:' + JSON.stringify(params));
     client.index(params).then(function(resp) {
         //console.log(nameFile + ' | createRelation | success:', JSON.stringify(resp));
@@ -1115,6 +1436,85 @@ router.get('/allstats/', (req, res) => {
         respData.total = totEnt;
         ret.setData(respData);
         return res.send(ret);
+    });
+});
+router.get('/allstatsglobal/', (req, res) => {
+    var ret = new jsonResponse();
+    var params = {};
+    client.indices.stats(params, function(err, resp, status) {
+        if (err) {
+            console.error("ERROR | " + nameFile + ' | allstats  :', err);
+            logger.error(nameFile + ' | allstats : ' + err);
+            ret.setSuccess(false);
+            ret.setExtraData({ log: err.message });
+            ret.setMessages("Entity " + err.displayName);
+            return res.send(ret);
+        }
+        var listEl = resp.indices;
+        var totEnt = 0;
+        var respData = {
+            total: 0,
+            indices: []
+        };
+        for (const [key, value] of Object.entries(listEl)) {
+            // if (key != "entity_relation") {
+            totEnt += value['primaries']['docs']['count'];
+            respData.indices.push({ index: key, count: value['primaries']['docs']['count'] });
+            //  }
+        }
+        respData.total = totEnt;
+        ret.setData(respData);
+        return res.send(ret);
+    });
+});
+router.get('/relationstat/', (req, res) => {
+
+    var ret = new jsonResponse();
+
+    var params = {};
+    params["index"] = "entity_relation";
+    params["type"] = "entity_relation";
+    params["body"] = {
+        "aggregations": {
+            "aggr": {
+                "terms": {
+                    "field": "_index1.keyword"
+                },
+                "aggregations": {
+                    "_index2": {
+                        "terms": {
+                            "field": "_index2.keyword"
+                        }
+                    }
+                }
+            }
+        }
+    };
+    client.indices.exists({ index: "entity_relation" }, function(err_, resp_, status_) {
+        if (status_ == 200) {
+            client.search(params).then(function(resp) {
+
+                ret.setData(resp.aggregations.aggr.buckets);
+                return res.send(ret);
+            }).catch(function(error) {
+                console.log(error);
+                ret.setMessages("Search Error");
+                ret.setSuccess(false);
+                ret.setExtraData({ "log": error });
+                return res.send(ret);
+            });
+        } else {
+
+            ret.setData([]);
+            return res.send(ret);
+            /* let params = { index: "entity_relation", type: "entity_relation" };
+             params["body"] = {};
+             datasetRel.forEach(element => {
+                 createRelation(element);
+             });*/
+
+        }
+
     });
 });
 //Marco gestione permessi

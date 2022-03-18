@@ -41,5 +41,9 @@ mongoose.model("DymerCronJobRule", {
     importrelation: {
         type: Boolean,
         require: true
+    },
+    typerelations: {
+        type: String,
+        require: true
     }
 });

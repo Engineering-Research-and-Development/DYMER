@@ -422,6 +422,7 @@ if (util.ishttps('webserver')) {
     });
 } else {
     app.listen(portExpress, () => {
+        // logger.error("testtt");
         logger.info(nameFile + " | Up and running-- this is " + global.configService.protocol + " " +
             global.configService.app_name + " service on port:" + global.configService.port + " context-path:" + util.getContextPath('webserver'));
         console.log("Up and running-- this is " + global.configService.protocol + " " +
