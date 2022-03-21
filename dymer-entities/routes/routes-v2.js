@@ -127,7 +127,7 @@ function startElastic() {
         }, function(error) {
             if (error) {
                 console.error("ERROR | " + nameFile + " | elasticsearch cluster is down!", error);
-                logger.error(nameFile + " | elasticsearch cluster is down!" + err);
+                logger.error(nameFile + " | elasticsearch cluster is down!" + error);
             } else {
                 elasticStatusUp = true;
                 console.log(nameFile + ' | Connected to elasticsearch! ', elasticStatusUp);
