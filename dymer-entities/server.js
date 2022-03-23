@@ -130,6 +130,16 @@ app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
 });
 app.get(util.getContextPath('entity') + '/checkservice', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
+    let infosize = logger.filesize("info");
+    let errorsize = logger.filesize("error");
+    ret.setData({
+        info: {
+            size: infosize
+        },
+        error: {
+            size: errorsize
+        }
+    });
     ret.setMessages("Service is up");
     res.status(200);
     ret.setSuccess(true);
@@ -152,6 +162,7 @@ app.get(util.getContextPath('entity') + "/*", (req, res) => {
 });
 app.listen(portExpress, () => {
     //logger.flushAllfile();
+
     logger.info(nameFile + " | Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + util.getContextPath('entity'));
     console.log("Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + util.getContextPath('entity'));
 });

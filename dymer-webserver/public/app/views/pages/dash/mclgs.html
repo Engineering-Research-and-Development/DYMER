@@ -20,6 +20,7 @@
                             </div>
                             <div class="col-5  text-right">
                                 <i class="fa fa-download dympointer " aria-hidden="true" ng-click="openLog('webform','info')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush info.log" ng-click="deleteLog('webform','info')"></i>
+                                <br><small style="color: #8c8985;"> ({{checkservice.webform.logs.info.size}})</small>
                             </div>
                         </div>
                         <div class="row">
@@ -29,6 +30,7 @@
                             </div>
                             <div class="col-5  text-right">
                                 <i class="fa fa-download dympointer" aria-hidden="true" ng-click="openLog('webform','error')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush error.log" ng-click="deleteLog('webform','error')"></i>
+                                <br><small style="color: #8c8985;"> ({{checkservice.webform.logs.error.size}})</small>
                             </div>
                         </div>
 
@@ -65,6 +67,8 @@
                             </div>
                             <div class="col-5  text-right">
                                 <i class="fa fa-download dympointer " aria-hidden="true" ng-click="openLog('templates','info')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush info.log" ng-click="deleteLog('templates','info')"></i>
+                                <br><small style="color: #8c8985;">
+                                    ({{checkservice.templates.logs.info.size}})</small>
                             </div>
                         </div>
                         <div class="row">
@@ -74,6 +78,8 @@
                             </div>
                             <div class="col-5  text-right">
                                 <i class="fa fa-download dympointer" aria-hidden="true" ng-click="openLog('templates','error')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush error.log" ng-click="deleteLog('templates','error')"></i>
+                                <br><small style="color: #8c8985;">
+                                    ({{checkservice.templates.logs.error.size}})</small>
                             </div>
                         </div>
 
@@ -110,6 +116,8 @@
                             </div>
                             <div class="col-5  text-right">
                                 <i class="fa fa-download dympointer " aria-hidden="true" ng-click="openLog('forms','info')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush info.log" ng-click="deleteLog('forms','info')"></i>
+                                <br><small style="color: #8c8985;">
+                                    ({{checkservice.forms.logs.info.size}})</small>
                             </div>
                         </div>
                         <div class="row">
@@ -119,6 +127,8 @@
                             </div>
                             <div class="col-5  text-right">
                                 <i class="fa fa-download dympointer" aria-hidden="true" ng-click="openLog('forms','error')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush error.log" ng-click="deleteLog('forms','error')"></i>
+                                <br><small style="color: #8c8985;">
+                                    ({{checkservice.forms.logs.error.size}})</small>
                             </div>
                         </div>
 
@@ -154,6 +164,8 @@
                             </div>
                             <div class="col-5  text-right">
                                 <i class="fa fa-download dympointer " aria-hidden="true" ng-click="openLog('entities','info')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush info.log" ng-click="deleteLog('entities','info')"></i>
+                                <br><small style="color: #8c8985;">
+                                    ({{checkservice.entities.logs.info.size}})</small>
                             </div>
                         </div>
                         <div class="row">
@@ -163,6 +175,8 @@
                             </div>
                             <div class="col-5  text-right">
                                 <i class="fa fa-download dympointer" aria-hidden="true" ng-click="openLog('entities','error')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush error.log" ng-click="deleteLog('entities','error')"></i>
+                                <br><small style="color: #8c8985;">
+                                    ({{checkservice.entities.logs.error.size}})</small>
                             </div>
                         </div>
 
@@ -199,6 +213,8 @@
                             </div>
                             <div class="col-5  text-right">
                                 <i class="fa fa-download dympointer " aria-hidden="true" ng-click="openLog('dservice','info')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush info.log" ng-click="deleteLog('dservice','info')"></i>
+                                <br><small style="color: #8c8985;">
+                                    ({{checkservice.dservice.logs.info.size}})</small>
                             </div>
                         </div>
                         <div class="row">
@@ -208,6 +224,8 @@
                             </div>
                             <div class="col-5  text-right">
                                 <i class="fa fa-download dympointer" aria-hidden="true" ng-click="openLog('dservice','error')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush error.log" ng-click="deleteLog('dservice','error')"></i>
+                                <br> <small style="color: #8c8985;">
+                                    ({{checkservice.dservice.logs.error.size}})</small>
                             </div>
                         </div>
 

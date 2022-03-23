@@ -76,6 +76,16 @@ app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
 });
 app.get(util.getContextPath('dservice') + '/checkservice', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
+    let infosize = logger.filesize("info");
+    let errorsize = logger.filesize("error");
+    ret.setData({
+        info: {
+            size: infosize
+        },
+        error: {
+            size: errorsize
+        }
+    });
     ret.setMessages("Service is up");
     res.status(200);
     ret.setSuccess(true);

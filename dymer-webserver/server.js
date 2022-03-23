@@ -69,6 +69,23 @@ app.get(util.getContextPath('webserver') + '/openLog/:filetype', [loadUserInfo, 
     //console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
     return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
 });
+app.get(util.getContextPath('webserver') + '/checkservice', [loadUserInfo, util.checkIsAdmin], (req, res) => {
+    var ret = new jsonResponse();
+    let infosize = logger.filesize("info");
+    let errorsize = logger.filesize("error");
+    ret.setData({
+        info: {
+            size: infosize
+        },
+        error: {
+            size: errorsize
+        }
+    });
+    ret.setMessages("Service is up");
+    res.status(200);
+    ret.setSuccess(true);
+    return res.send(ret);
+});
 app.use(express.static(__dirname + '/public'));
 //app.use(express.static(__dirname + global.gConfig.services.webserver["context-path"] + 'public'));
 //app.use(express.static(global.gConfig.services.webserver["context-path"] + 'public'));

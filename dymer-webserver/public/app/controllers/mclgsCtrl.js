@@ -58,9 +58,14 @@ angular.module('mclgsCtrl', [])
                 msg: "Service is up"
             }
         };
-
+        $http.get(baseContextPath + "/checkservice").then(function(rt) {
+            $scope.checkservice.webform.logs = rt.data.data;
+        }).catch(function(response) {
+            console.log(response);
+        });
         $http.get(baseContextPath + "/api/entities/checkservice").then(function(rt) {
             $scope.checkservice.entities.msg = rt.data.message;
+            $scope.checkservice.entities.logs = rt.data.data;
             $scope.checkservice.entities.state = " text-success";
         }).then(function() {
             $http.get(baseContextPath + "/api/entities/api/v1/entity/mongostate").then(function(rts) {
@@ -78,6 +83,7 @@ angular.module('mclgsCtrl', [])
         $http.get(baseContextPath + "/api/dservice/checkservice").then(function(rt) {
             $scope.checkservice.dservice.msg = rt.data.message;
             $scope.checkservice.dservice.state = " text-success";
+            $scope.checkservice.dservice.logs = rt.data.data;
         }).then(function() {
             $http.get(baseContextPath + "/api/dservice/api/v1/perm/mongostate").then(function(rts) {
                 $scope.checkservice.dservice.db.mongo.css = rts.data.data.css;
@@ -89,6 +95,7 @@ angular.module('mclgsCtrl', [])
         $http.get(baseContextPath + "/api/forms/checkservice").then(function(rt) {
             $scope.checkservice.forms.msg = rt.data.message;
             $scope.checkservice.forms.state = " text-success";
+            $scope.checkservice.forms.logs = rt.data.data;
         }).then(function() {
             $http.get(baseContextPath + "/api/forms/api/v1/form/mongostate").then(function(rts) {
                 $scope.checkservice.forms.db.mongo.css = rts.data.data.css;
@@ -100,6 +107,7 @@ angular.module('mclgsCtrl', [])
         $http.get(baseContextPath + "/api/templates/checkservice").then(function(rt) {
             $scope.checkservice.templates.msg = rt.data.message;
             $scope.checkservice.templates.state = " text-success";
+            $scope.checkservice.templates.logs = rt.data.data;
         }).then(function() {
             $http.get(baseContextPath + "/api/templates/api/v1/template/mongostate").then(function(rts) {
                 $scope.checkservice.templates.db.mongo.css = rts.data.data.css;

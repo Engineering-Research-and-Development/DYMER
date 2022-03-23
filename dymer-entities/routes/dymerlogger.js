@@ -103,7 +103,12 @@ var exports = {
         lvl(msg);
     }
 };
-
+exports.filesize = function(typefile) {
+    let typefilepath = './logs/' + typefile + '.log';
+    let fsize = (fs.statSync(typefilepath)).size;
+    fsize = (fsize > 0) ? (fsize / 2048).toFixed(2) : fsize;
+    return fsize + " M";
+};
 exports.flushfile = function(typefile) {
     let typefilepath = './logs/' + typefile + '.log';
     fs.writeFile(typefilepath, '', function() { console.log('flushed ' + typefilepath) })
