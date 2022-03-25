@@ -831,7 +831,7 @@ router.get('/updategid/:entype/:gid/:forceall?', util.checkIsAdmin, (req, res) =
                 updategid = (!element.properties.owner.hasOwnProperty("gid") || forceall) ? true : false;
                 if (!updategid)
                     if (element.properties.owner.hasOwnProperty("gid")) {
-                        updategid = (element.properties.owner.gid == "1" || element.properties.owner.gid == 1 || element.properties.owner.gid == 0 || element.properties.owner.gid == "0") ? true : false;
+                        updategid = (element.properties.owner.gid == "1" || element.properties.owner.gid == 1 || element.properties.owner.gid == 0 || element.properties.owner.gid == "0" || element.properties.owner.gid == "") ? true : false;
                     }
                 if (updategid) {
 
