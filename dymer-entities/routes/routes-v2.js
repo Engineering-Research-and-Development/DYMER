@@ -3069,24 +3069,26 @@ router.put('/:id', (req, res) => {
                             resp["hits"].hits.forEach((element) => {
                                 var oldElement = element;
                                 listSingleRelation(id).then(function(oldrelation) {
-                                    oldrelation.forEach(function(relel, index) {
-                                        //     console.log("Relation relel", relel);    
-                                        if (relel._source["_id1"] == id) {
-                                            if (ref.hasOwnProperty([relel._source["_index2"]])) {
-                                                if (!ref[relel._source["_index2"]].includes(relel._source["_id2"])) {
-                                                    _relationtodelete.push(relel._source["_id2"]);
+                                    if (ref != undefined) {
+                                        oldrelation.forEach(function(relel, index) {
+                                            //     console.log("Relation relel", relel);    
+                                            if (relel._source["_id1"] == id) {
+                                                if (ref.hasOwnProperty([relel._source["_index2"]])) {
+                                                    if (!ref[relel._source["_index2"]].includes(relel._source["_id2"])) {
+                                                        _relationtodelete.push(relel._source["_id2"]);
+                                                    }
                                                 }
                                             }
-                                        }
-                                        if (relel._source["_id2"] == id) {
-                                            if (ref.hasOwnProperty([relel._source["_index1"]])) {
-                                                if (!ref[relel._source["_index1"]].includes(relel._source["_id1"])) {
-                                                    _relationtodelete.push(relel._source["_id1"]);
+                                            if (relel._source["_id2"] == id) {
+                                                if (ref.hasOwnProperty([relel._source["_index1"]])) {
+                                                    if (!ref[relel._source["_index1"]].includes(relel._source["_id1"])) {
+                                                        _relationtodelete.push(relel._source["_id1"]);
+                                                    }
                                                 }
+                                                //oldFilteredrelation.push(relel._source["_id1"]);
                                             }
-                                            //oldFilteredrelation.push(relel._source["_id1"]);
-                                        }
-                                    });
+                                        });
+                                    }
                                     var elId = oldElement["_id"];
                                     if (_relationtodelete.length > 0) {
                                         // console.log(nameFile + ' | /:id | put | id,deleted relations :', id, JSON.stringify(_relationtodelete));
