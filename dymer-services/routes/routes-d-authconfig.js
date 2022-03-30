@@ -346,11 +346,11 @@ router.post('/login',
 
                         axios.get(config.tokenProvider + config.accessTokenPath, getUserInfoHeaders)
                             .then(userInfo => {
-                                getAllResorucesCapToken(userInfo.data, req).then(function (resp) {
+                                getResorucesUniversalCapToken(userInfo.data, req).then(function (resp) {
                                     if (req.session.extraData != undefined) {
-                                        req.session.extraData.getAllResourcesCapToken = JSON.stringify(resp.data);
+                                        req.session.extraData.getResourcesUniversalCapToken = JSON.stringify(resp.data);
                                     } else {
-                                        req.session.extraData = { getAllResourcesCapToken: JSON.stringify(resp.data) };
+                                        req.session.extraData = { getResourcesUniversalCapToken: JSON.stringify(resp.data) };
                                     }
                                     req.session.save();
                                      fetchCapTokens(userInfo.data, req)
@@ -459,14 +459,14 @@ router.delete('/logout',
 
 function fetchCapTokens(authToken, req) {
 
-    getCapabilityTokenDEMETER('getMyResources', req, '', authToken)
+    // getCapabilityTokenDEMETER('getMyResources', req, '', authToken)
     getCapabilityTokenDEMETER('getMetrics', req, '', authToken);
     getCapabilityTokenDEMETER('createResource', req, '', authToken)
 
 
 }
 
-const getAllResorucesCapToken = (accessToken, req) => {
+const getResorucesUniversalCapToken = (accessToken, req) => {
 
 
     req.session.accessToken = accessToken.access_token;
@@ -482,14 +482,12 @@ const getAllResorucesCapToken = (accessToken, req) => {
             token: accessToken.access_token,
             ac: "GET",
             de: rrmApi,
-            re: '/api/v1/resources'
+            re: '/api/v1/resources.*'
         }
 
         let body = JSON.stringify(getAllResources);
 
         axios.post(acsServer, body, postHeaders).then(resp => {
-
-
             resolve(resp);
         }).catch(function (error) {
             // handle error

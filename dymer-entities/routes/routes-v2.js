@@ -1943,14 +1943,15 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
 
                         let body = JSON.stringify(rawBody);
 
-                        if (reHeader === '/api/v1/resources/search?owner=' + token.id && objconf.api[callkey].method === 'GET') {
+                        if (reHeader.includes('/api/v1/resources/search?') && objconf.api[callkey].method === 'GET') {
+                            console.log("using universal cap token")
                             axios.get(ownerUrl).then(session => {
                                 if (session.data.data[0] != null) {
                                     if (session.data.data[0].session.extraData != undefined) {
 
-                                        if (session.data.data[0].session.extraData.getMyResourcesCapToken != undefined) {
-                                            const getMyResourcesCapToken = { data: JSON.parse(session.data.data[0].session.extraData.getMyResourcesCapToken) };
-                                            resolve(getMyResourcesCapToken);
+                                        if (session.data.data[0].session.extraData.getResourcesUniversalCapToken != undefined) {
+                                            const getResourcesUniversalCapToken = { data: JSON.parse(session.data.data[0].session.extraData.getResourcesUniversalCapToken) };
+                                            resolve(getResourcesUniversalCapToken);
                                         }
                                         else {
                                             axios.post(tokenProviderUrl, body, config).then(resp => {
@@ -2004,9 +2005,9 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
                                 console.log("SESIJA2", session.data)
                                 if (session.data.data[0] != null) {
                                     if (session.data.data[0].session.extraData != undefined) {
-                                        if (session.data.data[0].session.extraData.getAllResourcesCapToken != undefined) {
-                                            const getAllResourcesCapToken = { data: JSON.parse(session.data.data[0].session.extraData.getAllResourcesCapToken) };
-                                            resolve(getAllResourcesCapToken);
+                                        if (session.data.data[0].session.extraData.getResourcesUniversalCapToken != undefined) {
+                                            const getResourcesUniversalCapToken = { data: JSON.parse(session.data.data[0].session.extraData.getResourcesUniversalCapToken) };
+                                            resolve(getResourcesUniversalCapToken);
                                         }
                                         else {
                                             axios.post(tokenProviderUrl, body, config).then(resp => {
