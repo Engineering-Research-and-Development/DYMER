@@ -15,12 +15,13 @@ const { GridFsStorage } = require('multer-gridfs-storage');
 const nameFile = path.basename(__filename);
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
-
+const logger = require('./dymerlogger');
 const Template = mongoose.model("Template");
 var gridFSBucket;
 var db;
 const mongoURI = util.mongoUrl();
 console.log(nameFile + ' | mongoURI :', JSON.stringify(mongoURI));
+logger.info(nameFile + " | mongoURI: " + JSON.stringify(mongoURI));
 mongoose
     .connect(mongoURI, {
         //  useCreateIndex: true,
@@ -29,6 +30,7 @@ mongoose
     })
     .then(x => {
         console.log(nameFile + ` | Connected to Mongo! Database name: "${x.connections[0].name}"`);
+        logger.info(nameFile + ` | Connected to Mongo! Database name: "${x.connections[0].name}"`);
         db = x.connections[0].db;
         //console.log(x.connections[0].db);
         gridFSBucket = new mongoose.mongo.GridFSBucket(x.connections[0].db, {
@@ -50,6 +52,7 @@ mongoose
     })
     .catch(err => {
         console.error("ERROR | " + nameFile + ` | Error connecting to mongo! Database  : "${mongoURI}"`, err);
+        logger.error(nameFile + ` | Error connecting to mongo! Database name: "${mongoURI}" ` + err);
     });
 // Validator function
 function isValidObjectId(id) {
@@ -70,6 +73,36 @@ function isValidObjectId(id) {
  *************************************************************************************************************
  */
 
+router.get('/mongostate', (req, res) => {
+    let ret = new jsonResponse();
+    let dbState = [{
+            value: 0,
+            label: "Disconnected",
+            css: "text-danger"
+        },
+        {
+            value: 1,
+            label: "Connected",
+            css: "text-success"
+        },
+        {
+            value: 2,
+            label: "Connecting",
+            css: "text-info"
+        },
+        {
+            value: 3,
+            label: "Disconnecting",
+            css: "text-warning"
+        }
+    ];
+    let mongostate = mongoose.connection.readyState;
+    ret.setMessages("Mongodb state");
+    ret.setData(dbState.find(f => f.value == mongostate));
+    res.status(200);
+    ret.setSuccess(true);
+    return res.send(ret);
+});
 var getfilesArrays = function(er) {
     return new Promise(function(resolve, reject) {
         var attachments = [];
@@ -123,6 +156,7 @@ var recFile = function(file_id) {
         });
     }).catch(function(err) {
         console.error("ERROR | " + nameFile + ' | recFile  : ', err);
+        logger.error(nameFile + ' | recFile  : ' + err);
     });
 }
 
@@ -140,7 +174,8 @@ router.get('/', (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
-    console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
+    //console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
+    logger.info(nameFile + '  | get  | queryFind:' + JSON.stringify(queryFind));
     Template.find(queryFind).collation({ locale: "en" }).sort({ title: +1 }).then((templates) => {
         //Template.find(queryFind).then((templates) => {
         // console.log('dat', JSON.stringify(templates));
@@ -154,12 +189,14 @@ router.get('/', (req, res) => {
         })
     }).catch(function(err) {
         console.error("ERROR | " + nameFile + ' | get | queryFind : ', err);
+        logger.error(nameFile + ' | get | queryFind : ' + err);
     });
 });
 
 router.get('/content/:fileid', function(req, res, next) {
     var file_id = req.params.fileid;
-    console.log(nameFile + ' | get/content/:fileid |  fileid :', file_id);
+    //console.log(nameFile + ' | get/content/:fileid |  fileid :', file_id);
+    logger.info(nameFile + '  | get/content/:fileid |  fileid :' + file_id);
     if (!isValidObjectId(file_id)) {
         res.write('');
         res.end();
@@ -167,7 +204,8 @@ router.get('/content/:fileid', function(req, res, next) {
     }
     recFile(mongoose.Types.ObjectId(file_id))
         .then(function(result) {
-            console.log(nameFile + ' | get/content/:fileid |  fileid :', result);
+            // console.log(nameFile + ' | get/content/:fileid |  fileid :', result);
+            // logger.info(nameFile + '  | get/content/:fileid |  fileid :' + JSON.stringify(queryFind));
             res.setHeader('Content-type', result.contentType);
             res.setHeader('Content-disposition', 'filename=' + result.filename);
             res.charset = 'utf-8';
@@ -177,6 +215,7 @@ router.get('/content/:fileid', function(req, res, next) {
         })
         .catch(function(err) {
             console.error("ERROR | " + nameFile + ' | get/content/:fileid  : ', err);
+            logger.error(nameFile + ' | get/content/:fileid : ' + err);
         });
 });
 
@@ -185,6 +224,7 @@ router.post('/', util.checkIsAdmin, function(req, res) {
     upload(req, res, function(err) {
         if (err) {
             console.error("ERROR | " + nameFile + ' | post | upload  : ', err);
+            logger.error(nameFile + ' | post | upload  : ' + err);
             ret.setMessages("Upload Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -207,7 +247,8 @@ router.post('/', util.checkIsAdmin, function(req, res) {
         }
         var template = new Template(newObj);
         template.save().then((el) => {
-            console.log(nameFile + ' | post |  saved successfully :', JSON.stringify(newObj));
+            //console.log(nameFile + ' | post |  saved successfully :', JSON.stringify(newObj));
+            logger.info(nameFile + ' | post |  saved successfully :' + JSON.stringify(newObj));
             ret.setMessages("Template uploaded successfully");
             let queryFind = { '_id': mongoose.Types.ObjectId(el._id) };
             Template.find(queryFind).then((Models) => {
@@ -222,6 +263,7 @@ router.post('/', util.checkIsAdmin, function(req, res) {
         }).catch((err) => {
             if (err) {
                 console.error("ERROR | " + nameFile + ' | post | save  : ', err);
+                logger.error(nameFile + ' | post | save  :' + err);
                 ret.setMessages("Post error");
                 ret.setSuccess(false);
                 ret.setExtraData({ "log": err.stack });
@@ -236,6 +278,7 @@ router.post('/create', util.checkIsAdmin, function(req, res) {
     upload(req, res, function(err) {
         if (err) {
             console.error("ERROR | " + nameFile + ' | post/create | upload  : ', err);
+            logger.error(nameFile + ' | post/create | upload  : ' + err);
             ret.setMessages("Upload Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -245,13 +288,15 @@ router.post('/create', util.checkIsAdmin, function(req, res) {
         let data = callData.data;
         var template = new Template(data);
         template.save().then((el) => {
-            console.log(nameFile + ' | post/create  |  saved successfully :', JSON.stringify(data));
+            // console.log(nameFile + ' | post/create  |  saved successfully :', JSON.stringify(data));
+            logger.info(nameFile + ' | post/create  |  saved successfully :' + JSON.stringify(data));
             ret.setMessages("Template uploaded successfully");
             ret.addData(el);
             return res.send(ret);
         }).catch((err) => {
             if (err) {
                 console.error("ERROR | " + nameFile + ' | post/create | save  : ', err);
+                logger.error(nameFile + ' | post/create | save  : ' + err);
                 ret.setMessages("Post error");
                 ret.setSuccess(false);
                 ret.setExtraData({ "log": err.stack });
@@ -266,6 +311,7 @@ router.post('/addAsset', util.checkIsAdmin, function(req, res) {
     upload(req, res, function(err) {
         if (err) {
             console.error("ERROR | " + nameFile + ' | post/addAsset | upload  : ', err);
+            logger.error(nameFile + ' | post/addAsset | upload  : ' + err);
             ret.setMessages("Upload Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": error.stack });
@@ -283,11 +329,13 @@ router.post('/addAsset', util.checkIsAdmin, function(req, res) {
                 if (err) {
                     ret.setSuccess(false);
                     console.error("ERROR | " + nameFile + ' | post/addAsset | updateOne  : ', err);
+                    logger.error(nameFile + ' | post/addAsset | updateOne  : ' + err);
                     ret.setMessages("Template Error");
                     return res.send(ret);
                 } else {
                     ret.addData(updateData);
-                    console.log(nameFile + ' | post/addAsset  |  updateOne successfully :', JSON.stringify(updateData));
+                    //console.log(nameFile + ' | post/addAsset  |  updateOne successfully :', JSON.stringify(updateData));
+                    logger.info(nameFile + ' | post/addAsset  |  updateOne successfully :' + JSON.stringify(updateData));
                     ret.setMessages("Template Updated");
                     return res.send(ret);
                 }
@@ -301,6 +349,7 @@ router.post('/update', util.checkIsAdmin, function(req, res) {
     upload(req, res, function(err) {
         if (err) {
             console.error("ERROR | " + nameFile + ' | post/update | upload  : ', err);
+            logger.error(nameFile + ' | post/update | upload  : ' + err);
             ret.setMessages("Upload Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": error.stack });
@@ -322,10 +371,12 @@ router.post('/update', util.checkIsAdmin, function(req, res) {
                 if (err) {
                     ret.setSuccess(false);
                     console.error("ERROR | " + nameFile + ' | post/update | updateOne  : ', err);
+                    logger.error(nameFile + ' | post/update | updateOne  : ' + err);
                     ret.setMessages("Template Error");
                     return res.send(ret);
                 } else {
-                    console.log(nameFile + ' | post/update  |  updateOne successfully :', data.title);
+                    // console.log(nameFile + ' | post/update  |  updateOne successfully :', data.title);
+                    logger.info(nameFile + ' | post/update  |  updateOne successfully :' + data.title);
                     ret.setMessages("Template Updated");
                     return res.send(ret);
                 }
@@ -339,6 +390,7 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
     upload(req, res, function(err) {
         if (err) {
             console.error("ERROR | " + nameFile + ' | post/updateAsset | upload  : ', err);
+            logger.error(nameFile + ' | post/updateAsset | upload  : ' + err);
             ret.setMessages("Upload Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": error.stack });
@@ -355,10 +407,12 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
             if (err) {
                 ret.setSuccess(false);
                 console.error("ERROR | " + nameFile + ' | post/updateAsset | execute  : ', err);
+                logger.error(nameFile + ' | post/updateAsset | execute  : ' + err);
                 ret.setMessages("Template Error");
                 return res.send(ret);
             } else {
-                console.log(nameFile + ' | post/updateAsset  |  execute :', data.assetId);
+                // console.log(nameFile + ' | post/updateAsset  |  execute :', data.assetId);
+                logger.info(nameFile + '| post/updateAsset | execute :' + data.assetId);
                 gridFSBucket.delete(mongoose.Types.ObjectId(data.assetId)).then(() => {
                     ret.setMessages("Template Updated");
                     ret.setExtraData({ newAssetId: element.id });
@@ -366,6 +420,7 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
                 }).catch(function(err) {
                     ret.setSuccess(false);
                     console.error("ERROR | " + nameFile + ' | post/updateAsset | delete  : ', err);
+                    logger.error(nameFile + ' | post/updateAsset | delete  : ' + err);
                     ret.setMessages("Template Error");
                     return res.send(ret);
                 });
@@ -384,11 +439,13 @@ router.delete('/:id', util.checkIsAdmin, (req, res) => {
             gridFSBucket.delete(mongoose.Types.ObjectId(file._id));
         });
         ret.setMessages("Element deleted");
-        console.log(nameFile + ' | delete/:id  | findOneAndDelete successfully :', JSON.stringify(myfilter));
+        // console.log(nameFile + ' | delete/:id  | findOneAndDelete successfully :', JSON.stringify(myfilter));
+        logger.info(nameFile + ' | delete/:id  | findOneAndDelete successfully :' + JSON.stringify(myfilter));
         return res.send(ret);
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + ' | delete/:id  : ', err);
+            logger.error(nameFile + ' | delete/:id  : ' + err);
             ret.setMessages("Delete Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -409,11 +466,13 @@ router.delete('/:id/:fid', util.checkIsAdmin, (req, res) => {
             if (err) {
                 ret.setSuccess(false);
                 console.error("ERROR | " + nameFile + ' | delete/:id/:fid | updateOne : ', err);
+                logger.error(nameFile + ' | delete/:id/:fid | updateOne : ' + err);
                 ret.setMessages("Template Error");
                 return res.send(ret);
             } else {
                 gridFSBucket.delete(mongoose.Types.ObjectId(fid)).then(() => {
-                    console.log(nameFile + ' | delete/:id/:fid  | delete successfully :', fid);
+                    //console.log(nameFile + ' | delete/:id/:fid  | delete successfully :', fid);
+                    logger.info(nameFile + ' | delete/:id/:fid  | deleted successfully :' + fid);
                     return res.send(ret);
                 });
             }

@@ -69,6 +69,7 @@ router.post('/setConfig', util.checkIsAdmin, function(req, res) {
                 if (err) {
                     ret.setSuccess(false);
                     console.error("ERROR | " + nameFile + " | post/setConfig | updateOne :", err);
+                    logger.error(nameFile + ' || post/setConfig | updateOne  : ' + err);
                     ret.setMessages("Model Error");
                     return res.send(ret);
                 } else {
@@ -86,6 +87,7 @@ router.post('/setConfig', util.checkIsAdmin, function(req, res) {
         }).catch((err) => {
             if (err) {
                 console.error("ERROR | " + nameFile + " | post/setConfig | save :", err);
+                logger.error(nameFile + ' | post/setConfig | save : ' + err);
                 ret.setMessages("Post error");
                 ret.setSuccess(false);
                 ret.setExtraData({ "log": err.stack });
@@ -106,6 +108,7 @@ router.get('/configs', (req, res) => {
         }).catch((err) => {
             if (err) {
                 console.error("ERROR | " + nameFile + " | get/configs :", err);
+                logger.error(nameFile + ' | get/configs : ' + err);
                 ret.setMessages("Get error");
                 ret.setSuccess(false);
                 ret.setExtraData({ "log": err.stack });
@@ -131,6 +134,7 @@ router.post('/addrule', util.checkIsAdmin, function(req, res) {
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + " | post/addrule :", err);
+            logger.error(nameFile + '  | post/addrule : ' + err);
             ret.setMessages("Post error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -151,11 +155,12 @@ function findRule(queryFind, res) {
     OpnSearchRule.find(queryFind).then((els) => {
         ret.setMessages("List");
         ret.setData(els);
-        console.log('ret', ret);
+        // console.log('ret', ret);
         return res.send(ret);
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + " | findRule :", err);
+            logger.error(nameFile + ' | findRule : ' + err);
             ret.setMessages("Get error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -173,6 +178,7 @@ router.delete('/rule/:id', util.checkIsAdmin, (req, res) => {
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + " | delete/rule/:id :", id, err);
+            logger.error(nameFile + ' | delete/rule/:id : ' + id + " " + err);
             ret.setMessages("Delete Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -195,10 +201,11 @@ router.post('/listener', function(req, res) {
     OpnSearchRule.find(queryFind).then((els) => {
         ret.setMessages("List");
         ret.setData(els);
-        postAssettOpenness(eventSource[1], data.obj, els[0], extraInfo.extrainfo);
+        postAssettOpenness(eventSource[1], data.obj, els[0], extraInfo);
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + " | post/listener :", err);
+            logger.error(nameFile + ' | post/listener :' + err);
             ret.setMessages("Get error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -256,7 +263,7 @@ function postAssettOpenness(typeaction, obj, rule, extraInfo) {
                         "extContent": assetextContent
                     };
                     logger.info(nameFile + ' | postAssettOpenness | insert/update Json openness: ' + JSON.stringify(objToAssett));
-                    console.log(nameFile + ' | postAssettOpenness | insert/update Json openness', JSON.stringify(objToAssett));
+                    // console.log(nameFile + ' | postAssettOpenness | insert/update Json openness', JSON.stringify(objToAssett));
                     callOpennessJsw(el, objToAssett);
                 }
                 if (el.servicetype == 'delete') {
@@ -268,7 +275,7 @@ function postAssettOpenness(typeaction, obj, rule, extraInfo) {
                         "id": obj._id,
                     };
                     logger.info(nameFile + ' | postAssettOpenness | delete Json openness: ' + JSON.stringify(objToAssett));
-                    console.log(nameFile + ' | postAssettOpenness | delete Json openness', JSON.stringify(objToAssett));
+                    // console.log(nameFile + ' | postAssettOpenness | delete Json openness', JSON.stringify(objToAssett));
                     callOpennessJsw(el, objToAssett);
                 }
             } catch (error) {
@@ -289,16 +296,19 @@ function callOpennessJsw(conf, postObj) {
         if (conf.configuration.port != '')
             callurl += ":" + conf.configuration.port;
     callurl += "/api/jsonws/invoke";
-    console.log('chiamata callur X', callurl);
+    // console.log('chiamata callur X', callurl);
+    logger.info(nameFile + ' | callOpennessJsw  | chiamata callur X :' + callurl);
     if (conf.configuration.method == "POST") {
         var objPOST = {};
         objPOST[conf.configuration.path] = postObj;
         postObj = objPOST;
-        console.log('with postObj ', postObj);
+        // console.log('with postObj ', postObj);
+        logger.info(nameFile + ' | callOpennessJsw  | with postObj :' + JSON.stringify(postObj));
         //   postObj = JSON.stringify(objPOST);
         //    var configqq = { headers: { Cookie: 'JSESSIONID=C9B87F42FCF0BA612F4B59E411E908C5;' } };
         var creden = opnConfUtil.user.d_mail + ":" + opnConfUtil.user.d_pwd;
-        console.log('creden->', opnConfUtil.user.d_mail);
+        // console.log('creden->', opnConfUtil.user.d_mail);
+        logger.info(nameFile + ' | callOpennessJsw  | creden->:' + opnConfUtil.user.d_mail);
         const buff = Buffer.from(creden, 'utf-8');
         //let buff = new Buffer(creden);
         let authorizationBasic = buff.toString('base64');
@@ -308,19 +318,21 @@ function callOpennessJsw(conf, postObj) {
                 "Authorization": "Basic " + authorizationBasic
             }
         };
-        console.log('Authorization header-> ', configqq);
+        // console.log('Authorization header-> ', configqq);
         axios.post(callurl, postObj, configqq)
             .then(function(response) {
-                console.log(nameFile + ' | callOpennessJsw | POST | callurl, postObj, configqq', callurl, JSON.stringify(postObj), JSON.stringify(configqq));
-                console.log(nameFile + ' | callOpennessJsw | POST | response', callurl, JSON.stringify(response));
+                logger.info(nameFile + ' | callOpennessJsw | POST | callurl, postObj, configqq' + callurl + " , " + JSON.stringify(postObj) + " , " + JSON.stringify(configqq));
+                logger.info(nameFile + ' | callOpennessJsw | POST | response ' + callurl + " , " + JSON.stringify(response));
             })
             .catch(function(error) {
                 console.log(nameFile + ' | callOpennessJsw | POST', error);
+                logger.error(nameFile + ' | callOpennessJsw | POST : ' + error);
             });
     } else {
-        console.log(nameFile + ' | callOpennessJsw | GET | callurl, postObj, configqq', callurl, JSON.stringify(postObj));;
+        logger.info(nameFile + ' | callOpennessJsw | GET | callurl, postObj, configqq' + callurl + " , " + JSON.stringify(postObj));;
         axios.get(callurl, { params: postObj }).catch(function(error) {
             console.log(nameFile + ' | callOpennessJsw | GET', error);
+            logger.error(nameFile + ' | callOpennessJsw | GET : ' + error);
         });
     }
 }

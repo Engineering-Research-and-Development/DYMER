@@ -21,5 +21,6 @@ angular.module("userApp", [
     "configuratorCtrl",
     "permissionCtrl",
     "authenticationConfigCtrl",
-    "importcronjobCtrl"
+    "importcronjobCtrl",
+    "mclgsCtrl"
 ]);

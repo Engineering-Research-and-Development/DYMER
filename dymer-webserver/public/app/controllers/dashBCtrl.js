@@ -1,4 +1,4 @@
-angular.module('dashCtrl', [])
+angular.module('dashCtrl', ['nvd3'])
     .controller('dashController', function($scope, $http, $location, $browser, $rootScope) {
         var baseContextPath = $rootScope.globals.contextpath; //$rootScope.site_prefix; //'/d4ptest/'; //$browser.baseHref();
         $http.get(baseContextPath + '/api2/retriveinfoidpadmin', {
@@ -13,15 +13,27 @@ angular.module('dashCtrl', [])
             localStorage.setItem('d_gid', retE.data.d_gid);
         })
         var listEntities = [];
-        console.log('baseContextPath', baseContextPath + '/api/entities/api/v1/entity/allstats');
-        $http.get(baseContextPath + '/api/entities/api/v1/entity/allstats', {
+        //console.log('baseContextPath', baseContextPath + '/api/entities/api/v1/entity/allstats');
+
+        $http.get(baseContextPath + '/api/entities/api/v1/entity/allstatsglobal', {
 
         }).then(function(retE) {
             var res = retE.data.data;
+            let countrela = 0;
             listEntities = res.indices;
-
+            var lisrl = listEntities.filter(function(el) {
+                return el.index == "entity_relation";
+            })[0];
+            if (lisrl != undefined) {
+                countrela = lisrl["count"];
+            }
+            listEntities = listEntities.filter(function(el) {
+                return el.index !== "entity_relation";
+            });
             $scope.totIndices = listEntities.length;
-            $scope.totEntities = res.total;
+            $scope.totEntities = res.total - countrela;
+
+            $scope.totRelations = countrela;
             //return $scope.listEntity = templ_data.arr;
         }).then(function() {
 
@@ -130,4 +142,73 @@ angular.module('dashCtrl', [])
                 });
             }
         };
+        var color = d3.scale.category20()
+        $http.get(baseContextPath + '/api/entities/api/v1/entity/relationstat/', {
+
+        }).then(function(ret) {
+            $scope.data = {
+                "nodes": [],
+                "links": []
+            };
+            ret.data.data.forEach(element => {
+                let newitm = {
+                    "name": element.key,
+                    "group": element.key
+                };
+
+                if ($scope.data.nodes.find(x => x.name === element.key) == undefined)
+                    $scope.data.nodes.push(newitm)
+                element._index2.buckets.forEach(sub => {
+
+                    let newSitm = { "name": sub.key, "group": sub.key };
+
+                    if ($scope.data.nodes.find(x => x.name === sub.key) == undefined)
+                        $scope.data.nodes.push(newSitm)
+
+                });
+            });
+            ret.data.data.forEach(element => {
+                let sourc = $scope.data.nodes.find(x => x.name === element.key);
+                element._index2.buckets.forEach(sub => {
+                    let targ = $scope.data.nodes.find(x => x.name === sub.key);
+                    let newLk = {
+                        "source": sourc,
+                        "target": targ,
+                        "text": sub.doc_count
+                    };
+                    //if ($scope.data.links.indexOf(newLk) === -1)
+                    $scope.data.links.push(newLk)
+                });
+            });
+
+
+        }).catch(function(response) {
+            console.log(response);
+        });
+
+        $scope.options = {
+            chart: {
+
+                type: 'forceDirectedGraph',
+                height: 250,
+                width: 500,
+                margin: { top: 5, right: 5, bottom: 5, left: 5 },
+                color: function(d) {
+                    return color(d.group)
+                },
+                nodeExtras: function(node) {
+                    node && node
+                        .append("text")
+                        .attr("dx", 8)
+                        .attr("dy", ".35em")
+                        .text(function(d) { return d.name })
+                        .style('font-size', '10px');
+                },
+                linkDist: 120
+            },
+
+
+        };
+
+
     });

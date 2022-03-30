@@ -3,6 +3,7 @@ const path = require('path');
 const nameFile = path.basename(__filename);
 require("../models/BridgeEntitiesModel");
 const mongooseBridge = require("mongoose");
+const logger = require('./dymerlogger');
 /*mongooseBridge.connect(utilBridge.mongoUrlEntitiesBridge(), { useNewUrlParser: true }, () => {
     console.log("Bridge Database is connected");
 });*/
@@ -15,9 +16,11 @@ mongooseBridge
     .then(x => {
         //  console.log(`Connected to Mongo! Database name: "${x.connections[0].name}"`);
         console.log(nameFile + ` | Connected to Mongo! Database name: "${x.connections[0].name}"`);
+        logger.info(nameFile + ` | Connected to Mongo! Database name: "${x.connections[0].name}"`);
     })
     .catch(err => {
         console.error("ERROR | " + nameFile + " | Error connecting to mongo", err);
+        logger.error(nameFile + ` | Error connecting to mongo! Database name:   ` + err);
     });
 const bridgeModel = mongooseBridge.model("BridgeEntitiesModel");
 var bridgeEntities = function bridgeEntities() {
@@ -29,7 +32,8 @@ var bridgeEntities = function bridgeEntities() {
             if (!self.exsistMapping(obj)) {
                 var mod = new bridgeModel(obj);
                 mod.save().then((el) => {
-                    console.log(nameFile + ' | add :', JSON.stringify(el));
+                    //console.log(nameFile + ' | add :', JSON.stringify(el));
+                    logger.info(nameFile + ' | bridgeEntities | add:' + JSON.stringify(el));
                     //  el.mapping.dentity["_source"] = eval("(" + el.mapping.dentity["_source"] + ")");
                     // el.mapping.dentity["properties"] = eval("(" + el.mapping.dentity["properties"] + ")");
                     // el.mapping.extentity = eval("(" + el.mapping.extentity + ")");
@@ -40,6 +44,7 @@ var bridgeEntities = function bridgeEntities() {
                 }).catch((err) => {
                     if (err) {
                         console.error("ERROR | " + nameFile + ' | add : ', err);
+                        logger.error(nameFile + ' | bridgeEntities | add : ' + err);
                         reject({ success: false, msg: "endpoint entered error" });
                     }
                 })
@@ -49,6 +54,7 @@ var bridgeEntities = function bridgeEntities() {
             }
         }).catch(function(err) {
             console.error("ERROR | " + nameFile + ' | add promise : ', err);
+            logger.error(nameFile + ' | bridgeEntities | add promise: ' + err);
             return { success: false, msg: "error" };
         });
 
@@ -73,9 +79,11 @@ var bridgeEntities = function bridgeEntities() {
                     function(err, raw) {
                         if (err) {
                             console.error("ERROR | " + nameFile + ' | update : ', err);
+                            logger.error(nameFile + ' | bridgeEntities | update: ' + err);
                             reject({ success: false, msg: "endpoint updated error" });
                         } else {
-                            console.log(nameFile + ' | update :', JSON.stringify(raw));
+                            //console.log(nameFile + ' | update :', JSON.stringify(raw));
+                            logger.info(nameFile + ' | bridgeEntities | update:' + JSON.stringify(raw));
                             //  const ind = mappingList.findIndex(x => x["_id"] == id);
                             self.loadFromDb();
                             // mappingList[ind] = obj;
@@ -88,6 +96,7 @@ var bridgeEntities = function bridgeEntities() {
             }
         }).catch(function(err) {
             console.error("ERROR | " + nameFile + ' | update promise: ', err);
+            logger.error(nameFile + ' | bridgeEntities | update promise: ' + err);
             return { success: false, msg: "error" };
         });
     };
@@ -115,6 +124,7 @@ var bridgeEntities = function bridgeEntities() {
             }
         } catch (error) {
             console.error("ERROR | " + nameFile + ' | findByIndex: ', error);
+            logger.error(nameFile + ' | bridgeEntities | findByIndex: ' + error);
         }
         return res;
     };
@@ -153,17 +163,20 @@ var bridgeEntities = function bridgeEntities() {
                 if (pos > -1) {
                     mappingList.splice(pos, 1);
                 }
-                console.log(nameFile + ' | removeById :', id);
+                //console.log(nameFile + ' | removeById :', id);
+                logger.info(nameFile + ' | bridgeEntities | removeById :' + id);
                 resolve({ success: true, msg: "Element deleted" });
             }).catch((err) => {
                 if (err) {
                     console.error("ERROR | " + nameFile + ' | removeById: ', err);
+                    logger.error(nameFile + ' | bridgeEntities | removeById: ' + err);
                     reject({ success: false, msg: "Element delete error" });
                 }
             })
 
         }).catch(function(err) {
             console.error("ERROR | " + nameFile + ' | removeById promise : ', err);
+            logger.error(nameFile + ' | bridgeEntities | removeById promise: ' + err);
             return { success: false, msg: "error" };
         });
     };
@@ -279,6 +292,7 @@ var bridgeEntities = function bridgeEntities() {
             mappingList = els;
         }).catch((err) => {
             if (err) {
+                logger.error(nameFile + ' | loadFromDb : ' + err);
                 console.error("ERROR | " + nameFile + ' | loadFromDb : ', err);
             }
         })

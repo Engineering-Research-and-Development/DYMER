@@ -11,6 +11,10 @@ exports.serviceEntityUrl = function ( ) {
     return serviceEntityUrl;
 };
 */
+const path = require("path");
+const nameFile = path.basename(__filename);
+const logger = require('./routes/dymerlogger');
+var jsonResponse = require('./jsonResponse');
 exports.getServiceUrl = function(typeServ) {
     let url = global.gConfig.services[typeServ].protocol + "://" + global.gConfig.services[typeServ].ip + ':' + global.gConfig.services[typeServ].port;
     // url += this.getContextPath(typeServ);
@@ -95,4 +99,47 @@ exports.convertBodyParams = function(req) {
         //  console.log("Put diretto");
     }
     return obj;
+}
+
+exports.checkIsDymerUser = function(req, res, next) {
+    const hdymeruser = req.headers.dymeruser;
+    if (hdymeruser == undefined) {
+        logger.info(nameFile + ' | checkIsDymerUser | No permission, hdymeruser=undefined :' + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
+        //console.log('checkUser | No permission:', req.originalUrl, req.method, req.url);
+        var ret = new jsonResponse();
+        ret.setMessages("No permission");
+        // res.status(200);
+        ret.setSuccess(false);
+        return res.send(ret);
+    } else {
+        const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+        logger.info(nameFile + ' | checkIsDymerUser | Yes permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
+        next();
+    }
+}
+exports.checkIsAdmin = function(req, res, next) {
+    const hdymeruser = req.headers.dymeruser;
+    const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+    //console.log("dymeruser", dymeruser);
+    if ((dymeruser.roles.indexOf("app-admin") > -1)) {
+        logger.info(nameFile + ' | checkIsAdmin | Yes permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
+        next();
+    } else {
+        //console.log('checkIsAdmin | No permission:', dymeruser.id, req.originalUrl, req.method, req.url);
+        logger.info(nameFile + ' | checkIsAdmin | No permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
+        var ret = new jsonResponse();
+        ret.setMessages("No permission");
+        // res.status(200);
+        ret.setSuccess(false);
+        return res.send(ret);
+    }
+}
+exports.getDymerUser = function(req, res, next) {
+    const hdymeruser = req.headers.dymeruser;
+    if (hdymeruser == undefined) {
+        return null;
+    } else {
+        const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+        return dymeruser;
+    }
 }

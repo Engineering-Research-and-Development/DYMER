@@ -17,6 +17,8 @@ require("../models/permission/DymerAuthenticationRule");
 const DymRule = mongoose.model("DymerAuthenticationRule");
 const axios = require('axios');
 const session = require('express-session');
+
+const logger = require('./dymerlogger')
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({
     extended: false,
@@ -57,6 +59,7 @@ router.get('/', util.checkIsAdmin, (req, res) => {
     }).catch((err) => {
         if (err) {
             console.error(err);
+            logger.error(nameFile + ' | get/ | : ' + err);
             ret.setMessages("Get error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -108,15 +111,15 @@ router.get('/userinfo', (req, res) => {
                     // console.log('decoded', decoded);
                     objuser.email = decoded.email;
                     objuser.id = decoded.email;
-                    objuser.extrainfo.emailAddress = decoded.email;
                     if (decoded.hasOwnProperty("extrainfo")) {
                         objuser.gid = decoded.extrainfo.groupId;
                         //objuser.extrainfo = decoded.extrainfo;
-                        objuser.extrainfo = { ...decoded.extrainfo, ...objuser.extrainfo };
+                        objuser.extrainfo = {...objuser.extrainfo, ...decoded.extrainfo };
                     }
                     if (!(Object.entries(extradata).length === 0)) {
-                        objuser.extrainfo = { ...extradata, ...objuser.extrainfo };
+                        objuser.extrainfo = {...objuser.extrainfo, ...extradata.extrainfo };
                     }
+                    objuser.extrainfo.emailAddress = decoded.email;
                     //urs_gid = decoded.extrainfo.groupId;
                     // if (decoded.extrainfo != undefined)
                     //  objuser.extrainfo = decoded.extrainfo;
@@ -188,27 +191,35 @@ router.get('/userinfo', (req, res) => {
                             objuser.id = response.data.email;
                             objuser.d_appuid = response.data.app_id;
                             objuser.username = response.data.username;
-                            objuser.extrainfo.emailAddress = response.data.email;
+
                             if (!(Object.entries(extradata).length === 0)) {
-                                objuser.extrainfo = { ...extradata, ...objuser.extrainfo };
+                                objuser.extrainfo = {
+                                    ...objuser.extrainfo,
+                                    ...extradata.extrainfo
+                                };
                             }
+                            objuser.extrainfo.emailAddress = response.data.email;
                             ret.setMessages("User detail");
                             ret.setData(objuser);
                             return res.send(ret);
                         })
                         .catch(function (error) {
                             console.error(error);
-                            var token = data.DYM;
-                            var decoded = JSON.parse(Buffer.from(token, 'base64').toString());
-                            objuser.email = decoded.email;
-                            objuser.id = decoded.email;
-                            //urs_gid = decoded.extrainfo.groupId;
-                            objuser.extrainfo.emailAddress = decoded.email;
-                            objuser.extrainfo = decoded.extrainfo;
-                            decoded.roles.forEach(element => {
-                                objuser.roles.push(element.role);
-                            });
-                            objuser.username = decoded.username;
+                            logger.error(nameFile + ' | /userinfo oidc error | updateOne : ' + error);
+                            /* var token = data.DYM;
+                             var decoded = JSON.parse(Buffer.from(token, 'base64').toString());
+                             objuser.email = decoded.email;
+                             objuser.id = decoded.email;
+                             //urs_gid = decoded.extrainfo.groupId;
+                             objuser.extrainfo.emailAddress = decoded.email;
+                             objuser.extrainfo = decoded.extrainfo;
+                             decoded.roles.forEach(element => {
+                                 objuser.roles.push(element.role);
+                             });
+                             objuser.username = decoded.username;
+                             ret.setMessages("User detail");
+                             ret.setData(objuser);
+                             return res.send(ret);*/
                             ret.setMessages("User detail");
                             ret.setData(objuser);
                             return res.send(ret);
@@ -228,6 +239,7 @@ router.get('/userinfo', (req, res) => {
     }).catch((err) => {
         if (err) {
             console.error(err);
+            logger.error(nameFile + ' | /userinfo | DymRule : ' + err);
             ret.setMessages("Get error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -243,7 +255,8 @@ router.post('/', util.checkIsAdmin, function (req, res) {
     let data = callData.data;
     var ret = new jsonResponse();
     var mod = new DymRule(req.body);
-    console.log(nameFile + ' | post | create : ', JSON.stringify(req.body));
+    //console.log(nameFile + ' | post | create : ', JSON.stringify(req.body));
+    logger.info(nameFile + ' | post | create : ' + JSON.stringify(req.body));
     mod.save().then((el) => {
         ret.setMessages("Element created successfully");
         ret.addData(el);
@@ -251,6 +264,7 @@ router.post('/', util.checkIsAdmin, function (req, res) {
     }).catch((err) => {
         if (err) {
             console.error(err);
+            logger.error(nameFile + ' | post | create : ' + err);
             ret.setMessages("Create error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -268,12 +282,14 @@ router.put('/:id', util.checkIsAdmin, (req, res) => {
     var myquery = {
         "$set": req.body
     };
-    console.log(nameFile + ' | put/:id | id,query : ', id, JSON.stringify(req.body));
+    // console.log(nameFile + ' | put/:id | id,query : ', id, JSON.stringify(req.body));
+    logger.info(nameFile + ' | put/:id | id,query : ' + id + " " + JSON.stringify(req.body));
     DymRule.updateOne(myfilter, req.body,
         function (err, raw) {
             if (err) {
                 ret.setSuccess(false);
                 console.error(err);
+                logger.error(nameFile + ' | put/:id | id,query : ' + err);
                 ret.setMessages("Element Error");
                 return res.send(ret);
             } else {
@@ -288,13 +304,15 @@ router.delete('/:id', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     var id = req.params.id;
     var myfilter = { "_id": id };
-    console.log(nameFile + ' | delete/:id | id : ', id);
+    //console.log(nameFile + ' | delete/:id | id : ', id);
+    logger.info(nameFile + ' | delete/:id | id : ' + id);
     DymRule.findOneAndDelete(myfilter).then((el) => {
         ret.setMessages("Element deleted");
         return res.send(ret);
     }).catch((err) => {
         if (err) {
             console.error(err);
+            logger.error(nameFile + ' | delete/:id : ' + err);
             ret.setMessages("Delete Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });

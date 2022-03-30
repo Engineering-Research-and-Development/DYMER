@@ -56,12 +56,25 @@
     <script src="public/app/controllers/permissionCtrl.js"></script>
     <script src="public/app/controllers/authenticationConfigCtrl.js"></script>
     <script src="public/app/controllers/importcronjobCtrl.js"></script>
-
+    <script src="public/app/controllers/mclgsCtrl.js"></script>
 
     <link href="public/assets/css/paper-dashboard.css" rel="stylesheet" />
     <link href="public/assets/css/json-viewer.css" rel="stylesheet">
     <script src="public/assets/js/lib/Pure-JavaScript-HTML5-Parser/htmlparser.js"></script>
     <script src="public/assets/js/lib/html2json.js"></script>
+
+    <script src="public/assets/angular-nvd3/d3.js"></script>
+    <script src="public/assets/angular-nvd3/d3.min.js"></script>
+    <link rel="stylesheet" href="public/assets/angular-nvd3/nv.d3.css">
+    <script src="public/assets/angular-nvd3/nv.d3.js"></script>
+    <script src="public/assets/angular-nvd3/angular-nvd3.min.js"></script>
+    <!-- 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.0/d3.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.0/d3.min.js" integrity="sha512-DZKI/aub7j2NWPnRe/Rl3y0+7g5qbAfh34kF2l50u+rPvnRSCII38e3bCMYE1U6SNxbfNm34j+/uA89KnllyWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-nvd3/1.0.9/angular-nvd3.min.js"></script>
+    -->
 </head>
 
 <body class="">
@@ -84,11 +97,19 @@
             <div class="sidebar-wrapper">
                 <ul class="nav">
                     <li class="active ">
-                        <a href="dashboard">
+                        <a href="dashboard" class="haschild">
                             <i class="nc-icon nc-chart-bar-32"></i>
                             <p>Dashboard</p>
                         </a>
-
+                        <div class=" kmssublist">
+                            <ul class="">
+                                <li class="  ">
+                                    <a href="mclgs"><i class="nc-icon nc-paper"></i>
+                                        <p>Logs</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
 
                     <li>

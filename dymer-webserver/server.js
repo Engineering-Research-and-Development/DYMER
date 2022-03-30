@@ -12,6 +12,9 @@ const fs = require('fs');
 const https = require('https');
 const morgan = require('morgan');
 const cors = require('cors');
+const nameFile = path.basename(__filename);
+const logger = require('./routes/dymerlogger');
+var jsonResponse = require('./jsonResponse');
 //USO OIDC  
 //var passport = require('passport')
 //const router=express.Router();
@@ -58,7 +61,40 @@ var metricsRoutes = require('./routes/metrics');
 
 var publicdemoDonwlonad = require("./routes/demodownloads");
 const { off } = require("process");
+app.get(util.getContextPath('webserver') + '/deletelog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {
+    var ret = new jsonResponse();
+    var filetype = req.params.filetype;
+    // const dymeruser = util.getDymerUser(req, res);
+    // const dymerextrainfo = dymeruser.extrainfo;
+    logger.flushfile(filetype);
+    // logger.i
+    ret.setSuccess(true);
+    ret.setMessages("Deleted");
+    return res.send(ret);
+});
 
+app.get(util.getContextPath('webserver') + '/openLog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {
+    var filetype = req.params.filetype;
+    //console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
+    return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
+});
+app.get(util.getContextPath('webserver') + '/checkservice', [loadUserInfo, util.checkIsAdmin], (req, res) => {
+    var ret = new jsonResponse();
+    let infosize = logger.filesize("info");
+    let errorsize = logger.filesize("error");
+    ret.setData({
+        info: {
+            size: infosize
+        },
+        error: {
+            size: errorsize
+        }
+    });
+    ret.setMessages("Service is up");
+    res.status(200);
+    ret.setSuccess(true);
+    return res.send(ret);
+});
 app.use(express.static(__dirname + '/public'));
 //app.use(express.static(__dirname + global.gConfig.services.webserver["context-path"] + 'public'));
 //app.use(express.static(global.gConfig.services.webserver["context-path"] + 'public'));
@@ -74,6 +110,7 @@ app.use(function(req, res, next) {
 
 app.use(cors());
 app.set('trust proxy', true);
+
 
 
 
@@ -192,7 +229,8 @@ app.post(util.getContextPath('webserver') + '/api2/retriveinfo', loadUserInfo, (
         "d_gid": dymeruser.gid,
         "d_rl": dr_value
     };
-    console.log("api retriveinfo", JSON.stringify(objuser));
+    // console.log("api retriveinfo", JSON.stringify(objuser));
+    logger.info(nameFile + ' | /api2/retriveinfo :' + JSON.stringify(objuser));
     res.send(objuser);
 
 
@@ -220,14 +258,16 @@ function loadUserInfo(req, res, next) {
     // console.log('TESTSESSION', req.session.cc, req.session.cc == undefined);
     // console.log('TESTSESSION req ', req);
     // console.log('TESTSESSION req referer', req);
-    console.log('TESTSESSION req referer', req.headers);
+    // console.log('TESTSESSION req referer', req.headers);
+    logger.info(nameFile + ' | loadUserInfo : TESTSESSION req headers' + JSON.stringify(req.headers));
     // console.log('TESTSESSION req referer', req.headers.referer);
     // console.log('TESTSESSION req req.headers.authorization', req.headers.authorization);
     // console.log('TESTSESSION req req.headers.Authorization', req.headers.Authorization);
     //  console.log('TESTSESSION req dservice', util.getServiceUrl("dservice"));
     //  console.log('TESTSESSION  req.protocol', req.protocol);
-    console.log('TESTSESSION req host', req.get('host'));
-    console.log('TESTSESSION req originalUrl', req.originalUrl);
+    //console.log('TESTSESSION req host', req.get('host'));
+    logger.info(nameFile + ' | loadUserInfo : TESTSESSION req host, originalUrl' + req.get('host') + " , " + req.originalUrl);
+    // console.log('TESTSESSION req originalUrl', req.originalUrl);
     var authuserUrl = util.getServiceUrl("dservice") + "/api/v1/authconfig/userinfo";
     var dymtoken = (req.headers.authorization != undefined) ? req.headers.authorization.split(' ')[1] : undefined;
     var dymtokenAT = req.headers.authorizationtk;
@@ -239,7 +279,8 @@ function loadUserInfo(req, res, next) {
     //  console.log('loadUserInfo req.query.tkdym', req.query.tkdym);
     var dymtoExtraInfo = req.headers.extrainfo;
     //console.log('loadUserInfo authuserUrl', authuserUrl);
-    console.log('loadUserInfo dymtoken', dymtoken);
+    // console.log('loadUserInfo dymtoken', dymtoken);
+    logger.info(nameFile + ' | loadUserInfo : dymtoken' + JSON.stringify(dymtoken));
     //console.log('loadUserInfo dymtokenAT', dymtokenAT);
     var idsadm = false;
     if (req.cookies["lll"] != undefined) {
@@ -262,10 +303,15 @@ function loadUserInfo(req, res, next) {
     let originalRef = (req.headers["reqfrom"] == undefined) ? req.headers.referer : req.headers.reqfrom;
     originalRef = (originalRef == undefined) ? req.get('host') : originalRef;
     //console.log('loadUserInfo post-req.headers', req.headers);
-    console.log('loadUserInfo post-referer', req.headers.referer);
+    logger.info(nameFile + ' | loadUserInfo : post-referer' + req.headers.referer);
+    logger.info(nameFile + ' | loadUserInfo : post-reqfrom' + req.headers["reqfrom"]);
+    logger.info(nameFile + ' | loadUserInfo : originalRef' + originalRef + " , " + typeof originalRef);
+    logger.info(nameFile + ' | --------------------------');
+
+    /*console.log('loadUserInfo post-referer', req.headers.referer);
     console.log('loadUserInfo post-reqfrom', req.headers["reqfrom"]);
     console.log('loadUserInfo originalRef', originalRef, typeof originalRef);
-    console.log('--------------------------');
+    console.log('--------------------------');*/
     var config = {
         method: 'get',
         url: authuserUrl,
@@ -290,6 +336,7 @@ function loadUserInfo(req, res, next) {
             next();
         })
         .catch(function(error) {
+            logger.error(nameFile + ' |loadUserInfo | axios authuserUrl : ' + error);
             console.log(error);
             next();
         });
@@ -406,11 +453,15 @@ if (util.ishttps('webserver')) {
         cert: fs.readFileSync(path.join(__dirname, 'ssl', 'server.crt'))
     };
     https.createServer(Httpsoptions, app).listen(portExpress, () => {
+        logger.info(nameFile + " | Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + util.getContextPath('webserver'));
         console.log("Up and running-- this is " + global.configService.protocol + " " + global.configService.app_name + " service on port:" + global.configService.port + " context-path:" + util.getContextPath('webserver'));
         // console.log(`${global.gConfig.services.webserver.port} listening on port ${global.gConfigt}`);
     });
 } else {
     app.listen(portExpress, () => {
+        // logger.error("testtt");
+        logger.info(nameFile + " | Up and running-- this is " + global.configService.protocol + " " +
+            global.configService.app_name + " service on port:" + global.configService.port + " context-path:" + util.getContextPath('webserver'));
         console.log("Up and running-- this is " + global.configService.protocol + " " +
             global.configService.app_name + " service on port:" + global.configService.port + " context-path:" + util.getContextPath('webserver'));
         // console.log(`${global.gConfig.services.webserver.port} listening on port ${global.gConfigt}`);

@@ -23,7 +23,8 @@
         "multer-gridfs-storage": "5.0.2",
         "mv": "2.1.1",
         "path": "0.12.7",
-        "pump-promise": "1.0.0"
+        "pump-promise": "1.0.0",
+        "winston": "3.3.3"
     },
     "devDependencies": {},
     "scripts": {

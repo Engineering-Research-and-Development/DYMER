@@ -11,7 +11,7 @@ const typeService = 'dservice'; // process.env.TYPE_SERV;
 if (process.env.DYMER_CONTEXT_PATH != undefined) {
     //config[environment].services["webserver"]["context-path"] = "/" + process.env.DYMER_CONTEXT_PATH;
     config[environment].services["webserver"]["context-path"] = process.env.DYMER_CONTEXT_PATH;
-
+    //config[environment].services["webserver"]["context-path"] = "/" + process.env.DYMER_CONTEXT_PATH;
 }
 if (process.env.DYMER_CONTEXT_PATH != undefined) { //marco to set before commit
     //config[environment].services["webserver"]["context-path"]= process.env.DYMER_CONTEXT_PATH; 

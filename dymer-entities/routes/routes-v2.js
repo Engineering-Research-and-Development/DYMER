@@ -33,6 +33,7 @@ var storage;
 var upload;
 const mongoURI = util.mongoUrlFiles();
 console.log(nameFile + ' | mongoURI :', JSON.stringify(mongoURI));
+logger.info(nameFile + " | mongoURI: " + JSON.stringify(mongoURI));
 //const connection = mongoose.createConnection(mongoURI, { useNewUrlParser: true });
 
 mongoose
@@ -43,6 +44,7 @@ mongoose
     })
     .then(x => {
         console.log(nameFile + ` | Connected to Mongo! Database name: "${x.connections[0].name}"`);
+        logger.info(nameFile + ` | Connected to Mongo! Database name: "${x.connections[0].name}"`);
         db = x.connections[0].db;
         //console.log(x.connections[0].db);
         gridFSBucket = new mongoose.mongo.GridFSBucket(x.connections[0].db, {
@@ -65,6 +67,7 @@ mongoose
     })
     .catch(err => {
         console.error("ERROR | " + nameFile + ` | Error connecting to mongo! Database name: "${mongoURI}"`, err);
+        logger.error(nameFile + ` | Error connecting to mongo! Database name: "${mongoURI}" ` + err);
     });
 /*
  *************************************************************************************************************
@@ -125,20 +128,25 @@ function startElastic() {
         }, function (error) {
             if (error) {
                 console.error("ERROR | " + nameFile + " | elasticsearch cluster is down!", error);
+                logger.error(nameFile + " | elasticsearch cluster is down!" + error);
             } else {
                 elasticStatusUp = true;
                 console.log(nameFile + ' | Connected to elasticsearch! ', elasticStatusUp);
+                logger.info(nameFile + ' | Connected to elasticsearch!  :' + elasticStatusUp);
             }
             if (!elasticStatusUp) {
                 console.log(nameFile + ' | Elasticsearch down!, start setTimeout A', elasticStatusUp);
+                logger.info(nameFile + ' | Elasticsearch down!, start setTimeout A :' + elasticStatusUp);
                 elasticTimer += 2000;
                 setTimeout(startElastic, elasticTimer);
             }
         });
     } catch (error) {
         console.error("ERROR | " + nameFile + " | elasticsearch cluster is down!", error);
+        logger.error(nameFile + ' | elasticsearch cluster is down! ' + error);
         if (!elasticStatusUp) {
             console.log(nameFile + ' | Elasticsearch down!, start setTimeout B ', elasticStatusUp);
+            logger.error(nameFile + ' | Elasticsearch down!, start setTimeout B  ' + elasticStatusUp);
             elasticTimer += 2000;
             setTimeout(startElastic, elasticTimer);
         }
@@ -158,6 +166,79 @@ function stringAsKey(obj, arrkey, element) {
     }
 }
 
+router.get('/mongostate', util.checkIsAdmin, (req, res) => {
+    let ret = new jsonResponse();
+    let dbState = [{
+        value: 0,
+        label: "Disconnected",
+        css: "text-danger"
+    },
+    {
+        value: 1,
+        label: "Connected",
+        css: "text-success"
+    },
+    {
+        value: 2,
+        label: "Connecting",
+        css: "text-info"
+    },
+    {
+        value: 3,
+        label: "Disconnecting",
+        css: "text-warning"
+    }
+    ];
+    let mongostate = mongoose.connection.readyState;
+    ret.setMessages("Mongodb state");
+    ret.setData(dbState.find(f => f.value == mongostate));
+    res.status(200);
+    ret.setSuccess(true);
+    return res.send(ret);
+});
+
+router.get('/elasticstate', util.checkIsAdmin, (req, res) => {
+    let ret = new jsonResponse();
+    let elstate = 0;
+    let dbState = [{
+        value: 0,
+        label: "Disconnected",
+        css: "text-danger"
+    },
+    {
+        value: 1,
+        label: "Connected",
+        css: "text-success"
+    },
+    {
+        value: 2,
+        label: "Connecting",
+        css: "text-info"
+    },
+    {
+        value: 3,
+        label: "Disconnecting",
+        css: "text-warning"
+    }
+    ];
+
+    client.ping({
+        // ping usually has a 3000ms timeout
+        requestTimeout: 300
+    }, function (error) {
+        if (error) {
+            elstate = 0;
+        } else {
+            elstate = 1;
+        }
+        ret.setMessages("Elastic state");
+        ret.setData(dbState.find(f => f.value == elstate));
+        res.status(200);
+        ret.setSuccess(true);
+        return res.send(ret);
+    });
+
+});
 /*
  *************************************************************************************************************
  *************************************************************************************************************
@@ -178,6 +259,7 @@ var getfilesArrays = function (files_arr) {
         });
     }).catch(function (err) {
         console.error("ERROR | " + nameFile + ' | getfilesArrays : ', err);
+        logger.error(nameFile + ' | getfilesArrays : ' + err);
     });
 }
 
@@ -212,6 +294,7 @@ var recFile = function (file_id) {
         });
     }).catch(function (err) {
         console.error("ERROR | " + nameFile + ' | recFile  : ', err);
+        logger.error(nameFile + ' | recFile : ' + err);
     });
 }
 
@@ -228,7 +311,83 @@ var recFile = function (file_id) {
 function checkRelation(params, elIndex, elId) {
     var _id1 = elId;
     // console.log('checkRelation', params, elIndex);
-    console.log(nameFile + ' | checkRelation | params:', JSON.stringify(params), elIndex);
+    // console.log(nameFile + ' | checkRelation | params:', JSON.stringify(params), elIndex);
+    logger.info(nameFile + ' | checkRelation | params :' + JSON.stringify(params) + " , " + elIndex);
+    let datasetRel = [];
+
+    for (var myKey in params) {
+        let _id2_list = [];
+        for (var elre in params[myKey]) {
+            // console.log('params[myKey]', params[myKey]);
+            let _id2 = params[myKey][elre].to;
+            if (Array.isArray(_id2)) {
+                _id2_list = params[myKey][elre].to;
+            } else {
+                _id2_list.push(_id2);
+            }
+            //  console.log('_id2', _id2);
+            // console.log('myKey', myKey, elre);
+
+            _id2_list.forEach(singleId2 => {
+                if (singleId2 != "")
+                    datasetRel.push({
+                        _index1: elIndex,
+                        "_id1": _id1,
+                        "_id2": singleId2,
+                        _index2: myKey
+                    });
+                //console.log("avvio controllo", qparams, JSON.stringify(qparams)); 
+            });
+
+        }
+    }
+    let qparams = {};
+    qparams["index"] = "entity_relation";
+    qparams["type"] = "entity_relation";
+    qparams["body"] = {
+        "bool": {
+            "should": [{
+                "bool": {
+                    "must": [{
+                        "match": {
+                            "_id1": _id1
+                        }
+                    },
+                    {
+                        "match": {
+                            "_index1": elIndex
+                        }
+                    }
+                    ]
+                }
+            },
+            {
+                "bool": {
+                    "must": [{
+                        "match": {
+                            "_id2": _id1
+                        }
+                    },
+                    {
+                        "match": {
+                            "_index2": elIndex
+                        }
+                    }
+                    ]
+                }
+            }
+            ]
+        }
+    };
+    controlAndCreateRel_V2(qparams, datasetRel);
+    return true;
+}
+
+function checkRelation_original(params, elIndex, elId) {
+    var _id1 = elId;
+    // console.log('checkRelation', params, elIndex);
+    // console.log(nameFile + ' | checkRelation | params:', JSON.stringify(params), elIndex);
+    logger.info(nameFile + ' | checkRelation | params :' + JSON.stringify(params) + " , " + elIndex);
     for (var myKey in params) {
         let _id2_list = [];
         for (var elre in params[myKey]) {
@@ -305,12 +464,9 @@ function checkRelation(params, elIndex, elId) {
                     }
                     //console.log("avvio controllo", qparams, JSON.stringify(qparams));
                     controlAndCreateRel(qparams, newRel);
+
                 }
             });
-
-
-
-
         }
     }
     return true;
@@ -322,8 +478,54 @@ function checkRelation(params, elIndex, elId) {
     next();
 });*/
 
+function controlAndCreateRel_V2(qparams, datasetRel) {
+    var parm = qparams;
+    // client.indices.exists({ index: "entity_relation" }, function(err_, resp_, status_) {
+    //      if (status_ == 200) {
+    //  client.indices.exists({ index: "entity_relation" }).then((isExists) => {
+    client.indices.exists({ index: "entity_relation" }, function (err_, resp_, status_) {
+        if (status_ == 200) {
+            //  if (isExists) { // 
+            client.search(parm, function (err, resp, status) {
+                //console.log("controlAndCreateRel list", resp, JSON.stringify(qparams));
+                if (resp.hits == undefined) {
+                    //console.log("CREO resp.hits == undefined");
+                    createRelationV2(datasetRel);
+                } else {
+                    //console.log("CREO resp.hits != undefined");
+                    logger.info(nameFile + ' | controlAndCreateRel | CREO resp.hits != undefined  ');
+                    var exs = false;
+                    //console.log("controlAndCreateRel resp.hits riga 319", resp.hits);
+                    var filterdatasetRel = datasetRel.filter(function (o1) {
+                        // if match found return false
+                        return !resp["hits"].some(function (o2) {
+                            if ((o1["_id2"] == o2["_source"]["_id1"] && o1["_index2"] == o2["_source"]["_index1"]) || (o1["_id2"] == o2["_source"]["_id2"] && o1["_index2"] == o2["_source"]["_index2"])) {
+                                return true;
+                            } else return false;
+                        });
+                    });
+                    createRelationV2(filterdatasetRel);
+                }
+            }, function (err) {
+                //console.log('Error controlAndCreateRel search');
+                console.trace(err.message);
+                logger.error(nameFile + ' | controlAndCreateReld | search : ' + err);
+            });
+        } else {
+            console.log('NON ESISTE');
+            createRelationV2(datasetRel);
+            /* let params = { index: "entity_relation", type: "entity_relation" };
+             params["body"] = {};
+             datasetRel.forEach(element => {
+                 createRelation(element);
+             });*/
 
-function controlAndCreateRel(qparams, newRel) {
+        }
+
+    });
+}
+
+function controlAndCreateRel_original(qparams, newRel) {
     var parm = qparams;
     // client.indices.exists({ index: "entity_relation" }, function(err_, resp_, status_) {
     //      if (status_ == 200) {
@@ -337,7 +539,8 @@ function controlAndCreateRel(qparams, newRel) {
                     //console.log("CREO resp.hits == undefined");
                     createRelation(newRel);
                 } else {
-                    console.log("CREO resp.hits != undefined");
+                    //console.log("CREO resp.hits != undefined");
+                    logger.info(nameFile + ' | controlAndCreateRel | CREO resp.hits != undefined  ');
                     var exs = false;
                     //console.log("controlAndCreateRel resp.hits riga 319", resp.hits);
                     resp["hits"].hits.forEach((element) => {
@@ -352,6 +555,7 @@ function controlAndCreateRel(qparams, newRel) {
             }, function (err) {
                 //console.log('Error controlAndCreateRel search');
                 console.trace(err.message);
+                logger.error(nameFile + ' | controlAndCreateReld | search : ' + err);
             });
         } else {
             //console.log('NON ESISTE');
@@ -438,17 +642,18 @@ function deleteRelation(_id1, _id2) {
                         delarams["type"] = element["_type"];
                         delarams["id"] = element["_id"];
                         delarams["refresh"] = true;
-
-                        console.log(nameFile + ' | deleteRelation :', JSON.stringify(delarams));
+                        logger.info(nameFile + ' | deleted Relation :' + JSON.stringify(delarams));
+                        //console.log(nameFile + ' | deleteRelation :', JSON.stringify(delarams));
                         client.delete(delarams).then(
                             function (resp) {
                                 // console.log(resp);
-                                logger.info(nameFile + ' | deleteRelation :' + JSON.stringify(delarams));
+                                // logger.info(nameFile + ' | deleteRelation :' + JSON.stringify(delarams));
+                                logger.info(nameFile + ' | deleted Relation :' + JSON.stringify(delarams));
                                 // console.log(nameFile + ' | deleteRelation | success:', JSON.stringify(element));
                             },
                             function (err) {
                                 console.trace(err.message);
-                                logger.error(nameFile + ' | deleteRelation :' + JSON.stringify(delarams));
+                                logger.error(nameFile + ' | deleteRelation :' + err);
                             }
                         );
                     }
@@ -459,6 +664,54 @@ function deleteRelation(_id1, _id2) {
 }
 
 function deleteRelationByIndex(index) {
+    let qrdelete = {
+        "query": {
+            "bool": {
+                "should": [{
+                    "bool": {
+                        "must": [{
+                            "match": {
+                                "_index1": index
+                            }
+                        }]
+                    }
+                },
+                {
+                    "bool": {
+                        "must": [{
+                            "match": {
+                                "_index2": index
+                            }
+                        }]
+                    }
+                }
+                ],
+                "minimum_should_match": 1
+            }
+        }
+    };
+
+    client.indices.exists({ index: "entity_relation" }, function (err_, resp_, status_) {
+        if (status_ == 200) {
+            client.deleteByQuery({
+                index: 'entity_relation',
+                body: qrdelete,
+                timeout: "5m"
+            }, function (err, resp, status) {
+                if (err) {
+                    logger.error(nameFile + ' | deleteRelationByIndex | delete index:' + index + " , " + err);
+                    console.error("ERROR | " + nameFile + ' | deleteRelationByIndex | delete:', err);
+                } else {
+                    logger.info(nameFile + ' | deleteRelationByIndex index:' + index);
+                }
+            });
+
+        } else
+            return true;
+    });
+}
+
+function deleteRelationByIndex_original(index) {
     let params = { index: "entity_relation" };
     params["body"] = {
         "query": {
@@ -496,7 +749,7 @@ function deleteRelationByIndex(index) {
                     delarams["type"] = element["_type"];
                     delarams["id"] = element["_id"];
                     delarams["refresh"] = true;
-                    console.log(nameFile + ' | deleteRelationByIndex :', JSON.stringify(delarams));
+                    //   console.log(nameFile + ' | deleteRelationByIndex :', JSON.stringify(delarams));
                     logger.info(nameFile + ' | deleteRelationByIndex :' + JSON.stringify(delarams));
                     client.delete(delarams).then(
                         function (resp) { },
@@ -517,6 +770,60 @@ function deleteRelationByIndex(index) {
 }
 //toDelete
 function deleteRelationOneEntity(_id1) {
+    let params = { index: "entity_relation" };
+    let qrdelete = {
+        "query": {
+            "bool": {
+                "should": [{
+                    "bool": {
+                        "must": [{
+                            "match": {
+                                "_id1": _id1
+                            }
+                        }]
+                    }
+                },
+                {
+                    "bool": {
+                        "must": [{
+                            "match": {
+                                "_id2": _id1
+                            }
+                        }]
+                    }
+                }
+                ],
+                "minimum_should_match": 1
+            }
+        }
+    };
+    params["body"].size = 10000;
+    client.indices.exists({ index: "entity_relation" }).then((isExists) => {
+        if (isExists) {
+            client.deleteByQuery({
+                index: 'entity_relation',
+                body: qrdelete,
+                timeout: "5m"
+            }, function (err, resp, status) {
+                if (err) {
+                    logger.error(nameFile + ' | deleteRelationOneEntity | delete :' + err);
+                    console.error("ERROR | " + nameFile + ' | deleteRelationOneEntity | delete:', err);
+                } else {
+                    logger.info(nameFile + ' | deleteRelationOneEntity :' + index);
+                }
+            });
+            return true;
+        } else {
+
+            return false;
+        }
+    }).catch((err) => {
+        console.log(err);
+        logger.error(nameFile + ' | deleteRelationOneEntity   : ' + err);
+    });
+}
+
+function deleteRelationOneEntity_original(_id1) {
     let params = { index: "entity_relation" };
     params["body"] = {
         "query": {
@@ -550,7 +857,8 @@ function deleteRelationOneEntity(_id1) {
 
             client.search(params).then(function (resp) {
                 resp["hits"].hits.forEach((element) => {
-                    console.log(nameFile + ' | deleteRelationOneEntity | success:', JSON.stringify(element));
+                    //console.log(nameFile + ' | deleteRelationOneEntity | success:', JSON.stringify(element));
+                    logger.info(nameFile + ' |deleteRelationOneEntity | success :' + JSON.stringify(element));
                     var delarams = {};
                     delarams["index"] = element["_index"];
                     delarams["type"] = element["_type"];
@@ -563,12 +871,14 @@ function deleteRelationOneEntity(_id1) {
                         },
                         function (err) {
                             console.error("ERROR | " + nameFile + ' | deleteRelationOneEntity | delete :', delarams, err);
+                            logger.error(nameFile + ' | deleteRelationOneEntity | delete  : ' + err);
                         }
                     );
 
                 });
             }).catch(function (error) {
                 console.error("ERROR | " + nameFile + ' | deleteRelationOneEntity :', delarams, error);
+                logger.error(nameFile + ' | deleteRelationOneEntity | delete search : ' + error);
                 return false;
             });
             return true;
@@ -578,12 +888,74 @@ function deleteRelationOneEntity(_id1) {
         }
     }).catch((err) => {
         console.log(err);
+        logger.error(nameFile + ' | deleteRelationOneEntity   : ' + err);
     });
 
 
 }
 
 function deleteRelationOneEntityAndIndex(_id, _index) {
+    let params = { index: "entity_relation" };
+    let qrdelete = {
+        "query": {
+            "bool": {
+                "should": [{
+                    "bool": {
+                        "must": [{
+                            "match": {
+                                "_id1": _id
+                            }
+                        }, {
+                            "match": {
+                                "_index1": _index
+                            }
+                        }]
+                    }
+                },
+                {
+                    "bool": {
+                        "must": [{
+                            "match": {
+                                "_id2": _id
+                            }
+                        }, {
+                            "match": {
+                                "_index2": _index
+                            }
+                        }]
+                    }
+                }
+                ]
+            }
+        }
+    };
+    client.indices.exists({ index: "entity_relation" }).then((isExists) => {
+        if (isExists) {
+            client.deleteByQuery({
+                index: 'entity_relation',
+                body: qrdelete,
+                timeout: "5m"
+            }, function (err, resp, status) {
+                if (err) {
+                    logger.error(nameFile + ' | deleteRelationOneEntityAndIndex | delete :' + _index + " , " + _id + " , " + err);
+                    console.error("ERROR | " + nameFile + ' | deleteRelationOneEntityAndIndex | delete _index, _id:', _index, _id, err);
+                } else {
+                    logger.info(nameFile + ' | deleteRelationOneEntityAndIndex :' + _index + " , " + _id);
+                }
+            });
+
+            return true;
+        } else {
+
+            return false;
+        }
+    }).catch((err) => {
+        console.log(err);
+        logger.error(nameFile + ' | deleteRelationOneEntityAndIndex exists: ' + err);
+    });
+}
+
+function deleteRelationOneEntityAndIndex_original(_id, _index) {
     let params = { index: "entity_relation" };
     params["body"] = {
         "query": {
@@ -625,7 +997,8 @@ function deleteRelationOneEntityAndIndex(_id, _index) {
 
             client.search(params).then(function (resp) {
                 resp["hits"].hits.forEach((element) => {
-                    console.log(nameFile + ' | deleteRelationOneEntityAndIndex | success:', JSON.stringify(element));
+                    //console.log(nameFile + ' | deleteRelationOneEntityAndIndex | success:', JSON.stringify(element));
+                    logger.info(nameFile + ' | deleteRelationOneEntityAndIndex | success :' + JSON.stringify(element));
                     var delarams = {};
                     delarams["index"] = element["_index"];
                     delarams["type"] = element["_type"];
@@ -634,12 +1007,12 @@ function deleteRelationOneEntityAndIndex(_id, _index) {
                     client.delete(delarams).then(
                         function (resp) {
                             // console.log(resp);
-                            logger.info(nameFile + ' | deleteRelationOneEntityAndIndex :' + ',' + JSON.stringify(delarams));
+                            logger.info(nameFile + ' | deleteRelationOneEntityAndIndex : ' + JSON.stringify(delarams));
                             // console.error("Relation removed", delarams, resp);
                         },
                         function (err) {
-                            logger.error(nameFile + ' | deleteRelationOneEntityAndIndex :' + ',' + JSON.stringify(delarams) + ',' + err);
-                            console.error("ERROR | " + nameFile + ' | deleteRelationOneEntityAndIndex :', JSON.stringify(delarams), err);
+                            logger.error(nameFile + ' | deleteRelationOneEntityAndIndex : ' + JSON.stringify(delarams) + ',' + err);
+                            console.error("ERROR | " + nameFile + ' | deleteRelationOneEntityAndIndex delete:', JSON.stringify(delarams), err);
                         }
                     );
 
@@ -655,13 +1028,54 @@ function deleteRelationOneEntityAndIndex(_id, _index) {
         }
     }).catch((err) => {
         console.log(err);
+        logger.error(nameFile + ' | deleteRelationOneEntityAndIndex exists: ' + err);
     });
+}
+
+async function createRelationV2(dataset) {
+    //   let params = { index: "entity_relation", type: "entity_relation" };
+    //   params["body"] = newRel;
+    //  params["refresh"] = true;
+    if (dataset.length > 0) {
+
+
+        const body = dataset.flatMap(doc => [{ index: { "_index": 'entity_relation', "_type": 'entity_relation' } }, doc])
+        //const { body: bulkResponse } = await client.bulk({ refresh: true, body })
+        const bulkResponse = await client.bulk({ refresh: true, body })
+        if (bulkResponse.errors) {
+            const erroredDocuments = []
+            // The items array has the same order of the dataset we just indexed.
+            // The presence of the `error` key indicates that the operation
+            // that we did for the document has failed.
+            bulkResponse.items.forEach((action, i) => {
+                const operation = Object.keys(action)[0]
+                if (action[operation].error) {
+                    erroredDocuments.push({
+                        // If the status is 429 it means that you can retry the document,
+                        // otherwise it's very likely a mapping error, and you should
+                        // fix the document before to try it again.
+                        status: action[operation].status,
+                        error: action[operation].error,
+                        operation: body[i * 2],
+                        document: body[i * 2 + 1]
+                    })
+                }
+            })
+            console.log(erroredDocuments)
+            console.error("ERROR | " + nameFile + ' | createRelationV2  : ', erroredDocuments);
+            logger.error(nameFile + ' | createRelationV2:' + erroredDocuments);
+        } else {
+            logger.info(nameFile + ' | createRelationV2 | success:' + JSON.stringify(dataset));
+        }
+    } else {
+        logger.info(nameFile + ' | createRelationV2 | no relation deteced:');
+    }
 }
 
 function createRelation(newRel) {
     let params = { index: "entity_relation", type: "entity_relation" };
     params["body"] = newRel;
-    params["refresh"] = true;
+    //  params["refresh"] = true;
     logger.info(nameFile + ' | createRelation | success:' + JSON.stringify(params));
     client.index(params).then(function (resp) {
         //console.log(nameFile + ' | createRelation | success:', JSON.stringify(resp));
@@ -669,7 +1083,7 @@ function createRelation(newRel) {
         return true;
     }).catch(function (err) {
         console.error("ERROR | " + nameFile + ' | createRelation  : ', err);
-        logger.error(nameFile + ' | createRelation:' + JSON.stringify(params));
+        logger.error(nameFile + ' | createRelation:' + err);
         return false;
     });
 }
@@ -681,6 +1095,7 @@ var checkUnionRelation = function (originalList) {
             resolve(returnList);
         }).catch(function (err) {
             console.error("ERROR | " + nameFile + ' | checkUnionRelation | promise.all  : ', err);
+            logger.error(nameFile + ' | checkUnionRelation | promise.all : ' + err);
         });
         /*for (var i = 0, len = returnList.length; i < len; i++) {
         //returnList.forEach(function (element, index) {
@@ -700,6 +1115,7 @@ var checkUnionRelation = function (originalList) {
         //resolve(returnList); 
     }).catch(function (err) {
         console.error("ERROR | " + nameFile + ' | checkUnionRelation | promise  : ', err);
+        logger.error(nameFile + ' | checkUnionRelation | promise : ' + err);
     });
 }
 var listSingleRelation = function (id) {
@@ -741,7 +1157,8 @@ var listSingleRelation = function (id) {
                     resolve(relresp.hits.hits);
 
                 }, function (err) {
-                    console.error("ERROR | " + nameFile + ' | fetchSingleRelation | search qparams : ', err);
+                    console.error("ERROR | " + nameFile + ' | listSingleRelation | search qparams : ', err);
+                    logger.error(nameFile + ' | listSingleRelation | search qparams : ' + err);
                     resolve();
                 });
 
@@ -750,7 +1167,8 @@ var listSingleRelation = function (id) {
             }
         });
     }).catch(function (err) {
-        console.error("ERROR | " + nameFile + ' | fetchSingleRelation | promise  : ', err);
+        console.error("ERROR | " + nameFile + ' | listSingleRelation | promise  : ', err);
+        logger.error(nameFile + ' | listSingleRelation | promise : ' + err);
     });
 };
 var fetchSingleRelation = function (element) {
@@ -839,11 +1257,13 @@ var fetchSingleRelation = function (element) {
                         //   console.log('works');
                     }, function (err) {
                         console.error("ERROR | " + nameFile + ' | fetchSingleRelation | search relparams : ', err);
+                        logger.error(nameFile + ' | fetchSingleRelation | search relparams : ' + err);
                         reject();
                     });
 
                 }, function (err) {
                     console.error("ERROR | " + nameFile + ' | fetchSingleRelation | search qparams : ', err);
+                    logger.error(nameFile + ' | fetchSingleRelation | search qparams : ' + err);
                     resolve();
                 });
 
@@ -854,6 +1274,7 @@ var fetchSingleRelation = function (element) {
         });
     }).catch(function (err) {
         console.error("ERROR | " + nameFile + ' | fetchSingleRelation | promise  : ', err);
+        logger.error(nameFile + ' | fetchSingleRelation | promise : ' + err);
     });
 };
 //Marco aggiungere controllo permessi
@@ -866,13 +1287,16 @@ router.get('/', (req, res) => {
     params["body"] = query;
     params["sort"] = ["title.keyword:asc"];
     params["body"].size = 10000; //set max entity to return
-    console.log(nameFile + ' | GET | params:', JSON.stringify(params));
+    //console.log(nameFile + ' | GET | params:', JSON.stringify(params));
+    logger.info(nameFile + ' | GET | params:' + JSON.stringify(params));
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
-    console.log(nameFile + ' | GET | dymeruser:', JSON.stringify(dymeruser));
+    //console.log(nameFile + ' | GET | dymeruser:', JSON.stringify(dymeruser));
+    logger.info(nameFile + ' | GET | dymeruser:' + JSON.stringify(dymeruser));
     client.search(params, function (err, resp, status) {
         if (err) {
             console.error("ERROR | " + nameFile + ' | GET  : ', err);
+            logger.error(nameFile + ' |GET: ' + err);
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.message });
             ret.setMessages("Entity " + err.displayName);
@@ -897,7 +1321,7 @@ router.get('/contentfile/:entityid/:fileid', function (req, res, next) {
     var entityid = req.params.entityid;
     var file_id = req.params.fileid;
     if (!isValidObjectId(file_id)) {
-        //console.error("ERROR | " + nameFile + ' |  get/contentfile/:entityid/:fileid | fileid !isValidObjectId:');
+        //console.error("ERROR | " + nameFile + ' | get/contentfile/:entityid/:fileid | fileid !isValidObjectId:');
         res.status(404).send('Not Found');
         return;
     }
@@ -927,8 +1351,10 @@ router.get('/contentfile/:entityid/:fileid', function (req, res, next) {
         if ((respCheck["hits"].hits).length > 0) {
             var checkElemPerm = respCheck["hits"].hits[0]._source.properties;
             haspermissionGrants(dymeruser, checkElemPerm).then(function (listperm) {
-                //console.log(nameFile + ' | contentfile | permission view:', entityid, file_id, dymeruser.id, listperm.data.view);
-                //console.log(nameFile + ' | contentfile | listpermission:', JSON.stringify(listperm), JSON.stringify(dymeruser));
+                // console.log(nameFile + ' | contentfile | permission view:', entityid, file_id, dymeruser.id, listperm.data.view);
+                //   console.log(nameFile + ' | contentfile | listpermission:', JSON.stringify(listperm), JSON.stringify(dymeruser));
+                logger.info(nameFile + ' | contentfile | permission view:' + entityid + " , " + file_id + " , " + dymeruser.id + " , " + listperm.data.view);
+                logger.info(nameFile + ' | contentfile | listpermission:' + JSON.stringify(listperm) + " , " + JSON.stringify(dymeruser));
                 if (listperm.data.view) {
                     recFile(mongoose.Types.ObjectId(file_id))
                         .then(function (result) {
@@ -940,21 +1366,25 @@ router.get('/contentfile/:entityid/:fileid', function (req, res, next) {
                             res.end(result.data);
                         })
                         .catch(function (err) {
-                            console.error("ERROR | " + nameFile + ' |  get/contentfile/:entityid/:fileid | recFile:', err);
+                            console.error("ERROR | " + nameFile + ' | get/contentfile/:entityid/:fileid | recFile:', err);
+                            logger.error(nameFile + ' | get/contentfile/:entityid/:fileid | recFile: ' + err);
                             res.end("");
                         });
                 } else {
-                    console.log(nameFile + ' | contentfile | permission view:', entityid, file_id, dymeruser.id, listperm.data.view);
+                    //console.log(nameFile + ' | contentfile | permission view:', entityid, file_id, dymeruser.id, listperm.data.view);
+                    logger.info(nameFile + ' | contentfile | permission view :' + entityid + " , " + file_id + " , " + dymeruser.id + " , " + listperm.data.view);
                     res.status(401).send('Unauthorized');
                 }
             })
                 .catch(function (err) {
-                    console.error("ERROR | " + nameFile + ' |  get/contentfile/:entityid/:fileid | haspermissionGrants:', err);
+                    console.error("ERROR | " + nameFile + ' | get/contentfile/:entityid/:fileid | haspermissionGrants:', err);
+                    logger.error(nameFile + ' | get/contentfile/:entityid/:fileid | haspermissionGrants: ' + err);
                     res.end("");
                 });
         }
     }).catch(function (err) {
-        console.error("ERROR | " + nameFile + ' |  get/contentfile/:entityid/:fileid | search:', err);
+        console.error("ERROR | " + nameFile + ' | get/contentfile/:entityid/:fileid | search:', err);
+        logger.error(nameFile + ' | get/contentfile/:entityid/:fileid | search: ' + err);
         res.end("");
     });
 });
@@ -962,6 +1392,7 @@ router.get('/content_old/:fileid', function (req, res, next) {
     //Marco console.log(" ROUTER CONTENT ");
     var file_id = req.params.fileid;
     //  console.log("file_id", file_id);
+    res.end("");
     recFile(mongoose.Types.ObjectId(file_id))
         .then(function (result) {
             //  console.log("file_id", result);
@@ -974,6 +1405,7 @@ router.get('/content_old/:fileid', function (req, res, next) {
         })
         .catch(function (err) {
             console.error("ERROR | " + nameFile + ' | GET  : ', err);
+            logger.error(nameFile + ' | /content_old/:fileid | GET: ' + err);
             res.end("");
         });
 });
@@ -983,7 +1415,8 @@ router.get('/allstats/', (req, res) => {
     var params = {};
     client.indices.stats(params, function (err, resp, status) {
         if (err) {
-            console.error("ERROR | " + nameFile + ' |  allstats  :', err);
+            console.error("ERROR | " + nameFile + ' | allstats  :', err);
+            logger.error(nameFile + ' | allstats : ' + err);
             ret.setSuccess(false);
             ret.setExtraData({ log: err.message });
             ret.setMessages("Entity " + err.displayName);
@@ -1006,6 +1439,85 @@ router.get('/allstats/', (req, res) => {
         return res.send(ret);
     });
 });
+router.get('/allstatsglobal/', (req, res) => {
+    var ret = new jsonResponse();
+    var params = {};
+    client.indices.stats(params, function (err, resp, status) {
+        if (err) {
+            console.error("ERROR | " + nameFile + ' | allstats  :', err);
+            logger.error(nameFile + ' | allstats : ' + err);
+            ret.setSuccess(false);
+            ret.setExtraData({ log: err.message });
+            ret.setMessages("Entity " + err.displayName);
+            return res.send(ret);
+        }
+        var listEl = resp.indices;
+        var totEnt = 0;
+        var respData = {
+            total: 0,
+            indices: []
+        };
+        for (const [key, value] of Object.entries(listEl)) {
+            // if (key != "entity_relation") {
+            totEnt += value['primaries']['docs']['count'];
+            respData.indices.push({ index: key, count: value['primaries']['docs']['count'] });
+            //  }
+        }
+        respData.total = totEnt;
+        ret.setData(respData);
+        return res.send(ret);
+    });
+});
+router.get('/relationstat/', (req, res) => {
+
+    var ret = new jsonResponse();
+
+    var params = {};
+    params["index"] = "entity_relation";
+    params["type"] = "entity_relation";
+    params["body"] = {
+        "aggregations": {
+            "aggr": {
+                "terms": {
+                    "field": "_index1.keyword"
+                },
+                "aggregations": {
+                    "_index2": {
+                        "terms": {
+                            "field": "_index2.keyword"
+                        }
+                    }
+                }
+            }
+        }
+    };
+    client.indices.exists({ index: "entity_relation" }, function (err_, resp_, status_) {
+        if (status_ == 200) {
+            client.search(params).then(function (resp) {
+
+                ret.setData(resp.aggregations.aggr.buckets);
+                return res.send(ret);
+            }).catch(function (error) {
+                console.log(error);
+                ret.setMessages("Search Error");
+                ret.setSuccess(false);
+                ret.setExtraData({ "log": error });
+                return res.send(ret);
+            });
+        } else {
+
+            ret.setData([]);
+            return res.send(ret);
+            /* let params = { index: "entity_relation", type: "entity_relation" };
+             params["body"] = {};
+             datasetRel.forEach(element => {
+                 createRelation(element);
+             });*/
+
+        }
+
+    });
+});
 //Marco gestione permessi
 router.get('/allindex/', (req, res) => {
     var ret = new jsonResponse();
@@ -1013,7 +1525,8 @@ router.get('/allindex/', (req, res) => {
     params["index"] = "_all";
     client.indices.get(params, function (err, resp, status) {
         if (err) {
-            console.error("ERROR | " + nameFile + ' |  allindex :', err);
+            console.error("ERROR | " + nameFile + ' | allindex :', err);
+            logger.error(nameFile + ' | allindex : ' + err);
             ret.setSuccess(false);
             ret.setExtraData({ log: err.message });
             ret.setMessages("Entity " + err.displayName);
@@ -1049,7 +1562,8 @@ router.post('/_search', (req, res) => {
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
-    console.log(nameFile + ' | _search | dymeruser:', JSON.stringify(dymeruser));
+    //console.log(nameFile + ' | _search | dymeruser :', JSON.stringify(dymeruser));
+    logger.info(nameFile + ' | _search | dymeruser :' + JSON.stringify(dymeruser));
     //logger.info(nameFile + ' | _search | dymeruser:' + JSON.stringify(dymeruser));
     // logger.error(nameFile + ' | _search | dymeruser:' + JSON.stringify(dymeruser));
     // logger.warn(nameFile + ' | _search | dymeruser:' + JSON.stringify(dymeruser));
@@ -1119,17 +1633,20 @@ router.post('/_search', (req, res) => {
         var req_gid = 0;
         req_uid = dymeruser.id;
         req_gid = dymeruser.gid;
-        console.log(nameFile + ' | _search | callData:', JSON.stringify(callData));
+        //console.log(nameFile + ' | _search | callData:', JSON.stringify(callData));
+        logger.info(nameFile + ' | _search | callData :' + JSON.stringify(callData));
         var rr = [];
         //    console.log("indextosearch", indextosearch);
         //var bridgeConf = bE.findByIndex("e7");
         var rr = { indextosearch: [], query: [] };
         rr = retriveIndex_Query_ToSearch(rr, query.query);
-        console.log(nameFile + ' | _search | retriveIndex_Query_ToSearch:', JSON.stringify(rr));
+        //console.log(nameFile + ' | _search | retriveIndex_Query_ToSearch:', JSON.stringify(rr));
+        logger.info(nameFile + ' | _search | retriveIndex_Query_ToSearch :' + JSON.stringify(rr));
         var bridgeConf = undefined;
         if (rr != undefined)
             bridgeConf = bE.findByIndex(rr.indextosearch[0]);
-        console.log(nameFile + ' | _search | bridgeConf:', JSON.stringify(bridgeConf));
+        //console.log(nameFile + ' | _search | bridgeConf:', JSON.stringify(bridgeConf));
+        logger.info(nameFile + ' | _search | bridgeConf :' + JSON.stringify(bridgeConf));
         if (bridgeConf != undefined) {
             if (bridgeConf.api.tokenProvider != undefined) {
                 if (bridgeConf.api.tokenProvider.active == true) {
@@ -1142,18 +1659,21 @@ router.post('/_search', (req, res) => {
                                 return res.send(ret);
                             }).catch(function (error) {
                                 console.error("ERROR | " + nameFile + '  | _search | jsonMappingExternalToDymerEntity:', error);
+                                logger.error(nameFile + ' | _search | jsonMappingExternalToDymerEntity : ' + error);
                                 ret.setSuccess(false);
                                 ret.setMessages("Entity Mapping Problem");
                                 return res.send(ret);
                             });
                         }).catch(function (error) {
                             console.error("ERROR | " + nameFile + '  | _search | demeterExternalEntities:', error);
+                            logger.error(nameFile + ' | _search | bridgeEsternalEntities : ' + error);
                             ret.setSuccess(false);
                             ret.setMessages("Entity Recovery Problem");
                             return res.send(ret);
                         });
                     }).catch(function (error) {
                         console.error("ERROR | " + nameFile + '  | _search | getCapabilityTokenDEMETER:', error);
+                        logger.error(nameFile + ' | _search | getCapabilityTokenDEMETER: : ' + error);
                         ret.setSuccess(false);
                         ret.setMessages("Capability Token Problem");
                         return res.send(ret);
@@ -1170,12 +1690,14 @@ router.post('/_search', (req, res) => {
                         return res.send(ret);
                     }).catch(function (error) {
                         console.error("ERROR | " + nameFile + '  | _search | jsonMappingExternalToDymerEntity:', error);
+                        logger.error(nameFile + ' | _search | bridgeEsternalEntities : ' + error);
                         ret.setSuccess(false);
                         ret.setMessages("Entity Mapping Problem");
                         return res.send(ret);
                     });
                 }).catch(function (error) {
                     console.error("ERROR | " + nameFile + '  | _search | bridgeEsternalEntities:', error);
+                    logger.error(nameFile + ' | _search | bridgeEsternalEntities : ' + error);
                     ret.setSuccess(false);
                     ret.setMessages("Entity Recovery Problem");
                     return res.send(ret);
@@ -1272,15 +1794,16 @@ router.post('/_search', (req, res) => {
             params["sort"] = ["title.keyword:asc"];
             params["body"] = query;
             params["body"].size = 10000;
-            console.log('source', source);
+            //console.log('source', source);
 
             //    params["_source_includes"] = ["*"];
             //   params["_source_excludes"] = ["description"];
-            console.log(nameFile + ' | _search | params:', JSON.stringify(params));
-
+            //console.log(nameFile + ' | _search | params:', JSON.stringify(params));
+            logger.info(nameFile + ' | _search | params :' + JSON.stringify(params));
             client.search(params).then(function (resp) {
                 if (err) {
-                    console.error("ERROR | " + nameFile + '  | _search | search:', err);
+                    console.error("ERROR | " + nameFile + ' | _search | search:', err);
+                    logger.error(nameFile + ' | _search | search : ' + err);
                     ret.setSuccess(false);
                     ret.setExtraData({ "log": err.message });
                     ret.setMessages("Entity " + err.displayName);
@@ -1329,12 +1852,13 @@ router.post('/_search', (req, res) => {
                             }
                         }
                         ret.setData(nlist);
-                        //console.log(nameFile + ' | _search | resp no relations:', JSON.stringify(resp.hits.hits));
-                        console.log(nameFile + ' | _search | resp no relations: count ', resp.hits.hits.length);
+                        //console.log(nameFile + ' | _search | resp no relations:', JSON.stringify(resp.hits.hits)); 
+                        logger.info(nameFile + ' | _search | resp no relations: count:' + resp.hits.hits.length);
                         return res.send(ret);
 
                     }).catch(function (err) {
-                        console.error("ERROR | " + nameFile + '  | _search | checkUnionRelation:', err);
+                        console.error("ERROR | " + nameFile + ' | _search | checkUnionRelation:', err);
+                        logger.error(nameFile + ' | _search | checkUnionRelation : ' + err);
                     });
 
                 } else {
@@ -1363,12 +1887,14 @@ router.post('/_search', (req, res) => {
                             });
                             filertEntitiesFields(fileterdList, minmodelist, hdymeruser).then(function (nlist) {
                                 //  console.log("prepre", nlist);
-                                console.log(nameFile + ' | _search | resp filter relations:count ', nlist.length);
+                                //console.log(nameFile + ' | _search | resp filter relations:count ', nlist.length);
+                                logger.info(nameFile + ' | _search | resp filter relations:count ' + nlist.length);
                                 ret.setData(nlist);
                                 return res.send(ret);
                             }).catch(function (err) {
                                 // console.log(nameFile + ' | _search | resp filter relations:count ', resp.hits.hits.length);
-                                console.error("ERROR | " + nameFile + '  | _search | resp filter relations:count:', err);
+                                console.error("ERROR | " + nameFile + ' | _search | resp filter relations:count:', err);
+                                logger.error(nameFile + ' | _search | resp filter relations count: ' + err);
                             });
                             /* ret.setData(fileterdList);
                              console.log(nameFile + ' | _search | resp filter relations:count ', resp.hits.hits.length);
@@ -1379,19 +1905,21 @@ router.post('/_search', (req, res) => {
                             //   const uniqueRel = (meatch).map(item => item.relations);
 
                             //console.log(' minmodelist ', minmodelist);
-                            console.log(nameFile + ' | _search | resp no detect relations:count ', resp.hits.hits.length);
-
+                            //console.log(nameFile + ' | _search | resp no detect relations:count ', resp.hits.hits.length);
+                            logger.info(nameFile + ' | _search | resp no detect relations :count ' + resp.hits.hits.length);
                             filertEntitiesFields(meatch, minmodelist, hdymeruser).then(function (nlist) {
                                 //  console.log("prepre", nlist);
                                 ret.setData(nlist);
                                 return res.send(ret);
                             }).catch(function (err) {
-                                console.error("ERROR | " + nameFile + '  | _search | checkUnionRelation:', err);
+                                console.error("ERROR | " + nameFile + ' | _search | checkUnionRelation:', err);
+                                logger.error(nameFile + ' | _search | checkUnionRelation: ' + err);
                             });
                             //   return res.send(ret);
                         }
                     }).catch(function (err) {
-                        console.error("ERROR | " + nameFile + '  | _search | checkUnionRelation:', err);
+                        console.error("ERROR | " + nameFile + ' | _search | checkUnionRelation:', err);
+                        logger.error(nameFile + ' | _search | checkUnionRelation: ' + err);
                     });
                 }
 
@@ -1408,8 +1936,8 @@ router.post('/_search', (req, res) => {
         }
     });
 });
-var filertEntitiesFields = function (originalList, minmodelist, hdymeruser) {
-    return new Promise(function (resolve, reject) {
+var filertEntitiesFields = function(originalList, minmodelist, hdymeruser) {
+    return new Promise(function(resolve, reject) {
         let dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
         //  console.log('originalList', originalList);
         if (dymeruser.roles.length > 1) {
@@ -1435,13 +1963,13 @@ var filertEntitiesFields = function (originalList, minmodelist, hdymeruser) {
         axios(config)
             .then((respone) => {
                 let total_compr_struct = respone.data.data
-                // console.log("total_compr_struct", total_compr_struct);
-                Promise.all(originalList.map(function (element) {
-                    return new Promise(function (resolve, reject) {
+                    // console.log("total_compr_struct", total_compr_struct);
+                Promise.all(originalList.map(function(element) {
+                    return new Promise(function(resolve, reject) {
                         let single_compr_struct = ((total_compr_struct).find(x => (x.instance).find(y => y._index == element._index)));
                         if (single_compr_struct.hasOwnProperty('structure')) {
                             let single_compr_struct_visibility = (single_compr_struct.structure.child).filter(x => x.attr['dymer-model-visibility'] == "private")
-                            //   console.log("single_compr_struct_visibility", single_compr_struct_visibility);
+                                //   console.log("single_compr_struct_visibility", single_compr_struct_visibility);
                             single_compr_struct_visibility.forEach(singlel => {
                                 let ark_del = replaceAll(singlel.attr.name, '[', '["');
                                 ark_del = replaceAll(ark_del, ']', '"]');
@@ -1459,53 +1987,56 @@ var filertEntitiesFields = function (originalList, minmodelist, hdymeruser) {
                             });
                             //console.log("filertEntitiesFields 1 element", JSON.stringify(element));
                             if (element.hasOwnProperty('relations')) {
-                                Promise.all((element.relations).map(function (subelement) {
-                                    return new Promise(function (resolve, reject) {
-                                        let single_compr_struct = ((total_compr_struct).find(x => (x.instance).find(y => y._index == subelement._index)));
-                                        //console.log('subelement single_compr_struct', single_compr_struct, subelement);
-                                        if (single_compr_struct.hasOwnProperty('structure')) {
-                                            let single_compr_struct_visibility = (single_compr_struct.structure.child).filter(x => x.attr['dymer-model-visibility'] == "private")
-                                            single_compr_struct_visibility.forEach(singlel => {
-                                                let ark_del = replaceAll(singlel.attr.name, '[', '["');
-                                                ark_del = replaceAll(ark_del, ']', '"]');
-                                                ark_del = ark_del.replace("data", '');
-                                                let indexRgx = (singlel.attr.name).split("][").find(value => rgx.test(value));
-                                                if (indexRgx != undefined) {
-                                                    let listtest = [];
-                                                    for (let index = 0; index < 20; index++) {
-                                                        listtest.push(ark_del.replace('["0"]', index));
+                                Promise.all((element.relations).map(function(subelement) {
+                                        return new Promise(function(resolve, reject) {
+                                            let single_compr_struct = ((total_compr_struct).find(x => (x.instance).find(y => y._index == subelement._index)));
+                                            // console.log('subelement single_compr_struct', single_compr_struct, subelement);
+
+                                            if (_.get(single_compr_struct, 'structure')) {
+                                                let single_compr_struct_visibility = (single_compr_struct.structure.child).filter(x => x.attr['dymer-model-visibility'] == "private")
+                                                single_compr_struct_visibility.forEach(singlel => {
+                                                    let ark_del = replaceAll(singlel.attr.name, '[', '["');
+                                                    ark_del = replaceAll(ark_del, ']', '"]');
+                                                    ark_del = ark_del.replace("data", '');
+                                                    let indexRgx = (singlel.attr.name).split("][").find(value => rgx.test(value));
+                                                    if (indexRgx != undefined) {
+                                                        let listtest = [];
+                                                        for (let index = 0; index < 20; index++) {
+                                                            listtest.push(ark_del.replace('["0"]', index));
+                                                        }
+                                                        _.omit(subelement["_source"], listtest);
+                                                    } else {
+                                                        _.unset(subelement["_source"], ark_del);
                                                     }
-                                                    _.omit(subelement["_source"], listtest);
-                                                } else {
-                                                    _.unset(subelement["_source"], ark_del);
-                                                }
-                                                /* var ark = replaceAll(singlel.attr.name, '[', '@@');
-                                                 ark = replaceAll(ark, ']', '');
-                                                 ark = ark.split("@@");
-                                                 ark.shift();
-                                                 let keydel = ark.join('.');
-                                                 // console.log('singlekey 222', keydel);
-                                                 delete subelement["_source"][keydel];*/
-                                            });
-                                            //console.log("filertEntitiesFields 2 subelement", JSON.stringify(subelement));
-                                            resolve(subelement);
-                                        } else {
-                                            //console.log("filertEntitiesFields 2.1 subelement", JSON.stringify(subelement));
-                                            resolve(subelement);
-                                        }
-                                    }).catch(function (err) {
-                                        reject([]);
-                                        console.error("ERROR | " + nameFile + ' | filertEntitiesFields subelement | promise  : ', err);
-                                    });
-                                }))
-                                    .then(function (data) {
+                                                    /* var ark = replaceAll(singlel.attr.name, '[', '@@');
+                                                     ark = replaceAll(ark, ']', '');
+                                                     ark = ark.split("@@");
+                                                     ark.shift();
+                                                     let keydel = ark.join('.');
+                                                     // console.log('singlekey 222', keydel);
+                                                     delete subelement["_source"][keydel];*/
+                                                });
+                                                //console.log("filertEntitiesFields 2 subelement", JSON.stringify(subelement));
+                                                resolve(subelement);
+                                            } else {
+                                                //console.log("filertEntitiesFields 2.1 subelement", JSON.stringify(subelement));
+                                                resolve(subelement);
+                                            }
+                                        }).catch(function(err) {
+                                            reject([]);
+                                            console.error("ERROR | " + nameFile + ' | filertEntitiesFields subelement | promise  : ', err);
+                                            logger.error(nameFile + ' | filertEntitiesFields subelement | promise 0 : ' + err);
+                                        });
+                                    }))
+                                    .then(function(data) {
                                         //  console.log("filertEntitiesFields 3", JSON.stringify(data));
                                         resolve(data);
                                         //   return (data)
                                         // resolve(returnList);
-                                    }).catch(function (err) {
+                                    }).catch(function(err) {
                                         reject([]);
                                         console.error("ERROR | " + nameFile + ' | filertEntitiesFields | promise.all  : ', err);
+                                        logger.error(nameFile + ' | filertEntitiesFields | promise.all 0: ' + err);
                                     });
                             } else {
                                 //console.log("filertEntitiesFields 2.1 subelement", JSON.stringify(subelement));
@@ -1515,21 +2046,24 @@ var filertEntitiesFields = function (originalList, minmodelist, hdymeruser) {
                             //console.log("filertEntitiesFields 2.1 subelement", JSON.stringify(subelement));
                             resolve(element);
                         }
-                    }).catch(function (err) {
+                    }).catch(function(err) {
                         reject([]);
-                        console.error("ERROR | " + nameFile + ' | filertEntitiesFields | promise  : ', err);
+                        console.error("ERROR | " + nameFile + ' | filertEntitiesFields | promise 1 : ', err);
+                        logger.error(nameFile + ' | filertEntitiesFields | promise : ' + err);
                     });
-                })).then(function (data) {
+                })).then(function(data) {
                     //console.log("filertEntitiesFields 4", data);
                     return resolve(originalList);
-                }).catch(function (err) {
+                }).catch(function(err) {
                     reject([]);
-                    console.error("ERROR | " + nameFile + ' | filertEntitiesFields | promise.all  : ', err);
+                    console.error("ERROR | " + nameFile + ' | filertEntitiesFields | promise.all 1 : ', err);
+                    logger.error(nameFile + ' | filertEntitiesFields | promise.all : ' + err);
                 });
             });
-    }).catch(function (err) {
+    }).catch(function(err) {
         reject([]);
-        console.error("ERROR | " + nameFile + ' | filertEntitiesFields | promise  : ', err);
+        console.error("ERROR | " + nameFile + ' | filertEntitiesFields | promise 2 : ', err);
+        logger.error(nameFile + ' | filertEntitiesFields | promise  : ' + err);
     });
 }
 
@@ -1561,7 +2095,7 @@ const retriveIndex_Query_ToSearch = (rulesindexquery, obj) => {
                         if (key == "terms") {
                             rulesindexquery.indextosearch = rulesindexquery.indextosearch.concat(element["_index"]);
                             rulesindexquery.query.push(element);
-                            console.log('is terms', rulesindexquery);
+                            //console.log('is terms', rulesindexquery);
                             // resolve(indextosearch); 
                         }
                         if (key == "wildcard" || key == "match") { //term match
@@ -1736,7 +2270,8 @@ const bridgeEsternalEntities = (objconf, callkey, datatosend, reqConfig, files) 
                     /* Object.keys(newObjQR).forEach(function(elementk) {
  
                      });*/
-                    console.log(nameFile + ' | bridgeEsternalEntities | GET | newObjQR:', JSON.stringify(newObjQR));
+                    //console.log(nameFile + ' | bridgeEsternalEntities | GET | newObjQR:', JSON.stringify(newObjQR));
+                    logger.info(nameFile + ' | bridgeEsternalEntities | GET | newObjQR :' + JSON.stringify(newObjQR));
                     jsonMapper(newObjQR, objconf.api[callkey].mapping.query).then((querypams) => {
                         console.log(nameFile + ' | bridgeEsternalEntities,jsonMapper | GET | querypams:', JSON.stringify(querypams));
                         var querypam = "";
@@ -1747,41 +2282,49 @@ const bridgeEsternalEntities = (objconf, callkey, datatosend, reqConfig, files) 
                             else
                                 url += "&" + querypam
                         }
-                        console.log(nameFile + ' | bridgeEsternalEntities | GET | url:', url);
+                        //console.log(nameFile + ' | bridgeEsternalEntities | GET | url:', url);
+                        logger.info(nameFile + ' | bridgeEsternalEntities | GET | url :' + url);
                         axios.get(url).then(resp => {
                             resolve(resp);
                         }).catch(function (error) {
                             // handle error
-                            console.error("ERROR | " + nameFile + ' | bridgeEsternalEntities | GET | axios:', error);
+                            //console.error("ERROR | " + nameFile + ' | bridgeEsternalEntities | GET | axios:', error);
+                            logger.error(nameFile + ' | bridgeEsternalEntities | GET | axios: ' + error);
                             reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
                         });
 
                     }).catch(function (error) {
                         console.error("ERROR | " + nameFile + ' | bridgeEsternalEntities,jsonMapper | GET :', error);
+                        logger.error(nameFile + ' | bridgeEsternalEntities,jsonMapper | GET : ' + error);
                     });
                 } else {
-                    console.log(nameFile + ' | bridgeEsternalEntities | GET | querypam Semplice url:', url);
+                    // console.log(nameFile + ' | bridgeEsternalEntities | GET | querypam Semplice url:', url);
+                    logger.info(nameFile + ' | bridgeEsternalEntities | GET | querypam Semplice url :' + url);
                     axios.get(url).then(resp => {
                         resolve(resp);
                     }).catch(function (error) {
                         // handle error
                         console.error("ERROR | " + nameFile + ' | bridgeEsternalEntities | GET | querypam Semplice axios:', error);
+                        logger.error(nameFile + ' | bridgeEsternalEntities | GET | querypam Semplice axios: ' + error);
                         reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
                     });
                 }
             } else { //reqConfig != undefined
-                console.log(nameFile + ' | bridgeEsternalEntities | GET | reqConfig == undefined axios url:', url);
+                // console.log(nameFile + ' | bridgeEsternalEntities | GET | reqConfig == undefined axios url:', url);
+                logger.info(nameFile + ' | bridgeEsternalEntities | GET | reqConfig == undefined axios url :' + url);
                 axios.get(url).then(resp => {
                     //console.log("GET external ok", resp.stats);
                     resolve(resp);
                 }).catch(function (error) {
                     console.error("ERROR | " + nameFile + ' | bridgeEsternalEntities | GET | reqConfig == undefined axios url:', error);
+                    logger.error(nameFile + ' | bridgeEsternalEntities | GET | reqConfig == undefined axios url: ' + error);
                     reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
                 });
             }
         }
         if (objconf.api[callkey].method == "POST") {
-            console.log(nameFile + ' | bridgeEsternalEntities | POST | datatosend:', JSON.stringify(datatosend));
+            //console.log(nameFile + ' | bridgeEsternalEntities | POST | datatosend:', JSON.stringify(datatosend));
+            logger.info(nameFile + ' | bridgeEsternalEntities | POST | datatosend:' + JSON.stringify(datatosend));
             let formdata = new FormData();
             appendFormdata(formdata, datatosend);
             let requests = files.map((fl) => {
@@ -1802,9 +2345,11 @@ const bridgeEsternalEntities = (objconf, callkey, datatosend, reqConfig, files) 
                         // console.log("Deleted " + fl.filename);
                     }).catch(function (err) {
                         console.error("ERROR | " + nameFile + ' | bridgeEsternalEntities | POST | delete  : ', err);
+                        logger.error(nameFile + ' | bridgeEsternalEntities | POST | delete : ' + err);
                     });
                 }).catch(function (err) {
                     console.error("ERROR | " + nameFile + ' | bridgeEsternalEntities | POST | recFile  : ', err);
+                    logger.error(nameFile + ' | bridgeEsternalEntities | POST | recFile : ' + err);
                 });
             })
             Promise.all(requests).then(() => {
@@ -1813,41 +2358,49 @@ const bridgeEsternalEntities = (objconf, callkey, datatosend, reqConfig, files) 
                         'Content-Type': `multipart/form-data; boundary=${formdata._boundary}`
                     }
                 }).then((resp) => {
-                    console.log(nameFile + ' | bridgeEsternalEntities | POST | Promise.all success : ');
+                    // console.log(nameFile + ' | bridgeEsternalEntities | POST | Promise.all success : ');
+                    logger.info(nameFile + ' | bridgeEsternalEntities | POST | Promise.all success :');
                     resolve(resp);
                 }).catch((err) => {
                     console.error("ERROR | " + nameFile + ' | bridgeEsternalEntities | POST | Promise.all error : ', err);
+                    logger.error(nameFile + ' | bridgeEsternalEntities | POST | Promise.all error : ' + err);
                     reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
                 })
             });
         }
         if (objconf.api[callkey].method == "PATCH") {
-            console.log(nameFile + ' | bridgeEsternalEntities | PATCH | axios url,datatosend:', url, JSON.stringify(datatosend));
+            //console.log(nameFile + ' | bridgeEsternalEntities | PATCH | axios url,datatosend:', url, JSON.stringify(datatosend));
+            logger.info(nameFile + ' | bridgeEsternalEntities | PATCH | axios url,datatosend :' + JSON.stringify(datatosend));
             axios.post(url, datatosend).then(resp => {
                 resolve(resp);
             }).catch(function (error) {
                 // handle error
                 console.error("ERROR | " + nameFile + ' | bridgeEsternalEntities | PATCH : ', error);
+                logger.error(nameFile + ' | bridgeEsternalEntities | PATCH : ' + error);
                 reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
             });
         }
         if (objconf.api[callkey].method == "PUT") {
-            console.log(nameFile + ' | bridgeEsternalEntities | PUT | axios url,datatosend:', url, JSON.stringify(datatosend));
+            //console.log(nameFile + ' | bridgeEsternalEntities | PUT | axios url,datatosend:', url, JSON.stringify(datatosend));
+            logger.info(nameFile + ' | bridgeEsternalEntities | PUT | axios url,datatosend :' + JSON.stringify(datatosend));
             axios.put(url, datatosend).then(resp => {
                 resolve(resp);
             }).catch(function (error) {
                 // handle error
                 console.error("ERROR | " + nameFile + ' | bridgeEsternalEntities | PUT : ', error);
+                logger.error(nameFile + ' | bridgeEsternalEntities | PUT : ' + error);
                 reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
             });
         }
         if (objconf.api[callkey].method == "DELETE") {
-            console.log(nameFile + ' | bridgeEsternalEntities | DELETE | axios url,datatosend:', url, JSON.stringify(datatosend));
+            //console.log(nameFile + ' | bridgeEsternalEntities | DELETE | axios url,datatosend:', url, JSON.stringify(datatosend));
+            logger.info(nameFile + ' | bridgeEsternalEntities | DELETE | axios url,datatosend :' + JSON.stringify(datatosend));
             axios.delete(url, { data: datatosend }).then(resp => {
                 resolve(resp);
             }).catch(function (error) {
                 // handle error
                 console.error("ERROR | " + nameFile + ' | bridgeEsternalEntities | DELETE : ', error);
+                logger.error(nameFile + ' | bridgeEsternalEntities | DELETE : ' + error);
                 reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
             });
         }
@@ -2352,22 +2905,27 @@ const demeterExternalEntities = (objconf, callkey, capToken, authToken, datatose
 
 const jsonMappingExternalToDymerEntity = (obj, conf, calltype) => {
     return new Promise((resolve, reject) => {
-        console.log(nameFile + ' | jsonMappingExternalToDymerEntity |   conf.mapping.dentity["_source"] :', JSON.stringify(conf.mapping.dentity["_source"]));
+        logger.info(nameFile + ' | jsonMappingExternalToDymerEntity |  conf.mapping.dentity["_source"]  :' + JSON.stringify(conf.mapping.dentity["_source"]));
+        //console.log(nameFile + ' | jsonMappingExternalToDymerEntity |  conf.mapping.dentity["_source"] :', JSON.stringify(conf.mapping.dentity["_source"]));
+
         if (conf.api[calltype].hasOwnProperty("containerkey")) {
             if (conf.api[calltype]["containerkey"] != "") {
                 obj = obj[conf.api[calltype]["containerkey"]];
             }
         }
         jsonMapper(obj, conf.mapping.dentity).then((result) => {
-            console.log(nameFile + ' | jsonMappingExternalToDymerEntity | jsonMapper :', JSON.stringify(result));
+            logger.info(nameFile + ' | jsonMappingExternalToDymerEntity |  jsonMapper  :' + JSON.stringify(result));
+            // console.log(nameFile + ' | jsonMappingExternalToDymerEntity | jsonMapper :', JSON.stringify(result));
             resolve(result);
         }).catch(function (error) {
             // handle error
+            logger.error(nameFile + ' | jsonMappingExternalToDymerEntity | jsonMapper : ' + error);
             console.error("ERROR | " + nameFile + ' | jsonMappingExternalToDymerEntity | jsonMapper : ', error);
             reject("ERROR:jsonMappingExternalToDymerEntity error")
         });
     })
 }
+
 const jsonMappingDymerEntityToExternal = (obj, conf, calltype, files) => {
     return new Promise((resolve, reject) => {
         if (conf.api[calltype].hasOwnProperty("containerkey"))
@@ -2384,43 +2942,51 @@ const jsonMappingDymerEntityToExternal = (obj, conf, calltype, files) => {
             }
         }
         jsonMapper(obj, templateObj).then((result) => {
-            console.log(nameFile + ' | jsonMappingDymerEntityToExternal | jsonMapper :', JSON.stringify(result));
+            logger.info(nameFile + ' | jsonMappingDymerEntityToExternal | jsonMapper :' + JSON.stringify(result));
+            // console.log(nameFile + ' | jsonMappingDymerEntityToExternal | jsonMapper :', JSON.stringify(result));
             //  console.log("jsonMapper result", JSON.stringify(result));
             resolve(result);
         }).catch(function (error) {
             // handle error
             console.error("ERROR | " + nameFile + ' | jsonMappingDymerEntityToExternal | jsonMapper : ', error);
+            logger.error(nameFile + ' | jsonMappingDymerEntityToExternal | jsonMapper : ' + error);
             reject("ERROR:jsonMappingDymerEntityToExternal error")
         });;
     })
 }
 
+
 router.post('/entitiesbridge', (req, res) => {
     var ret = new jsonResponse();
     bE.add(req.body).then(function (retdata) {
-        console.log(nameFile + ' | entitiesbridge | add :', JSON.stringify(retdata));
+        // console.log(nameFile + ' | entitiesbridge | add :', JSON.stringify(retdata));
+        logger.info(nameFile + ' | entitiesbridge | add :' + JSON.stringify(retdata));
         ret.setData(retdata.data);
         ret.setSuccess(retdata.success);
         ret.setMessages(retdata.msg);
         return res.send(ret);
     }).catch(function (err) {
         console.error("ERROR | " + nameFile + ' | entitiesbridge | add : ', err);
+        logger.error(nameFile + ' | entitiesbridge | add : ' + err);
         ret.setSuccess(false);
         ret.setMessages("error add");
         return res.send(ret);
     });
 });
+
 router.put('/entitiesbridge/:id', (req, res) => {
     var ret = new jsonResponse();
     const id = req.params.id;
     bE.update(req.body, id).then(function (retdata) {
-        console.log(nameFile + ' | entitiesbridge | put :', JSON.stringify(retdata));
+        //console.log(nameFile + ' | entitiesbridge | put :', JSON.stringify(retdata));
+        logger.info(nameFile + ' | entitiesbridge | put :' + JSON.stringify(retdata));
         ret.setData(retdata.data);
         ret.setSuccess(retdata.success);
         ret.setMessages(retdata.msg);
         return res.send(ret);
     }).catch(function (err) {
         console.error("ERROR | " + nameFile + ' | entitiesbridge | put : ', err);
+        logger.error(nameFile + ' | entitiesbridge | put : ' + err);
         ret.setSuccess(false);
         ret.setMessages("error edit");
         return res.send(ret);
@@ -2435,14 +3001,16 @@ router.get('/entitiesbridge/:doevaljson', (req, res) => {
 router.delete('/entitiesbridge/:id', (req, res) => {
     let id = req.params.id;
     var ret = new jsonResponse();
-    console.log("delete id", id);
+
+    logger.info(nameFile + ' | delete | /entitiesbridge/:id :' + id);
     bE.removeById(id).then(function (retdata) {
-        console.log(nameFile + ' | entitiesbridge | delete :', JSON.stringify(retdata));
+        logger.info(nameFile + ' | entitiesbridge | delete :' + JSON.stringify(retdata));
         ret.setSuccess(retdata.success);
         ret.setMessages(retdata.msg);
         return res.send(ret);
     }).catch(function (err) {
         console.error("ERROR | " + nameFile + ' | entitiesbridge | delete : ', err);
+        logger.error(nameFile + ' | entitiesbridge | delete : ' + err);
         ret.setSuccess(false);
         ret.setMessages("error delete");
         return res.send(ret);
@@ -2590,11 +3158,13 @@ router.post('/:enttype', function (req, res) {
     // console.log(nameFile + ' | /:enttype | create | dymeruser:', JSON.stringify(dymeruser));
     axios.get(url)
         .then((response) => {
-            console.log(nameFile + ' | /:enttype | create | permission create:', JSON.stringify(response.data.data.result));
+            // console.log(nameFile + ' | /:enttype | create | permission create:', JSON.stringify(response.data.data.result));
+            logger.info(nameFile + ' | /:enttype | create | permission create:' + JSON.stringify(response.data.data.result));
             if (response.data.data.result || hasperm) {
                 upload(req, res, function (err) {
                     if (err) {
                         console.error("ERROR | " + nameFile + ' | /:enttype | create | upload:', err);
+                        logger.error(nameFile + ' | /:enttype | create | upload : ' + err);
                         ret.setMessages("Upload Error");
                         ret.setSuccess(false);
                         ret.setExtraData({ "log": err.stack });
@@ -2609,7 +3179,8 @@ router.post('/:enttype', function (req, res) {
                     var globalData = req.body;
                     var trq = Object.assign({}, req);
                     var bridgeConf = bE.findByIndex(elIndex);
-                    console.log(nameFile + ' | /:enttype | create  | bridgeConf:', JSON.stringify(bridgeConf));
+                    // console.log(nameFile + ' | /:enttype | create | bridgeConf:', JSON.stringify(bridgeConf));
+                    logger.info(nameFile + ' | /:enttype | create | bridgeConf:' + JSON.stringify(bridgeConf));
                     if (bridgeConf != undefined) {
                         if (trq.files != undefined) {
                             trq.files.forEach(function (element) {
@@ -2660,12 +3231,14 @@ router.post('/:enttype', function (req, res) {
                         else {
                             jsonMappingDymerEntityToExternal(globalData, bridgeConf, "create", req.files).then(function (mapdata) {
                                 bridgeEsternalEntities(bridgeConf, "create", mapdata, undefined, req.files).then(function (callresp) {
-                                    console.log(nameFile + ' | /:enttype | create | bridgeEsternalEntities: ', JSON.stringify(mapdata), JSON.stringify(callresp.data));
+                                    //console.log(nameFile + ' | /:enttype | create | bridgeEsternalEntities: ', JSON.stringify(mapdata), JSON.stringify(callresp.data));
+                                    logger.info(nameFile + ' | /:enttype | create | bridgeEsternalEntities:' + JSON.stringify(mapdata) + " , " + JSON.stringify(callresp.data));
                                     ret.setData(callresp.data);
                                     ret.setMessages("Entity Creted successfully");
                                     return res.send(ret);
                                 }).catch(function (error) {
-                                    console.error("ERROR | " + nameFile + '  | /:enttype | create | bridgeEsternalEntities:', error);
+                                    console.error("ERROR | " + nameFile + ' | /:enttype | create | bridgeEsternalEntities:', error);
+                                    logger.error(nameFile + ' | /:enttype | create | bridgeEsternalEntities: ' + error);
                                     ret.setSuccess(false);
                                     ret.setMessages("Entity Create Problem");
                                     return res.send(ret);
@@ -2681,7 +3254,7 @@ router.post('/:enttype', function (req, res) {
                         //fine externale
                         var files_arr = [];
                         var label_index = -1;
-                        console.log('reqfile', req.files);
+                        //  console.log('reqfile', req.files);
                         if (req.files != undefined) {
                             req.files.forEach(function (element) {
                                 var ark = replaceAll(element.fieldname, '[', '@@');
@@ -2693,7 +3266,8 @@ router.post('/:enttype', function (req, res) {
                                 stringAsKey(data, ark, element);
                             });
                         }
-                        logger.info("predata" + JSON.stringify(data));
+                        //  logger.info("predata" + JSON.stringify(data));
+                        logger.info(nameFile + ' | /:enttype | create | predata :' + JSON.stringify(data));
                         //       if (!((JSON.parse(data.properties)).hasOwnProperty("owner") && asis)) {
                         if (!(data.properties.owner != undefined && asis)) {
                             data.properties.owner = {};
@@ -2714,10 +3288,12 @@ router.post('/:enttype', function (req, res) {
                         let ref = Object.assign({}, data.relation);
                         if (data != undefined)
                             delete data.relation;
-                        console.log(nameFile + '  | /:enttype | create | params:', dymeruser.id, JSON.stringify(params));
+                        // console.log(nameFile + ' | /:enttype | create | params:', dymeruser.id, JSON.stringify(params));
+                        logger.info(nameFile + ' | /:enttype | create | params :' + dymeruser.id + " , " + JSON.stringify(params));
                         client.index(params, function (err, resp, status) {
                             if (err) {
-                                console.error("ERROR | " + nameFile + '  | /:enttype | create:', err);
+                                console.error("ERROR | " + nameFile + ' | /:enttype | create:', err);
+                                logger.error(nameFile + ' | /:enttype | create : ' + err);
                                 ret.setSuccess(false);
                                 ret.setExtraData({ "log": resp });
                                 ret.setMessages("Entity creation error");
@@ -2728,19 +3304,19 @@ router.post('/:enttype', function (req, res) {
                             ret.addData(resp);
                             //   console.log('new ent ', resp);
                             var elId = resp["_id"];
-                            logger.info(nameFile + '  | /:enttype | create | dymeruser.id, params:' + dymeruser.id + ' , ' + JSON.stringify(params));
-                            logger.info(nameFile + '  | /:enttype | create | ref, elIndex, elId:' + JSON.stringify(ref) + ' , ' + elIndex + ' , ' + elId);
+                            logger.info(nameFile + ' | /:enttype | create | dymeruser.id, params:' + dymeruser.id + ' , ' + JSON.stringify(params));
+                            logger.info(nameFile + ' | /:enttype | create | ref, elIndex, elId:' + JSON.stringify(ref) + ' , ' + elIndex + ' , ' + elId);
                             try {
                                 checkRelation(ref, elIndex, elId);
                             } catch (error) {
-                                logger.error(nameFile + '  | /:enttype | create |  checkRelation:' + error);
+                                logger.error(nameFile + ' | /:enttype | create | checkRelation:' + error);
                             }
 
                             /* var extraInfo = dymerextrainfo;
                              if (extraInfo != undefined)
                                  extraInfo.extrainfo.emailAddress = dymeruser.id;*/
                             // console.log(nameFile + ' | /:enttype | create | pre check hook extraInfo: ', dymerextrainfo);
-                            logger.info(nameFile + '  | /:enttype | create |  pre check hook| obj, extraInfo:' + JSON.stringify(resp) + ' , ' + JSON.stringify(dymerextrainfo));
+                            logger.info(nameFile + ' | /:enttype | create | pre check hook| obj, extraInfo:' + JSON.stringify(resp) + ' , ' + JSON.stringify(dymerextrainfo));
                             setTimeout(() => {
                                 checkServiceHook('after_insert', resp, dymerextrainfo, req);
                             }, 3000);
@@ -2757,7 +3333,8 @@ router.post('/:enttype', function (req, res) {
                 return res.send(ret);
             }
         }, (error) => {
-            console.error("ERROR | " + nameFile + '  | /:enttype | permission:', error);
+            console.error("ERROR | " + nameFile + ' | /:enttype | permission:', error);
+            logger.error(nameFile + ' | /:enttype | permission : ' + error);
             ret.setMessages("No permission");
             res.status(200);
             ret.setSuccess(false);
@@ -2788,8 +3365,10 @@ router.put('/update/:id', (req, res) => {
     // let par = { "query": { "servicetype": { "$ne": "general" } } };
     let par = { "query": { "servicetype": "update" } };
 
-    console.log("INFO | " + nameFile + " | url :", url);
-    console.log("INFO | " + nameFile + " | par :", par, rfrom);
+    //console.log("INFO | " + nameFile + " | url :", url);
+    // console.log("INFO | " + nameFile + " | par :", par, rfrom);
+    logger.info(nameFile + ' | /update/:id url:' + url);
+    logger.info(nameFile + ' | /update/:id par:' + par + " , " + rfrom);
     //axios.get(url, {})
     axios.get(url, {
         "params": par
@@ -2797,8 +3376,10 @@ router.put('/update/:id', (req, res) => {
         .then((optresp) => {
 
             let entry = optresp.data.data[0];
-            console.log("INFO | " + nameFile + " | optresp :", entry);
-            console.log("INFO | " + nameFile + " | entry.configuration.host :", entry.configuration.host, (entry.configuration.host).includes(rfrom));
+            //console.log("INFO | " + nameFile + " | optresp :", entry);
+            logger.info(nameFile + ' | /update/:id |optresp:' + JSON.stringify(entry));
+            // console.log("INFO | " + nameFile + " | entry.configuration.host :", entry.configuration.host, (entry.configuration.host).includes(rfrom));
+            // logger.info(nameFile + ' | /update/:id | entry.configuration.host:' + JSON.stringify(entry)); 
             //  optresp.data.data.forEach(function(entry) {
             if ((entry.configuration.host).includes(rfrom)) {
                 let listRel = [];
@@ -2809,6 +3390,7 @@ router.put('/update/:id', (req, res) => {
                 upload(req, res, function (err) {
                     if (err) {
                         console.error("ERROR | " + nameFile + ' | /:id | put | upload:', err);
+                        logger.error(nameFile + ' | /update/:id | put | upload : ' + err);
                         ret.setMessages("Upload Error");
                         ret.setSuccess(false);
                         ret.setExtraData({ "log": err.stack });
@@ -2822,7 +3404,8 @@ router.put('/update/:id', (req, res) => {
                     var editValues = data;
                     let elIndex = instance.index;
                     var ref = {};
-                    console.log("INFO | " + nameFile + " | data :", JSON.stringify(editValues), listRel);
+                    //  console.log("INFO | " + nameFile + " | data :", JSON.stringify(editValues), listRel);
+                    logger.info(nameFile + ' | /update/:id | data,listRel :' + JSON.stringify(editValues) + " , " + JSON.stringify(listRel));
                     if (editValues.relation != undefined) {
                         //  ref = {};
                         listRel.forEach(value => {
@@ -2841,7 +3424,8 @@ router.put('/update/:id', (req, res) => {
                     }
                     let _relationtodelete = [];
                     listSingleRelation(id).then(function (oldrelation) {
-                        console.log('oldrelation', oldrelation);
+                        //console.log('oldrelation', oldrelation);
+                        logger.info(nameFile + ' | /update/:id | oldrelation:' + JSON.stringify(oldrelation));
                         // let oldFilteredrelation=[];
                         oldrelation.forEach(function (relel, index) {
                             //     console.log("Relation relel", relel);    
@@ -2880,12 +3464,14 @@ router.put('/update/:id', (req, res) => {
                         client.search(parmquery).then(function (resp) {
                             resp["hits"].hits.forEach((element) => {
                                 var oldElement = element;
-                                console.log('oldElement', oldElement);
-                                console.log('_relationtodelete', _relationtodelete);
+                                //console.log('oldElement', oldElement);
+                                //console.log('_relationtodelete', _relationtodelete);
+                                logger.info(nameFile + ' | /update/:id | oldElement:' + JSON.stringify(oldElement));
+                                logger.info(nameFile + ' | /update/:id | _relationtodelete:' + JSON.stringify(_relationtodelete));
                                 var elId = oldElement["_id"];
                                 if (_relationtodelete.length > 0) {
-                                    console.log(nameFile + ' | /:id | put | id,deleted relations :', id, JSON.stringify(_relationtodelete));
-                                    logger.info(nameFile + ' | /:id | put | id,deleted relations :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(_relationtodelete));
+                                    //console.log(nameFile + ' | /:id | put | id,deleted relations :', id, JSON.stringify(_relationtodelete));
+                                    logger.info(nameFile + ' |  /update/:id | put | id,deleted relations :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(_relationtodelete));
                                     _relationtodelete.forEach(function (entry) {
                                         deleteRelation(elId, entry);
                                     });
@@ -2923,15 +3509,15 @@ router.put('/update/:id', (req, res) => {
                                         body: new_Temp_Entity._source,
                                         refresh: 'true'
                                     }).then(function (resp) {
-                                        console.log(nameFile + ' | /:id | put | updated :', id, JSON.stringify(resp));
+                                        //console.log(nameFile + ' | /:id | put | updated :', id, JSON.stringify(resp));
                                         logger.info(nameFile + ' | /:id | put | updated dymeruser.id, id, enity :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(new_Temp_Entity));
-                                        logger.info(nameFile + ' | /:id | put | updated dymeruser.id, id, _relationtodelete :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(_relationtodelete));
+                                        logger.info(nameFile + ' | /:id | put | updated dymeruser.id, id, _relationtodeleted :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(_relationtodelete));
                                         ret.setMessages("Updated!");
                                         var objHook = new_Temp_Entity;
                                         /* var extraInfo = dymerextrainfo;
                                          if (extraInfo != undefined)
                                              extraInfo.extrainfo.emailAddress = dymeruser.id;*/
-                                        console.log(nameFile + ' | /:id | put | pre check hook id,extraInfo: ', id, JSON.stringify(dymerextrainfo));
+                                        //console.log(nameFile + ' | /:id | put | pre check hook id,extraInfo: ', id, JSON.stringify(dymerextrainfo));
                                         logger.info(nameFile + ' | /:id | put | pre check hook| obj, extraInfo:' + dymeruser.id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
                                         checkServiceHook('after_update', objHook, dymerextrainfo, req);
                                         return res.send(ret);
@@ -2944,6 +3530,7 @@ router.put('/update/:id', (req, res) => {
                                     });
                                 }).catch(function (err) {
                                     console.error("ERROR | " + nameFile + ' | /:id | put | delete: ', id, err);
+                                    logger.error(nameFile + '|  /:id | put | delete:' + id + ' , ' + err);
                                     ret.setSuccess(false);
                                     ret.setMessages("Error Updated!");
                                     return res.send(ret);
@@ -2951,6 +3538,7 @@ router.put('/update/:id', (req, res) => {
                             });
                         }).catch(function (err) {
                             console.error("ERROR | " + nameFile + ' | /:id | put | delete search: ', id, err);
+                            logger.error(nameFile + '|  /:id | put | delete search:' + id + ' , ' + err);
                             ret.setSuccess(false);
                             ret.setMessages("Error Updated!");
                             return res.send(ret);
@@ -2986,7 +3574,8 @@ router.put('/update/:id', (req, res) => {
             }
             // });
         }, (error) => {
-            console.error("ERROR | " + nameFile + '  | /:enttype | permission:', error);
+            console.error("ERROR | " + nameFile + ' | /:enttype | permission:', error);
+            logger.error(nameFile + '| /:enttype | permission:' + error);
             ret.setMessages("No permission");
             res.status(200);
             ret.setSuccess(false);
@@ -3013,6 +3602,7 @@ router.put('/:id', (req, res) => {
     upload(req, res, function (err) {
         if (err) {
             console.error("ERROR | " + nameFile + ' | /:id | put | upload:', err);
+            logger.error(nameFile + '| /:id | put | upload:' + err);
             ret.setMessages("Upload Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -3026,7 +3616,8 @@ router.put('/:id', (req, res) => {
         var editValues = data;
         let elIndex = instance.index;
         var bridgeConf = bE.findByIndex(elIndex);
-        console.log(nameFile + ' | /:id | put  | bridgeConf:', JSON.stringify(bridgeConf));
+        //console.log(nameFile + ' | /:id | put | bridgeConf:', JSON.stringify(bridgeConf));
+        logger.info(nameFile + ' | /:id | put | bridgeConf :' + JSON.stringify(bridgeConf));
         if (bridgeConf != undefined) {
             var globalData = callData;
 
@@ -3087,21 +3678,24 @@ router.put('/:id', (req, res) => {
                 }
             }
             else {
-                jsonMappingDymerEntityToExternal(globalData, bridgeConf, "update").then(function (mapdata) {
+                jsonMappingDymerEntityToExternal(globalData, bridgeConf, "update").then(function(mapdata) {
                     //  console.log("jsonMapper FINALE", JSON.stringify(mapdata));
-                    bridgeEsternalEntities(bridgeConf, "update", mapdata).then(function (callresp) {
-                        console.log(nameFile + ' | /:id | put | bridgeEsternalEntities: ', JSON.stringify(mapdata), JSON.stringify(callresp.data));
+                    bridgeEsternalEntities(bridgeConf, "update", mapdata).then(function(callresp) {
+                        //console.log(nameFile + ' | /:id | put | bridgeEsternalEntities: ', JSON.stringify(mapdata), JSON.stringify(callresp.data));
+                        logger.info(nameFile + ' | /:id | put | bridgeEsternalEntities :' + JSON.stringify(mapdata) + " , " + JSON.stringify(callresp.data));
                         ret.setData(callresp.data);
                         ret.setMessages("Entity Edited successfully");
                         return res.send(ret);
-                    }).catch(function (error) {
-                        console.error("ERROR | " + nameFile + '  | /:id | put | bridgeEsternalEntities:', error);
+                    }).catch(function(error) {
+                        console.error("ERROR | " + nameFile + ' | /:id | put | bridgeEsternalEntities:', error);
+                        logger.error(nameFile + ' | /:id | put | bridgeEsternalEntities: ' + error);
                         ret.setSuccess(false);
                         ret.setMessages("Entity Edit Problem");
                         return res.send(ret);
                     });
                 }).catch(function (error) {
                     console.error("ERROR | " + nameFile + '  | /:id | put | jsonMappingDymerEntityToExternal:', error);
+                    logger.error(nameFile + ' | /:id | put | jsonMappingDymerEntityToExternal: ' + error);
                     ret.setSuccess(false);
                     ret.setMessages("Entity Edit Problem");
                     return res.send(ret);
@@ -3117,7 +3711,7 @@ router.put('/:id', (req, res) => {
                 }
             };
             paramsCheck["body"].size = 10000;
-            client.search(paramsCheck).then(function (respCheck) {
+            client.search(paramsCheck).then(function(respCheck) {
                 if ((respCheck["hits"].hits).length > 0) {
                     var checkElemPerm = respCheck["hits"].hits[0]._source.properties;
                     let harpermEdit = false;
@@ -3130,15 +3724,16 @@ router.put('/:id', (req, res) => {
                             }
                         }
                     }
-                    console.log(nameFile + ' | /:id | put | permission update:', dymeruser.id, id, harpermEdit);
-                    logger.info(nameFile + ' | /:id | put | permission update:' + dymeruser.id + ' , ' + id + ' , ' + harpermEdit);
+                    //console.log(nameFile + ' | /:id | put | permission update:', dymeruser.id, id, harpermEdit);
+                    logger.info(nameFile + ' | /:id | put | permission update | dymeruser.id, id, harpermEdit:' + dymeruser.id + ' , ' + id + ' , ' + harpermEdit);
                     if (harpermEdit) {
                         var ref = undefined;
                         if (editValues.relation != undefined) {
                             ref = Object.assign({}, editValues.relation);
                             delete editValues.relation;
                         }
-                        console.log('editValues.relationtodelete', editValues.relationtodelete);
+                        //console.log('editValues.relationtodelete', editValues.relationtodelete);
+                        logger.info(nameFile + ' | /:id | put | editValues.relationtodelete :' + JSON.stringify(editValues.relationtodelete));
                         var _relationtodelete = undefined;
                         if (editValues.relationtodelete != undefined) {
                             _relationtodelete = (editValues.relationtodelete).slice();
@@ -3150,17 +3745,20 @@ router.put('/:id', (req, res) => {
                         var _split = data.todelete;
                         var _todeleteObj = data.todeleteObj;
                         if (_split != undefined) {
-                            _split.forEach(function (entry) {
-                                recFile(mongoose.Types.ObjectId(entry)).then(function (result) {
-                                    gridFSBucket.delete(mongoose.Types.ObjectId(entry)).then(() => {
-                                        console.log(nameFile + ' | /:id | put | deleted Attachments :', entry);
+                            _split.forEach(function(entry) {
+                                recFile(mongoose.Types.ObjectId(entry)).then(function(result) {
+                                        gridFSBucket.delete(mongoose.Types.ObjectId(entry)).then(() => {
+                                                //console.log(nameFile + ' | /:id | put | deleted Attachments :', entry);
+                                                logger.info(nameFile + ' | /:id | put | deleted Attachments :' + entry);
+                                            })
+                                            .catch(function(err) {
+                                                console.error("ERROR | " + nameFile + ' | /:id | put | deleted Attachments :', err);
+                                                logger.error(nameFile + ' | /:id | put | deleted Attachments : ' + err);
+                                            });
                                     })
-                                        .catch(function (err) {
-                                            console.error("ERROR | " + nameFile + ' | /:id | put | deleted Attachments :', err);
-                                        });
-                                })
-                                    .catch(function (err) {
+                                    .catch(function(err) {
                                         console.error("ERROR | " + nameFile + ' | /:id | put | recFile :', err);
+                                        logger.error(nameFile + ' | /:id | put | recFile : ' + err);
                                         //  res.end("");
                                     });
                             });
@@ -3175,39 +3773,35 @@ router.put('/:id', (req, res) => {
                             }
                         };
                         params["body"].size = 10000;
-                        client.search(params).then(function (resp) {
+                        client.search(params).then(function(resp) {
                             resp["hits"].hits.forEach((element) => {
                                 var oldElement = element;
-                                listSingleRelation(id).then(function (oldrelation) {
-                                    oldrelation.forEach(function (relel, index) {
-                                        //     console.log("Relation relel", relel);    
-                                        if (relel._source["_id1"] == id) {
-                                            if (ref.hasOwnProperty([relel._source["_index2"]])) {
-                                                if (!ref[relel._source["_index2"]].includes(relel._source["_id2"])) {
-                                                    _relationtodelete.push(relel._source["_id2"]);
+                                listSingleRelation(id).then(function(oldrelation) {
+                                    if (ref != undefined) {
+                                        oldrelation.forEach(function(relel, index) {
+                                            //     console.log("Relation relel", relel);    
+                                            if (relel._source["_id1"] == id) {
+                                                if (ref.hasOwnProperty([relel._source["_index2"]])) {
+                                                    if (!ref[relel._source["_index2"]].includes(relel._source["_id2"])) {
+                                                        _relationtodelete.push(relel._source["_id2"]);
+                                                    }
                                                 }
                                             }
-                                        }
-                                        if (relel._source["_id2"] == id) {
-                                            if (ref.hasOwnProperty([relel._source["_index1"]])) {
-                                                if (!ref[relel._source["_index1"]].includes(relel._source["_id1"])) {
-                                                    _relationtodelete.push(relel._source["_id1"]);
+                                            if (relel._source["_id2"] == id) {
+                                                if (ref.hasOwnProperty([relel._source["_index1"]])) {
+                                                    if (!ref[relel._source["_index1"]].includes(relel._source["_id1"])) {
+                                                        _relationtodelete.push(relel._source["_id1"]);
+                                                    }
                                                 }
+                                                //oldFilteredrelation.push(relel._source["_id1"]);
                                             }
-                                            //oldFilteredrelation.push(relel._source["_id1"]);
-
-                                        }
-
-                                    });
-
-
-
-
+                                        });
+                                    }
                                     var elId = oldElement["_id"];
                                     if (_relationtodelete.length > 0) {
-                                        console.log(nameFile + ' | /:id | put | id,deleted relations :', id, JSON.stringify(_relationtodelete));
+                                        // console.log(nameFile + ' | /:id | put | id,deleted relations :', id, JSON.stringify(_relationtodelete));
                                         logger.info(nameFile + ' | /:id | put | id,deleted relations :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(_relationtodelete));
-                                        _relationtodelete.forEach(function (entry) {
+                                        _relationtodelete.forEach(function(entry) {
                                             deleteRelation(elId, entry);
                                         });
                                     }
@@ -3220,7 +3814,7 @@ router.put('/:id', (req, res) => {
                                     // console.log("new_Temp_Entity2", new_Temp_Entity);
                                     new_Temp_Entity._source.properties = extend(oldElement._source.properties, editValues.properties);
                                     if (req.files != undefined)
-                                        req.files.forEach(function (el) {
+                                        req.files.forEach(function(el) {
                                             var ark = replaceAll(el.fieldname, '[', '@@');
                                             var temp_el = el;
                                             delete el.fieldname;
@@ -3235,15 +3829,15 @@ router.put('/:id', (req, res) => {
                                     params_del["index"] = new_Temp_Entity._index;
                                     params_del["type"] = new_Temp_Entity._type;
                                     // params_del["refresh"] = 'true';
-                                    client.delete(params_del).then(function (resp) {
+                                    client.delete(params_del).then(function(resp) {
                                         client.index({
                                             index: new_Temp_Entity._index,
                                             type: new_Temp_Entity._type,
                                             id: new_Temp_Entity["_id"],
                                             body: new_Temp_Entity._source,
                                             refresh: 'true'
-                                        }).then(function (resp) {
-                                            console.log(nameFile + ' | /:id | put | updated :', id, JSON.stringify(resp));
+                                        }).then(function(resp) {
+                                            // console.log(nameFile + ' | /:id | put | updated :', id, JSON.stringify(resp));
                                             logger.info(nameFile + ' | /:id | put | updated dymeruser.id, id, enity :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(new_Temp_Entity));
                                             logger.info(nameFile + ' | /:id | put | updated dymeruser.id, id, _relationtodelete :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(_relationtodelete));
                                             ret.setMessages("Updated!");
@@ -3251,36 +3845,29 @@ router.put('/:id', (req, res) => {
                                             /* var extraInfo = dymerextrainfo;
                                              if (extraInfo != undefined)
                                                  extraInfo.extrainfo.emailAddress = dymeruser.id;*/
-                                            console.log(nameFile + ' | /:id | put | pre check hook id,extraInfo: ', id, JSON.stringify(dymerextrainfo));
+                                            // console.log(nameFile + ' | /:id | put | pre check hook id,extraInfo: ', id, JSON.stringify(dymerextrainfo));
                                             logger.info(nameFile + ' | /:id | put | pre check hook| obj, extraInfo:' + dymeruser.id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
                                             checkServiceHook('after_update', objHook, dymerextrainfo, req);
                                             return res.send(ret);
-                                        }).catch(function (err) {
+                                        }).catch(function(err) {
                                             console.error("ERROR | " + nameFile + ' | /:id | put | id: ', id, err);
-                                            logger.error(nameFile + '| /:id | put | id, entity:' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(new_Temp_Entity));
+                                            logger.error(nameFile + '| /:id | put | id, entity:' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(new_Temp_Entity) + " , " + err);
                                             ret.setSuccess(false);
                                             ret.setMessages("Error Updated!");
                                             return res.send(ret);
                                         });
-                                    }).catch(function (err) {
+                                    }).catch(function(err) {
                                         console.error("ERROR | " + nameFile + ' | /:id | put | delete: ', id, err);
+                                        logger.error(nameFile + ' | /:id | put | delete: ' + dymeruser.id + ' , ' + id + ' , ' + err);
                                         ret.setSuccess(false);
                                         ret.setMessages("Error Updated!");
                                         return res.send(ret);
                                     });
-
-
-
-
                                 });
-
-
-
-
-
                             });
-                        }).catch(function (err) {
+                        }).catch(function(err) {
                             console.error("ERROR | " + nameFile + ' | /:id | put | delete search: ', id, err);
+                            logger.error(nameFile + ' | /:id | put | delete search: ' + dymeruser.id + ' , ' + id + ' , ' + err);
                             ret.setSuccess(false);
                             ret.setMessages("Error Updated!");
                             return res.send(ret);
@@ -3297,8 +3884,9 @@ router.put('/:id', (req, res) => {
                     ret.setSuccess(false);
                     return res.send(ret);
                 }
-            }).catch(function (err) {
+            }).catch(function(err) {
                 console.error("ERROR | " + nameFile + ' | /:id | put | delete search: ', id, err);
+                logger.error(nameFile + ' | /:id | put | delete search: ' + dymeruser.id + ' , ' + id + ' , ' + err);
                 ret.setSuccess(false);
                 ret.setMessages("Error Updated!");
                 return res.send(ret);
@@ -3306,6 +3894,7 @@ router.put('/:id', (req, res) => {
         }
     });
 });
+
 const checklogged = function (req) {
     return new Promise(function (resolve, reject) {
         const callData = util.getAllQuery(req);
@@ -3520,7 +4109,8 @@ router.patch('/:id', async (req, res, next) => {
         hasperm = true;
         isadmin = true;
     }
-    console.log(nameFile + ' | patch/:id | dymeruser:', JSON.stringify(dymeruser));
+    //console.log(nameFile + ' | patch/:id | dymeruser:', JSON.stringify(dymeruser));
+    logger.info(nameFile + ' | patch/:id | dymeruser :' + JSON.stringify(dymeruser));
     queryString = "?role[]=" + dymeruser.roles.join("&role[]=");
     var url = util.getServiceUrl("dservice") + "/api/v1/perm/entityrole/";
     url += act + "/";
@@ -3529,6 +4119,7 @@ router.patch('/:id', async (req, res, next) => {
     upload(req, res, function (err) {
         if (err) {
             console.error("ERROR | " + nameFile + ' | patch/:id | upload:', err);
+            logger.error(nameFile + ' | patch/:id | upload : ' + err);
             ret.setMessages("Upload Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -3545,22 +4136,26 @@ router.patch('/:id', async (req, res, next) => {
         if (instance != undefined) {
             bridgeConf = bE.findByIndex(instance.index);
         }
-        console.log(nameFile + ' | patch/:id | bridgeConf:', JSON.stringify(bridgeConf));
+        //console.log(nameFile + ' | patch/:id | bridgeConf:', JSON.stringify(bridgeConf));
+        logger.info(nameFile + ' | patch/:id | bridgeConf :' + JSON.stringify(bridgeConf));
         if (bridgeConf != undefined) {
-            jsonMappingDymerEntityToExternal(callData, bridgeConf, "patch").then(function (mapdata) {
-                bridgeEsternalEntities(bridgeConf, "patch", mapdata).then(function (callresp) {
-                    console.log(nameFile + ' | patch/:id | bridgeEsternalEntities: ', JSON.stringify(mapdata), JSON.stringify(callresp.data));
+            jsonMappingDymerEntityToExternal(callData, bridgeConf, "patch").then(function(mapdata) {
+                bridgeEsternalEntities(bridgeConf, "patch", mapdata).then(function(callresp) {
+                    //console.log(nameFile + ' | patch/:id | bridgeEsternalEntities: ', JSON.stringify(mapdata), JSON.stringify(callresp.data));
+                    logger.info(nameFile + ' | patch/:id | bridgeEsternalEntities :' + JSON.stringify(mapdata) + " , " + JSON.stringify(callresp.data));
                     ret.setData(callresp.data);
                     ret.setMessages("Fields Edited successfully");
                     return res.send(ret);
-                }).catch(function (error) {
-                    console.error("ERROR | " + nameFile + '  | patch/:id | bridgeEsternalEntities:', error);
+                }).catch(function(error) {
+                    console.error("ERROR | " + nameFile + ' | patch/:id | bridgeEsternalEntities:', error);
+                    logger.error(nameFile + ' |  patch/:id | bridgeEsternalEntities : ' + error);
                     ret.setSuccess(false);
                     ret.setMessages("Fields Edit Problem");
                     return res.send(ret);
                 });
-            }).catch(function (error) {
-                console.error("ERROR | " + nameFile + '  | patch/:id | jsonMappingDymerEntityToExternal:', error);
+            }).catch(function(error) {
+                console.error("ERROR | " + nameFile + ' | patch/:id | jsonMappingDymerEntityToExternal:', error);
+                logger.error(nameFile + ' |  patch/:id | jsonMappingDymerEntityToExternal : ' + error);
                 ret.setSuccess(false);
                 ret.setMessages("Fields Edit Problem");
                 return res.send(ret);
@@ -3581,10 +4176,12 @@ router.patch('/:id', async (req, res, next) => {
                     let harpermEdit = false;
                     if (checkElemPerm.owner.uid == urs_uid || isadmin)
                         harpermEdit = true;
-                    if ((checkElemPerm.grant.update.uid).find(x => x == urs_uid)) {
-                        harpermEdit = true;
-                    }
-                    console.log(nameFile + ' | patch/:id | dymeruser.id, id,permission patch:', dymeruser.id, id, harpermEdit);
+                    if (checkElemPerm.hasOwnProperty("grant"))
+                        if ((checkElemPerm.grant.update.uid).find(x => x == urs_uid)) {
+                            harpermEdit = true;
+                        }
+                    // console.log(nameFile + ' | patch/:id | dymeruser.id, id,permission patch:', dymeruser.id, id, harpermEdit);
+                    logger.info(nameFile + ' | patch/:id | dymeruser.id, id,permission patch:' + dymeruser.id + " , " + id + " , " + harpermEdit);
                     if (harpermEdit) {
                         client.update({
                             id: id,
@@ -3594,7 +4191,7 @@ router.patch('/:id', async (req, res, next) => {
                             refresh: 'true'
                         }).then(function (resp) {
                             logger.info(nameFile + ' | patch/:id | dymeruser.id, id updated :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(data));
-                            console.log(nameFile + ' | patch/:id | dymeruser.id, id updated :', dymeruser.id, id);
+                            //console.log(nameFile + ' | patch/:id | dymeruser.id, id updated :', dymeruser.id, id);
                             ret.setMessages("Updated!");
                             return res.send(ret);
                         }).catch(function (err) {
@@ -3613,6 +4210,7 @@ router.patch('/:id', async (req, res, next) => {
                 })
             }).catch((loger) => {
                 console.error("ERROR | " + nameFile + ' | patch/:id | dymeruser.id, id search :', dymeruser.id, id, loger);
+                logger.error(nameFile + ' | patch/:id | dymeruser.id, id search : ' + dymeruser.id + ' , ' + id + ' , ' + loger);
                 ret.setSuccess(false);
                 ret.setMessages("Error Updated!");
                 return res.send(ret);
@@ -3682,8 +4280,8 @@ router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
     };
     params_["body"].size = 10000;
     logger.info(nameFile + ' | deleteAllEntityByIndex | dymeruser.id, index :' + dymeruser.id + ' , ' + index);
-    console.log(nameFile + ' | deleteAllEntityByIndex | dymeruser.id, index :', dymeruser.id, index);
-    client.search(params_).then(function (resp) {
+    // console.log(nameFile + ' | deleteAllEntityByIndex | dymeruser.id, index :', dymeruser.id, index);
+    client.search(params_).then(function(resp) {
         if (resp.hits.total == 0) {
             ret.setSuccess(true);
             ret.setMessages("No entity founded");
@@ -3711,13 +4309,15 @@ router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
             }
             client.delete(delarams).then(
                 function (resp) {
-                    console.log(nameFile + ' | deleteAllEntityByIndex | dymeruser.id, entity removed :', dymeruser.id, JSON.stringify(resp));
+                    //console.log(nameFile + ' | deleteAllEntityByIndex | dymeruser.id, entity removed :', dymeruser.id, JSON.stringify(resp));
+                    logger.info(nameFile + ' | deleteAllEntityByIndex | dymeruser.id, entity removed :' + dymeruser.id + " , " + JSON.stringify(resp));
                     gridfs_delete_queue.forEach(function (element) {
                         gridFSBucket.delete(mongoose.Types.ObjectId(element))
                             .then(() => { })
                             .catch(function (err) {
                                 ret.setSuccess(false);
                                 console.error("ERROR | " + nameFile + ' | deleteAllEntityByIndex | dymeruser.id, gridFSBucket.delete :', dymeruser.id, err);
+                                logger.error(nameFile + ' | | deleteAllEntityByIndex | dymeruser.id, gridFSBucket.delete : ' + dymeruser.id + " , " + err);
                             });
                     });
                     ret.setMessages("Entity deleted successfully");
@@ -3729,7 +4329,7 @@ router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
                     /*var extraInfo = dymerextrainfo;
                     if (extraInfo != undefined)
                         extraInfo.extrainfo.emailAddress = dymeruser.id;*/
-                    console.log(nameFile + ' | deleteAllEntityByIndex | pre check hook id,extraInfo: ', dymeruser.id, JSON.stringify(objHook), JSON.stringify(dymerextrainfo));
+                    // console.log(nameFile + ' | deleteAllEntityByIndex | pre check hook id,extraInfo: ', dymeruser.id, JSON.stringify(objHook), JSON.stringify(dymerextrainfo));
                     logger.info(nameFile + ' | deleteAllEntityByIndex | pre check hook id,extraInfo: ' + dymeruser.id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
                     checkServiceHook('after_delete', objHook, dymerextrainfo, req);
                 },
@@ -3743,6 +4343,7 @@ router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
     }, function (err) {
         ret.setSuccess(false);
         console.error("ERROR | " + nameFile + ' | deleteAllEntityByIndex | search :', dymeruser.id, err);
+        logger.error(nameFile + ' | deleteAllEntityByIndex | search dymeruser.id, err : ' + dymeruser.id + " , " + err);
         ret.setMessages("Error search deleteAllEntityByIndex");
         return res.send(ret);
     });
@@ -3762,7 +4363,7 @@ router.get('/deleteAllEntityAndIndexByIndex/', (req, res) => {
     client.indices.delete({
         index: index_,
     }).then(function (resp) {
-        console.log(nameFile + ' | deleteAllEntityAndIndexByIndex | index :', dymeruser.id, index_);
+        //console.log(nameFile + ' | deleteAllEntityAndIndexByIndex | index :', dymeruser.id, index_);
         logger.info(nameFile + ' | deleteAllEntityAndIndexByIndex | dymeruser.id, index :' + dymeruser.id + ' , ' + index_);
         deleteRelationByIndex(index_);
     }, function (err) {
@@ -3793,10 +4394,12 @@ router.delete('/:id', (req, res) => {
         urs_gid = dymerextrainfo.extrainfo.groupId;*/
     if (dymerextrainfo != undefined)
         urs_gid = dymerextrainfo.groupId;
-    console.log(nameFile + ' | delete/:id | dymeruser:', JSON.stringify(dymeruser));
+    //console.log(nameFile + ' | delete/:id | dymeruser:', JSON.stringify(dymeruser));
+    logger.info(nameFile + ' | delete/:id | dymeruser :' + JSON.stringify(dymeruser));
     upload(req, res, function (err) {
         if (err) {
             console.error("ERROR | " + nameFile + ' | delete/:id :', err);
+            logger.error(nameFile + ' | delete/:id : ' + err);
             ret.setMessages("Upload Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -3809,7 +4412,8 @@ router.delete('/:id', (req, res) => {
         params["id"] = id;
         var indextosearch = [callData.indexentity];
         var bridgeConf = bE.findByIndex(indextosearch[0]); // bE.findByIndex(indextosearch[0]);
-        console.log(nameFile + ' | delete/:id | bridgeConf:', JSON.stringify(bridgeConf));
+        // console.log(nameFile + ' | delete/:id | bridgeConf:', JSON.stringify(bridgeConf));
+        logger.info(nameFile + ' | delete/:id | dymeruser :' + JSON.stringify(bridgeConf));
         if (bridgeConf != undefined) {
             var globalData = req.body;
             if (bridgeConf.api.tokenProvider != undefined) {
@@ -3848,20 +4452,23 @@ router.delete('/:id', (req, res) => {
                 }
             }
             else {
-                jsonMappingDymerEntityToExternal(callData, bridgeConf, "delete").then(function (mapdata) {
-                    bridgeEsternalEntities(bridgeConf, "delete", mapdata).then(function (callresp) {
-                        console.log(nameFile + ' | delete/:id | bridgeEsternalEntities: ', JSON.stringify(mapdata), JSON.stringify(callresp.data));
+                jsonMappingDymerEntityToExternal(callData, bridgeConf, "delete").then(function(mapdata) {
+                    bridgeEsternalEntities(bridgeConf, "delete", mapdata).then(function(callresp) {
+                        //console.log(nameFile + ' | delete/:id | bridgeEsternalEntities: ', JSON.stringify(mapdata), JSON.stringify(callresp.data));
+                        logger.info(nameFile + ' | delete/:id | bridgeEsternalEntities :' + JSON.stringify(mapdata) + " , " + JSON.stringify(callresp.data));
                         ret.setData(callresp.data);
                         ret.setMessages("Entity Deleted successfully");
                         return res.send(ret);
-                    }).catch(function (error) {
+                    }).catch(function(error) {
                         console.log(nameFile + ' | delete/:id | bridgeEsternalEntities: ', error);
+                        logger.error(nameFile + ' | delete/:id | bridgeEsternalEntities : ' + error);
                         ret.setSuccess(false);
                         ret.setMessages("Entity Delete Problem");
                         return res.send(ret);
                     });
                 }).catch(function (error) {
                     console.log(nameFile + ' | delete/:id | jsonMappingDymerEntityToExternal: ', error);
+                    logger.error(nameFile + ' | delete/:id | jsonMappingDymerEntityToExternal: ' + error);
                     ret.setSuccess(false);
                     ret.setMessages("Entity Delete Problem");
                     return res.send(ret);
@@ -3906,6 +4513,7 @@ router.delete('/:id', (req, res) => {
                     client.delete(params, function (err, resp, status) {
                         if (err) {
                             console.error("ERROR | " + nameFile + ' | delete/:id | delete :', err);
+                            logger.error(nameFile + ' | delete/:id | delete: ' + err);
                             ret.setSuccess(false);
                             ret.setExtraData({ "log": err.message });
                             ret.setMessages("Error delete");
@@ -3917,18 +4525,20 @@ router.delete('/:id', (req, res) => {
                                 .then(() => { })
                                 .catch(function (err) {
                                     console.error("ERROR | " + nameFile + ' | delete/:id | Attachments :', err);
+                                    logger.error(nameFile + ' | delete/:id | Attachments: ' + err);
                                 });
                         });
                         ret.setMessages("Entity deleted successfully");
                         ret.addData(resp);
-                        console.log(nameFile + ' | delete/:id | deleted id:', dymeruser.id, id);
+                        //console.log(nameFile + ' | delete/:id | deleted id:', dymeruser.id, id);
+                        logger.info(nameFile + ' | delete/:id | deleted id :' + dymeruser.id + " , " + id);
                         // deleteRelationOneEntity(id);
                         deleteRelationOneEntityAndIndex(params.id, element["_index"]);
                         var objHook = elToDelete;
                         /* var extraInfo = dymerextrainfo;
                          if (extraInfo != undefined)
                              extraInfo.extrainfo.emailAddress = dymeruser.id;*/
-                        console.log(nameFile + ' | delete/:id | pre check hook id,extraInfo: ', dymeruser.id, id, JSON.stringify(dymerextrainfo));
+                        //console.log(nameFile + ' | delete/:id | pre check hook id,extraInfo: ', dymeruser.id, id, JSON.stringify(dymerextrainfo));
                         logger.info(nameFile + ' | delete/:id | pre check hook id,extraInfo: ' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
                         checkServiceHook('after_delete', objHook, dymerextrainfo, req);
                         return res.send(ret);
@@ -3950,9 +4560,7 @@ function checkServiceHook(EventSource, objSend, extraInfo, req) {
     //insert non ho i dati quindi devo fare un get
     var url_dservice = util.getServiceUrl("dservice");
     logger.info(nameFile + ' | checkServiceHook | url_dservice,EventSource,objSend: ' + url_dservice + ' , ' + EventSource + ' , ' + JSON.stringify(objSend));
-    console.log(nameFile + ' | checkServiceHook | url_dservice,EventSource: ', url_dservice, EventSource);
-    console.log(nameFile + ' | checkServiceHook | objSend: ', JSON.stringify(objSend));
-    console.log(nameFile + ' | checkServiceHook | reqfrom: ', JSON.stringify(req.headers));
+    logger.info(nameFile + ' | checkServiceHook | reqfrom: ' + JSON.stringify(req.headers));
     const headers = {
         'reqfrom': req.headers["reqfrom"]
     }
@@ -3970,7 +4578,8 @@ function checkServiceHook(EventSource, objSend, extraInfo, req) {
             //marcoper adapter
             checkUnionRelation(resp.hits.hits).then(function (match) {
                 let element = match[0];
-                console.log('ent match element', JSON.stringify(element));
+                // console.log('ent match element', JSON.stringify(element));
+                logger.info(nameFile + ' | checkServiceHook | ent match element: ' + JSON.stringify(element));
                 //    match.forEach(element => {
                 if (element.hasOwnProperty("relations")) {
                     if (element.relations.length > 0)
@@ -3991,7 +4600,8 @@ function checkServiceHook(EventSource, objSend, extraInfo, req) {
                         });
                     delete element.relations;
                 }
-                console.log('NEW match', JSON.stringify(element));
+                // console.log('NEW match', JSON.stringify(element));
+                logger.info(nameFile + ' | checkServiceHook | NEW match: ' + JSON.stringify(element));
                 // objSend = resp.hits.hits[0];
                 var postObj = {
                     eventSource: EventSource,
@@ -4000,15 +4610,17 @@ function checkServiceHook(EventSource, objSend, extraInfo, req) {
                 axios.post(url_dservice + '/api/v1/servicehook/checkhook', { data: postObj, "extraInfo": extraInfo }, {
                     headers: headers
                 }).then(response => {
-                    console.log(nameFile + ' | checkServiceHook | insert axios.post: ', response);
+                    //console.log(nameFile + ' | checkServiceHook | insert axios.post: ', response);
+                    logger.info(nameFile + ' | checkServiceHook | insert axios.post: ' + response);
                 })
                     .catch(error => {
-                        logger.error("ERROR | " + nameFile + ' | checkServiceHook | insert axios.post: ', error);
-                        // console.error("ERROR | " + nameFile + ' | checkServiceHook | insert axios.post: ', error);
+                        logger.error("ERROR | " + nameFile + ' | checkServiceHook | insert axios.post: ' + error);
+                        console.error("ERROR | " + nameFile + ' | checkServiceHook | insert axios.post: ', error);
                     });
                 //   });
             }).catch(function (err) {
-                console.error("ERROR | " + nameFile + '  | _search | checkUnionRelation:', err);
+                console.error("ERROR | " + nameFile + ' | _search | checkUnionRelation:', err);
+                logger.error(nameFile + ' | _search | checkUnionRelation : ' + err);
             });
         });
     } else {
@@ -4017,10 +4629,12 @@ function checkServiceHook(EventSource, objSend, extraInfo, req) {
             obj: objSend
         };
         axios.post(url_dservice + '/api/v1/servicehook/checkhook', { data: postObj, "extraInfo": extraInfo }, { headers: headers }).then(response => {
-            console.log(nameFile + ' | checkServiceHook | axios.post: ', response);
+            //console.log(nameFile + ' | checkServiceHook | axios.post: ', response);
+            logger.info(nameFile + ' | checkServiceHook | axios.post: ' + response);
         })
             .catch(error => {
                 console.error("ERROR | " + nameFile + ' | checkServiceHook | axios.post: ', error);
+                logger.error(nameFile + ' | _search | checkServiceHook | axios.post : ' + error);
             });
     }
 }

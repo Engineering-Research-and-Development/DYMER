@@ -1,12 +1,14 @@
 var util = require('../utility');
 var jsonResponse = require('../jsonResponse');
 var http = require('http');
+var https = require('https');
 var express = require('express');
 const FormData = require('form-data')
 const bodyParser = require("body-parser");
 const path = require('path');
 const nameFile = path.basename(__filename);
 const mongoose = require("mongoose");
+const logger = require('./dymerlogger');
 require('./mongodb.js');
 const axios = require('axios');
 const fs = require('fs');
@@ -16,6 +18,7 @@ var router = express.Router();
 //https://www.npmjs.com/package/cron-job-manager
 var CronJobManager = require('cron-job-manager');
 const multer = require('multer');
+const { json } = require('body-parser');
 //DymerCronJobRule
 require("../models/permission/DymerCronJobRule");
 const DymRule = mongoose.model("DymerCronJobRule");
@@ -90,12 +93,13 @@ function pushrunJobs() {
             var key = (element._id).toString();
             manager.add(key, element.time, () => {
                 countstop++;
-                console.log("countstop", countstop);
-                console.log("a2", element.title, new Date().toLocaleString());
+                logger.info(nameFile + ' | pushrunJobs | countstop :' + countstop + " " + element.title);
+                //console.log("countstop", countstop);
+                //console.log("a2", element.title, new Date().toLocaleString());
                 let urlToInvocke = util.getServiceUrl('webserver') + util.getContextPath('webserver') + '/api/dservice/api/v1/import/fromdymer/' + key
                 axios.get(urlToInvocke).then(resp => {
-
-                    console.log("invoco super", key);
+                    logger.info(nameFile + ' | invoco super :' + key);
+                    //console.log("invoco super", key);
                 });
             });
             manager.start(key);
@@ -110,11 +114,12 @@ function stopAndRestartAll() {
 }
 
 function stopJob(campaignId) {
-    console.log("provo a terminare");
+    // console.log("provo a terminare");
     /*loblist[index].stop();*/
     manager.stop(campaignId)
         /* job.stop();*/
-    console.log("ho terminato il processo");
+        // console.log("ho terminato il processo");
+    logger.info(nameFile + ' | stopJob :' + campaignId);
 }
 
 router.post('/cronjob/:id?', util.checkIsAdmin, function(req, res) {
@@ -130,6 +135,7 @@ router.post('/cronjob/:id?', util.checkIsAdmin, function(req, res) {
             function(err, raw) {
                 if (err) {
                     ret.setSuccess(false);
+                    logger.error(nameFile + ' | post/cronjob/:id? | updateOne :' + err);
                     console.error("ERROR | " + nameFile + " | post/cronjob/:id? | updateOne :", err);
                     ret.setMessages("Model Error");
                     return res.send(ret);
@@ -150,6 +156,7 @@ router.post('/cronjob/:id?', util.checkIsAdmin, function(req, res) {
             return res.send(ret);
         }).catch((err) => {
             if (err) {
+                logger.error(nameFile + ' | post/cronjob/:id? | create: ' + err);
                 console.error("ERROR | " + nameFile + " | post/cronjob/:id? | create: ", err);
                 ret.setMessages("Post error");
                 ret.setSuccess(false);
@@ -161,8 +168,9 @@ router.post('/cronjob/:id?', util.checkIsAdmin, function(req, res) {
     }
 });
 router.put('/cronjob/:id', util.checkIsAdmin, (req, res) => {
-    console.log("Put cronjob Roles");
+    //console.log("Put cronjob Roles");
     let id = req.params.id;
+    logger.info(nameFile + ' | put/cronjob/:id   :' + id);
     let callData = util.getAllQuery(req);
     //let data = callData.data;
     let data = req.body;
@@ -177,6 +185,7 @@ router.put('/cronjob/:id', util.checkIsAdmin, (req, res) => {
             if (err) {
                 ret.setSuccess(false);
                 console.error("ERROR | " + nameFile + " | put/cronjob/:id? | updateOne :", err);
+                logger.error(nameFile + ' | put/cronjob/:id? | updateOne : ' + err);
                 ret.setMessages("Element Error");
                 return res.send(ret);
             } else {
@@ -199,6 +208,7 @@ router.delete('/cronjob/:id', util.checkIsAdmin, (req, res) => {
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + " | delete/cronjob/:id? | findOneAndDelete :", err);
+            logger.error(nameFile + ' | delete/cronjob/:id? | findOneAndDelete : ' + err);
             ret.setMessages("Delete Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -208,7 +218,7 @@ router.delete('/cronjob/:id', util.checkIsAdmin, (req, res) => {
 });
 
 // '/api/dservice/api/v1/import/fromjson'
-router.get('/fromjson', (req, res) => {
+router.get('/fromjson', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -216,11 +226,13 @@ router.get('/fromjson', (req, res) => {
     var filename = callData.filename;
     var entityType = callData.type;
     var listTopost = [];
-    console.log(nameFile + ' | get/fromjson | import : ', filename);
+    //console.log(nameFile + ' | get/fromjson | import : ', filename);
+    logger.info(nameFile + '| get/fromjson | import :' + filename);
     //http://localhost:8080/api/dservice/api/v1/import/fromjson?filename=AIREGIO_ServicePortfolio_onlinePortal.json.js&type=organization
     fs.readFile('importfile/' + filename, (err, data) => {
         if (err) {
             console.error("ERROR | " + nameFile + " | get/fromjson  :", err);
+            logger.error(nameFile + ' | get/fromjson | get/fromjson  : ' + err);
             return res.send(ret);
         } //throw err;
         let list = JSON.parse(data);
@@ -325,7 +337,7 @@ router.get('/fromjson', (req, res) => {
                         "id": element["owner"],
                         "app_id": "",
                         "email": element["owner"],
-                        "username": "frastefa frastefa"
+                        "username": element["owner"]
                     };
                     let userinfo_objJsonStr = JSON.stringify(userinfo);
                     let userinfo_objJsonB64 = Buffer.from(userinfo_objJsonStr).toString("base64");
@@ -334,7 +346,8 @@ router.get('/fromjson', (req, res) => {
                 });
                 listTopost.forEach(function(obj, index) {
                     setTimeout(function() {
-                        console.log("import timeout axios", index);
+                        //  console.log("import timeout axios", index);
+                        logger.info(nameFile + ' get/fromjson | import timeout axios :' + index + " " + JSON.stringify(obj.data));
                         postMyData(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA);
                     }, 1000 * (index + 1));
                 });
@@ -342,6 +355,7 @@ router.get('/fromjson', (req, res) => {
             })
             .catch(error => {
                 console.error("ERROR | " + nameFile + " | get/fromjson ", error);
+                logger.error(nameFile + ' | get/fromjson : ' + error);
             });
     });
 });
@@ -426,24 +440,41 @@ function postMyData(el, index, DYM, DYM_EXTRA) {
     axios(config)
         .then(function(updatedEl) {}).catch(function(error) {
             console.log("Error__________", error);
+            logger.error(nameFile + ' | postMyData : ' + error);
         });
 
 }
 var downloadFile = function(url, dest, filename) {
     return new Promise(function(resolve, reject) {
-        http.get(url, (res) => {
-            // Image will be stored at this path
-            //const path = `${__dirname}../importfile/img.jpeg`;
-            const path = `${dest}/${filename}`;
-            const filePath = fs.createWriteStream(path);
-            res.pipe(filePath);
-            filePath.on('finish', () => {
-                filePath.close();
-                resolve();
+        if (url.startsWith("https")) {
+            https.get(url, (res) => {
+                // Image will be stored at this path
+                //const path = `${__dirname}../importfile/img.jpeg`;
+                const path = `${dest}/${filename}`;
+                const filePath = fs.createWriteStream(path);
+                res.pipe(filePath);
+                filePath.on('finish', () => {
+                    filePath.close();
+                    resolve();
+                })
             })
-        })
+        } else {
+            http.get(url, (res) => {
+                // Image will be stored at this path
+                //const path = `${__dirname}../importfile/img.jpeg`;
+                const path = `${dest}/${filename}`;
+                const filePath = fs.createWriteStream(path);
+                res.pipe(filePath);
+                filePath.on('finish', () => {
+                    filePath.close();
+                    resolve();
+                })
+            })
+        }
+
     }).catch(function(err) {
         console.error("ERROR | " + nameFile + " | downloadFile ", err);
+        logger.error(nameFile + ' | downloadFile : ' + err);
     });
 }
 const removeDir = function(path) {
@@ -463,10 +494,12 @@ const removeDir = function(path) {
         }
     } else {
         console.error("ERROR | " + nameFile + " | Directory path not found ", path);
+        logger.error(nameFile + ' | removeDir | Directory path not found  : ' + path);
     }
 }
 
-function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action) {
+
+function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action, fileurl) {
     var posturl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/" + index;
     if (action == "put")
         posturl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/" + el.instance.id;
@@ -476,22 +509,28 @@ function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action) {
     const dir = dest + "/" + el.instance.id;
     checkFilesFormdata(arrlistFiles, el);
     let requests = arrlistFiles.map((fl) => {
-        let url = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/contentfile/" + el.instance.id + "/" + fl.id;
+        let url = fileurl + "/api/entities/api/v1/entity/contentfile/" + el.instance.id + "/" + fl.id;
         url += "?tkdym=" + DYM;
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
         }
         let fname = fl.filename;
+        //   console.log('fname', fname);
+        //    console.log('url', url);
         return downloadFile(url, dir, fname).then(function(result) {
+            //logger.error(nameFile + ' test | postMyDataAndFiles | downloadFile : ');
+            console.log('downloadFile', fname, result);
             // form.append('file', fs.readFileSync(dest), fname);
         }).catch(function(err) {
             console.log("err_a");
             console.log(err);
+            logger.error(nameFile + ' | postMyDataAndFiles | downloadFile : ' + err);
         });
     })
     Promise.all(requests).then(() => {
         appendFormdataFiles(formdata, el, '', dir + "/");
-        console.log("Promesse tutte eseguite");
+        //console.log("Promesse tutte eseguite");
+        logger.info(nameFile + ' | postMyDataAndFiles | Promesse tutte eseguite  ');
         var config = {
             method: action,
             url: posturl,
@@ -502,6 +541,9 @@ function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action) {
             },
             data: formdata
         };
+        // console.log(nameFile + ' | callFwAdapter | invio, ad adapter | conf : ' + JSON.stringify(conf));
+        //console.log(nameFile + ' | callFwAdapter | invio, ad adapter | el : ' + action + "-" + posturl + "-" + JSON.stringify(el));
+
         axios(config)
             .then(function(updatedEl) {
                 if (fs.existsSync(dir)) {
@@ -510,6 +552,7 @@ function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action) {
                     // fs.rmdirSync(dir, { recursive: true });
                 }
             }).catch(function(error) {
+                logger.error(nameFile + ' | postMyDataAndFiles | axios post : ' + error);
                 console.log("Error__________", error);
             });
     });
@@ -555,19 +598,340 @@ var objectToFormData = function(obj, form, namespace) {
     }
     return fd;
 };
+router.get('/updategeo/:entype', util.checkIsAdmin, (req, res) => {
+    logger.info(nameFile + '| get/updategeo');
+    var entype = req.params.entype;
+    var ret = new jsonResponse();
+    const originalrelquery = entype;
+    var pt = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/_search";
+    var listGeo = [];
+    var query = {
+        "query": {
+            "query": {
+                "bool": {
+                    "must": [{
+                        "term": {
+                            "_index": originalrelquery
+                        }
+                    }]
+                }
+            }
+        },
+        "qoptions": { "relations": "false" }
+    };
+    var extrainfo_admin = {
+        "extrainfo": {
+            "companyId": "20097",
+            "groupId": "20121",
+            "cms": "lfr",
+            "userId": 1,
+            "virtualhost": "localhost"
+        }
+    };
+    let extrainfo_objJsonStr_admin = JSON.stringify(extrainfo_admin);
+    let extrainfo_objJsonB64_admin = Buffer.from(extrainfo_objJsonStr_admin).toString("base64");
+    var userinfo_admin = {
+        "isGravatarEnabled": false,
+        "authorization_decision": "",
+        "roles": [{
+                "role": "User",
+                "id": "20109"
+            },
+            {
+                "role": "app-admin",
+                "id": "20110"
+            }
+        ],
+        "app_azf_domain": "",
+        "id": 1,
+        "app_id": "",
+        "email": "marcoromano12@gmail.com",
+        "username": "marcoromano12@gmail.com"
+    };
+
+    let userinfo_objJsonStr_admin = JSON.stringify(userinfo_admin);
+    let userinfo_objJsonB64_admin = Buffer.from(userinfo_objJsonStr_admin).toString("base64");
+    var formdata_admin = new FormData();
+    appendFormdata(formdata_admin, query);
+    var config = {
+        method: 'post',
+        url: pt,
+        headers: {
+            ...formdata_admin.getHeaders(),
+            'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
+            'extrainfo': `${extrainfo_objJsonB64_admin}`,
+        },
+        data: formdata_admin
+    };
+    //  axios(config)
+    // axios.post(pt, query)
+    axios(config).then(response => {
+            const listaRel = response.data.data;
+            console.log("listaRelswap", JSON.stringify(listaRel));
+            listaRel.forEach(element => {
+                if (element.hasOwnProperty("location")) {
+                    if (element.location.hasOwnProperty("coordinates")) {
+                        if (element.location.coordinates.length == 2 && (element.location.coordinates[0] != "" && element.location.coordinates[1] != "")) {
+                            let tmpcoord0 = element.location.coordinates[1];
+                            let tmpcoord1 = element.location.coordinates[0];
+                            var singleEntity = {
+                                "data": {
+                                    "location": {
+                                        "coordinates": [tmpcoord0, tmpcoord1]
+                                    }
+                                }
+                            };
+                            var extrainfo = {
+                                "extrainfo": {
+                                    "companyId": "20097",
+                                    "groupId": "20121",
+                                    "cms": "lfr",
+                                    "userId": element.properties.owner["uid"],
+                                    "virtualhost": "localhost"
+                                }
+                            };
+                            let extrainfo_objJsonStr = JSON.stringify(extrainfo);
+                            let extrainfo_objJsonB64 = Buffer.from(extrainfo_objJsonStr).toString("base64");
+                            var userinfo = {
+                                "isGravatarEnabled": false,
+                                "authorization_decision": "",
+                                "roles": [{
+                                        "role": "User",
+                                        "id": "20109"
+                                    },
+                                    {
+                                        "role": "app-admin",
+                                        "id": "20110"
+                                    }
+                                ],
+                                "app_azf_domain": "",
+                                "id": element.properties.owner["uid"],
+                                "app_id": "",
+                                "email": element.properties.owner["uid"],
+                                "username": element.properties.owner["uid"]
+                            };
+                            let userinfo_objJsonStr = JSON.stringify(userinfo);
+                            let userinfo_objJsonB64 = Buffer.from(userinfo_objJsonStr).toString("base64");
+                            var objToPost = { 'id': element._id, 'data': singleEntity, 'DYM': userinfo_objJsonB64, 'DYM_EXTRA': extrainfo_objJsonB64 };
+                            listGeo.push(objToPost);
+                        }
+                    }
+
+                }
+            });
+            const basepatchurl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/";
+            logger.info(nameFile + ' | /updategeo/:entype | listGeo :' + JSON.stringify(listGeo));
+            listGeo.forEach(function(obj, index) {
+                setTimeout(function() {
+                    var formdata = new FormData();
+                    appendFormdata(formdata, obj.data);
+                    var patchurl = basepatchurl + obj.id;
+                    //  console.log("import timeout axios", index);
+                    logger.info(nameFile + ' | /updategeo/:entype | import timeout axios :' + index + " " + JSON.stringify(obj.data));
+                    var config = {
+                        method: 'patch',
+                        url: patchurl,
+                        headers: {
+                            ...formdata.getHeaders(),
+                            'Authorization': `Bearer ${obj.DYM}`,
+                            'extrainfo': `${obj.DYM_EXTRA}`,
+                        },
+                        data: formdata
+                    };
+                    axios(config)
+                        .then(function(updatedEl) {}).catch(function(error) {
+                            console.log("Error__________", error);
+                            logger.error(nameFile + '| /updategeo/:entype | postMyData : ' + error);
+                        });
+
+
+                }, 1000 * (index + 1));
+            });
+            return res.send(ret);
+        })
+        .catch(error => {
+            console.error("ERROR | " + nameFile + " | get/updategeo ", error);
+            logger.error(nameFile + ' | get/updategeo : ' + error);
+        });
+});
+router.get('/updategid/:entype/:gid/:forceall?', util.checkIsAdmin, (req, res) => {
+    logger.info(nameFile + '| get/updategid');
+    var entype = req.params.entype;
+    let forceall = (!req.params.key) ? false : true;
+    let gid = req.params.gid;
+    var ret = new jsonResponse();
+    const originalrelquery = entype;
+    var pt = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/_search";
+    var list = [];
+    var query = {
+        "query": {
+            "query": {
+                "bool": {
+                    "must": [{
+                        "term": {
+                            "_index": originalrelquery
+                        }
+                    }]
+                }
+            }
+        },
+        "qoptions": { "relations": "false" }
+    };
+    var extrainfo_admin = {
+        "extrainfo": {
+            "companyId": "20097",
+            "groupId": "20121",
+            "cms": "lfr",
+            "userId": 1,
+            "virtualhost": "localhost"
+        }
+    };
+    let extrainfo_objJsonStr_admin = JSON.stringify(extrainfo_admin);
+    let extrainfo_objJsonB64_admin = Buffer.from(extrainfo_objJsonStr_admin).toString("base64");
+    var userinfo_admin = {
+        "isGravatarEnabled": false,
+        "authorization_decision": "",
+        "roles": [{
+                "role": "User",
+                "id": "20109"
+            },
+            {
+                "role": "app-admin",
+                "id": "20110"
+            }
+        ],
+        "app_azf_domain": "",
+        "id": 1,
+        "app_id": "",
+        "email": "marcoromano12@gmail.com",
+        "username": "marcoromano12@gmail.com"
+    };
+
+    let userinfo_objJsonStr_admin = JSON.stringify(userinfo_admin);
+    let userinfo_objJsonB64_admin = Buffer.from(userinfo_objJsonStr_admin).toString("base64");
+    var formdata_admin = new FormData();
+    appendFormdata(formdata_admin, query);
+    var config = {
+        method: 'post',
+        url: pt,
+        headers: {
+            ...formdata_admin.getHeaders(),
+            'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
+            'extrainfo': `${extrainfo_objJsonB64_admin}`,
+        },
+        data: formdata_admin
+    };
+    //  axios(config)
+    // axios.post(pt, query)
+    axios(config).then(response => {
+            const listaRel = response.data.data;
+            console.log("listaRelswap", JSON.stringify(listaRel));
+            listaRel.forEach(element => {
+                let updategid = false;
+                updategid = (!element.properties.owner.hasOwnProperty("gid") || forceall) ? true : false;
+                if (!updategid)
+                    if (element.properties.owner.hasOwnProperty("gid")) {
+                        updategid = (element.properties.owner.gid == "1" || element.properties.owner.gid == 1 || element.properties.owner.gid == 0 || element.properties.owner.gid == "0" || element.properties.owner.gid == "") ? true : false;
+                    }
+                if (updategid) {
+
+                    var singleEntity = {
+                        "data": {
+                            "properties": {
+                                "owner": {
+                                    "gid": gid
+                                }
+                            }
+                        }
+                    };
+                    var extrainfo = {
+                        "extrainfo": {
+                            "companyId": "20097",
+                            "groupId": "20121",
+                            "cms": "lfr",
+                            "userId": element.properties.owner["uid"],
+                            "virtualhost": "localhost"
+                        }
+                    };
+                    let extrainfo_objJsonStr = JSON.stringify(extrainfo);
+                    let extrainfo_objJsonB64 = Buffer.from(extrainfo_objJsonStr).toString("base64");
+                    var userinfo = {
+                        "isGravatarEnabled": false,
+                        "authorization_decision": "",
+                        "roles": [{
+                                "role": "User",
+                                "id": "20109"
+                            },
+                            {
+                                "role": "app-admin",
+                                "id": "20110"
+                            }
+                        ],
+                        "app_azf_domain": "",
+                        "id": element.properties.owner["uid"],
+                        "app_id": "",
+                        "email": element.properties.owner["uid"],
+                        "username": element.properties.owner["uid"]
+                    };
+                    let userinfo_objJsonStr = JSON.stringify(userinfo);
+                    let userinfo_objJsonB64 = Buffer.from(userinfo_objJsonStr).toString("base64");
+                    var objToPost = { 'id': element._id, 'data': singleEntity, 'DYM': userinfo_objJsonB64, 'DYM_EXTRA': extrainfo_objJsonB64 };
+                    list.push(objToPost);
+                }
+
+
+            });
+            const basepatchurl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/";
+            logger.info(nameFile + ' | /updategid/:entype | list :' + JSON.stringify(list));
+            list.forEach(function(obj, index) {
+                setTimeout(function() {
+                    var formdata = new FormData();
+                    appendFormdata(formdata, obj.data);
+                    var patchurl = basepatchurl + obj.id;
+                    //  console.log("import timeout axios", index);
+                    logger.info(nameFile + ' | /updategid/:entype | import timeout axios :' + index + " " + JSON.stringify(obj.data));
+                    var config = {
+                        method: 'patch',
+                        url: patchurl,
+                        headers: {
+                            ...formdata.getHeaders(),
+                            'Authorization': `Bearer ${obj.DYM}`,
+                            'extrainfo': `${obj.DYM_EXTRA}`,
+                        },
+                        data: formdata
+                    };
+                    axios(config)
+                        .then(function(updatedEl) {}).catch(function(error) {
+                            console.log("Error__________", error);
+                            logger.error(nameFile + '| /updategid/:entype | postMyData : ' + error);
+                        });
+
+
+                }, 1500 * (index + 1));
+            });
+            return res.send(ret);
+        })
+        .catch(error => {
+            console.error("ERROR | " + nameFile + " | get/updategid ", error);
+            logger.error(nameFile + ' | get/updategid : ' + error);
+        });
+});
 // '/api/dservice/api/v1/import/fromdymer'
-router.get('/fromdymer/:id', (req, res) => {
+router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     var id = req.params.id;
     var myfilter = { "_id": id };
     DymRule.find(myfilter).then((els) => {
         let crnrule = els[0];
-        var pt_external = crnrule.sourcepath; //"http://localhost:8080/api/entities/api/v1/entity/_search";
+        var pt_external = crnrule.sourcepath + crnrule.apisearchpath; //"http://localhost:8080/api/entities/api/v1/entity/_search";
         var pt_internal = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/_search";
+        const fileurl = crnrule.sourcepath; //"http://195.201.83.104"
         const originalrelquery = crnrule.sourceindex; //."";
+        const crnruletitle = crnrule.title; //."";
         const newentityType = crnrule.targetindex; //"";
         const targetprefix = (crnrule.targetprefix == undefined) ? "" : crnrule.targetprefix;
         let importRelations = (crnrule.importrelation == undefined) ? false : crnrule.importrelation;
+        let listRelationsImports = (crnrule.typerelations == undefined || crnrule.typerelations == "") ? [] : crnrule.typerelations.split(",");
         let sameid = (crnrule.sameid == undefined) ? false : crnrule.sameid;
         var query = {
             "query": {
@@ -601,63 +965,132 @@ router.get('/fromdymer/:id', (req, res) => {
         };
         let listTopost = [];
         let listToput = [];
-        axios.post(pt_external, query).then(response => {
+        var extrainfo_admin = {
+            "extrainfo": {
+                "companyId": "20097",
+                "groupId": "20121",
+                "cms": "lfr",
+                "userId": 1,
+                "virtualhost": "localhost"
+            }
+        };
+        let extrainfo_objJsonStr_admin = JSON.stringify(extrainfo_admin);
+        let extrainfo_objJsonB64_admin = Buffer.from(extrainfo_objJsonStr_admin).toString("base64");
+        var userinfo_admin = {
+            "isGravatarEnabled": false,
+            "authorization_decision": "",
+            "roles": [{
+                    "role": "User",
+                    "id": "20109"
+                },
+                {
+                    "role": "app-admin",
+                    "id": "20110"
+                }
+            ],
+            "app_azf_domain": "",
+            "id": 1,
+            "app_id": "",
+            "email": "marcoromano12@gmail.com",
+            "username": "marcoromano12@gmail.com"
+        };
+
+        let userinfo_objJsonStr_admin = JSON.stringify(userinfo_admin);
+        let userinfo_objJsonB64_admin = Buffer.from(userinfo_objJsonStr_admin).toString("base64");
+        var formdata_admin = new FormData();
+        appendFormdata(formdata_admin, query);
+        var config = {
+            method: 'post',
+            url: pt_external,
+            headers: {
+                ...formdata_admin.getHeaders(),
+                'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
+                'extrainfo': `${extrainfo_objJsonB64_admin}`,
+            },
+            data: formdata_admin
+        };
+
+        axios(config).then(response => {
                 const listaRel = response.data.data;
                 listaRel.forEach(element => { queryInternal.query.query.bool.must[1].ids.values.push(targetprefix + element._id); });
-                axios.post(pt_internal, queryInternal).then(respInt => {
+                formdata_admin = new FormData();
+                logger.info(nameFile + ' | Cron Job Import | external entities :' + crnruletitle + "," + listaRel.length);
+                appendFormdata(formdata_admin, queryInternal);
+                config = {
+                    method: 'post',
+                    url: pt_internal,
+                    headers: {
+                        ...formdata_admin.getHeaders(),
+                        'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
+                        'extrainfo': `${extrainfo_objJsonB64_admin}`,
+                    },
+                    data: formdata_admin
+                };
+
+                axios(config).then(respInt => {
                         const listaInt = respInt.data.data;
+
                         listaRel.forEach(element => {
                             element._source.properties.ipsource = pt_external;
                             //dih
-                            let isdih = false;
-                            if (originalrelquery == "businessservice") {
-                                element._source.category = "Business";
-                                isdih = true;
-                            }
-                            if (originalrelquery == "dataservices") {
-                                element._source.category = "Data";
-                                isdih = true;
-                            }
-                            if (originalrelquery == "ecosystemservice") {
-                                element._source.category = "Ecosystem";
-                                isdih = true;
-                            }
-                            if (originalrelquery == "skillservice") {
-                                element._source.category = "Skill";
-                                isdih = true;
-                            }
-                            if (originalrelquery == "technologyservices") {
-                                element._source.category = "Technology";
-                                isdih = true;
-                            }
-                            if (isdih) {
-                                var relToSearch = element.relations;
-                                let elRelfinded = relToSearch.find((el) => el._index == "project");
-                                let id_R = elRelfinded._id;
-                            }
+                            /*  let isdih = false;
+                              if (originalrelquery == "businessservice") {
+                                  element._source.category = "Business";
+                                  isdih = true;
+                              }
+                              if (originalrelquery == "dataservices") {
+                                  element._source.category = "Data";
+                                  isdih = true;
+                              }
+                              if (originalrelquery == "ecosystemservice") {
+                                  element._source.category = "Ecosystem";
+                                  isdih = true;
+                              }
+                              if (originalrelquery == "skillservice") {
+                                  element._source.category = "Skill";
+                                  isdih = true;
+                              }
+                              if (originalrelquery == "technologyservices") {
+                                  element._source.category = "Technology";
+                                  isdih = true;
+                              }
+                              if (isdih) {
+                                  var relToSearch = element.relations;
+                                  let elRelfinded = relToSearch.find((el) => el._index == "project");
+                                  let id_R = elRelfinded._id;
+                              }*/
                             //fine dih
                             let elfinded = listaInt.find((el) => el._id == targetprefix + element._id);
+
+                            /* console.log('importRelations', importRelations);
+                             console.log('element', element);
+                             console.log('elfinded', elfinded);*/
                             if (importRelations) {
                                 if (element.hasOwnProperty("relations")) {
                                     if (element.relations.length > 0)
-                                        element.relation = {};
+                                        element._source.relation = {};
                                     element.relations.forEach(entityrelation => {
                                         let indexentrel = entityrelation._index;
                                         let identrel = entityrelation._id;
-                                        if (element.relation.hasOwnProperty(indexentrel)) {
-                                            element.relation[indexentrel].push({
-                                                "to": identrel
-                                            });
-                                        } else {
-                                            element.relation[indexentrel] = [{
-                                                "to": identrel
-                                            }];
+                                        if (listRelationsImports.length == 0 || listRelationsImports.includes(indexentrel)) {
+                                            if (element._source.relation.hasOwnProperty(indexentrel)) {
+                                                element._source.relation[indexentrel].push({
+                                                    "to": identrel
+                                                });
+                                            } else {
+                                                element._source.relation[indexentrel] = [{
+                                                    "to": identrel
+                                                }];
+                                            }
                                         }
+
+
                                     });
                                 }
                             }
+                            //  console.log('element aftewr rel', element);
                             /* dih add relation to initiatives */
-                            if (isdih) {
+                            /*if (isdih) {
                                 if (!element.hasOwnProperty("relation")) {
                                     element.relation = {};
                                 }
@@ -678,14 +1111,15 @@ router.get('/fromdymer/:id', (req, res) => {
                                         }];
                                     }
                                     element._source.relation = element.relation;
-                                    /*continuo il flusso da qua */
+                                    //continuo il flusso da qua 
                                 }).catch(error => {
                                     console.error("ERROR | " + nameFile + " | get/fromdymer/:id ", id, error);
+                                    logger.error(nameFile + " | get/fromdymer/:id " + id + " " + error);
                                     ret.setSuccess(false);
                                     ret.setMessages("ax error");
                                     return res.send(ret);
                                 });
-                            }
+                            }*/
                             /*fine dih end rel initiatives */
                             var singleEntity = {
                                 "instance": {
@@ -736,34 +1170,283 @@ router.get('/fromdymer/:id', (req, res) => {
                                 if (sameid) {
                                     objToPost.data.instance.id = targetprefix + element._id;
                                 }
-                                console.log(nameFile + " | get/fromdymer/:id | dateExt > dateInt,aggiungo", JSON.stringify(objToPost));
+                                // console.log(nameFile + " | get/fromdymer/:id | dateExt > dateInt,aggiungo", JSON.stringify(objToPost));
+                                logger.info(nameFile + ' | Cron Job Import | dateExt > dateInt,aggiungo :' + crnruletitle + "," + JSON.stringify(objToPost));
                                 listTopost.push(objToPost);
                             } else {
                                 let dateExt = new Date(element._source.properties.changed);
                                 let dateInt = new Date(elfinded._source.properties.changed);
                                 if (dateExt > dateInt) {
                                     //add put
-                                    console.log(nameFile + " | get/fromdymer/:id | dateExt > dateInt,aggiorno", JSON.stringify(objToPost));
+                                    //console.log(nameFile + " | get/fromdymer/:id | dateExt > dateInt,aggiorno", JSON.stringify(objToPost));
+                                    logger.info(nameFile + ' | Cron Job Import | dateExt > dateInt,aggiorno :' + crnruletitle + "," + JSON.stringify(objToPost));
                                     listToput.push(objToPost);
                                 }
                             }
                         });
                         listTopost.forEach(function(obj, index) {
                             setTimeout(function() {
-                                console.log(nameFile + " | get/fromdymer/:id | import timeout axios post ", index);
-                                postMyDataAndFiles(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA, "post");
-                            }, 1000 * (index + 1));
+                                //console.log(nameFile + " | get/fromdymer/:id | import timeout axios post ", index);
+                                logger.info(nameFile + ' | Cron Job Import  | import timeout axios post' + crnruletitle + "," + index + " " + JSON.stringify(obj.data));
+                                postMyDataAndFiles(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA, "post", fileurl);
+                            }, 2500 * (index + 1));
                         });
                         listToput.forEach(function(obj, index) {
                             setTimeout(function() {
-                                console.log(nameFile + " | get/fromdymer/:id | import timeout axios put ", index);
-                                postMyDataAndFiles(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA, "put");
-                            }, 1000 * (index + 1));
+                                //console.log(nameFile + " | get/fromdymer/:id | import timeout axios put ", index);
+                                logger.info(nameFile + ' | Cron Job Import  | import timeout axios put' + crnruletitle + "," + index + " " + JSON.stringify(obj.data));
+                                postMyDataAndFiles(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA, "put", fileurl);
+                            }, 3500 * (index + 1));
+                        });
+                        //    return res.send(ret);
+                    })
+                    .catch(error => {
+                        console.error("ERROR | " + nameFile + " | Cron Job Import  | post ", error);
+                        logger.error(nameFile + ' | Cron Job Import  | post ' + error);
+                        ret.setSuccess(false);
+                        ret.setMessages("ax error");
+                        return res.send(ret);
+                    });
+                return res.send(ret);
+            })
+            .catch(error => {
+                console.error("ERROR | " + nameFile + "| Cron Job Import  | post axios", error);
+                logger.error(nameFile + '| Cron Job Import  | post axios ' + error);
+                ret.setSuccess(false);
+                ret.setMessages("ax error");
+                return res.send(ret);
+            });
+    }).catch((err) => {
+        if (err) {
+            console.error("ERROR | " + nameFile + "| Cron Job Import  | find", err);
+            logger.error(nameFile + '| Cron Job Import  | find ' + err);
+            ret.setMessages("find Error");
+            ret.setSuccess(false);
+            ret.setExtraData({ "log": err.stack });
+            return res.send(ret);
+        }
+    })
+});
+router.get('/fromdymer_original/:id', util.checkIsAdmin, (req, res) => {
+    var ret = new jsonResponse();
+    var id = req.params.id;
+    var myfilter = { "_id": id };
+    DymRule.find(myfilter).then((els) => {
+        let crnrule = els[0];
+        var pt_external = crnrule.sourcepath + crnrule.apisearchpath; //"http://localhost:8080/api/entities/api/v1/entity/_search";
+        var pt_internal = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/_search";
+        const fileurl = crnrule.sourcepath; //"http://195.201.83.104"
+        const originalrelquery = crnrule.sourceindex; //."";
+        const newentityType = crnrule.targetindex; //"";
+        const targetprefix = (crnrule.targetprefix == undefined) ? "" : crnrule.targetprefix;
+        let importRelations = (crnrule.importrelation == undefined) ? false : crnrule.importrelation;
+
+        let sameid = (crnrule.sameid == undefined) ? false : crnrule.sameid;
+        var query = {
+            "query": {
+                "query": {
+                    "bool": {
+                        "must": [{
+                            "term": {
+                                "_index": originalrelquery
+                            }
+                        }]
+                    }
+                }
+            }
+        };
+        var queryInternal = {
+            "query": {
+                "query": {
+                    "bool": {
+                        "must": [{
+                            "term": {
+                                "_index": newentityType
+                            }
+                        }, {
+                            "ids": {
+                                "values": []
+                            }
+                        }]
+                    }
+                }
+            }
+        };
+        let listTopost = [];
+        let listToput = [];
+        axios.post(pt_external, query).then(response => {
+                const listaRel = response.data.data;
+                listaRel.forEach(element => { queryInternal.query.query.bool.must[1].ids.values.push(targetprefix + element._id); });
+                axios.post(pt_internal, queryInternal).then(respInt => {
+                        const listaInt = respInt.data.data;
+                        listaRel.forEach(element => {
+                            element._source.properties.ipsource = pt_external;
+                            //dih
+                            /*  let isdih = false;
+                              if (originalrelquery == "businessservice") {
+                                  element._source.category = "Business";
+                                  isdih = true;
+                              }
+                              if (originalrelquery == "dataservices") {
+                                  element._source.category = "Data";
+                                  isdih = true;
+                              }
+                              if (originalrelquery == "ecosystemservice") {
+                                  element._source.category = "Ecosystem";
+                                  isdih = true;
+                              }
+                              if (originalrelquery == "skillservice") {
+                                  element._source.category = "Skill";
+                                  isdih = true;
+                              }
+                              if (originalrelquery == "technologyservices") {
+                                  element._source.category = "Technology";
+                                  isdih = true;
+                              }
+                              if (isdih) {
+                                  var relToSearch = element.relations;
+                                  let elRelfinded = relToSearch.find((el) => el._index == "project");
+                                  let id_R = elRelfinded._id;
+                              }*/
+                            //fine dih
+                            let elfinded = listaInt.find((el) => el._id == targetprefix + element._id);
+                            console.log('importRelations', importRelations);
+                            console.log('element', element);
+                            console.log('elfinded', elfinded);
+                            if (importRelations) {
+                                if (element.hasOwnProperty("relations")) {
+                                    if (element.relations.length > 0)
+                                        element._source.relation = {};
+                                    element.relations.forEach(entityrelation => {
+                                        let indexentrel = entityrelation._index;
+                                        let identrel = entityrelation._id;
+                                        if (element._source.relation.hasOwnProperty(indexentrel)) {
+                                            element._source.relation[indexentrel].push({
+                                                "to": identrel
+                                            });
+                                        } else {
+                                            element._source.relation[indexentrel] = [{
+                                                "to": identrel
+                                            }];
+                                        }
+                                    });
+                                }
+                            }
+                            console.log('element aftewr rel', element);
+                            /* dih add relation to initiatives */
+                            /*if (isdih) {
+                                if (!element.hasOwnProperty("relation")) {
+                                    element.relation = {};
+                                }
+                                var indice_;
+                                var valore_;
+                                var query_s = { "query": { "query": { "match": { "_id": id_R } } } };
+                                axios.post(pt_internal, query_s).then(respIntRel => {
+                                    let elSingleRelfinded = respIntRel.data.data[0].relations.find((el) => el._index == "initiatives");
+                                    indice_ = elSingleRelfinded._index;
+                                    valore_ = elSingleRelfinded._id;
+                                    if (element.relation.hasOwnProperty(indice_)) {
+                                        element.relation[indice_].push({
+                                            "to": valore_
+                                        });
+                                    } else {
+                                        element.relation[indice_] = [{
+                                            "to": valore_
+                                        }];
+                                    }
+                                    element._source.relation = element.relation;
+                                    //continuo il flusso da qua 
+                                }).catch(error => {
+                                    console.error("ERROR | " + nameFile + " | get/fromdymer/:id ", id, error);
+                                    logger.error(nameFile + " | get/fromdymer/:id " + id + " " + error);
+                                    ret.setSuccess(false);
+                                    ret.setMessages("ax error");
+                                    return res.send(ret);
+                                });
+                            }*/
+                            /*fine dih end rel initiatives */
+                            var singleEntity = {
+                                "instance": {
+                                    "index": newentityType,
+                                    "type": newentityType
+                                },
+                                "data": element._source
+                            };
+                            //  singleEntity.data.
+                            var extrainfo = {
+                                "extrainfo": {
+                                    "companyId": "20097",
+                                    "groupId": "20121",
+                                    "cms": "lfr",
+                                    "userId": element._source.properties.owner["uid"],
+                                    "virtualhost": "localhost"
+                                }
+                            };
+                            let extrainfo_objJsonStr = JSON.stringify(extrainfo);
+                            let extrainfo_objJsonB64 = Buffer.from(extrainfo_objJsonStr).toString("base64");
+                            var userinfo = {
+                                "isGravatarEnabled": false,
+                                "authorization_decision": "",
+                                "roles": [{
+                                        "role": "User",
+                                        "id": "20109"
+                                    },
+                                    {
+                                        "role": "app-teter",
+                                        "id": "20110"
+                                    },
+                                    {
+                                        "role": "app-admin",
+                                        "id": "20112"
+                                    }
+                                ],
+                                "app_azf_domain": "",
+                                "id": element._source.properties.owner["uid"],
+                                "app_id": "",
+                                "email": element._source.properties.owner["uid"],
+                                "username": element._source.properties.owner["uid"]
+                            };
+                            let userinfo_objJsonStr = JSON.stringify(userinfo);
+                            let userinfo_objJsonB64 = Buffer.from(userinfo_objJsonStr).toString("base64");
+                            var objToPost = { 'data': singleEntity, 'DYM': userinfo_objJsonB64, 'DYM_EXTRA': extrainfo_objJsonB64 };
+                            if (elfinded == undefined) {
+                                //add post
+                                if (sameid) {
+                                    objToPost.data.instance.id = targetprefix + element._id;
+                                }
+                                // console.log(nameFile + " | get/fromdymer/:id | dateExt > dateInt,aggiungo", JSON.stringify(objToPost));
+                                logger.info(nameFile + ' | get/fromdymer/:id | dateExt > dateInt,aggiungo :' + JSON.stringify(objToPost));
+                                listTopost.push(objToPost);
+                            } else {
+                                let dateExt = new Date(element._source.properties.changed);
+                                let dateInt = new Date(elfinded._source.properties.changed);
+                                if (dateExt > dateInt) {
+                                    //add put
+                                    //console.log(nameFile + " | get/fromdymer/:id | dateExt > dateInt,aggiorno", JSON.stringify(objToPost));
+                                    logger.info(nameFile + ' | get/fromdymer/:id | dateExt > dateInt,aggiorno :' + JSON.stringify(objToPost));
+                                    listToput.push(objToPost);
+                                }
+                            }
+                        });
+                        listTopost.forEach(function(obj, index) {
+                            setTimeout(function() {
+                                //console.log(nameFile + " | get/fromdymer/:id | import timeout axios post ", index);
+                                logger.info(nameFile + ' | get/fromdymer/:id | import timeout axios post' + index + " " + JSON.stringify(obj.data));
+                                postMyDataAndFiles(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA, "post", fileurl);
+                            }, 2000 * (index + 1));
+                        });
+                        listToput.forEach(function(obj, index) {
+                            setTimeout(function() {
+                                //console.log(nameFile + " | get/fromdymer/:id | import timeout axios put ", index);
+                                logger.info(nameFile + ' | get/fromdymer/:id | import timeout axios put' + index + " " + JSON.stringify(obj.data));
+                                postMyDataAndFiles(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA, "put", fileurl);
+                            }, 1500 * (index + 1));
                         });
                         //    return res.send(ret);
                     })
                     .catch(error => {
                         console.error("ERROR | " + nameFile + " | get/fromdymer/:id | post ", error);
+                        logger.error(nameFile + ' | get/fromdymer/:id | post ' + error);
                         ret.setSuccess(false);
                         ret.setMessages("ax error");
                         return res.send(ret);
@@ -772,6 +1455,7 @@ router.get('/fromdymer/:id', (req, res) => {
             })
             .catch(error => {
                 console.error("ERROR | " + nameFile + "| get/fromdymer/:id | post axios", error);
+                logger.error(nameFile + '| get/fromdymer/:id | post axios ' + error);
                 ret.setSuccess(false);
                 ret.setMessages("ax error");
                 return res.send(ret);
@@ -779,6 +1463,7 @@ router.get('/fromdymer/:id', (req, res) => {
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + "| get/fromdymer/:id | find", error);
+            logger.error(nameFile + '| get/fromdymer/:id | find ' + error);
             ret.setMessages("find Error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });

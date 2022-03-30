@@ -1,111 +1,168 @@
 <div class="row">
+    <div class="col-6">
+        <div class="row">
+            <div class="col-6">
+                <div class="card card-stats">
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-5 col-md-4">
+                                <div class="icon-big text-center icon-warning">
+                                    <i class="nc-icon nc-atom text-primary"></i>
+                                </div>
+                            </div>
+                            <div class="col-7 col-md-8">
+                                <div class="numbers">
+                                    <p class="card-category">Indices</p>
 
-    <div class="col-3">
+                                    <p class="card-title">{{totIndices}}
+                                        <div class="spinner-border text-primary" role="status" ng-if="!totIndices">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                        <p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer ">
+                        <hr>
+
+                        <!--  <div class="stats">
+                <i class="fa fa-refresh"></i> Update Now
+              </div>-->
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card card-stats">
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-5 col-md-4">
+                                <div class="icon-big text-center icon-warning">
+                                    <i class="nc-icon nc-layout-11 text-success"></i>
+                                </div>
+                            </div>
+                            <div class="col-7 col-md-8">
+                                <div class="numbers">
+                                    <p class="card-category">Templates</p>
+                                    <p class="card-title">{{totTemplates}}
+                                        <div class="spinner-border text-success" role="status" ng-if="!totTemplates">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                        <p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer ">
+                        <hr>
+                        <div class="stats">
+                            <!--<i class="fa fa-calendar-o"></i> Last day-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <div class="card card-stats">
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-5 col-md-4">
+                                <div class="icon-big text-center icon-warning">
+                                    <i class="nc-icon nc-tile-56 text-warning"></i>
+                                </div>
+                            </div>
+                            <div class="col-7 col-md-8">
+                                <div class="numbers">
+                                    <p class="card-category">Models</p>
+                                    <p class="card-title">{{totModels}}
+                                        <div class="spinner-border text-warning" role="status" ng-if="!totModels">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                        <p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer ">
+                        <hr>
+                        <!-- <div class="stats">
+                <i class="fa fa-refresh"></i> Update now
+              </div>-->
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card card-stats">
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-5 col-md-4">
+                                <div class="icon-big text-center icon-warning">
+                                    <i class="nc-icon nc-world-2 text-info"></i>
+                                </div>
+                            </div>
+                            <div class="col-7 col-md-8">
+                                <div class="numbers">
+                                    <p class="card-category">Entities</p>
+                                    <p class="card-title">{{totEntities}}
+                                        <div class="spinner-border text-info" role="status" ng-if="!totEntities">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                        <p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer ">
+                        <hr>
+                        <!--  <div class="stats">
+                  <i class="fa fa-refresh"></i> Update Now
+                </div>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6">
+
         <div class="card card-stats">
             <div class="card-body ">
                 <div class="row">
                     <div class="col-5 col-md-4">
                         <div class="icon-big text-center icon-warning">
-                            <i class="nc-icon nc-atom text-primary"></i>
+                            <i class="fa fa-sitemap text-danger"></i>
                         </div>
                     </div>
                     <div class="col-7 col-md-8">
                         <div class="numbers">
-                            <p class="card-category">Indices</p>
-                            <p class="card-title">{{totIndices}}
+                            <p class="card-category">Relations</p>
+                            <p class="card-title">{{totRelations}}
+                                <div class="spinner-border text-danger" role="status" ng-if="!totRelations &&  totRelations!=0">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
                                 <p>
                         </div>
+                    </div>
+                    <div>
+                        <nvd3 options='options' data='data'></nvd3>
                     </div>
                 </div>
             </div>
             <div class="card-footer ">
                 <hr>
                 <!--  <div class="stats">
-            <i class="fa fa-refresh"></i> Update Now
-          </div>-->
+                          <i class="fa fa-refresh"></i> Update Now
+                        </div>-->
             </div>
         </div>
-    </div>
-    <div class="col-3">
-        <div class="card card-stats">
-            <div class="card-body ">
-                <div class="row">
-                    <div class="col-5 col-md-4">
-                        <div class="icon-big text-center icon-warning">
-                            <i class="nc-icon nc-layout-11 text-success"></i>
-                        </div>
-                    </div>
-                    <div class="col-7 col-md-8">
-                        <div class="numbers">
-                            <p class="card-category">Templates</p>
-                            <p class="card-title">{{totTemplates}}
-                                <p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer ">
-                <hr>
-                <div class="stats">
-                    <!--<i class="fa fa-calendar-o"></i> Last day-->
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="col-3">
-        <div class="card card-stats">
-            <div class="card-body ">
-                <div class="row">
-                    <div class="col-5 col-md-4">
-                        <div class="icon-big text-center icon-warning">
-                            <i class="nc-icon nc-tile-56 text-warning"></i>
-                        </div>
-                    </div>
-                    <div class="col-7 col-md-8">
-                        <div class="numbers">
-                            <p class="card-category">Models</p>
-                            <p class="card-title">{{totModels}}
-                                <p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer ">
-                <hr>
-                <!-- <div class="stats">
-            <i class="fa fa-refresh"></i> Update now
-          </div>-->
-            </div>
-        </div>
-    </div>
-    <div class="col-3">
-        <div class="card card-stats">
-            <div class="card-body ">
-                <div class="row">
-                    <div class="col-5 col-md-4">
-                        <div class="icon-big text-center icon-warning">
-                            <i class="nc-icon nc-world-2 text-info"></i>
-                        </div>
-                    </div>
-                    <div class="col-7 col-md-8">
-                        <div class="numbers">
-                            <p class="card-category">Entities</p>
-                            <p class="card-title">{{totEntities}}
-                                <p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer ">
-                <hr>
-                <!--  <div class="stats">
-              <i class="fa fa-refresh"></i> Update Now
-            </div>-->
-            </div>
-        </div>
     </div>
 </div>
+
+
+
+
+
 <div class="row">
     <div class="col-md-12">
         <div class="card ">
@@ -133,7 +190,7 @@
 
                         </thead>
                         <tbody>
-                            <tr ng-repeat="el in ListEntities  ">
+                            <tr ng-repeat="el in ListEntities  | orderBy:'index'">
                                 <td>
                                     {{ el.index }}
                                 </td>
@@ -197,7 +254,7 @@
 
                         </thead>
                         <tbody>
-                            <tr ng-repeat="el in ListEntities  ">
+                            <tr ng-repeat="el in ListEntities | orderBy:'index' ">
                                 <td>
                                     {{ el.index }} ( {{ el.model.title }} )
                                 </td>
