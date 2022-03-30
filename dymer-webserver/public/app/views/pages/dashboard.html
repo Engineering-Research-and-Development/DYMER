@@ -15,7 +15,7 @@
                                     <p class="card-category">Indices</p>
 
                                     <p class="card-title">{{totIndices}}
-                                        <div class="spinner-border text-primary" role="status" ng-if="!totIndices">
+                                        <div class="spinner-border text-primary" role="status" ng-if=" totIndices==undefined">
                                             <span class="sr-only">Loading...</span>
                                         </div>
                                         <p>
@@ -45,7 +45,7 @@
                                 <div class="numbers">
                                     <p class="card-category">Templates</p>
                                     <p class="card-title">{{totTemplates}}
-                                        <div class="spinner-border text-success" role="status" ng-if="!totTemplates">
+                                        <div class="spinner-border text-success" role="status" ng-if=" totTemplates==undefined">
                                             <span class="sr-only">Loading...</span>
                                         </div>
                                         <p>
@@ -76,7 +76,7 @@
                                 <div class="numbers">
                                     <p class="card-category">Models</p>
                                     <p class="card-title">{{totModels}}
-                                        <div class="spinner-border text-warning" role="status" ng-if="!totModels">
+                                        <div class="spinner-border text-warning" role="status" ng-if="totModels==undefined">
                                             <span class="sr-only">Loading...</span>
                                         </div>
                                         <p>
@@ -105,7 +105,7 @@
                                 <div class="numbers">
                                     <p class="card-category">Entities</p>
                                     <p class="card-title">{{totEntities}}
-                                        <div class="spinner-border text-info" role="status" ng-if="!totEntities">
+                                        <div class="spinner-border text-info" role="status" ng-if="totEntities==undefined">
                                             <span class="sr-only">Loading...</span>
                                         </div>
                                         <p>
@@ -137,7 +137,7 @@
                         <div class="numbers">
                             <p class="card-category">Relations</p>
                             <p class="card-title">{{totRelations}}
-                                <div class="spinner-border text-danger" role="status" ng-if="!totRelations &&  totRelations!=0">
+                                <div class="spinner-border text-danger" role="status" ng-if=" totRelations==undefined">
                                     <span class="sr-only">Loading...</span>
                                 </div>
                                 <p>
