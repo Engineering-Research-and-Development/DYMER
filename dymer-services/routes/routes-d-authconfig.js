@@ -114,10 +114,10 @@ router.get('/userinfo', (req, res) => {
                     if (decoded.hasOwnProperty("extrainfo")) {
                         objuser.gid = decoded.extrainfo.groupId;
                         //objuser.extrainfo = decoded.extrainfo;
-                        objuser.extrainfo = {...objuser.extrainfo, ...decoded.extrainfo };
+                        objuser.extrainfo = { ...objuser.extrainfo, ...decoded.extrainfo };
                     }
                     if (!(Object.entries(extradata).length === 0)) {
-                        objuser.extrainfo = {...objuser.extrainfo, ...extradata.extrainfo };
+                        objuser.extrainfo = { ...objuser.extrainfo, ...extradata.extrainfo };
                     }
                     objuser.extrainfo.emailAddress = decoded.email;
                     //urs_gid = decoded.extrainfo.groupId;
@@ -134,9 +134,10 @@ router.get('/userinfo', (req, res) => {
                 return res.send(ret);
             }
             if (authtype == "xauth") {
-                console.log("SESSIJA", req.session)
+                logger.info(nameFile + ' | userInfo | GET | XAUTH : ' + req.session);
+                // console.log("SESSIJA", req.session)
 
-                console.log("ISXAUTH")
+                // console.log("ISXAUTH")
                 var token = data.DYM;
                 if (token != undefined && token != "null" && token != null) {
                     var decoded = JSON.parse(Buffer.from(token, 'base64').toString());
@@ -164,7 +165,6 @@ router.get('/userinfo', (req, res) => {
                     objuser.extrainfo.userId = decoded.User.id;
                 }
                 ret.setMessages("User detail");
-                console.log("OBJUSER", objuser)
                 ret.setData(objuser);
                 return res.send(ret);
             }
@@ -325,6 +325,7 @@ router.post('/login',
     function (req, res) {
         var ret = new jsonResponse();
         ret.setSuccess(false);
+
         console.log('Login Request received');
         let body = req.body;
         let config;
@@ -343,7 +344,6 @@ router.post('/login',
         };
 
         var queryFind = { host: req.headers.referer, active: true };
-        console.log("REFER in headers", req.headers.referer);
         DymRule.find(queryFind).then((els) => {
 
             if (els.length) {
@@ -371,7 +371,7 @@ router.post('/login',
                                         req.session.extraData = { getResourcesUniversalCapToken: JSON.stringify(resp.data) };
                                     }
                                     req.session.save();
-                                     fetchCapTokens(userInfo.data, req)
+                                    fetchCapTokens(userInfo.data, req)
                                     const getUserAssociatedRolesHeaders = {
                                         headers: {
                                             'Content-Type': 'application/json',
@@ -397,14 +397,17 @@ router.post('/login',
                                                                         resolve()
                                                                     })
                                                                 }).catch(function (err) {
-                                                                    console.log('err ars', err);
+                                                                    console.log("ERROR | " + nameFile + ' | Login | Get application ' + err);
+                                                                    logger.error(nameFile + ' | Login | Get application ' + err);
+                                                                    // console.log('err ars', err);
                                                                     ret.setMessages('User not allow to perform the action');
                                                                     return res.send(ret);
                                                                 })
                                                         })
                                                     })
                                                 ).catch(function (err) {
-                                                    console.log('err ars', err);
+                                                    console.log("ERROR | " + nameFile + ' | Login | User Associated roles ' + err);
+                                                    logger.error(nameFile + ' | Login | User Associated roles ' + err);
                                                     ret.setMessages('User not allow to perform the action');
                                                     return res.send(ret);
                                                 })
@@ -424,17 +427,20 @@ router.post('/login',
                                             }
                                         })
                                 }).catch(function (err) {
-                                    console.log('err ars', err);
+                                    console.log("ERROR | " + nameFile + ' | Login :' + err);
+                                    logger.error(nameFile + ' | Login : ' + err);
                                     ret.setMessages('User not allow to perform the action');
                                     return res.send(ret);
                                 })
                             }).catch(function (err) {
-                                console.log('err ars', err);
+                                console.log("ERROR | " + nameFile + ' | Login | Token :' + err);
+                                logger.error(nameFile + ' | Login | Token: ' + err);
                                 ret.setMessages('Invalid token');
                                 return res.send(ret);
                             })
                     }).catch(function (err) {
-                        console.log('err ars', err);
+                        console.log("ERROR | " + nameFile + ' | Login :' + err);
+                        logger.error(nameFile + ' | Login : ' + err);
                         ret.setMessages('Invalid grant: user credentials are invalid');
                         return res.send(ret);
 
@@ -494,7 +500,7 @@ const getResorucesUniversalCapToken = (accessToken, req) => {
         const postHeaders = {
             'Content-Type': 'application/json',
         };
-   
+
 
         let getAllResources = {
             token: accessToken.access_token,
@@ -509,13 +515,13 @@ const getResorucesUniversalCapToken = (accessToken, req) => {
             resolve(resp);
         }).catch(function (error) {
             // handle error
-            console.log(error);
+            console.log("ERROR | " + nameFile + ' | getResorucesUniversalCapToken :' + error);
+            logger.error(nameFile + ' | getResorucesUniversalCapToken : ' + error);
             reject("ERROR:" + " external error=" + error.response.status)
         });
     })
 };
 
-//This is path, this MUST be fixed in next release
 async function getCapabilityTokenDEMETER(capTokenName, req, url, authToken) {
 
     let config = {
@@ -525,7 +531,7 @@ async function getCapabilityTokenDEMETER(capTokenName, req, url, authToken) {
     }
 
 
- 
+
     let getAllResources = {
         token: authToken.access_token,
         ac: "GET",
@@ -570,7 +576,8 @@ async function getCapabilityTokenDEMETER(capTokenName, req, url, authToken) {
             req.session.save();
         }).catch(function (error) {
             // handle error
-            console.log(error);
+            console.log("ERROR | " + nameFile + ' | getCapabilityTokenDEMETER | getAllResources :' + error);
+            logger.error(nameFile + ' | getCapabilityTokenDEMETER | getAllResources : ' + error);
         });
 
     }
@@ -589,7 +596,8 @@ async function getCapabilityTokenDEMETER(capTokenName, req, url, authToken) {
             } req.session.save();
         }).catch(function (error) {
             // handle error
-            console.log(error);
+            console.log("ERROR | " + nameFile + ' | getCapabilityTokenDEMETER | getMyResources :' + error);
+            logger.error(nameFile + ' | getCapabilityTokenDEMETER | getMyResources : ' + error);
         });
 
     }
@@ -608,7 +616,8 @@ async function getCapabilityTokenDEMETER(capTokenName, req, url, authToken) {
             } req.session.save();
         }).catch(function (error) {
             // handle error
-            console.log(error);
+            console.log("ERROR | " + nameFile + ' | getCapabilityTokenDEMETER | createResource :' + error);
+            logger.error(nameFile + ' | getCapabilityTokenDEMETER | createResource : ' + error);
         });
 
     }
@@ -627,7 +636,8 @@ async function getCapabilityTokenDEMETER(capTokenName, req, url, authToken) {
             } req.session.save();
         }).catch(function (error) {
             // handle error
-            console.log(error);
+            console.log("ERROR | " + nameFile + ' | getCapabilityTokenDEMETER | getMetrics :' + error);
+            logger.error(nameFile + ' | getCapabilityTokenDEMETER | getMetrics : ' + error);
         });
 
     }

@@ -26,7 +26,7 @@ var FormData = require('form-data');
 const jwt = require('jsonwebtoken');
 const nameFile = path.basename(__filename);
 const https = require('https');
-const rrmApi = process.env.RRM_API;
+const rrmApi = process.env.RRM_API || 'https://acs.bse.h2020-demeter-cloud.eu:1029';
 const logger = require('./dymerlogger');
 var db;
 var storage;
@@ -2410,6 +2410,7 @@ const bridgeEsternalEntities = (objconf, callkey, datatosend, reqConfig, files) 
 
 const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfig, userLocation) => {
 
+
     var url_dservice = util.getServiceUrl("dservice");
     var ownerUrl = url_dservice + "/api/v1/sessions/findByAccessToken/" + token.extrainfo.token;
 
@@ -2468,11 +2469,13 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
                 jsonMapper(newObjQR, objconf.api[callkey].mapping.query).then((querypams) => {
                     console.log('newObjQRquerypam', JSON.stringify(querypams));
                     if (userLocation != undefined) {
-                        console.log('distanceinpams', querypams.localisationDistance);
-                        console.log('=====User Location in get method=====', userLocation)
+                        // console.log('distanceinpams', querypams.localisationDistance);
+                        logger.info(nameFile + ' | getCapabilityTokenDEMETER | GET | distanceQR : ' + querypams.localisationDistance);
+                        // console.log('=====User Location in get method=====', userLocation)
                         if (querypams.localisationDistance != undefined) {
                             querypams.localisationDistance = userLocation + ',' + querypams.localisationDistance;
-                            console.log('newDistance', querypams.localisationDistance);
+                            logger.info(nameFile + ' | getCapabilityTokenDEMETER | GET | userLocation :' + querypams.localisationDistance);
+                            // console.log('newDistance', querypams.localisationDistance);
                         }
                     }
                     var querypam = "";
@@ -2511,7 +2514,8 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
                                                 resolve(resp);
                                             }).catch(function (error) {
                                                 // handle error
-                                                console.log(error);
+                                                console.log("ERROR | " + nameFile + ' | getCapabilityTokenDEMETER | GET | Universal token | Advanced search :' + error);
+                                                logger.error(nameFile + ' | getCapabilityTokenDEMETER | GET | Universal token | Advanced search :' + error);
                                                 reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
                                             });
                                         }
@@ -2522,14 +2526,16 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
                                         resolve(resp);
                                     }).catch(function (error) {
                                         // handle error
-                                        console.log(error);
+                                        console.log("ERROR | " + nameFile + ' | getCapabilityTokenDEMETER | GET | Universal token not fetched | Advanced search :' + error);
+                                        logger.error(nameFile + ' | getCapabilityTokenDEMETER | GET | Universal token not fetched | Advanced search :' + error);
                                         reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
                                     });
                                 }
 
                             }).catch(function (error) {
                                 // handle error
-                                console.error("GET external error", error);
+                                console.log("ERROR | " + nameFile + ' | getCapabilityTokenDEMETER | GET | Advanced search :' + error);
+                                logger.error(nameFile + ' | getCapabilityTokenDEMETER | GET | Advanced search :' + error);
                                 reject("ERROR:" + ownerUrl + " external error=" + error)
                             });
                         }
@@ -2539,7 +2545,8 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
                                 resolve(resp);
                             }).catch(function (error) {
                                 // handle error
-                                console.log(error);
+                                console.log("ERROR | " + nameFile + ' | getCapabilityTokenDEMETER | GET | Advanced search :' + error);
+                                logger.error(nameFile + ' | getCapabilityTokenDEMETER | GET | Advanced search :' + error);
                                 reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
                             });
                         }
@@ -2555,7 +2562,6 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
 
                         if (reHeader === '/api/v1/resources' && objconf.api[callkey].method === 'GET') {
                             axios.get(ownerUrl).then(session => {
-                                console.log("SESIJA2", session.data)
                                 if (session.data.data[0] != null) {
                                     if (session.data.data[0].session.extraData != undefined) {
                                         if (session.data.data[0].session.extraData.getResourcesUniversalCapToken != undefined) {
@@ -2567,7 +2573,8 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
                                                 resolve(resp);
                                             }).catch(function (error) {
                                                 // handle error
-                                                console.log(error);
+                                                console.log("ERROR | " + nameFile + ' | getCapabilityTokenDEMETER | GET | Universal token | All Resources :' + error);
+                                                logger.error(nameFile + ' | getCapabilityTokenDEMETER | GET | Universal token | Advanced search :' + error);
                                                 reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
                                             });
                                         }
@@ -2578,14 +2585,16 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
                                         resolve(resp);
                                     }).catch(function (error) {
                                         // handle error
-                                        console.log(error);
+                                        console.log("ERROR | " + nameFile + ' | getCapabilityTokenDEMETER | GET | Universal token not exist | All Resources :' + error);
+                                        logger.error(nameFile + ' | getCapabilityTokenDEMETER | GET | Universal token not exist | All Resources :' + error);
                                         reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
                                     });
                                 }
 
                             }).catch(function (error) {
                                 // handle error
-                                console.error("GET external error", error);
+                                console.log("ERROR | " + nameFile + ' | getCapabilityTokenDEMETER | GET | All Resources :' + error);
+                                logger.error(nameFile + ' | getCapabilityTokenDEMETER | GET | All Resources :' + error);
                                 reject("ERROR:" + ownerUrl + " external error=" + error)
                             });
                         }
@@ -2594,15 +2603,16 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
                                 resolve(resp);
                             }).catch(function (error) {
                                 // handle error
-                                console.log(error);
+                                console.log("ERROR | " + nameFile + ' | getCapabilityTokenDEMETER | GET : ' + error);
+                                logger.error(nameFile + ' | getCapabilityTokenDEMETER | GET | :' + error);
                                 reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
                             });
                         }
                     }
                 }).catch(function (error) {
                     // handle error
-                    console.error("jsonMapping bridgeEsternalEntities error", error);
-
+                    console.log("ERROR | " + nameFile + ' | getCapabilityTokenDEMETER | bridgeEsternalEntities : ' + error);
+                    logger.error(nameFile + ' | getCapabilityTokenDEMETER | bridgeEsternalEntities | :' + error);
                 });
 
             } else {
@@ -2619,7 +2629,8 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
                     resolve(resp);
                 }).catch(function (error) {
                     // handle error
-                    console.log(error);
+                    console.log("ERROR | " + nameFile + ' | getCapabilityTokenDEMETER : ' + error);
+                    logger.error(nameFile + ' | getCapabilityTokenDEMETER | GET :' + error);
                     reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
                 });
             }
@@ -2646,7 +2657,8 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
                                     resolve(resp);
                                 }).catch(function (error) {
                                     // handle error
-                                    console.log(error);
+                                    console.log("ERROR | " + nameFile + ' | getCapabilityTokenDEMETER | POST | Universal token :' + error);
+                                    logger.error(nameFile + ' | getCapabilityTokenDEMETER | POST | Universal token :' + error);
                                     reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
                                 });
                             }
@@ -2657,14 +2669,16 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
                             resolve(resp);
                         }).catch(function (error) {
                             // handle error
-                            console.log(error);
+                            console.log("ERROR | " + nameFile + ' | getCapabilityTokenDEMETER | POST | Universal token not exist :' + error);
+                            logger.error(nameFile + ' | getCapabilityTokenDEMETER | POST | Universal token not exist:' + error);
                             reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
                         });
                     }
 
                 }).catch(function (error) {
                     // handle error
-                    console.error("GET external error", error);
+                    console.log("ERROR | " + nameFile + ' | getCapabilityTokenDEMETER | POST ' + error);
+                    logger.error(nameFile + ' | getCapabilityTokenDEMETER | POST ' + error);
                     reject("ERROR:" + ownerUrl + " external error=" + error)
                 });
             }
@@ -2673,7 +2687,8 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
                     resolve(resp);
                 }).catch(function (error) {
                     // handle error
-                    console.log(error);
+                    console.log("ERROR | " + nameFile + ' | getCapabilityTokenDEMETER ' + error);
+                    logger.error(nameFile + ' | getCapabilityTokenDEMETER ' + error);
                     reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
                 });
             }
@@ -2729,6 +2744,7 @@ const demeterExternalEntities = (objconf, callkey, capToken, authToken, datatose
                         });
                     });
                     newObjQR = Object.expand(newObjQR);
+                    logger.info(nameFile + ' | demeterExternalEntities | GET | newObjQR :' + JSON.stringify(newObjQR));
                     jsonMapper(newObjQR, objconf.api[callkey].mapping.query).then((querypams) => {
                         if (userLocation != undefined) {
                             if (querypams.localisationDistance != undefined) {
@@ -2746,36 +2762,42 @@ const demeterExternalEntities = (objconf, callkey, capToken, authToken, datatose
 
                         url = url.replace('*TO*', '').replace('*TO*', '').replace('*TO*', '').replace('*TO*', '')
                         axios.get(url, { headers: config.headers, httpsAgent: agent }).then(resp => {
-                            console.log("GET external ok", resp.stats);
+                            // console.log("GET external ok", resp.stats);
+                            logger.info(nameFile + ' | demeterExternalEntities | GET | axios: ' + resp.status);
                             resolve(resp);
                         }).catch(function (error) {
                             // handle error
-                            console.error("GET external error", error);
+                            // console.error("GET external error", error);
+                            logger.error(nameFile + ' | demeterExternalEntities | GET | axios: ' + error);
                             reject("ERROR:" + objconf.api[callkey].method + " external error=" + error)
                         });
 
                     }).catch(function (error) {
                         // handle error
-                        console.error("jsonMapping bridgeEsternalEntities error", error);
-
+                        console.error("jsonMapping demeterExternalEntities error", error);
+                        logger.error(nameFile + ' | demeterExternalEntities,jsonMapper | GET : ' + error);
                     });
                 } else {
                     axios.get(url, { headers: config.headers, httpsAgent: agent }).then(resp => {
-                        console.log("GET external ok", resp.stats);
+                        logger.info(nameFile + ' | demeterExternalEntities | GET | querypam Semplice url :' + url);
+                        // console.log("GET external ok", resp.stats);
                         resolve(resp);
                     }).catch(function (error) {
                         // handle error
-                        console.error("GET external error", error.response.status);
+                        console.error("ERROR | " + nameFile + ' | demeterExternalEntities | GET | querypam Semplice axios:', error);
+                        logger.error(nameFile + ' | demeterExternalEntities | GET | querypam Semplice axios: ' + error);
                         reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
                     });
                 }
             } else {
                 axios.get(url, { headers: config.headers, httpsAgent: agent }).then(resp => {
-                    console.log("GET external ok", resp.stats);
+                    // console.log("GET external ok", resp.stats);
+                    logger.info(nameFile + ' | demeterExternalEntities | GET | reqConfig == undefined axios url :' + url);
                     resolve(resp);
                 }).catch(function (error) {
                     // handle error
-                    console.error("GET external error", error.response.status);
+                    console.error("ERROR | " + nameFile + ' | demeterExternalEntities | GET | reqConfig == undefined axios url:', error);
+                    logger.error(nameFile + ' | demeterExternalEntities | GET | reqConfig == undefined axios url: ' + error);
                     reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
                 });
             }
@@ -2784,6 +2806,7 @@ const demeterExternalEntities = (objconf, callkey, capToken, authToken, datatose
 
 
         if (objconf.api[callkey].method == "POST") {
+            logger.info(nameFile + ' | demeterExternalEntities | POST | datatosend:' + JSON.stringify(datatosend));
             let formdata = new FormData();
             appendFormdata(formdata, datatosend);
 
@@ -2794,11 +2817,12 @@ const demeterExternalEntities = (objconf, callkey, capToken, authToken, datatose
                         gridFSBucket.delete(mongoose.Types.ObjectId(fl.id)).then(() => {
                             console.log("Deleted " + fl.filename);
                         }).catch(function (err) {
-                            console.log('Caught an error in delete Attachments inoltro!');
+                            console.error("ERROR | " + nameFile + ' | demeterExternalEntities | POST | Type: attachment | delete  : ', err);
+                            logger.error(nameFile + ' | demeterExternalEntities | POST | | Type: application | delete : ' + err);
                         });
                     }).catch(function (err) {
-                        console.log("err_a");
-                        console.log(err);
+                        console.error("ERROR | " + nameFile + ' | demeterExternalEntities | POST | | Type: attachment | recFile  : ', err);
+                        logger.error(nameFile + ' | demeterExternalEntities | POST | | Type: application | recFile : ' + err);
                     });
                 }
 
@@ -2808,11 +2832,12 @@ const demeterExternalEntities = (objconf, callkey, capToken, authToken, datatose
                         gridFSBucket.delete(mongoose.Types.ObjectId(fl.id)).then(() => {
                             console.log("Deleted " + fl.filename);
                         }).catch(function (err) {
-                            console.log('Caught an error in delete images inoltro!');
+                            console.error("ERROR | " + nameFile + ' | demeterExternalEntities | POST | Type: image | delete  : ', err);
+                            logger.error(nameFile + ' | demeterExternalEntities | POST | | Type: image | delete : ' + err);
                         });
                     }).catch(function (err) {
-                        console.log("err_a");
-                        console.log(err);
+                        console.error("ERROR | " + nameFile + ' | demeterExternalEntities | POST | | Type: image | recFile  : ', err);
+                        logger.error(nameFile + ' | demeterExternalEntities | POST | | Type: image | recFile : ' + err);
                     });
                 }
             })
@@ -2828,14 +2853,17 @@ const demeterExternalEntities = (objconf, callkey, capToken, authToken, datatose
                         'Content-Length': formdata.getLengthSync()
                     }
                 }).then((resp) => {
+                    logger.info(nameFile + ' | demeterExternalEntities | POST | Promise.all success :');
                     resolve(resp);
                 }).catch((error) => {
+                    console.error("ERROR | " + nameFile + ' | demeterExternalEntities | POST | Promise.all error : ', err);
+                    logger.error(nameFile + ' | demeterExternalEntities | POST | Promise.all error : ' + err);
                     reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
                 })
             });
         }
         if (objconf.api[callkey].method == "PUT") {
-
+            logger.info(nameFile + ' | demeterExternalEntities | PUT | axios url,datatosend :' + JSON.stringify(datatosend));
             let formdata = new FormData();
             appendFormdata(formdata, datatosend);
 
@@ -2847,11 +2875,12 @@ const demeterExternalEntities = (objconf, callkey, capToken, authToken, datatose
                         gridFSBucket.delete(mongoose.Types.ObjectId(fl.id)).then(() => {
                             console.log("Deleted " + fl.filename);
                         }).catch(function (err) {
-                            console.log('Caught an error in delete Attachments inoltro!');
+                            console.error("ERROR | " + nameFile + ' | demeterExternalEntities | PUT | Type: attachment : ', err);
+                            logger.error(nameFile + ' | demeterExternalEntities | PUT | | Type: attachment : ' + err);
                         });
                     }).catch(function (err) {
-                        console.log("err_a");
-                        console.log(err);
+                        console.error("ERROR | " + nameFile + ' | demeterExternalEntities | PUT | | Type: attachment | recFile  : ', err);
+                        logger.error(nameFile + ' | demeterExternalEntities | PUT | | Type: attachment | recFile : ' + err);
                     });
                 }
 
@@ -2862,11 +2891,12 @@ const demeterExternalEntities = (objconf, callkey, capToken, authToken, datatose
                         gridFSBucket.delete(mongoose.Types.ObjectId(fl.id)).then(() => {
                             console.log("Deleted " + fl.filename);
                         }).catch(function (err) {
-                            console.log('Caught an error in delete Attachments inoltro!');
+                            console.error("ERROR | " + nameFile + ' | demeterExternalEntities | PUT | Type: image  : ', err);
+                            logger.error(nameFile + ' | demeterExternalEntities | PUT | | Type: image : ' + err);
                         });
                     }).catch(function (err) {
-                        console.log("err_a");
-                        console.log(err);
+                        console.error("ERROR | " + nameFile + ' | demeterExternalEntities | PUT | | Type: image | recFile  : ', err);
+                        logger.error(nameFile + ' | demeterExternalEntities | PUT | | Type: image | recFile : ' + err);
                     });
                 }
             })
@@ -2882,20 +2912,24 @@ const demeterExternalEntities = (objconf, callkey, capToken, authToken, datatose
                         'Content-Length': formdata.getLengthSync()
                     }
                 }).then((resp) => {
+                    logger.info(nameFile + ' | demeterExternalEntities | PUT | Promise.all success :');
                     resolve(resp);
                 }).catch((error) => {
-                    console.log(error);
+                    console.error("ERROR | " + nameFile + ' | demeterExternalEntities | POST | Promise.all error : ', err);
+                    logger.error(nameFile + ' | demeterExternalEntities | POST | Promise.all error : ' + err);
                     reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
                 })
             });
         }
 
         if (objconf.api[callkey].method == "DELETE") {
+            logger.info(nameFile + ' | demeterExternalEntities | DELETE | axios url :' + url);
             axios.delete(url, { headers: config.headers, httpsAgent: agent }).then(resp => {
                 resolve(resp);
             }).catch(function (error) {
                 // handle error
-                console.log(error);
+                console.error("ERROR | " + nameFile + ' | demeterExternalEntities | DELETE : ', error);
+                logger.error(nameFile + ' | demeterExternalEntities | DELETE : ' + error);
                 reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
             });
         }
@@ -3199,6 +3233,7 @@ router.post('/:enttype', function (req, res) {
                                 jsonMappingDymerEntityToExternal(globalData, bridgeConf, "create", req.files).then(function (mapdata) {
                                     getCapabilityTokenDEMETER(bridgeConf, "create", dymeruser, mapdata).then(function (tokenResponse) {
                                         demeterExternalEntities(bridgeConf, "create", tokenResponse.data, dymeruser.extrainfo.token, mapdata, undefined, undefined, req.files).then(function (callresp) {
+                                            logger.info(nameFile + ' | /:enttype | create | demeterExternalEntities:' + JSON.stringify(mapdata) + " , " + JSON.stringify(callresp.data));
                                             ret.setSuccess(callresp.data.success);
                                             ret.setData(callresp.data);
                                             if (!ret.success) {
@@ -3210,18 +3245,21 @@ router.post('/:enttype', function (req, res) {
 
                                         }).catch(function (error) {
                                             console.error("ERROR | " + nameFile + '  | /:enttype | create | demeterExternalEntities:', error);
+                                            logger.error(nameFile + ' | /:enttype | create | demeterExternalEntities: ' + error);
                                             ret.setSuccess(false);
                                             ret.setMessages("Entity Create Problem");
                                             return res.send(ret);
                                         })
                                     }).catch(function (error) {
                                         console.error("ERROR | " + nameFile + '  | /:enttype | create | getCapabilityTokenDEMETER:', error);
+                                        logger.error(nameFile + ' | /:enttype | create | getCapabilityTokenDEMETER: ' + error);
                                         ret.setSuccess(false);
                                         ret.setMessages("Capability Token Problem");
                                         return res.send(ret);
                                     });
                                 }).catch(function (error) {
                                     console.error("ERROR | " + nameFile + '  | /:enttype | create | jsonMappingDymerEntityToExternal:', error);
+                                    logger.error(nameFile + ' | /:enttype | create | jsonMappingDymerEntityToExternal: ' + error);
                                     ret.setSuccess(false);
                                     ret.setMessages("Entity Mapping Problem");
                                     return res.send(ret);
@@ -3648,6 +3686,7 @@ router.put('/:id', (req, res) => {
                     jsonMappingDymerEntityToExternal(globalData, bridgeConf, "update").then(function (mapdata) {
                         getCapabilityTokenDEMETER(bridgeConf, "update", dymeruser, mapdata).then(function (tokenResponse) {
                             demeterExternalEntities(bridgeConf, "update", tokenResponse.data, dymeruser.extrainfo.token, mapdata, undefined, undefined, req.files).then(function (callresp) {
+                                logger.info(nameFile + ' | /:id | put | demeterExternalEntities : ' + JSON.stringify(mapdata) + " , " + JSON.stringify(callresp.data));
                                 ret.setSuccess(callresp.data.success);
                                 ret.setData(callresp.data);
                                 if (!ret.success) {
@@ -3658,19 +3697,23 @@ router.put('/:id', (req, res) => {
                                 return res.send(ret);
 
                             }).catch(function (error) {
-                                console.error("ERROR | " + nameFile + '  | /:id | put | demeterExternalEntities:', error);
+                                console.error("ERROR | " + nameFile + '  | /:id | put | demeterExternalEntities: ', error);
+                                logger.error(nameFile + ' | /:id | put | demeterExternalEntities: ' + error);
                                 ret.setSuccess(false);
                                 ret.setMessages("Entity Update Problem");
                                 return res.send(ret);
                             })
                         }).catch(function (error) {
-                            console.error("ERROR | " + nameFile + '  | /:id | put | getCapabilityTokenDEMETER:', error);
+                            console.error("ERROR | " + nameFile + '  | /:id | put | getCapabilityTokenDEMETER: ', error);
+                            logger.error(nameFile + '  | /:id | put | getCapabilityTokenDEMETER: ' + error);
+
                             ret.setSuccess(false);
                             ret.setMessages("Capability Token Problem");
                             return res.send(ret);
                         });
                     }).catch(function (error) {
                         console.error("ERROR | " + nameFile + '  | /:id | put | jsonMappingDymerEntityToExternal:', error);
+                        logger.error(nameFile + ' | /:id | put | jsonMappingDymerEntityToExternal: ' + error);
                         ret.setSuccess(false);
                         ret.setMessages("Entity Mapping Problem");
                         return res.send(ret);

@@ -39,7 +39,6 @@ store.on('error', function (error) {
 
 app.use(session({
     genid: function (req) {
-        console.log('session id created');
         return uuidv4();
     },
     secret: 'thisShouldBeLongAndSecret',
