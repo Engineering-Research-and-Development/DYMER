@@ -1972,6 +1972,7 @@ function kmsrenderEl(ar, rendertype) {
         });
         if (rendertype == 'fullcontent' || types.length == 1) {
             var item = (rendertype == 'fullcontent') ? ar[0] : ar;
+            console.log("ecco");
             if (ar.length == 1)
                 checkbreadcrumb(item);
             var tmpl = (rendertype == 'fullcontent') ? item._index + "@" + item._type : item[0]._index + "@" + item[0]._type;
@@ -2758,8 +2759,8 @@ function checkbreadcrumb(arObj, fnct, linklabel) {
     var elementExists = document.getElementById("dymer_breadcrumb");
     if (elementExists == null)
         return;
-    if (arObj == 'undefined' || fnct == undefined || arObj == undefined)
-        return;
+    /*if (arObj == 'undefined' || fnct == undefined || arObj == undefined)
+        return;*/
     var dbrdid = '';
     var dbrdtitle = '';
     var dbrdclick = '';

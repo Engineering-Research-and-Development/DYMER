@@ -1950,8 +1950,9 @@ var filertEntitiesFields = function(originalList, minmodelist, hdymeruser) {
                                 Promise.all((element.relations).map(function(subelement) {
                                         return new Promise(function(resolve, reject) {
                                             let single_compr_struct = ((total_compr_struct).find(x => (x.instance).find(y => y._index == subelement._index)));
-                                            //console.log('subelement single_compr_struct', single_compr_struct, subelement);
-                                            if (single_compr_struct.hasOwnProperty('structure')) {
+                                            // console.log('subelement single_compr_struct', single_compr_struct, subelement);
+
+                                            if (_.get(single_compr_struct, 'structure')) {
                                                 let single_compr_struct_visibility = (single_compr_struct.structure.child).filter(x => x.attr['dymer-model-visibility'] == "private")
                                                 single_compr_struct_visibility.forEach(singlel => {
                                                     let ark_del = replaceAll(singlel.attr.name, '[', '["');
