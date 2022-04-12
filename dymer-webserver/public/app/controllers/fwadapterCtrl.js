@@ -5,7 +5,8 @@ angular.module('fwadapterCtrl', [])
             config: {
                 insert: { servicetype: "insert", id: '' },
                 update: { servicetype: "update", id: '' },
-                delete: { servicetype: "delete", id: '' }
+                delete: { servicetype: "delete", id: '' },
+                dispatch: { servicetype: "dispatch", id: '' }
             }
         };
         $http.get(baseContextPath + '/api/dservice/api/v1/fwadapter/configs', {}).then(function(retE) {
@@ -25,17 +26,41 @@ angular.module('fwadapterCtrl', [])
             }).then(function successCallback(response) {
                     console.log('response', response);
                     if (response.data.success) {
-                        useGritterTool("<b><i class='fa fa-map-signs  '></i> FIWARE ADAPTER</b>", response.data.message);
+                        useGritterTool("<b><i class='nc-icon nc-planet'></i> FIWARE ADAPTER</b>", response.data.message);
                         response.data.data.forEach(el => {
                             $scope.fwadapter.config[el.servicetype].id = el.id;
                         });
                     } else {
-                        useGritterTool("<b><i class='fa fa-map-signs  '></i> FIWARE ADAPTER</b>", response.data.message, "warning");
+                        useGritterTool("<b><i class='nc-icon nc-planet'></i> FIWARE ADAPTER</b>", response.data.message, "warning");
                     }
                 },
                 function errorCallback(response) {
-                    useGritterTool("<b><i class='fa fa-map-signs  '></i> FIWARE ADAPTER</b>", response.data.message, "warning");
+                    useGritterTool("<b><i class='nc-icon nc-planet'></i> FIWARE ADAPTER</b>", response.data.message, "warning");
                     console.log("Error. FIWARE ADAPTER Try Again!", response);
                 });
         }
+        $scope.dispatchfwadapter = function() {
+            if (confirm("Click OK to start")) {
+                $http({
+                    method: 'GET',
+                    url: baseContextPath + '/api/dservice/api/v1/fwadapter/dispatch'
+                }).then(function successCallback(response) {
+                        console.log('response', response);
+                        if (response.data.success) {
+                            useGritterTool("<b><i class='nc-icon nc-planet'></i> FIWARE ADAPTER</b>", response.data.message);
+                            response.data.data.forEach(el => {
+                                $scope.fwadapter.config[el.servicetype].id = el.id;
+                            });
+                        } else {
+                            useGritterTool("<b><i class='nc-icon nc-planet'></i> FIWARE ADAPTER</b>", response.data.message, "warning");
+                        }
+                    },
+                    function errorCallback(response) {
+                        useGritterTool("<b><i class='nc-icon nc-planet'></i> FIWARE ADAPTER</b>", response.data.message, "warning");
+                        console.log("Error. FIWARE ADAPTER Try Again!", response);
+                    });
+            }
+        }
+
+
     });

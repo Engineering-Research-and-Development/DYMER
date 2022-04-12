@@ -1972,9 +1972,10 @@ function kmsrenderEl(ar, rendertype) {
         });
         if (rendertype == 'fullcontent' || types.length == 1) {
             var item = (rendertype == 'fullcontent') ? ar[0] : ar;
-            console.log("ecco");
-            if (ar.length == 1)
+            if (ar.length == 1 && rendertype == 'fullcontent')
                 checkbreadcrumb(item);
+            else
+                $("#dymer_breadcrumb span").not(':first').remove();
             var tmpl = (rendertype == 'fullcontent') ? item._index + "@" + item._type : item[0]._index + "@" + item[0]._type;
             //   tmpl = item._index + "@" + item._type;
             var typetemplateToRender = (rendertype == 'fullcontent') ? 'fullcontent' : kmsconf.viewtype;

@@ -22,7 +22,7 @@ let infoLog = [
     new(winston.transports.File)({ filename: './logs/info.log', level: 'info' })
 ];
 let loggerdebug = process.env.DYMER_LOGGER;
-//loggerdebug = "true";
+
 if (loggerdebug != undefined && (loggerdebug == 'true' || loggerdebug == true)) {
     infoLog = [
         new(winston.transports.File)({ filename: './logs/info.log', level: 'info' }),

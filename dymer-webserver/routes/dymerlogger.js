@@ -11,7 +11,7 @@ var debug = winston.createLogger({
         winston.format.printf(info => `${info.level}: ${[info.timestamp]}: ${info.message}`),
     ),
     transports: [
-        new (winston.transports.File)({ filename: './logs/debug.log', level: 'debug' })
+        new(winston.transports.File)({ filename: './logs/debug.log', level: 'debug' })
     ]
 });
 /*transports: [
@@ -19,14 +19,14 @@ var debug = winston.createLogger({
     new (winston.transports.Console)({ level: 'debug' })
 ]*/
 let infoLog = [
-    new (winston.transports.File)({ filename: './logs/info.log', level: 'info' })
+    new(winston.transports.File)({ filename: './logs/info.log', level: 'info' })
 ];
 let loggerdebug = process.env.DYMER_LOGGER;
-//loggerdebug = "true";
+
 if (loggerdebug != undefined && (loggerdebug == 'true' || loggerdebug == true)) {
     infoLog = [
-        new (winston.transports.File)({ filename: './logs/info.log', level: 'info' }),
-        new (winston.transports.Console)({ level: 'info' })
+        new(winston.transports.File)({ filename: './logs/info.log', level: 'info' }),
+        new(winston.transports.Console)({ level: 'info' })
     ]
 }
 var info = winston.createLogger({
@@ -58,7 +58,7 @@ var warn = winston.createLogger({
         winston.format.printf(info => `${info.level}: ${[info.timestamp]}: ${info.message}`),
     ),
     transports: [
-        new (winston.transports.File)({ filename: './logs/warn.log', level: 'warn' })
+        new(winston.transports.File)({ filename: './logs/warn.log', level: 'warn' })
     ]
 });
 /*transports: [
@@ -76,7 +76,7 @@ var error = winston.createLogger({
         winston.format.printf(info => `${info.level}: ${[info.timestamp]}: ${info.message}`),
     ),
     transports: [
-        new (winston.transports.File)({ filename: './logs/error.log', level: 'error' })
+        new(winston.transports.File)({ filename: './logs/error.log', level: 'error' })
     ]
 });
 /*
@@ -86,38 +86,38 @@ var error = winston.createLogger({
     ]
 */
 var exports = {
-    debug: function (msg) {
+    debug: function(msg) {
         debug.debug(msg);
     },
-    info: function (msg) {
+    info: function(msg) {
         info.info(msg);
     },
-    warn: function (msg) {
+    warn: function(msg) {
         warn.warn(msg);
     },
-    error: function (msg) {
+    error: function(msg) {
         error.error(msg);
     },
-    log: function (level, msg) {
+    log: function(level, msg) {
         var lvl = exports[level];
         lvl(msg);
     }
 };
-exports.filesize = function (typefile) {
+exports.filesize = function(typefile) {
     let typefilepath = './logs/' + typefile + '.log';
     let fsize = (fs.statSync(typefilepath)).size;
     fsize = (fsize > 0) ? (fsize / 2048).toFixed(2) : fsize;
     return fsize + " M";
 };
-exports.flushfile = function (typefile) {
+exports.flushfile = function(typefile) {
     let typefilepath = './logs/' + typefile + '.log';
-    fs.writeFile(typefilepath, '', function () { console.log('flushed ' + typefilepath) })
+    fs.writeFile(typefilepath, '', function() { console.log('flushed ' + typefilepath) })
 };
-exports.flushAllfile = function () {
+exports.flushAllfile = function() {
     let typefilepath1 = './logs/info.log';
-    fs.writeFile(typefilepath1, '', function (typefilepath) { console.log('flushed' + typefilepath1) })
+    fs.writeFile(typefilepath1, '', function(typefilepath) { console.log('flushed' + typefilepath1) })
     let typefilepath2 = './logs/error.log';
-    fs.writeFile(typefilepath2, '', function (typefilepath) { console.log('flushed ' + typefilepath2) })
+    fs.writeFile(typefilepath2, '', function(typefilepath) { console.log('flushed ' + typefilepath2) })
 };
 module.exports = exports;
 /*module.exports = winston.createLogger({
