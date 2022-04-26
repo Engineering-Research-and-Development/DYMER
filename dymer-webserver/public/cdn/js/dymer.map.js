@@ -62,17 +62,15 @@ function refreshMapDT() {
 
 
     // actualTemplateType = conf.viewtype;
-    reloadMarker(undefined).then(function(ars) {
-        console.log("ars", ars);
-
+    reloadMarker(undefined).then(function(rt) {
         //   if ($("#cont-Map").length) {
         if ($(retriveIfIsType('map')).length) {
-            populateMap(ars);
+            populateMap(rt.map);
         }
 
         // if ($('#cont-Dt').length) {
         if ($(retriveTargetId('dt')).length) {
-            populateDT(ars);
+            populateDT(rt.dt);
             afterTableInitialization();
         }
 
@@ -131,7 +129,6 @@ function toggleWiewNext(el) {
 let reloadMarker = function(el) {
     return new Promise(function(resolve, reject) {
         //kmsconf = conf;
-
         //  var ret = actionPostMultipartForm(kmsconf.endpoint, el, undefined, undefined, undefined, undefined, false);
         var ret = actionPostMultipartForm(kmsconf.endpoint, el, kmsconf.query, undefined, undefined, undefined, false);
         var dataDt = ret.data;
@@ -139,14 +136,24 @@ let reloadMarker = function(el) {
         kmsdataset = templ_data.arr;
         var dataMp = ret.data;
         //	manageTamplateList(templ_data.templates);
-        //	console.log("getEntities2 ret", ret);
         //	console.log("getEntities2 templ_data", templ_data);
         //	console.log("getEntities2 kmsdataset", kmsdataset);
-        if (kmsconf.swapgeop)
-            dataMp = mapJsonArrayToGeoJson(ret.data);
-        //	console.log("confLoad", conf, ret);
-        populateDT(kmsdataset);
-        resolve(dataMp);
+        if (kmsconf.swapgeop) {
+            mapJsonArrayToGeoJson(kmsdataset).then(datam => {
+                resolve({
+                    map: datam,
+                    dt: kmsdataset
+                });
+            });
+            //dataMp = mapJsonArrayToGeoJson(ret.data);
+        } else {
+            resolve({
+                map: dataMp,
+                dt: kmsdataset
+            });
+        }
+        // populateDT(kmsdataset);
+        // resolve(dataMp);
 
     });
 };
