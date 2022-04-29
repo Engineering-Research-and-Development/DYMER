@@ -3336,14 +3336,14 @@ const haspermissionGrantByAction = function(urs, action, entityprop) {
         const entityOwner = entityprop.owner;
         const entityGrant = entityprop.grant;
         const visibility = entityprop.visibility;
+        //0 Public
+        //1 Private
+        //2 Restricted
+        const status = entityprop.status;
         //1 Published
         //2 Not Published
         //3 Draft
         //0 Deleted
-        const status = entityprop.status;
-        //0 Public
-        //1 Private
-        //2 Restricted
 
         let hasperm = false;
         if (userroles.indexOf("app-admin") > -1) {
