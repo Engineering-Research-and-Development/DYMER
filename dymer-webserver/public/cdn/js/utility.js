@@ -2774,10 +2774,15 @@ function checkbreadcrumb(arObj, fnct, linklabel) {
             dbrdtitle = linklabel;
             bdrHtml = linklabel;
         } else {
-            dbrdid = 'dbrdidlist';
-            dbrdclick = fnct.attr('onclick');
-            dbrdtitle = '';
-            bdrHtml = '<i class="fa fa-list" aria-hidden="true"></i>';
+            if (fnct != undefined) {
+                dbrdid = 'dbrdidlist';
+                dbrdclick = fnct.attr('onclick');
+                dbrdtitle = '';
+                bdrHtml = '<i class="fa fa-list" aria-hidden="true"></i>';
+            } else {
+                return;
+            }
+
         }
 
     } else {
@@ -4213,6 +4218,7 @@ function dymerSearch(options) {
             querycreator.bool.must.push(subquerycreator);
         //  console.log('querycreator', querycreator);
         switchQuery(querycreator);
+        $('#dymer_breadcrumb').empty();
     }
     this.showFilter = function() {
         let myform = $("#" + options.formid + "");
@@ -4324,6 +4330,7 @@ function switchByFilterBase() {
 
     console.log('querycreator', querycreator);
     switchQuery(querycreator);
+
 }
 
 function switchByFilter(cc, vType) {
