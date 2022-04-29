@@ -1739,6 +1739,30 @@ router.post('/_search', (req, res) => {
                                                 }
                                             }]
                                         }
+                                    }, {
+                                        "bool": {
+                                            "should": [{
+                                                "match_phrase": {
+                                                    "properties.grant.update.uid": req_uid
+                                                }
+                                            }, {
+                                                "match_phrase": {
+                                                    "properties.grant.update.gid": req_gid
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "bool": {
+                                            "should": [{
+                                                "match_phrase": {
+                                                    "properties.grant.delete.uid": req_uid
+                                                }
+                                            }, {
+                                                "match_phrase": {
+                                                    "properties.grant.delete.gid": req_gid
+                                                }
+                                            }]
+                                        }
                                     }]
                                 }
                             }]
@@ -3230,14 +3254,14 @@ const haspermissionGrants = function(urs, entityprop) {
         let entityOwner = entityprop.owner;
         let entityGrant = entityprop.grant;
         let visibility = entityprop.visibility;
+        //0 Public
+        //1 Private
+        //2 Restricted
+        let status = entityprop.status;
         //1 Published
         //2 Not Published
         //3 Draft
         //0 Deleted
-        let status = entityprop.status;
-        //0 Public
-        //1 Private
-        //2 Restricted
         if (userroles.indexOf("app-admin") > -1) {
             permissions.view = true;
             permissions.update = true;
@@ -3262,10 +3286,19 @@ const haspermissionGrants = function(urs, entityprop) {
         if (visibility == '0' && status == '1') {
             permissions.view = true;
         }
-        if (((visibility == '2' || visibility == '3') && (status == '0' || status == '2')) && ((entityGrant.view.uid).find(userid) || (entityGrant.view.gid).find(usergid))) {
+        /*  if (((visibility == '2' || visibility == '3') && (status == '2' || status == '3')) && ((entityGrant.view.uid).find(userid) || (entityGrant.view.gid).find(usergid))) {
+              permissions.view = true;
+          }*/
+        if ((visibility == '1' && status == '3') && ((entityGrant.view.uid).find(userid) || (entityGrant.view.gid).find(usergid))) {
             permissions.view = true;
         }
-        if (status == '2' && usergid == entityOwner.gid) {
+        //if (status == '2' && usergid == entityOwner.gid) {
+        //    permissions.view = true;
+        // }
+        if (visibility == '2' && status == '1' && usergid == entityOwner.gid) {
+            permissions.view = true;
+        }
+        if (visibility == '2' && status == '3' && usergid == entityOwner.gid) {
             permissions.view = true;
         }
         //update
