@@ -106,7 +106,7 @@ var exports = {
 exports.filesize = function(typefile) {
     let typefilepath = './logs/' + typefile + '.log';
     let fsize = (fs.statSync(typefilepath)).size;
-    fsize = (fsize > 0) ? (fsize / 2048).toFixed(2) : fsize;
+    fsize = (fsize > 0) ? (fsize / (1024 * 1024)).toFixed(2) : fsize;
     return fsize + " M";
 };
 exports.flushfile = function(typefile) {
