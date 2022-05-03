@@ -122,8 +122,11 @@ angular.module('entitiesControllers', [])
             //el.created = new Date();
             drawEntities(callconf);
             $scope.objChanged = el.properties.changed;
-            $scope.detailObj = el;
+            //  $scope.detailObj = el;
 
+        };
+        $scope.showentitydet = function() {
+            $scope.detailObj = actualItem;
         };
         $scope.numberOfPages = function() {
             return Math.ceil($scope.listEntity.length / $scope.pageSize);
