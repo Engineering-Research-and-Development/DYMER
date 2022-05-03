@@ -19,8 +19,8 @@
                                     info.log</span>
                             </div>
                             <div class="col-5  text-right">
-                                <i class="fa fa-download dympointer " aria-hidden="true" ng-click="openLog('webform','info')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush info.log" ng-click="deleteLog('webform','info')"></i>
-                                <br><small style="color: #8c8985;"> ({{checkservice.webform.logs.info.size}})</small>
+                                <i class="fa fa-download dympointer " aria-hidden="true" ng-click="openLog('webserver','info')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush info.log" ng-click="deleteLog('webserver','info')"></i>
+                                <br><small style="color: #8c8985;"> ({{checkservice.webserver.logs.info.size}})</small>
                             </div>
                         </div>
                         <div class="row">
@@ -29,8 +29,8 @@
                                     error.log</span>
                             </div>
                             <div class="col-5  text-right">
-                                <i class="fa fa-download dympointer" aria-hidden="true" ng-click="openLog('webform','error')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush error.log" ng-click="deleteLog('webform','error')"></i>
-                                <br><small style="color: #8c8985;"> ({{checkservice.webform.logs.error.size}})</small>
+                                <i class="fa fa-download dympointer" aria-hidden="true" ng-click="openLog('webserver','error')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush error.log" ng-click="deleteLog('webserver','error')"></i>
+                                <br><small style="color: #8c8985;"> ({{checkservice.webserver.logs.error.size}})</small>
                             </div>
                         </div>
 
@@ -38,7 +38,7 @@
                 </div>
             </div>
             <div class="card-footer ">
-                <hr><i class="fa fa-power-off {{checkservice.webform.state}}" aria-hidden="true"></i> {{checkservice.webform.msg}}
+                <hr><i class="fa fa-power-off {{checkservice.webserver.state}}" aria-hidden="true"></i> {{checkservice.webserver.msg}}
 
                 <!--  <div class="stats">
             <i class="fa fa-refresh"></i> Update Now

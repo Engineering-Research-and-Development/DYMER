@@ -2583,123 +2583,132 @@ router.post('/:enttype', function(req, res) {
                         ret.setExtraData({ "log": err.stack });
                         return res.send(ret);
                     }
-                    let callData = util.getAllQuery(req);
-                    let instance = callData.instance;
-                    let elIndex = instance.index;
-                    let elDymerUuid = instance.id;
-                    let data = callData.data;
-                    //External
-                    var globalData = req.body;
-                    var trq = Object.assign({}, req);
-                    var bridgeConf = bE.findByIndex(elIndex);
-                    // console.log(nameFile + ' | /:enttype | create | bridgeConf:', JSON.stringify(bridgeConf));
-                    logger.info(nameFile + ' | /:enttype | create | bridgeConf:' + JSON.stringify(bridgeConf));
-                    if (bridgeConf != undefined) {
-                        if (trq.files != undefined) {
-                            trq.files.forEach(function(element) {
-                                var ark = replaceAll(element.fieldname, '[', '@@');
-                                delete element.fieldname;
-                                ark = replaceAll(ark, ']', '');
-                                ark = ark.split("@@");
-                                ark.shift();
-                                stringAsKey(globalData.data, ark, element);
-                            });
-                        }
-                        jsonMappingDymerEntityToExternal(globalData, bridgeConf, "create", req.files).then(function(mapdata) {
-                            bridgeEsternalEntities(bridgeConf, "create", mapdata, undefined, req.files).then(function(callresp) {
-                                //console.log(nameFile + ' | /:enttype | create | bridgeEsternalEntities: ', JSON.stringify(mapdata), JSON.stringify(callresp.data));
-                                logger.info(nameFile + ' | /:enttype | create | bridgeEsternalEntities:' + JSON.stringify(mapdata) + " , " + JSON.stringify(callresp.data));
-                                ret.setData(callresp.data);
-                                ret.setMessages("Entity Creted successfully");
-                                return res.send(ret);
+                    try {
+                        let callData = util.getAllQuery(req);
+                        let instance = callData.instance;
+                        let elIndex = instance.index;
+                        let elDymerUuid = instance.id;
+                        let data = callData.data;
+                        //External
+                        var globalData = req.body;
+                        var trq = Object.assign({}, req);
+                        var bridgeConf = bE.findByIndex(elIndex);
+                        // console.log(nameFile + ' | /:enttype | create | bridgeConf:', JSON.stringify(bridgeConf));
+                        logger.info(nameFile + ' | /:enttype | create | bridgeConf:' + JSON.stringify(bridgeConf));
+                        if (bridgeConf != undefined) {
+                            if (trq.files != undefined) {
+                                trq.files.forEach(function(element) {
+                                    var ark = replaceAll(element.fieldname, '[', '@@');
+                                    delete element.fieldname;
+                                    ark = replaceAll(ark, ']', '');
+                                    ark = ark.split("@@");
+                                    ark.shift();
+                                    stringAsKey(globalData.data, ark, element);
+                                });
+                            }
+                            jsonMappingDymerEntityToExternal(globalData, bridgeConf, "create", req.files).then(function(mapdata) {
+                                bridgeEsternalEntities(bridgeConf, "create", mapdata, undefined, req.files).then(function(callresp) {
+                                    //console.log(nameFile + ' | /:enttype | create | bridgeEsternalEntities: ', JSON.stringify(mapdata), JSON.stringify(callresp.data));
+                                    logger.info(nameFile + ' | /:enttype | create | bridgeEsternalEntities:' + JSON.stringify(mapdata) + " , " + JSON.stringify(callresp.data));
+                                    ret.setData(callresp.data);
+                                    ret.setMessages("Entity Creted successfully");
+                                    return res.send(ret);
+                                }).catch(function(error) {
+                                    console.error("ERROR | " + nameFile + ' | /:enttype | create | bridgeEsternalEntities:', error);
+                                    logger.error(nameFile + ' | /:enttype | create | bridgeEsternalEntities: ' + error);
+                                    ret.setSuccess(false);
+                                    ret.setMessages("Entity Create Problem");
+                                    return res.send(ret);
+                                });
                             }).catch(function(error) {
-                                console.error("ERROR | " + nameFile + ' | /:enttype | create | bridgeEsternalEntities:', error);
-                                logger.error(nameFile + ' | /:enttype | create | bridgeEsternalEntities: ' + error);
+                                console.error("ERROR | " + nameFile + ' | /:enttype | create | jsonMappingDymerEntityToExternal:', error);
+                                logger.error(nameFile + ' | /:enttype | create | jsonMappingDymerEntityToExternal: ' + error);
                                 ret.setSuccess(false);
-                                ret.setMessages("Entity Create Problem");
+                                ret.setMessages("Entity Mapping Problem");
                                 return res.send(ret);
                             });
-                        }).catch(function(error) {
-                            console.error("ERROR | " + nameFile + ' | /:enttype | create | jsonMappingDymerEntityToExternal:', error);
-                            logger.error(nameFile + ' | /:enttype | create | jsonMappingDymerEntityToExternal: ' + error);
-                            ret.setSuccess(false);
-                            ret.setMessages("Entity Mapping Problem");
-                            return res.send(ret);
-                        });
-                    } else {
-                        //fine externale
-                        var files_arr = [];
-                        var label_index = -1;
-                        //  console.log('reqfile', req.files);
-                        if (req.files != undefined) {
-                            req.files.forEach(function(element) {
-                                var ark = replaceAll(element.fieldname, '[', '@@');
-                                var temp_el = element;
-                                delete element.fieldname;
-                                ark = replaceAll(ark, ']', '');
-                                ark = ark.split("@@");
-                                ark.shift();
-                                stringAsKey(data, ark, element);
+                        } else {
+                            //fine externale
+                            var files_arr = [];
+                            var label_index = -1;
+                            //  console.log('reqfile', req.files);
+                            if (req.files != undefined) {
+                                req.files.forEach(function(element) {
+                                    var ark = replaceAll(element.fieldname, '[', '@@');
+                                    var temp_el = element;
+                                    delete element.fieldname;
+                                    ark = replaceAll(ark, ']', '');
+                                    ark = ark.split("@@");
+                                    ark.shift();
+                                    stringAsKey(data, ark, element);
+                                });
+                            }
+                            //  logger.info("predata" + JSON.stringify(data));
+                            logger.info(nameFile + ' | /:enttype | create | predata :' + JSON.stringify(data));
+                            //       if (!((JSON.parse(data.properties)).hasOwnProperty("owner") && asis)) {
+                            if (!(data.properties.owner != undefined && asis)) {
+                                data.properties.owner = {};
+                                data.properties.owner.uid = urs_uid;
+                                data.properties.owner.gid = urs_gid;
+                                data.properties.lang = "und";
+                                data.properties.tid = "0";
+                                data.properties.created = new Date().toISOString();
+                                data.properties.changed = new Date().toISOString();
+                            }
+                            if (elDymerUuid == undefined) {
+                                instance.id = util.generateDymerUuid();
+                            }
+                            let params = (instance) ? instance : {};
+                            params["body"] = data;
+                            // params["body"].size = 10000;
+                            params["refresh"] = true;
+                            let ref = Object.assign({}, data.relation);
+                            if (data != undefined)
+                                delete data.relation;
+                            // console.log(nameFile + ' | /:enttype | create | params:', dymeruser.id, JSON.stringify(params));
+                            logger.info(nameFile + ' | /:enttype | create | params :' + dymeruser.id + " , " + JSON.stringify(params));
+                            client.index(params, function(err, resp, status) {
+                                if (err) {
+                                    console.error("ERROR | " + nameFile + ' | /:enttype | create:', err);
+                                    logger.error(nameFile + ' | /:enttype | create : ' + err);
+                                    ret.setSuccess(false);
+                                    ret.setExtraData({ "log": resp });
+                                    ret.setMessages("Entity creation error");
+                                    return res.send(ret);
+                                }
+                                var respResult = resp.result;
+                                ret.setMessages("Entity " + respResult + " successfully");
+                                ret.addData(resp);
+                                //   console.log('new ent ', resp);
+                                var elId = resp["_id"];
+                                logger.info(nameFile + ' | /:enttype | create | dymeruser.id, params:' + dymeruser.id + ' , ' + JSON.stringify(params));
+                                logger.info(nameFile + ' | /:enttype | create | ref, elIndex, elId:' + JSON.stringify(ref) + ' , ' + elIndex + ' , ' + elId);
+                                try {
+                                    checkRelation(ref, elIndex, elId);
+                                } catch (error) {
+                                    logger.error(nameFile + ' | /:enttype | create | checkRelation:' + error);
+                                }
+
+                                /* var extraInfo = dymerextrainfo;
+                                 if (extraInfo != undefined)
+                                     extraInfo.extrainfo.emailAddress = dymeruser.id;*/
+                                // console.log(nameFile + ' | /:enttype | create | pre check hook extraInfo: ', dymerextrainfo);
+                                logger.info(nameFile + ' | /:enttype | create | pre check hook| obj, extraInfo:' + JSON.stringify(resp) + ' , ' + JSON.stringify(dymerextrainfo));
+                                setTimeout(() => {
+                                    checkServiceHook('after_insert', resp, dymerextrainfo, req);
+                                }, 3000);
+
+
+                                return res.send(ret);
                             });
                         }
-                        //  logger.info("predata" + JSON.stringify(data));
-                        logger.info(nameFile + ' | /:enttype | create | predata :' + JSON.stringify(data));
-                        //       if (!((JSON.parse(data.properties)).hasOwnProperty("owner") && asis)) {
-                        if (!(data.properties.owner != undefined && asis)) {
-                            data.properties.owner = {};
-                            data.properties.owner.uid = urs_uid;
-                            data.properties.owner.gid = urs_gid;
-                            data.properties.lang = "und";
-                            data.properties.tid = "0";
-                            data.properties.created = new Date().toISOString();
-                            data.properties.changed = new Date().toISOString();
-                        }
-                        if (elDymerUuid == undefined) {
-                            instance.id = util.generateDymerUuid();
-                        }
-                        let params = (instance) ? instance : {};
-                        params["body"] = data;
-                        // params["body"].size = 10000;
-                        params["refresh"] = true;
-                        let ref = Object.assign({}, data.relation);
-                        if (data != undefined)
-                            delete data.relation;
-                        // console.log(nameFile + ' | /:enttype | create | params:', dymeruser.id, JSON.stringify(params));
-                        logger.info(nameFile + ' | /:enttype | create | params :' + dymeruser.id + " , " + JSON.stringify(params));
-                        client.index(params, function(err, resp, status) {
-                            if (err) {
-                                console.error("ERROR | " + nameFile + ' | /:enttype | create:', err);
-                                logger.error(nameFile + ' | /:enttype | create : ' + err);
-                                ret.setSuccess(false);
-                                ret.setExtraData({ "log": resp });
-                                ret.setMessages("Entity creation error");
-                                return res.send(ret);
-                            }
-                            var respResult = resp.result;
-                            ret.setMessages("Entity " + respResult + " successfully");
-                            ret.addData(resp);
-                            //   console.log('new ent ', resp);
-                            var elId = resp["_id"];
-                            logger.info(nameFile + ' | /:enttype | create | dymeruser.id, params:' + dymeruser.id + ' , ' + JSON.stringify(params));
-                            logger.info(nameFile + ' | /:enttype | create | ref, elIndex, elId:' + JSON.stringify(ref) + ' , ' + elIndex + ' , ' + elId);
-                            try {
-                                checkRelation(ref, elIndex, elId);
-                            } catch (error) {
-                                logger.error(nameFile + ' | /:enttype | create | checkRelation:' + error);
-                            }
-
-                            /* var extraInfo = dymerextrainfo;
-                             if (extraInfo != undefined)
-                                 extraInfo.extrainfo.emailAddress = dymeruser.id;*/
-                            // console.log(nameFile + ' | /:enttype | create | pre check hook extraInfo: ', dymerextrainfo);
-                            logger.info(nameFile + ' | /:enttype | create | pre check hook| obj, extraInfo:' + JSON.stringify(resp) + ' , ' + JSON.stringify(dymerextrainfo));
-                            setTimeout(() => {
-                                checkServiceHook('after_insert', resp, dymerextrainfo, req);
-                            }, 3000);
-
-
-                            return res.send(ret);
-                        });
+                    } catch (error) {
+                        console.error("ERROR | " + nameFile + ' | /:enttype | core:', error);
+                        logger.error(nameFile + ' | /:enttype | core : ' + error);
+                        ret.setMessages("ERROR create");
+                        res.status(200);
+                        ret.setSuccess(false);
+                        return res.send(ret);
                     }
                 });
             } else {
