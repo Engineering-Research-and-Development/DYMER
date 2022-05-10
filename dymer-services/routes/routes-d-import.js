@@ -381,10 +381,12 @@ function appendFormdata(FormData, data, name) {
 
 function appendFormdataFiles(FormData, data, name, folder) {
     var name = name || '';
-    if (typeof data === 'object') {
+    if (typeof data === 'object' && data != null) {
         var index = 0
         if (data.hasOwnProperty("filename") && data.hasOwnProperty("bucketName")) {
-            FormData.append(name, fs.createReadStream(folder + data.filename));
+            let fnametotal = folder + data.filename;
+
+            FormData.append(name, fs.createReadStream(fnametotal));
         } else {
             for (var key in data) {
                 if (data.hasOwnProperty(key)) {
@@ -424,7 +426,7 @@ function checkFilesFormdata(arr, data, name) {
 
 function postMyData(el, index, DYM, DYM_EXTRA) {
     // var posturl = "http://localhost:8080/api/entities/api/v1/entity/" + index;
-    var posturl = "";
+    var posturl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/" + index;
     var formdata = new FormData();
     appendFormdata(formdata, el);
     var config = {
@@ -539,6 +541,8 @@ function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action, fileurl) {
                 'Authorization': `Bearer ${DYM}`,
                 'extrainfo': `${DYM_EXTRA}`,
             },
+            maxContentLength: Infinity,
+            maxBodyLength: Infinity,
             data: formdata
         };
         // console.log(nameFile + ' | callFwAdapter | invio, ad adapter | conf : ' + JSON.stringify(conf));
@@ -648,7 +652,6 @@ router.get('/updategeo/:entype', util.checkIsAdmin, (req, res) => {
         "email": "marcoromano12@gmail.com",
         "username": "marcoromano12@gmail.com"
     };
-
     let userinfo_objJsonStr_admin = JSON.stringify(userinfo_admin);
     let userinfo_objJsonB64_admin = Buffer.from(userinfo_objJsonStr_admin).toString("base64");
     var formdata_admin = new FormData();
@@ -716,7 +719,6 @@ router.get('/updategeo/:entype', util.checkIsAdmin, (req, res) => {
                             listGeo.push(objToPost);
                         }
                     }
-
                 }
             });
             const basepatchurl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/";
@@ -743,8 +745,6 @@ router.get('/updategeo/:entype', util.checkIsAdmin, (req, res) => {
                             console.log("Error__________", error);
                             logger.error(nameFile + '| /updategeo/:entype | postMyData : ' + error);
                         });
-
-
                 }, 1000 * (index + 1));
             });
             return res.send(ret);
@@ -753,6 +753,127 @@ router.get('/updategeo/:entype', util.checkIsAdmin, (req, res) => {
             console.error("ERROR | " + nameFile + " | get/updategeo ", error);
             logger.error(nameFile + ' | get/updategeo : ' + error);
         });
+});
+
+router.get('/generateuser', util.checkIsAdmin, (req, res) => {
+    let urltoken = "http://xxx/v1/auth/tokens";
+    let urluser = "http://xxx/v1/users";
+    let urluserput = "http://xxx/v1/applications/ba14334c-cd76-4050-a569-66ac36d4360d/users/";
+    let formdata_admin = { "name": "xxx", "password": "xxx" };
+    let role = "xxx";
+    let role1 = "xxx";
+    let role2 = "xxx";
+    let list_prom = [];
+    let list_user = [{
+        "userId": 0,
+        "groupId": 0,
+        "companyId": 0,
+        "firstName": "x",
+        "lastName": "x",
+        "emailAddress": "x@x.x"
+    }];
+
+    // var ret = new jsonResponse();
+    //   return res.send(ret);
+
+    let formdata_user = {
+        "user": {
+            "email": "x",
+            "username": "x",
+            "password": "x",
+            "enabled": true,
+            "admin": false
+        }
+    };
+    var config = {
+        method: 'post',
+        url: urltoken,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: formdata_admin
+    };
+    axios(config).then(response => {
+
+            console.log("response.headers", JSON.stringify(response.headers));
+            let mytoken = response.headers["x-subject-token"];
+            let config_user = {
+                method: 'post',
+                url: urluser,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Auth-token': mytoken
+                },
+                data: formdata_user
+            };
+            list_user.forEach((element, index) => {
+                config_user.data.user.email = element.emailAddress;
+                config_user.data.user.username = (element.firstName + "." + element.lastName).toLowerCase();
+                config_user.data.user.password = (element.emailAddress).charAt(0) + (element.emailAddress).charAt(1).toUpperCase() + Math.random().toString(36).slice(-5) + index + (element.emailAddress).charAt(3).toUpperCase();
+                console.log("user config_user", config_user.data.user);
+                list_prom.push(
+                    axios(config_user).then(responseuser => {
+                        console.log("user created username|id|email", responseuser.data.user.username, responseuser.data.user.id, responseuser.data.user.email);
+                        let url_pur_role = urluserput + responseuser.data.user.id + "/roles/" + role;
+                        let url_pur_role1 = urluserput + responseuser.data.user.id + "/roles/" + role1;
+                        let url_pur_role2 = urluserput + responseuser.data.user.id + "/roles/" + role2;
+                        let config_user_put = {
+                            method: 'put',
+                            url: url_pur_role,
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Auth-token': mytoken
+                            }
+                        };
+                        axios(config_user_put).then(responseuser => {
+                            console.log("user updated role", responseuser.data.role_user_assignments.user_id, responseuser.data.role_user_assignments.role_id);
+                            let config_user_put1 = {
+                                method: 'put',
+                                url: url_pur_role1,
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-Auth-token': mytoken
+                                }
+                            };
+                            axios(config_user_put1).then(responseuser1 => {
+                                console.log("user updated role1", responseuser1.data.role_user_assignments.user_id, responseuser1.data.role_user_assignments.role_id);
+                                let config_user_put2 = {
+                                    method: 'put',
+                                    url: url_pur_role2,
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-Auth-token': mytoken
+                                    }
+                                };
+                                axios(config_user_put2).then(responseuser2 => {
+                                    console.log("user updated role2", responseuser2.data.role_user_assignments.user_id, responseuser2.data.role_user_assignments.role_id);
+                                }).catch(error => {
+                                    console.error("ERROR | " + nameFile + " | generateuser/user role2  ", error);
+                                });
+                            }).catch(error => {
+                                console.error("ERROR | " + nameFile + " | generateuser/user role1  ", error);
+                            });
+                        }).catch(error => {
+                            console.error("ERROR | " + nameFile + " | generateuser/user role  ", error);
+                        });
+                    })
+                    .catch(error => {
+                        console.error("ERROR | " + nameFile + " | generateuser/user  ", error);
+                    })
+
+                );
+            });
+            Promise.all(list_prom).then(responses => {
+                    console.log("all users are created!");
+                })
+                // console.log("mytoken", JSON.stringify(mytoken));
+
+        })
+        .catch(error => {
+            console.error("ERROR | " + nameFile + " | generateuser/token  ", error);
+        });
+    var ret = new jsonResponse();
+    return res.send(ret);
 });
 router.get('/updategid/:entype/:gid/:forceall?', util.checkIsAdmin, (req, res) => {
     logger.info(nameFile + '| get/updategid');
@@ -917,6 +1038,7 @@ router.get('/updategid/:entype/:gid/:forceall?', util.checkIsAdmin, (req, res) =
         });
 });
 // '/api/dservice/api/v1/import/fromdymer'
+
 router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     var id = req.params.id;
@@ -1032,39 +1154,7 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
 
                         listaRel.forEach(element => {
                             element._source.properties.ipsource = pt_external;
-                            //dih
-                            /*  let isdih = false;
-                              if (originalrelquery == "businessservice") {
-                                  element._source.category = "Business";
-                                  isdih = true;
-                              }
-                              if (originalrelquery == "dataservices") {
-                                  element._source.category = "Data";
-                                  isdih = true;
-                              }
-                              if (originalrelquery == "ecosystemservice") {
-                                  element._source.category = "Ecosystem";
-                                  isdih = true;
-                              }
-                              if (originalrelquery == "skillservice") {
-                                  element._source.category = "Skill";
-                                  isdih = true;
-                              }
-                              if (originalrelquery == "technologyservices") {
-                                  element._source.category = "Technology";
-                                  isdih = true;
-                              }
-                              if (isdih) {
-                                  var relToSearch = element.relations;
-                                  let elRelfinded = relToSearch.find((el) => el._index == "project");
-                                  let id_R = elRelfinded._id;
-                              }*/
-                            //fine dih
                             let elfinded = listaInt.find((el) => el._id == targetprefix + element._id);
-
-                            /* console.log('importRelations', importRelations);
-                             console.log('element', element);
-                             console.log('elfinded', elfinded);*/
                             if (importRelations) {
                                 if (element.hasOwnProperty("relations")) {
                                     if (element.relations.length > 0)
@@ -1140,7 +1230,7 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
                             };
                             let extrainfo_objJsonStr = JSON.stringify(extrainfo);
                             let extrainfo_objJsonB64 = Buffer.from(extrainfo_objJsonStr).toString("base64");
-                            var userinfo = {
+                            let userinfo = {
                                 "isGravatarEnabled": false,
                                 "authorization_decision": "",
                                 "roles": [{
@@ -1162,6 +1252,8 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
                                 "email": element._source.properties.owner["uid"],
                                 "username": element._source.properties.owner["uid"]
                             };
+
+
                             let userinfo_objJsonStr = JSON.stringify(userinfo);
                             let userinfo_objJsonB64 = Buffer.from(userinfo_objJsonStr).toString("base64");
                             var objToPost = { 'data': singleEntity, 'DYM': userinfo_objJsonB64, 'DYM_EXTRA': extrainfo_objJsonB64 };
