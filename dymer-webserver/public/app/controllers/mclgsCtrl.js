@@ -53,13 +53,13 @@ angular.module('mclgsCtrl', [])
                     }
                 }
             },
-            webform: {
+            webserver: {
                 state: " text-success",
                 msg: "Service is up"
             }
         };
         $http.get(baseContextPath + "/checkservice").then(function(rt) {
-            $scope.checkservice.webform.logs = rt.data.data;
+            $scope.checkservice.webserver.logs = rt.data.data;
         }).catch(function(response) {
             console.log(response);
         });
@@ -121,7 +121,7 @@ angular.module('mclgsCtrl', [])
                 let pathOpLog = "";
                 let tpop = "deletelog/";
                 switch (service) {
-                    case "webform":
+                    case "webserver":
                         pathOpLog = "/" + tpop + typelog;
                         break;
                     default:
@@ -159,7 +159,7 @@ angular.module('mclgsCtrl', [])
             let pathOpLog = "";
             let tpop = "openLog/";
             switch (service) {
-                case "webform":
+                case "webserver":
                     pathOpLog = "/" + tpop + typelog;
                     break;
                 default:

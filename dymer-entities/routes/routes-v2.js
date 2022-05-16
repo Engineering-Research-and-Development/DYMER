@@ -1779,6 +1779,30 @@ router.post('/_search', (req, res) => {
                                                 }
                                             }]
                                         }
+                                    }, {
+                                        "bool": {
+                                            "should": [{
+                                                "match_phrase": {
+                                                    "properties.grant.update.uid": req_uid
+                                                }
+                                            }, {
+                                                "match_phrase": {
+                                                    "properties.grant.update.gid": req_gid
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "bool": {
+                                            "should": [{
+                                                "match_phrase": {
+                                                    "properties.grant.delete.uid": req_uid
+                                                }
+                                            }, {
+                                                "match_phrase": {
+                                                    "properties.grant.delete.gid": req_gid
+                                                }
+                                            }]
+                                        }
                                     }]
                                 }
                             }]
@@ -3204,164 +3228,172 @@ router.post('/:enttype', function (req, res) {
                         ret.setExtraData({ "log": err.stack });
                         return res.send(ret);
                     }
-                    let callData = util.getAllQuery(req);
-                    let instance = callData.instance;
-                    let elIndex = instance.index;
-                    let elDymerUuid = instance.id;
-                    let data = callData.data;
-                    //External
-                    var globalData = req.body;
-                    var trq = Object.assign({}, req);
-                    var bridgeConf = bE.findByIndex(elIndex);
-                    // console.log(nameFile + ' | /:enttype | create | bridgeConf:', JSON.stringify(bridgeConf));
-                    logger.info(nameFile + ' | /:enttype | create | bridgeConf:' + JSON.stringify(bridgeConf));
-                    if (bridgeConf != undefined) {
-                        if (trq.files != undefined) {
-                            trq.files.forEach(function (element) {
-                                var ark = replaceAll(element.fieldname, '[', '@@');
-                                delete element.fieldname;
-                                ark = replaceAll(ark, ']', '');
-                                ark = ark.split("@@");
-                                ark.shift();
-                                stringAsKey(globalData.data, ark, element);
-                            });
-                        }
-
-                        if (bridgeConf.api.tokenProvider != undefined) {
-                            if (bridgeConf.api.tokenProvider.active == true) {
-                                globalData.data.properties.owner = { "uid": urs_uid, "gid": urs_gid }
-                                jsonMappingDymerEntityToExternal(globalData, bridgeConf, "create", req.files).then(function (mapdata) {
-                                    getCapabilityTokenDEMETER(bridgeConf, "create", dymeruser, mapdata).then(function (tokenResponse) {
-                                        demeterExternalEntities(bridgeConf, "create", tokenResponse.data, dymeruser.extrainfo.token, mapdata, undefined, undefined, req.files).then(function (callresp) {
-                                            logger.info(nameFile + ' | /:enttype | create | demeterExternalEntities:' + JSON.stringify(mapdata) + " , " + JSON.stringify(callresp.data));
-                                            ret.setSuccess(callresp.data.success);
-                                            ret.setData(callresp.data);
-                                            if (!ret.success) {
-                                                ret.setMessages(callresp.data.extraData.message);
-                                            } else {
-                                                ret.setMessages(callresp.data.message);
-                                            }
-                                            return res.send(ret);
-
-                                        }).catch(function (error) {
-                                            console.error("ERROR | " + nameFile + '  | /:enttype | create | demeterExternalEntities:', error);
-                                            logger.error(nameFile + ' | /:enttype | create | demeterExternalEntities: ' + error);
-                                            ret.setSuccess(false);
-                                            ret.setMessages("Entity Create Problem");
-                                            return res.send(ret);
-                                        })
-                                    }).catch(function (error) {
-                                        console.error("ERROR | " + nameFile + '  | /:enttype | create | getCapabilityTokenDEMETER:', error);
-                                        logger.error(nameFile + ' | /:enttype | create | getCapabilityTokenDEMETER: ' + error);
-                                        ret.setSuccess(false);
-                                        ret.setMessages("Capability Token Problem");
-                                        return res.send(ret);
-                                    });
-                                }).catch(function (error) {
-                                    console.error("ERROR | " + nameFile + '  | /:enttype | create | jsonMappingDymerEntityToExternal:', error);
-                                    logger.error(nameFile + ' | /:enttype | create | jsonMappingDymerEntityToExternal: ' + error);
-                                    ret.setSuccess(false);
-                                    ret.setMessages("Entity Mapping Problem");
-                                    return res.send(ret);
-                                });;
+                    try {
+                        let callData = util.getAllQuery(req);
+                        let instance = callData.instance;
+                        let elIndex = instance.index;
+                        let elDymerUuid = instance.id;
+                        let data = callData.data;
+                        //External
+                        var globalData = req.body;
+                        var trq = Object.assign({}, req);
+                        var bridgeConf = bE.findByIndex(elIndex);
+                        // console.log(nameFile + ' | /:enttype | create | bridgeConf:', JSON.stringify(bridgeConf));
+                        logger.info(nameFile + ' | /:enttype | create | bridgeConf:' + JSON.stringify(bridgeConf));
+                        if (bridgeConf != undefined) {
+                            if (trq.files != undefined) {
+                                trq.files.forEach(function(element) {
+                                    var ark = replaceAll(element.fieldname, '[', '@@');
+                                    delete element.fieldname;
+                                    ark = replaceAll(ark, ']', '');
+                                    ark = ark.split("@@");
+                                    ark.shift();
+                                    stringAsKey(globalData.data, ark, element);
+                                });
                             }
-                        }
-                        else {
-                            jsonMappingDymerEntityToExternal(globalData, bridgeConf, "create", req.files).then(function (mapdata) {
-                                bridgeEsternalEntities(bridgeConf, "create", mapdata, undefined, req.files).then(function (callresp) {
+                            if (bridgeConf.api.tokenProvider != undefined) {
+                                if (bridgeConf.api.tokenProvider.active == true) {
+                                    globalData.data.properties.owner = { "uid": urs_uid, "gid": urs_gid }
+                                    jsonMappingDymerEntityToExternal(globalData, bridgeConf, "create", req.files).then(function (mapdata) {
+                                        getCapabilityTokenDEMETER(bridgeConf, "create", dymeruser, mapdata).then(function (tokenResponse) {
+                                            demeterExternalEntities(bridgeConf, "create", tokenResponse.data, dymeruser.extrainfo.token, mapdata, undefined, undefined, req.files).then(function (callresp) {
+                                                logger.info(nameFile + ' | /:enttype | create | demeterExternalEntities:' + JSON.stringify(mapdata) + " , " + JSON.stringify(callresp.data));
+                                                ret.setSuccess(callresp.data.success);
+                                                ret.setData(callresp.data);
+                                                if (!ret.success) {
+                                                    ret.setMessages(callresp.data.extraData.message);
+                                                } else {
+                                                    ret.setMessages(callresp.data.message);
+                                                }
+                                                return res.send(ret);
+    
+                                            }).catch(function (error) {
+                                                console.error("ERROR | " + nameFile + '  | /:enttype | create | demeterExternalEntities:', error);
+                                                logger.error(nameFile + ' | /:enttype | create | demeterExternalEntities: ' + error);
+                                                ret.setSuccess(false);
+                                                ret.setMessages("Entity Create Problem");
+                                                return res.send(ret);
+                                            })
+                                        }).catch(function (error) {
+                                            console.error("ERROR | " + nameFile + '  | /:enttype | create | getCapabilityTokenDEMETER:', error);
+                                            logger.error(nameFile + ' | /:enttype | create | getCapabilityTokenDEMETER: ' + error);
+                                            ret.setSuccess(false);
+                                            ret.setMessages("Capability Token Problem");
+                                            return res.send(ret);
+                                        });
+                                    }).catch(function (error) {
+                                        console.error("ERROR | " + nameFile + '  | /:enttype | create | jsonMappingDymerEntityToExternal:', error);
+                                        logger.error(nameFile + ' | /:enttype | create | jsonMappingDymerEntityToExternal: ' + error);
+                                        ret.setSuccess(false);
+                                        ret.setMessages("Entity Mapping Problem");
+                                        return res.send(ret);
+                                    });;
+                                }
+                            }
+                            else{
+                            jsonMappingDymerEntityToExternal(globalData, bridgeConf, "create", req.files).then(function(mapdata) {
+                                bridgeEsternalEntities(bridgeConf, "create", mapdata, undefined, req.files).then(function(callresp) {
                                     //console.log(nameFile + ' | /:enttype | create | bridgeEsternalEntities: ', JSON.stringify(mapdata), JSON.stringify(callresp.data));
                                     logger.info(nameFile + ' | /:enttype | create | bridgeEsternalEntities:' + JSON.stringify(mapdata) + " , " + JSON.stringify(callresp.data));
                                     ret.setData(callresp.data);
                                     ret.setMessages("Entity Creted successfully");
                                     return res.send(ret);
-                                }).catch(function (error) {
+                                }).catch(function(error) {
                                     console.error("ERROR | " + nameFile + ' | /:enttype | create | bridgeEsternalEntities:', error);
                                     logger.error(nameFile + ' | /:enttype | create | bridgeEsternalEntities: ' + error);
                                     ret.setSuccess(false);
                                     ret.setMessages("Entity Create Problem");
                                     return res.send(ret);
                                 });
-                            }).catch(function (error) {
-                                console.error("ERROR | " + nameFile + '  | /:enttype | create | jsonMappingDymerEntityToExternal:', error);
+                            }).catch(function(error) {
+                                console.error("ERROR | " + nameFile + ' | /:enttype | create | jsonMappingDymerEntityToExternal:', error);
+                                logger.error(nameFile + ' | /:enttype | create | jsonMappingDymerEntityToExternal: ' + error);
                                 ret.setSuccess(false);
                                 ret.setMessages("Entity Mapping Problem");
                                 return res.send(ret);
                             });
-                        }
-                    } else {
-                        //fine externale
-                        var files_arr = [];
-                        var label_index = -1;
-                        //  console.log('reqfile', req.files);
-                        if (req.files != undefined) {
-                            req.files.forEach(function (element) {
-                                var ark = replaceAll(element.fieldname, '[', '@@');
-                                var temp_el = element;
-                                delete element.fieldname;
-                                ark = replaceAll(ark, ']', '');
-                                ark = ark.split("@@");
-                                ark.shift();
-                                stringAsKey(data, ark, element);
+                        }} else {
+                            //fine externale
+                            var files_arr = [];
+                            var label_index = -1;
+                            //  console.log('reqfile', req.files);
+                            if (req.files != undefined) {
+                                req.files.forEach(function(element) {
+                                    var ark = replaceAll(element.fieldname, '[', '@@');
+                                    var temp_el = element;
+                                    delete element.fieldname;
+                                    ark = replaceAll(ark, ']', '');
+                                    ark = ark.split("@@");
+                                    ark.shift();
+                                    stringAsKey(data, ark, element);
+                                });
+                            }
+                            //  logger.info("predata" + JSON.stringify(data));
+                            logger.info(nameFile + ' | /:enttype | create | predata :' + JSON.stringify(data));
+                            //       if (!((JSON.parse(data.properties)).hasOwnProperty("owner") && asis)) {
+                            if (!(data.properties.owner != undefined && asis)) {
+                                data.properties.owner = {};
+                                data.properties.owner.uid = urs_uid;
+                                data.properties.owner.gid = urs_gid;
+                                data.properties.lang = "und";
+                                data.properties.tid = "0";
+                                data.properties.created = new Date().toISOString();
+                                data.properties.changed = new Date().toISOString();
+                            }
+                            if (elDymerUuid == undefined) {
+                                instance.id = util.generateDymerUuid();
+                            }
+                            let params = (instance) ? instance : {};
+                            params["body"] = data;
+                            // params["body"].size = 10000;
+                            params["refresh"] = true;
+                            let ref = Object.assign({}, data.relation);
+                            if (data != undefined)
+                                delete data.relation;
+                            // console.log(nameFile + ' | /:enttype | create | params:', dymeruser.id, JSON.stringify(params));
+                            logger.info(nameFile + ' | /:enttype | create | params :' + dymeruser.id + " , " + JSON.stringify(params));
+                            client.index(params, function(err, resp, status) {
+                                if (err) {
+                                    console.error("ERROR | " + nameFile + ' | /:enttype | create:', err);
+                                    logger.error(nameFile + ' | /:enttype | create : ' + err);
+                                    ret.setSuccess(false);
+                                    ret.setExtraData({ "log": resp });
+                                    ret.setMessages("Entity creation error");
+                                    return res.send(ret);
+                                }
+                                var respResult = resp.result;
+                                ret.setMessages("Entity " + respResult + " successfully");
+                                ret.addData(resp);
+                                //   console.log('new ent ', resp);
+                                var elId = resp["_id"];
+                                logger.info(nameFile + ' | /:enttype | create | dymeruser.id, params:' + dymeruser.id + ' , ' + JSON.stringify(params));
+                                logger.info(nameFile + ' | /:enttype | create | ref, elIndex, elId:' + JSON.stringify(ref) + ' , ' + elIndex + ' , ' + elId);
+                                try {
+                                    checkRelation(ref, elIndex, elId);
+                                } catch (error) {
+                                    logger.error(nameFile + ' | /:enttype | create | checkRelation:' + error);
+                                }
+
+                                /* var extraInfo = dymerextrainfo;
+                                 if (extraInfo != undefined)
+                                     extraInfo.extrainfo.emailAddress = dymeruser.id;*/
+                                // console.log(nameFile + ' | /:enttype | create | pre check hook extraInfo: ', dymerextrainfo);
+                                logger.info(nameFile + ' | /:enttype | create | pre check hook| obj, extraInfo:' + JSON.stringify(resp) + ' , ' + JSON.stringify(dymerextrainfo));
+                                setTimeout(() => {
+                                    checkServiceHook('after_insert', resp, dymerextrainfo, req);
+                                }, 3000);
+
+
+                                return res.send(ret);
                             });
                         }
-                        //  logger.info("predata" + JSON.stringify(data));
-                        logger.info(nameFile + ' | /:enttype | create | predata :' + JSON.stringify(data));
-                        //       if (!((JSON.parse(data.properties)).hasOwnProperty("owner") && asis)) {
-                        if (!(data.properties.owner != undefined && asis)) {
-                            data.properties.owner = {};
-                            data.properties.owner.uid = urs_uid;
-                            data.properties.owner.gid = urs_gid;
-                            data.properties.lang = "und";
-                            data.properties.tid = "0";
-                            data.properties.created = new Date().toISOString();
-                            data.properties.changed = new Date().toISOString();
-                        }
-                        if (elDymerUuid == undefined) {
-                            instance.id = util.generateDymerUuid();
-                        }
-                        let params = (instance) ? instance : {};
-                        params["body"] = data;
-                        // params["body"].size = 10000;
-                        params["refresh"] = true;
-                        let ref = Object.assign({}, data.relation);
-                        if (data != undefined)
-                            delete data.relation;
-                        // console.log(nameFile + ' | /:enttype | create | params:', dymeruser.id, JSON.stringify(params));
-                        logger.info(nameFile + ' | /:enttype | create | params :' + dymeruser.id + " , " + JSON.stringify(params));
-                        client.index(params, function (err, resp, status) {
-                            if (err) {
-                                console.error("ERROR | " + nameFile + ' | /:enttype | create:', err);
-                                logger.error(nameFile + ' | /:enttype | create : ' + err);
-                                ret.setSuccess(false);
-                                ret.setExtraData({ "log": resp });
-                                ret.setMessages("Entity creation error");
-                                return res.send(ret);
-                            }
-                            var respResult = resp.result;
-                            ret.setMessages("Entity " + respResult + " successfully");
-                            ret.addData(resp);
-                            //   console.log('new ent ', resp);
-                            var elId = resp["_id"];
-                            logger.info(nameFile + ' | /:enttype | create | dymeruser.id, params:' + dymeruser.id + ' , ' + JSON.stringify(params));
-                            logger.info(nameFile + ' | /:enttype | create | ref, elIndex, elId:' + JSON.stringify(ref) + ' , ' + elIndex + ' , ' + elId);
-                            try {
-                                checkRelation(ref, elIndex, elId);
-                            } catch (error) {
-                                logger.error(nameFile + ' | /:enttype | create | checkRelation:' + error);
-                            }
-
-                            /* var extraInfo = dymerextrainfo;
-                             if (extraInfo != undefined)
-                                 extraInfo.extrainfo.emailAddress = dymeruser.id;*/
-                            // console.log(nameFile + ' | /:enttype | create | pre check hook extraInfo: ', dymerextrainfo);
-                            logger.info(nameFile + ' | /:enttype | create | pre check hook| obj, extraInfo:' + JSON.stringify(resp) + ' , ' + JSON.stringify(dymerextrainfo));
-                            setTimeout(() => {
-                                checkServiceHook('after_insert', resp, dymerextrainfo, req);
-                            }, 3000);
-
-
-                            return res.send(ret);
-                        });
+                    } catch (error) {
+                        console.error("ERROR | " + nameFile + ' | /:enttype | core:', error);
+                        logger.error(nameFile + ' | /:enttype | core : ' + error);
+                        ret.setMessages("ERROR create");
+                        res.status(200);
+                        ret.setSuccess(false);
+                        return res.send(ret);
                     }
                 });
             } else {
@@ -3379,6 +3411,7 @@ router.post('/:enttype', function (req, res) {
             return res.send(ret);
         });
 });
+
 router.put('/update/:id', (req, res) => {
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser
@@ -3981,14 +4014,14 @@ const haspermissionGrants = function (urs, entityprop) {
         let entityOwner = entityprop.owner;
         let entityGrant = entityprop.grant;
         let visibility = entityprop.visibility;
+        //0 Public
+        //1 Private
+        //2 Restricted
+        let status = entityprop.status;
         //1 Published
         //2 Not Published
         //3 Draft
         //0 Deleted
-        let status = entityprop.status;
-        //0 Public
-        //1 Private
-        //2 Restricted
         if (userroles.indexOf("app-admin") > -1) {
             permissions.view = true;
             permissions.update = true;
@@ -4013,10 +4046,19 @@ const haspermissionGrants = function (urs, entityprop) {
         if (visibility == '0' && status == '1') {
             permissions.view = true;
         }
-        if (((visibility == '2' || visibility == '3') && (status == '0' || status == '2')) && ((entityGrant.view.uid).find(userid) || (entityGrant.view.gid).find(usergid))) {
+        /*  if (((visibility == '2' || visibility == '3') && (status == '2' || status == '3')) && ((entityGrant.view.uid).find(userid) || (entityGrant.view.gid).find(usergid))) {
+              permissions.view = true;
+          }*/
+        if ((visibility == '1' && status == '3') && ((entityGrant.view.uid).find(userid) || (entityGrant.view.gid).find(usergid))) {
             permissions.view = true;
         }
-        if (status == '2' && usergid == entityOwner.gid) {
+        //if (status == '2' && usergid == entityOwner.gid) {
+        //    permissions.view = true;
+        // }
+        if (visibility == '2' && status == '1' && usergid == entityOwner.gid) {
+            permissions.view = true;
+        }
+        if (visibility == '2' && status == '3' && usergid == entityOwner.gid) {
             permissions.view = true;
         }
         //update
@@ -4054,14 +4096,14 @@ const haspermissionGrantByAction = function (urs, action, entityprop) {
         const entityOwner = entityprop.owner;
         const entityGrant = entityprop.grant;
         const visibility = entityprop.visibility;
+        //0 Public
+        //1 Private
+        //2 Restricted
+        const status = entityprop.status;
         //1 Published
         //2 Not Published
         //3 Draft
         //0 Deleted
-        const status = entityprop.status;
-        //0 Public
-        //1 Private
-        //2 Restricted
 
         let hasperm = false;
         if (userroles.indexOf("app-admin") > -1) {

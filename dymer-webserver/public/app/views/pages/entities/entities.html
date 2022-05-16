@@ -5,11 +5,31 @@
                 <div class="input-group no-border">
                     <div class="input-group-append " style="width: 100%;">
                         <select ng-model="search_index" class="form-control">
-                            <option value="">All</option>
+                            <option value="">Index: All</option>
                             <option ng-repeat="el in indexEntities | orderBy " value="{{el}}"> {{ el}} </option>
                         </select>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="input-group no-border col-6">
+                        <select ng-model="search_visibility" class="form-control">
+                            <option value="">Visibility: All</option>
+                            <option value="0"> Pubilc <i class="fa fa-unlock icon-action" aria-hidden="true"></i>
+                            </option>
+                            <option value="1"> Private </option>
+                            <option value="2"> Restricted </option>
+                        </select>
+                    </div>
+                    <div class="input-group no-border col-6">
+                        <select ng-model="search_status" class="form-control">
+                            <option value="">Status: All</option>
+                            <option value="1"> Published </option>
+                            <option value="2"> UnPublished </option>
+                            <option value="3"> Draft </option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="input-group no-border">
                     <input type="text" value="" class="form-control" placeholder="Search by title" ng-model="searchName" />
                     <div class="input-group-append">
@@ -24,15 +44,34 @@
                     <div class="alert alert-info  "> No Entity available </div>
                 </div>
                 <ul class="list-unstyled team-members">
-                    <li ng-repeat="el in listEntity | filter:{title:searchName, _index:search_index } | startFrom:currentPage*pageSize | limitTo:pageSize" class="kmspointer hover actcolor">
+                    <li ng-repeat="el in listEntity | filter:{title:searchName, _index:search_index,  properties:{visibility:search_visibility,status:search_status}     } | startFrom:currentPage*pageSize | limitTo:pageSize" class="kmspointer hover actcolor" style="border-bottom: 1px solid #e5e5e5;
+padding: 4px 0;">
                         <div class="row" refEntity="{{ el._id }}">
-                            <div class="col-md-7  col-7">
-                                <span ng-click="RenderEntity(el,$index);templ.isActive = !templ.isActive" style="bottom: -17px; position: relative;" ng-class="{active:$index== selected}">{{
-                                    el.title }}<br>
+                            <div class="col-md-8  col-8" style="padding-right: 0!important; ">
+                                <div ng-click="RenderEntity(el,$index);templ.isActive = !templ.isActive" ng-class="{active:$index== selected}">{{ el.title }}
+                                </div>
+                                <div>
                                     <span class="txtinsta">({{ el._index }})</span>
-                                </span>
+                                    <span ng-switch on="{{el.properties.visibility}}">
+                                        <span ng-switch-when="0" title="public" class=" badge badge-info"> <i
+                                                class="fa fa-unlock icon-action" aria-hidden="true"></i> </span>
+
+                                    <span ng-switch-when="1" title="private" class=" badge badge-danger"><i
+                                                class="fa fa-lock icon-action"></i> </span>
+
+                                    <span ng-switch-when="2" title="restricted" class=" badge badge-warning"> <i
+                                                class="fa fa-unlock-alt icon-action"></i> </span>
+
+                                    </span>
+                                    <span ng-switch on="{{el.properties.status}}">
+                                        <span ng-switch-when="1" title="PUBLISHED" class=" badge badge-info"> P </span>
+                                    <span ng-switch-when="2" title="UNPUBLISHED" class=" badge badge-dark"> U
+                                        </span>
+                                    <span ng-switch-when="3" title="DRAFT" class=" badge badge-light"> D </span>
+                                    </span>
+                                </div>
                             </div>
-                            <div class="col-5 text-right">
+                            <div class="col-4 text-right" style="padding-left: 0!important;">
                                 <btn class="btn btn-sm btn-outline-success btn-round btn-icon" ng-click="RenderEntity(el,$index)"><i class="fa fa-eye" aria-hidden="true"></i>
                                 </btn>
                                 <!-- <btn class="btn btn-sm btn-outline-success btn-round btn-icon" ng-click="EditEntity(el,$index)"><i class="fa fa-pencil" aria-hidden="true"></i></btn>
@@ -47,13 +86,13 @@
 
                 <br>
                 <div class="row align-items-center">
-                    <div class="col">
+                    <div class="col-4">
                         <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1" class="btn btn-primary">
-                            Previous
+                            Prev
                         </button>
                     </div>
-                    <div class="col text-center"> <span>{{currentPage+1}}/{{numberOfPages()}}</span></div>
-                    <div class="col"> <button ng-disabled="currentPage >= listEntity.length/pageSize - 1" class="btn btn-primary" ng-click="currentPage=currentPage+1">
+                    <div class="col-4 text-center"> <span>{{currentPage+1}}/{{numberOfPages()}}</span></div>
+                    <div class="col-4"> <button ng-disabled="currentPage >= listEntity.length/pageSize - 1" class="btn btn-primary" ng-click="currentPage=currentPage+1">
                             Next
                         </button></div>
                 </div>
@@ -115,7 +154,8 @@
                 <div class="stats" ng-show="objChanged"><i class="fa fa-history"></i>Last update: <span ng-bind="objChanged | date:'MM/dd/yyyy HH:mm'"></span>
 
                     <span class='pull-right'><i class="fa fa-info burgherAction"
-                            ng-click="showFilterItem = ! showFilterItem" aria-hidden="true"></i> </span>
+                            ng-click="showFilterItem = ! showFilterItem; showentitydet();" aria-hidden="true"></i>
+                    </span>
                 </div>
                 <div ng-show="showFilterItem">
                     <pre>{{detailObj | json }}</pre>

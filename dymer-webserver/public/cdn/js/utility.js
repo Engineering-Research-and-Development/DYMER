@@ -1985,9 +1985,10 @@ function kmsrenderEl(ar, rendertype) {
         });
         if (rendertype == 'fullcontent' || types.length == 1) {
             var item = (rendertype == 'fullcontent') ? ar[0] : ar;
-            console.log("ecco");
-            if (ar.length == 1)
+            if (ar.length == 1 && rendertype == 'fullcontent')
                 checkbreadcrumb(item);
+            else
+                $("#dymer_breadcrumb span").not(':first').remove();
             var tmpl = (rendertype == 'fullcontent') ? item._index + "@" + item._type : item[0]._index + "@" + item[0]._type;
             //   tmpl = item._index + "@" + item._type;
             var typetemplateToRender = (rendertype == 'fullcontent') ? 'fullcontent' : kmsconf.viewtype;
@@ -2788,10 +2789,15 @@ function checkbreadcrumb(arObj, fnct, linklabel) {
             dbrdtitle = linklabel;
             bdrHtml = linklabel;
         } else {
-            dbrdid = 'dbrdidlist';
-            dbrdclick = fnct.attr('onclick');
-            dbrdtitle = '';
-            bdrHtml = '<i class="fa fa-list" aria-hidden="true"></i>';
+            if (fnct != undefined) {
+                dbrdid = 'dbrdidlist';
+                dbrdclick = fnct.attr('onclick');
+                dbrdtitle = '';
+                bdrHtml = '<i class="fa fa-list" aria-hidden="true"></i>';
+            } else {
+                return;
+            }
+
         }
 
     } else {
@@ -4235,6 +4241,7 @@ function dymerSearch(options) {
             querycreator.bool.must.push(subquerycreator);
         //  console.log('querycreator', querycreator);
         switchQuery(querycreator);
+        $('#dymer_breadcrumb').empty();
     }
     this.showFilter = function() {
         let myform = $("#" + options.formid + "");
@@ -4346,6 +4353,7 @@ function switchByFilterBase() {
 
     console.log('querycreator', querycreator);
     switchQuery(querycreator);
+
 }
 
 function switchByFilter(cc, vType) {

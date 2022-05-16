@@ -10,11 +10,12 @@ Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
 Handlebars.registerHelper('loadfile', function(eid, fid, options) {
     var ret = (kmsconfig.cdn).replace('public/cdn/', "") + "api/entities/api/v1/entity/contentfile/" + eid + "/" + fid;
     var tk = localStorage.getItem('DYMAT');
+    var tk_extra = localStorage.getItem('DYM_EXTRA');
     if (tk != null)
-        return ret += "?tkdymat=" + tk;
+        return ret += "?tkdymat=" + tk + "&tkextra=" + tk_extra;
     tk = localStorage.getItem('DYM');
     if (tk != null)
-        return ret += "?tkdym=" + tk;
+        return ret += "?tkdym=" + tk + "&tkextra=" + tk_extra;
 });
 Handlebars.registerHelper('formatDate', function(val, format) {
     return dymerFormatDate(val, format);
@@ -222,14 +223,14 @@ Handlebars.registerHelper('EntityStatus', function(obj, hookCheckSatusconf, obj2
 
 
 Handlebars.registerHelper('EntityStatusTwo', function(obj, hookCheckSatusconf, obj2) {
-var ret = '';
+    var ret = '';
     var args = [],
         options = arguments[arguments.length - 1];
     if (hookCheckSatusconf != undefined) {
         if (hookCheckSatusconf.name == "EntityStatusTwo")
             hookCheckSatusconf = undefined;
     }
-     
+
     var perm = checkPermission(obj);
     var status = checkSatus(obj, hookCheckSatusconf);
     var visibility = checkVisibility(obj);
@@ -246,7 +247,7 @@ var ret = '';
             if (perm.delete)
                 editBtn += '<a href="#" class="actionDymerItem fixedDelete" style="cursor:pointer" onclick="deleteEntity(\'' + obj._id + '\', \'' + obj._index + '\'  )"><b><i class="fa fa-trash" aria-hidden="true"></i></b> <span>Delete </span></a> ';
             if (perm.edit) {
-                 editBtn += '<a href="#" class="actionDymerItem fixedEdit" style="cursor:pointer" onclick="editEntity(\'' + obj._id + '\')"> <b> <i class="fa fa-pencil" aria-hidden="true"></i></b> <span>Edit </span> </a>';
+                editBtn += '<a href="#" class="actionDymerItem fixedEdit" style="cursor:pointer" onclick="editEntity(\'' + obj._id + '\')"> <b> <i class="fa fa-pencil" aria-hidden="true"></i></b> <span>Edit </span> </a>';
             }
             //editBtn += '<span id="closeButtonItem" style="cursor:pointer" class="closeButton  btn-listdymer " onclick="drawEntities(jsonConfig)"> <i class="fa fa-window-close-o" aria-hidden="true"></i> Close </span>';
 
@@ -255,17 +256,17 @@ var ret = '';
     }
 
 
-    if (perm.view){
-       if (actualTemplateType=='fullcontent'){
-         editBtn+='<a href="#" class="actionDymerItem fixedClose" style="cursor:pointer" id="closeButtonItem" onclick="showDatasetContainer();drawEntities(jsonConfig);" > <b><i class="fa fa-window-close-o" aria-hidden="true"></i> </b>  <span> Close </span></a>'; 
-       }
+    if (perm.view) {
+        if (actualTemplateType == 'fullcontent') {
+            editBtn += '<a href="#" class="actionDymerItem fixedClose" style="cursor:pointer" id="closeButtonItem" onclick="showDatasetContainer();drawEntities(jsonConfig);" > <b><i class="fa fa-window-close-o" aria-hidden="true"></i> </b>  <span> Close </span></a>';
+        }
     }
 
-    var closeBtn='<span id="closeButtonItem" class="actionDymerItem  btn-listdymer " onclick="drawEntities(jsonConfig)"> <i class="fa fa-times-circle" aria-hidden="true"></i> Close </span></a>';	
+    var closeBtn = '<span id="closeButtonItem" class="actionDymerItem  btn-listdymer " onclick="drawEntities(jsonConfig)"> <i class="fa fa-times-circle" aria-hidden="true"></i> Close </span></a>';
 
     if (owner != '' || visibility != '')
-         owner = '<a href="#" class="fixOwner"><b>' + owner + "&nbsp;" + visibility + '</b><span>Ownership</span></a>';
-    ret ='<div class=" text-right dotItems">'+ status + owner + editBtn +'</div>';
+        owner = '<a href="#" class="fixOwner"><b>' + owner + "&nbsp;" + visibility + '</b><span>Ownership</span></a>';
+    ret = '<div class=" text-right dotItems">' + status + owner + editBtn + '</div>';
 
     return ret;
 });

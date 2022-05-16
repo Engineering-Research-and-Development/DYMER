@@ -271,13 +271,19 @@ function loadUserInfo(req, res, next) {
     var authuserUrl = util.getServiceUrl("dservice") + "/api/v1/authconfig/userinfo";
     var dymtoken = (req.headers.authorization != undefined) ? req.headers.authorization.split(' ')[1] : undefined;
     var dymtokenAT = req.headers.authorizationtk;
-    if (req.query.tkdymat != undefined)
+    var dymtoExtraInfo = req.headers.extrainfo;
+
+
+    if (req.query.tkdymat != undefined) {
         dymtokenAT = req.query.tkdymat;
+        dymtoExtraInfo = req.query.tkextra;
+    }
+
     if (req.query.tkdym != undefined)
         dymtoken = req.query.tkdym;
     // console.log('loadUserInfo req.query.tkdymat', req.query.tkdymat);
     //  console.log('loadUserInfo req.query.tkdym', req.query.tkdym);
-    var dymtoExtraInfo = req.headers.extrainfo;
+
     //console.log('loadUserInfo authuserUrl', authuserUrl);
     // console.log('loadUserInfo dymtoken', dymtoken);
     logger.info(nameFile + ' | loadUserInfo : dymtoken' + JSON.stringify(dymtoken));
