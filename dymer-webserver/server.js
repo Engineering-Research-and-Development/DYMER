@@ -252,6 +252,22 @@ function checkAuthentication(req, res, next) {
     }
 }
 
+function getTokenFromRequest(req, res, next) {
+
+    var url = req.originalUrl;
+    var splitUrl = url.split('?')
+    var originalUrl = splitUrl[0];
+    console.log("SPLIT", originalUrl)
+    var token = url.substring(
+        url.lastIndexOf("&token=") + 7,
+        url.lastIndexOf("&state")
+    );
+
+    req.originalUrl = originalUrl;
+    req.headers["jwtToken"] = token;
+
+    next();
+}
 function loadUserInfo(req, res, next) {
     cookie = req.cookies;
     //console.log("cookiecookie", cookie);
@@ -378,6 +394,7 @@ app.post(util.getContextPath('webserver') + "/api/test/", loadUserInfo, (req, re
 @Marko Change starts here
 */
 app.use(util.getContextPath('webserver') + "/api/xauth/login", dserviceRoutes);
+app.use(util.getContextPath('webserver') + "/api/xauth/loginnn/", getTokenFromRequest, dserviceRoutes);
 app.use(util.getContextPath('webserver') + "/api/xauth/logout", loadUserInfo, dserviceRoutes);
 app.use(util.getContextPath('webserver') + "/api/attachment/", attachmentRoutes);
 app.use(util.getContextPath('webserver') + "/api/metrics/", metricsRoutes);
