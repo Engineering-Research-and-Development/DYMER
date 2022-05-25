@@ -431,7 +431,8 @@ function postListfwadapter(list, el) {
                     });
                 })
                 return Promise.all(promlist).then(mappedlist => {
-                    // console.log("mappedlist mappedlist ")
+                    //   console.log("mappedlist mappedlist ", mappedlist[0])
+                    let batchindex = mappedlist[0].instance.index;
                     let databs = BSON.serialize(mappedlist);
                     let actionUrldispatch = el.configuration.method;
                     var postUrldispatch = el.configuration.host;
@@ -439,7 +440,7 @@ function postListfwadapter(list, el) {
                         if (el.configuration.port != '')
                             postUrldispatch += ":" + el.configuration.port;
                     postUrldispatch += el.configuration.path;
-
+                    postUrldispatch += "/" + batchindex;
                     var config = {
                         method: actionUrldispatch,
                         url: postUrldispatch,
@@ -463,11 +464,7 @@ function postListfwadapter(list, el) {
                         });
                 });
             })
-
-
         })
-
-
 }
 
 function postfwadapter(typeaction, obj, extraInfo, rfrom) {
@@ -592,7 +589,7 @@ function callFwAdapter(el, index, DYM, DYM_EXTRA, action, conf) {
     let arrlistFiles = [];
     let dest = 'tempfolder';
     let id = el.instance["id"];
-    let ind = el.instance["id"];
+    let ind = el.instance["index"];
     const dir = dest + "/" + id;
     if (action == "delete") {
         posturl = posturl + "/" + ind + "/" + id;
