@@ -787,3 +787,39 @@ table.dataTable tfoot td {
     top: 6px;
     z-index: 1;
 }
+
+
+/*summernote*/
+
+.note-editor .note-toolbar,
+.note-popover .popover-content {
+    margin: 0;
+    padding: 0 0 5px 5px;
+}
+
+.note-toolbar {
+    background: hsla(0, 0%, 50.2%, 0.11);
+}
+
+.note-toolbar {
+    position: relative;
+}
+
+.card-header {
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 0;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solidrgba(0, 0, 0, 0.125);
+}
+
+.note-editor .panel-heading.note-toolbar .note-view .btn-fullscreen {
+    display: none;
+}
+
+.note-editor .panel-heading.note-toolbar .btn-group {
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    background-color: #fff;
+}
+
+
+/*end summernote*/

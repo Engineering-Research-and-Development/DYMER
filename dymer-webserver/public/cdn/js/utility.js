@@ -622,7 +622,15 @@ function loadRequireForm() {
     group = "bootstrap";
     filename = kmsconfig.cdn + "js/lib/bootstrap/4.1.3/bootstrap.min.js";
     if (!(ckaddimport.indexOf(group) > -1))
+        arr.push(new Elfile("link", filename, callback, useonload, group));
+
+    group = "summernote";
+    if (!(ckaddimport.indexOf(group) > -1)) {
+        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.css";
+        arr.push(new Elfile("link", filename, callback, useonload, group));
+        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.js";
         arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    }
     filename = kmsconfig.cdn + "js/ajaxcall.js";
     var mycallback = function() { // Method which will display type of Animal
         try {
@@ -1387,6 +1395,14 @@ function loadRequireView() {
     filename = kmsconfig.cdn + 'js/lib/bootstrap-select/bootstrap-select.min.js';
     if (!(ckaddimport.indexOf(group) > -1))
         arr.push(new Elfile(domtype, filename, callback, useonload));
+    group = "summernote";
+    if (!(ckaddimport.indexOf(group) > -1)) {
+        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.css";
+        arr.push(new Elfile("link", filename, callback, useonload, group));
+        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.js";
+        arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    }
+
     group = "mandatory";
     /*filename = kmsconfig.cdn + "js/validate-forms.js";
     arr.push(new Elfile(domtype, filename, mycallback, useonload));*/
@@ -1492,6 +1508,7 @@ function loadRequireMap() {
     arr.push(new Elfile(domtype, filename, callback, useonload, group));
     filename = kmsconfig.cdn + "leaflet/leaflet.awesome-markers.js";
     arr.push(new Elfile(domtype, filename, callback, useonload, group));
+
     group = "jquery.dataTables";
     if (!(ckaddimport.indexOf(group) > -1)) {
         filename = kmsconfig.cdn + "js/lib/datatables/jquery.dataTables.min.js";
@@ -1532,6 +1549,13 @@ function loadRequireMap() {
         arr.push(new Elfile(domtype, filename, callback, useonload, group));
     //filename = kmsconfig.cdn + "js/kms.view.js";
     //arr.push(new Elfile(domtype, filename, callback, useonload));
+    group = "summernote";
+    if (!(ckaddimport.indexOf(group) > -1)) {
+        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.css";
+        arr.push(new Elfile("link", filename, callback, useonload, group));
+        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.js";
+        arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    }
     group = "mandatory";
     filename = kmsconfig.cdn + "leaflet/plugin/toolbar/leaflet.toolbar.js";
     arr.push(new Elfile(domtype, filename, callback, useonload, group));
