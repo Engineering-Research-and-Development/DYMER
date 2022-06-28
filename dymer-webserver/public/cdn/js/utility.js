@@ -336,7 +336,7 @@ function cloneRepeatable(elToClone) {
             if ($(this).next() != undefined) {
                 if ($(this).next().hasClass("note-editor")) {
                     $(this).next().remove();
-                    $(this).summernote();
+                    $(this).summernote({ dialogsInBody: true });
                 }
             }
         } else {
@@ -2485,7 +2485,7 @@ function populateFormEdit(frm, item, basename, wasarr, origitem) {
                 if (Array.isArray(value)) {
                     if (value.length > 0) {
                         if (elPop.hasClass('summernote')) {
-                            elPop.summernote();
+                            elPop.summernote({ dialogsInBody: true });
 
                         } else if (elPop.hasClass('selectpicker')) {
 
@@ -2548,7 +2548,7 @@ function populateFormEdit(frm, item, basename, wasarr, origitem) {
                 } else {
                     elPop.val(value);
                     if (elPop.hasClass('summernote')) {
-                        elPop.summernote();
+                        elPop.summernote({ dialogsInBody: true });
                     }
                 }
             }
@@ -2643,7 +2643,7 @@ const populateFormEdit_Promise = function(frm, item, basename, wasarr) {
                     } else {
                         elPop.val(value);
                         if (elPop.hasClass('summernote')) {
-                            elPop.summernote();
+                            elPop.summernote({ dialogsInBody: true });
                         }
                     }
                 }
@@ -3244,7 +3244,7 @@ function showAddEntityBindReload() {
         var actToAppend = oldact;
         $('#entityAdd').find("[onclick^='actionPostMultipartForm']").attr('onclick', actToAppend);
         if ($('#entityAdd').find(".summernote").length > 0)
-            $('#entityAdd').find(".summernote").summernote();
+            $('#entityAdd').find(".summernote").summernote({ dialogsInBody: true });
         $('.selectpicker').selectpicker();
     }, 1000);
 }
