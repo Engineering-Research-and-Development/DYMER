@@ -27,7 +27,7 @@ router.use(bodyParser.urlencoded({
 
 
 const acsServer = process.env.ACS_SERVER || 'https://acs.bse.h2020-demeter-cloud.eu:3030';
-const rrmApi = process.env.RRM_API || 'https://deh-demeter.eng.it/pep-proxy';
+const rrmApi = process.env.RRM_API || 'https://acs.bse.h2020-demeter-cloud.eu:1029';
 
 /*
 const mongoURI = util.mongoUrlForm();
@@ -515,19 +515,15 @@ router.delete('/logout',
 
 function fetchCapTokens(authToken, req) {
 
-
-
     // getCapabilityTokenDEMETER('getMyResources', req, '', authToken)
     getCapabilityTokenDEMETER('getMetrics', req, '', authToken);
     getCapabilityTokenDEMETER('createResource', req, '', authToken)
-    // getCapabilityTokenDEMETER('getUniversal', req, '', authToken)
 
 
 }
 
 const getResorucesUniversalCapToken = (accessToken, req) => {
 
-    console.log("TOKEN IN UNVERSAL", accessToken)
 
     req.session.accessToken = accessToken;
     req.session.save();
