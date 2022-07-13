@@ -2524,16 +2524,15 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
                         let body = JSON.stringify(rawBody);
 
                         if (reHeader.includes('/api/v1/resources/search?') && objconf.api[callkey].method === 'GET') {
-                            console.log("using universal cap token")
                             axios.get(ownerUrl).then(session => {
                                 if (session.data.data[0] != null) {
                                     if (session.data.data[0].session.extraData != undefined) {
-
                                         if (session.data.data[0].session.extraData.getResourcesUniversalCapToken != undefined) {
                                             const getResourcesUniversalCapToken = { data: JSON.parse(session.data.data[0].session.extraData.getResourcesUniversalCapToken) };
                                             resolve(getResourcesUniversalCapToken);
                                         }
                                         else {
+                                            console.log("Kurac")
                                             axios.post(tokenProviderUrl, body, config).then(resp => {
                                                 resolve(resp);
                                             }).catch(function (error) {
@@ -2564,7 +2563,6 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
                             });
                         }
                         else {
-
                             axios.post(tokenProviderUrl, body, config).then(resp => {
                                 resolve(resp);
                             }).catch(function (error) {
@@ -2602,6 +2600,16 @@ const getCapabilityTokenDEMETER = (objconf, callkey, token, datatosend, reqConfi
                                                 reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
                                             });
                                         }
+                                    }
+                                    else {
+                                        axios.post(tokenProviderUrl, body, config).then(resp => {
+                                            resolve(resp);
+                                        }).catch(function (error) {
+                                            // handle error
+                                            console.log("ERROR | " + nameFile + ' | getCapabilityTokenDEMETER | GET | Universal token | All Resources :' + error);
+                                            logger.error(nameFile + ' | getCapabilityTokenDEMETER | GET | Universal token | Advanced search :' + error);
+                                            reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
+                                        });
                                     }
                                 }
                                 else {
