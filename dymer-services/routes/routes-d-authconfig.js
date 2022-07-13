@@ -27,7 +27,7 @@ router.use(bodyParser.urlencoded({
 
 
 const acsServer = process.env.ACS_SERVER || 'https://acs.bse.h2020-demeter-cloud.eu:3030';
-const rrmApi = process.env.RRM_API || 'https://acs.bse.h2020-demeter-cloud.eu:1029';
+const rrmApi = process.env.RRM_API || 'https://deh-demeter.eng.it/pep-proxy';
 
 /*
 const mongoURI = util.mongoUrlForm();
@@ -321,6 +321,39 @@ router.delete('/:id', util.checkIsAdmin, (req, res) => {
     })
 });
 
+router.post('/cacheCapTokens',
+    function (req, res) {
+        var ret = new jsonResponse();
+
+        let body = req.body;
+        let userInfo = body.userInfo;
+        console.log("RADIIIII", userInfo)
+        getResorucesUniversalCapToken(userInfo.access_token, req).then(function (resp) {
+            if (req.session.extraData != undefined) {
+                req.session.extraData.getResourcesUniversalCapToken = JSON.stringify(resp.data);
+            } else {
+                req.session.extraData = { getResourcesUniversalCapToken: JSON.stringify(resp.data) };
+            }
+            req.session.save();
+            fetchCapTokens(userInfo, req)
+            ret.setData("Obtained");
+            ret.setSuccess(true)
+            return res.send(ret);
+        });
+
+
+        // var ret = new jsonResponse();
+        // getResorucesUniversalCapToken(userInfo.access_token, req).then(function (resp) {
+        //     if (req.session.extraData != undefined) {
+        //         req.session.extraData.getResourcesUniversalCapToken = JSON.stringify(resp.data);
+        //     } else {
+        //         req.session.extraData = { getResourcesUniversalCapToken: JSON.stringify(resp.data) };
+        //     }
+        //     req.session.save();
+        // })
+    });
+
+
 router.post('/login',
     function (req, res) {
         var ret = new jsonResponse();
@@ -419,7 +452,6 @@ router.post('/login',
                                                         const buff = Buffer.from(JSON.stringify(userInfo.data), 'utf-8');
                                                         const base64UserInfo = buff.toString('base64');
                                                         let response = { token: base64UserInfo }
-                                                        ret.setData
                                                         ret.setData(response);
 
                                                         return res.send(ret);
@@ -483,17 +515,21 @@ router.delete('/logout',
 
 function fetchCapTokens(authToken, req) {
 
+
+
     // getCapabilityTokenDEMETER('getMyResources', req, '', authToken)
     getCapabilityTokenDEMETER('getMetrics', req, '', authToken);
     getCapabilityTokenDEMETER('createResource', req, '', authToken)
+    // getCapabilityTokenDEMETER('getUniversal', req, '', authToken)
 
 
 }
 
 const getResorucesUniversalCapToken = (accessToken, req) => {
 
+    console.log("TOKEN IN UNVERSAL", accessToken)
 
-    req.session.accessToken = accessToken.access_token;
+    req.session.accessToken = accessToken;
     req.session.save();
     return new Promise((resolve, reject) => {
 
@@ -503,7 +539,7 @@ const getResorucesUniversalCapToken = (accessToken, req) => {
 
 
         let getAllResources = {
-            token: accessToken.access_token,
+            token: accessToken,
             ac: "GET",
             de: rrmApi,
             re: '/api/v1/resources.*'
@@ -517,7 +553,7 @@ const getResorucesUniversalCapToken = (accessToken, req) => {
             // handle error
             console.log("ERROR | " + nameFile + ' | getResorucesUniversalCapToken :' + error);
             logger.error(nameFile + ' | getResorucesUniversalCapToken : ' + error);
-            reject("ERROR:" + " external error=" + error.response.status)
+            reject("ERROR:" + " external error=" + error)
         });
     })
 };
@@ -532,7 +568,7 @@ async function getCapabilityTokenDEMETER(capTokenName, req, url, authToken) {
 
 
 
-    let getAllResources = {
+    let getUniversal = {
         token: authToken.access_token,
         ac: "GET",
         de: rrmApi,
@@ -561,17 +597,17 @@ async function getCapabilityTokenDEMETER(capTokenName, req, url, authToken) {
     }
 
 
-    if (capTokenName === 'getAllResources') {
+    if (capTokenName === 'getUniversal') {
 
-        let body = JSON.stringify(getAllResources);
+        let body = JSON.stringify(getUniversal);
 
         axios.post(acsServer, body, config).then(resp => {
 
             console.log("GET ALL Resources Cap. Token", JSON.stringify(resp.data))
             if (req.session.extraData != undefined) {
-                req.session.extraData.getAllResourcesCapToken = JSON.stringify(resp.data);
+                req.session.extraData.getResorucesUniversalCapToken = JSON.stringify(resp.data);
             } else {
-                req.session.extraData = { getAllResourcesCapToken: JSON.stringify(resp.data) };
+                req.session.extraData = { getResorucesUniversalCapToken: JSON.stringify(resp.data) };
             }
             req.session.save();
         }).catch(function (error) {
