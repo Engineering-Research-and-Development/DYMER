@@ -239,14 +239,14 @@ const getMetricsFromRRM = (url, authToken, capToken) => {
     return new Promise((resolve, reject) => {
 
         axios.get(serverUrl, { headers: headers }).then(resp => {
-            logger.info(nameFile + ' | getMetricsFromRRM | GET external ok: ' + resp.stats);
-            console.log("GET external ok", resp.stats);
+            logger.info(nameFile + ' | getMetricsFromRRM | GET external ok: ' + resp.status);
+            console.log("GET external ok metrics", resp.status);
             resolve(resp);
         }).catch(function (error) {
             // handle error
             logger.error(nameFile + ' | getMetricsFromRRM ' + error);
-            console.error("GET external error", error.response.status);
-            reject("ERROR:" + error.response.status)
+            console.error("GET external error", error);
+            reject("ERROR:" + error)
         });
     })
 }
@@ -265,7 +265,7 @@ const getCapabilityTokenAttachment = (accessToken) => {
             // handle error
             logger.error(nameFile + ' | getCapabilityTokenAttachment ' + error);
             console.log(error);
-            reject("ERROR:" + " external error=" + error.response.status)
+            reject("ERROR:" + " external error=" + error)
         });
     })
 };
@@ -297,7 +297,7 @@ const getMetricsCapabilityToken = (url, authToken) => {
             // handle error
             logger.error(nameFile + ' | getMetricsCapabilityToken ' + error);
             console.log(error);
-            reject("ERROR: Getting Metrics Cap. Token external error=" + error.response.status)
+            reject("ERROR: Getting Metrics Cap. Token external error=" + error)
         });
     })
 };
