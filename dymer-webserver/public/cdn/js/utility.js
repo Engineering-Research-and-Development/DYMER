@@ -336,7 +336,7 @@ function cloneRepeatable(elToClone) {
             if ($(this).next() != undefined) {
                 if ($(this).next().hasClass("note-editor")) {
                     $(this).next().remove();
-                    $(this).summernote();
+                    $(this).summernote({ dialogsInBody: true });
                 }
             }
         } else {
@@ -622,7 +622,15 @@ function loadRequireForm() {
     group = "bootstrap";
     filename = kmsconfig.cdn + "js/lib/bootstrap/4.1.3/bootstrap.min.js";
     if (!(ckaddimport.indexOf(group) > -1))
+        arr.push(new Elfile("link", filename, callback, useonload, group));
+
+    group = "summernote";
+    if (!(ckaddimport.indexOf(group) > -1)) {
+        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.css";
+        arr.push(new Elfile("link", filename, callback, useonload, group));
+        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.js";
         arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    }
     filename = kmsconfig.cdn + "js/ajaxcall.js";
     var mycallback = function () { // Method which will display type of Animal
         try {
@@ -1401,6 +1409,14 @@ function loadRequireView() {
     filename = kmsconfig.cdn + 'js/lib/bootstrap-select/bootstrap-select.min.js';
     if (!(ckaddimport.indexOf(group) > -1))
         arr.push(new Elfile(domtype, filename, callback, useonload));
+    group = "summernote";
+    if (!(ckaddimport.indexOf(group) > -1)) {
+        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.css";
+        arr.push(new Elfile("link", filename, callback, useonload, group));
+        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.js";
+        arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    }
+
     group = "mandatory";
     /*filename = kmsconfig.cdn + "js/validate-forms.js";
     arr.push(new Elfile(domtype, filename, mycallback, useonload));*/
@@ -1505,6 +1521,7 @@ function loadRequireMap() {
     arr.push(new Elfile(domtype, filename, callback, useonload, group));
     filename = kmsconfig.cdn + "leaflet/leaflet.awesome-markers.js";
     arr.push(new Elfile(domtype, filename, callback, useonload, group));
+
     group = "jquery.dataTables";
     if (!(ckaddimport.indexOf(group) > -1)) {
         filename = kmsconfig.cdn + "js/lib/datatables/jquery.dataTables.min.js";
@@ -1545,6 +1562,13 @@ function loadRequireMap() {
         arr.push(new Elfile(domtype, filename, callback, useonload, group));
     //filename = kmsconfig.cdn + "js/kms.view.js";
     //arr.push(new Elfile(domtype, filename, callback, useonload));
+    group = "summernote";
+    if (!(ckaddimport.indexOf(group) > -1)) {
+        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.css";
+        arr.push(new Elfile("link", filename, callback, useonload, group));
+        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.js";
+        arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    }
     group = "mandatory";
     filename = kmsconfig.cdn + "leaflet/plugin/toolbar/leaflet.toolbar.js";
     arr.push(new Elfile(domtype, filename, callback, useonload, group));
@@ -2474,7 +2498,7 @@ function populateFormEdit(frm, item, basename, wasarr, origitem) {
                 if (Array.isArray(value)) {
                     if (value.length > 0) {
                         if (elPop.hasClass('summernote')) {
-                            elPop.summernote();
+                            elPop.summernote({ dialogsInBody: true });
 
                         } else if (elPop.hasClass('selectpicker')) {
 
@@ -2539,7 +2563,7 @@ function populateFormEdit(frm, item, basename, wasarr, origitem) {
                 } else {
                     elPop.val(value);
                     if (elPop.hasClass('summernote')) {
-                        elPop.summernote();
+                        elPop.summernote({ dialogsInBody: true });
                     }
                 }
             }
@@ -2634,7 +2658,7 @@ const populateFormEdit_Promise = function (frm, item, basename, wasarr) {
                     } else {
                         elPop.val(value);
                         if (elPop.hasClass('summernote')) {
-                            elPop.summernote();
+                            elPop.summernote({ dialogsInBody: true });
                         }
                     }
                 }
@@ -3243,7 +3267,7 @@ function showAddEntityBindReload() {
         var actToAppend = oldact;
         $('#entityAdd').find("[onclick^='actionPostMultipartForm']").attr('onclick', actToAppend);
         if ($('#entityAdd').find(".summernote").length > 0)
-            $('#entityAdd').find(".summernote").summernote();
+            $('#entityAdd').find(".summernote").summernote({ dialogsInBody: true });
         $('.selectpicker').selectpicker();
     }, 1000);
 }

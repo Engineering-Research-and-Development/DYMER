@@ -322,7 +322,7 @@ function callOpennessJsw(conf, postObj) {
         axios.post(callurl, postObj, configqq)
             .then(function(response) {
                 logger.info(nameFile + ' | callOpennessJsw | POST | callurl, postObj, configqq' + callurl + " , " + JSON.stringify(postObj) + " , " + JSON.stringify(configqq));
-                logger.info(nameFile + ' | callOpennessJsw | POST | response ' + callurl + " , " + JSON.stringify(response));
+                logger.info(nameFile + ' | callOpennessJsw | POST | response ' + callurl + " , " + response);
             })
             .catch(function(error) {
                 console.log(nameFile + ' | callOpennessJsw | POST', error);

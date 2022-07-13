@@ -196,7 +196,8 @@
                 if not composed<br>
                 <b>query.query.relationdymer</b>:{<span>"indice_relazione":["id_entità_relazione"]</span>} contiene il filtro con le relazioni<br> <b>query.getfields</b> <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html">doc</a>recupera
                 solo determinati attributi
-                <br><b>qoptions.recoverRelation</b>: true/false recupera o meno le relazioni nel risultato di ricerca
+                <br><b>qoptions: { relations: false }</b>: true/false recupera o meno le relazioni nel risultato di ricerca ex. var query = {"query": {"query": {"bool": {"must": [{"term": {"_index": originalrelquery}}]}}},
+                <b>"qoptions": { "relations": "false" }</b>};
             </div>
             <h4 class="text-info" id="lnkdymersearch"><i class="fa fa-caret-right" aria-hidden="true"></i> Dymer Search Bar
             </h4>
