@@ -393,9 +393,7 @@ app.post(util.getContextPath('webserver') + "/api/test/", loadUserInfo, (req, re
 /*
 @Marko Change starts here
 */
-app.use(util.getContextPath('webserver') + "/api/xauth/login", dserviceRoutes);
-app.use(util.getContextPath('webserver') + "/api/xauth/loginnn/", getTokenFromRequest, dserviceRoutes);
-app.use(util.getContextPath('webserver') + "/api/xauth/logout", loadUserInfo, dserviceRoutes);
+app.use(util.getContextPath('webserver') + "/api/xauth/cacheCapTokens", dserviceRoutes);
 app.use(util.getContextPath('webserver') + "/api/attachment/", attachmentRoutes);
 app.use(util.getContextPath('webserver') + "/api/metrics/", metricsRoutes);
 /*
