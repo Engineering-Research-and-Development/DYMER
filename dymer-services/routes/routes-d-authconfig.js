@@ -339,7 +339,12 @@ router.post('/cacheCapTokens',
             ret.setData("Obtained");
             ret.setSuccess(true)
             return res.send(ret);
-        });
+        }).catch(function (err) {
+            console.log("ERROR | " + nameFile + ' | Cache Cap Tokens | Get application ' + err);
+            logger.error("ERROR | " + nameFile + ' | Cache Cap Tokens | Get application ' + err);
+            ret.setMessages('Error with caching tokens');
+            return res.send(ret);
+        })
 
 
         // var ret = new jsonResponse();
