@@ -224,9 +224,11 @@ app.post(util.getContextPath('webserver') + '/api2/retriveinfo', loadUserInfo, (
     logger.info(nameFile + ' | /api2/retriveinfo :' + JSON.stringify(objuser));
     res.send(objuser);
 });
-app.get(util.getContextPath('webserver') + '/version', (req, res, next) => {
+app.get(util.getContextPath('webserver') + '/info/:key?', (req, res, next) => {
     var pjson = require('./package.json');
-    let htmlsend =
+    var key = req.params.key;
+    let infodymer = { "version": pjson.version };
+    let htmlsend_hd =
         '<!DOCTYPE html>' +
         '<html lang="en"><head>' +
         '<meta charset="utf-8">' +
@@ -242,8 +244,8 @@ app.get(util.getContextPath('webserver') + '/version', (req, res, next) => {
         '<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous" ></script>' +
         '<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>' + '</script>' +
         ' </head > ' +
-        '<body  style="background-color:#ebecf2;"> <div class="container"> ' +
-        '<div class="row justify-content-center">' +
+        '<body  style="background-color:#ebecf2;"> ';
+    let htmlcontainer = '<div class="container"> <div class="row justify-content-center">' +
         ' <div class="col-xl-10 col-lg-12 col-md-9" > ' +
         '<div class="card o-hidden border-0 shadow-lg my-5">' +
         '<div class="card-body p-0">' +
@@ -257,7 +259,7 @@ app.get(util.getContextPath('webserver') + '/version', (req, res, next) => {
         '<br><small style="color: #8c8985;">DYnamic Information ModElling & Rendering</small>' +
         '</div>' +
         '<div class="  	col-12 p-2" style="color: #8c8985;">' +
-        '<br> version ' + pjson.version + '</div>' +
+        '<br> version ' + infodymer.version + '</div>' +
         '<div class="text-center col-12 p-2">' +
         '<span style=" font-size: 12px;">&#169; 2022, Prowered by <a href="https://www.eng.it/" target="_blank">' + '<img src="https://www.eng.it/resources/images/logo%20eng.png" style="width: 20px;bottom: 3px;position: relative; "> Enginnering</a>' + '</span>' +
         '</div>' +
@@ -266,8 +268,21 @@ app.get(util.getContextPath('webserver') + '/version', (req, res, next) => {
         '</div>' +
         '</div>' +
         '</div>' +
-        '</div>' + '</div>' + '</div>' + '</div>' + '</body>' + '</html>';
-    res.send(htmlsend);
+        '</div>' + '</div>' + '</div>' + '</div>';
+    let htmlsend_fo = '</body>' + '</html>';
+
+    switch (key) {
+        case 'json':
+            res.send(infodymer);
+            break;
+        case 'html':
+            res.send(htmlcontainer);
+            break;
+        default:
+            let htmlsend = htmlsend_hd + htmlcontainer + htmlsend_fo;
+            res.send(htmlsend);
+            break;
+    }
 });
 /*
 app.use(session({
