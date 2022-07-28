@@ -261,7 +261,7 @@ app.get(util.getContextPath('webserver') + '/info/:key?', (req, res, next) => {
         '<div class="  	col-12 p-2" style="color: #8c8985;">' +
         '<br> version ' + infodymer.version + '</div>' +
         '<div class="text-center col-12 p-2">' +
-        '<span style=" font-size: 12px;">&#169; 2022, Prowered by <a href="https://www.eng.it/" target="_blank">' + '<img src="https://www.eng.it/resources/images/logo%20eng.png" style="width: 20px;bottom: 3px;position: relative; "> Enginnering</a>' + '</span>' +
+        '<span style=" font-size: 12px;">&#169; 2022, Powered by <a href="https://www.eng.it/" target="_blank">' + '<img src="https://www.eng.it/resources/images/logo%20eng.png" style="width: 20px;bottom: 3px;position: relative; "> Engineering</a>' + '</span>' +
         '</div>' +
         '</div>' +
         '</div>' +
