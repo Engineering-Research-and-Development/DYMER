@@ -61,6 +61,10 @@ exports.getServiceConfig = function(typeServ) {
     let cnf = global.gConfig.services[typeServ];
     return cnf;
 };
+exports.getCacheUrl = function(typeServ) {
+    let url = global.gConfig.services[typeServ].cache.protocol + "://" + global.gConfig.services[typeServ].cache.ip + ':' + global.gConfig.services[typeServ].cache.port;
+    return url;
+};
 
 function isEmpty(obj) {
     for (var key in obj) {
