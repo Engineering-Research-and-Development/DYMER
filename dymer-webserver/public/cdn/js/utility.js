@@ -2664,6 +2664,14 @@ function appendTodeleteId(fid, oid) {
     $('<input name="data[todeleteObj][]" type="hidden" value="' + oid + '">').insertAfter('#entityEdit [name="instance[index]"]');
 }
 
+function getPagePath() {
+    return window.location.protocol + "/" + window.location.host + "/" + window.location.pathname
+}
+
+function getPageJsonPath() {
+    return { 'protocol': window.location.protocol, 'host': window.location.host, 'pathname': window.location.pathname }
+}
+
 function getAllUrlParams(url) {
     // get query string from url (optional) or window
     var queryString = url ? url.split('?')[1] : window.location.search.slice(1);

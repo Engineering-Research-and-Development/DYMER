@@ -34,7 +34,15 @@ angular.module('dashCtrl', ['nvd3'])
             $scope.totEntities = res.total - countrela;
 
             $scope.totRelations = countrela;
-            //return $scope.listEntity = templ_data.arr;
+            $http.get(baseContextPath + '/api/entities/uuid', {
+
+                }).then(function(retU) {
+
+                    $scope.uuid = retU.data.data.uuid;
+
+                    //return $scope.listEntity = templ_data.arr;
+                })
+                //return $scope.listEntity = templ_data.arr;
         }).then(function() {
 
             var listTemplates = [];

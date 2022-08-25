@@ -77,22 +77,32 @@ angular.module('dymerHooksCtrl', [])
         $scope.createDymerHook = function(dataPost) {
                 dataPost.microserviceType = "entity";
                 var modService = dataPost.service;
+                /* dataPost.service = {
+                     serviceType: modService,
+                     servicePath: baseContextPath + "/api/dservice/api/v1/opn/listener"
+                 }*/
                 if (modService == "openness_search") {
                     dataPost.service = {
                         serviceType: modService,
-                        servicePath: baseContextPath + "/api/dservice/api/v1/opn/listener"
+                        servicePath: "/api/dservice/api/v1/opn/listener"
                     }
                 }
                 if (modService == "eaggregation_hook") {
                     dataPost.service = {
                         serviceType: modService,
-                        servicePath: baseContextPath + "/api/dservice/api/v1/eaggregation/listener"
+                        servicePath: "/api/dservice/api/v1/eaggregation/listener"
                     }
                 }
                 if (modService == "fwadapter") {
                     dataPost.service = {
                         serviceType: modService,
-                        servicePath: baseContextPath + "/api/dservice/api/v1/fwadapter/listener"
+                        servicePath: "/api/dservice/api/v1/fwadapter/listener"
+                    }
+                }
+                if (modService == "sync") {
+                    dataPost.service = {
+                        serviceType: modService,
+                        servicePath: "/api/dservice/api/v1/sync/listener"
                     }
                 }
                 $http({

@@ -881,7 +881,8 @@ pre.code-jquery code {
     opacity: 0.6;
 }
 
-#formconfigBridge textarea.form-control {
+#formconfigBridge textarea.form-control,
+#formSYNC textarea.form-control {
     resize: vertical !important;
     max-height: none;
 }

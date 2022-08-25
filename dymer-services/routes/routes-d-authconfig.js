@@ -68,7 +68,11 @@ router.get('/userinfo', (req, res) => {
     let extradata = {};
     if (data.dymtoExtraInfo != undefined && data.dymtoExtraInfo != 'undefined' && data.dymtoExtraInfo != null && data.dymtoExtraInfo != 'null') {
         extradata = JSON.parse(Buffer.from(data.dymtoExtraInfo, 'base64').toString());
-        mygid = extradata.extrainfo.groupId;
+        // console.log("EXTRADATA", extradata);
+        if (extradata.extrainfo == undefined)
+            mygid = extradata.groupId;
+        else
+            mygid = extradata.extrainfo.groupId;
     }
     var objuser = {
         roles: ["app-guest"],

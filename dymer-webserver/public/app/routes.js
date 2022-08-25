@@ -150,6 +150,10 @@ function config($routeProvider, $locationProvider) {
             templateUrl: site_prefix + "/public/app/views/pages/services/importcronjob.html",
             controller: "importcronjobController"
         })
+        .when(site_prefix + "/sync", {
+            templateUrl: site_prefix + "/public/app/views/pages/services/sync.html",
+            controller: "syncController"
+        })
         /*   .when(site_prefix + "/authenticate", {
                templateUrl: site_prefix + "/authenticate"
            })*/

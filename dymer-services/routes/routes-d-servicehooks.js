@@ -119,6 +119,10 @@ router.post('/checkhook', function(req, res) {
         "eventType": eventSource
     };
     var wbsUrl = util.getServiceUrl('webserver');
+    let contp = util.getContextPath('webserver');
+    if (contp != "")
+        wbsUrl += contp;
+    //wbsUrl = util.getServiceUrl('dservice');
     //console.log("chekkkk", JSON.stringify(queryFind));
     logger.info(nameFile + ' | post/checkhook :' + JSON.stringify(queryFind));
     const headers = {
@@ -129,12 +133,13 @@ router.post('/checkhook', function(req, res) {
             // console.log("chekkkk el", JSON.stringify(el));
             logger.info(nameFile + ' | post/checkhook | HookModel: chek el' + JSON.stringify(el));
             var pt = wbsUrl + el.service.servicePath;
+            // pt = el.service.servicePath; 
             axios.post(pt, { 'data': data, "extraInfo": extraInfo }, {
                     headers: headers
                 }).then(response => {
                     // console.log("checkhook resp axios ", response);
                     // console.log(nameFile + " | post/checkhook | inoltro | response :", response);
-                    logger.info(nameFile + '| post/checkhook | inoltro | response ' + JSON.stringify(response));
+                    logger.info(nameFile + '| post/checkhook | inoltro | response ' + response);
                 })
                 .catch(error => {
                     console.log("ERROR | " + nameFile + " | post/checkhook | pt,data, extraInfo :", pt, data, extraInfo, error);

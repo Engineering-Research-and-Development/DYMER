@@ -111,6 +111,15 @@ function detectPermission(req, res, next) {
        }
    */
 }
+
+app.get('/uuid', util.checkIsAdmin, (req, res) => {
+    var ret = new jsonResponse();
+    const uuid = util.getDymerUuid();
+    ret.setData({ 'uuid': uuid });
+    ret.setSuccess(true);
+    ret.setMessages("uuid");
+    return res.send(ret);
+});
 app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     var filetype = req.params.filetype;

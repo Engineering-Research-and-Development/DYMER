@@ -1,0 +1,170 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">SYNC vs another dymer<span class='pull-right'><i class="fa fa-cogs burgherAction"
+                            ng-click="showConfigAuthentication = ! showConfigAuthentication" aria-hidden="true"></i>
+                    </span>
+                </h5>
+            </div>
+            <div class="card-body " ng-show="showConfigAuthentication">
+                <h4>DYMER SYNC</h4>
+                <form name="formSYNC" id="formSYNC">
+                    <input type="hidden" ng-model="configSYNC._id">
+                    <div class="row">
+                        <div class=" col-12">
+
+                            <div class="form-group">
+                                <div class="text-info pull-right">
+                                    <input type="checkbox" ng-model="configSYNC.active"> Enabled
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="text-info"> Title *</label>
+                                <input type="text" class="form-control col-12" ng-model="configSYNC.title" required>
+                            </div>
+
+                            <!-- <div class="form-group">
+                                <label class="text-info"> Source path </label><small style="color: #8c8985;"> (with
+                                    final / )</small>
+                                <input type="text" class="form-control col-12" ng-model="configSYNC.sourcepath" required>
+                            </div>-->
+                            <div class="form-group">
+                                <label class="text-info"> Target path </label><small style="color: #8c8985;"> (without
+                                    final / )</small>
+                                <input type="text" class="form-control col-12" ng-model="configSYNC.targetpath" required>
+                            </div>
+                            <div class="form-group ng-hide">
+                                <label class="text-info"> Insert path </label><small style="color: #8c8985;"> (with
+                                    initial / )</small>
+                                <input type="text" class="form-control col-12" ng-model="configSYNC.apis.insert.path">
+                            </div>
+                            <div class="form-group ng-hide">
+                                <label class="text-info"> Update path </label><small style="color: #8c8985;"> (with
+                                    initial / )</small>
+                                <input type="text" class="form-control col-12" ng-model="configSYNC.apis.update.path">
+                            </div>
+                            <div class="form-group ng-hide">
+                                <label class="text-info"> Delete path </label><small style="color: #8c8985;"> (with
+                                    initial / )</small>
+                                <input type="text" class="form-control col-12" ng-model="configSYNC.apis.delete.path">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="text-info"> Source index *</label>
+
+                                <input type="text" class="form-control col-12" ng-model="configSYNC.sourceindex" required>
+                            </div>
+                            <div class="form-group"> <label class="text-info"> Target index *</label>
+                                <input type="text" class="form-control col-12" ng-model="configSYNC.targetindex" required>
+                            </div>
+                            <div class="form-group"> <label class="text-info"> Condition</label><small style="color: #8c8985;"> (write here your js code. the code must <b>return true</b>
+                                    or <b>false</b>. <b>true</b> if the entity is to be submitted <b>false</b>
+                                    otherwise.
+                                    the variable <b>entity</b> is the entity object that you can use for your controls
+                                    and
+                                    can be manipulated before sending. Below the json structure of the entity in the
+                                    entity
+                                    variable : {
+                                    _index: '&lt;entity-index&gt;',
+                                    _id: '&lt;entity-id&gt;',
+                                    _source:
+                                    {"&lt;field1-key&gt;":"&lt;field1-value&gt;","&lt;fieldn-key&gt;":"&lt;fieldn-value&gt;"})</small>
+                                <textarea type="text" class="form-control col-12" ng-model="configSYNC.cond"></textarea>
+                            </div>
+
+
+
+                            <div class="form-group">
+                                <input type="checkbox" ng-model="configSYNC.sendrelation">
+                                <span class="text-info ">Post relations </span><small style="color: #8c8985;"> (only
+                                    the first level of
+                                    relations will sended
+                                    not the entities)</small>
+                            </div>
+
+                            <div class="form-group" ng-show="configSYNC.sendrelation"><label class="text-info">
+                                    Indexes </label><small style="color: #8c8985;"> (indexes
+                                    of the relations separated by commas)</small>
+                                <input type="text " class="form-control " ng-model="configSYNC.typerelations">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-right ">
+                        <div class="col-12 ">
+                            <span class="btn btn-info " ng-show="!configSYNC._id" ng-click="formSYNC.$valid && saveSYNC(configSYNC)">Save</span>
+                            <span class="btn btn-warning " ng-show="configSYNC._id" ng-click="formSYNC.$valid && saveSYNC(configSYNC)">Update</span>
+                            <span class="btn btn-danger " ng-show="configSYNC._id" ng-click="configSYNC = {}">Cancel</span>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row ">
+    <div class="col-md-12 ">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title ">Sync Rules<span class='pull-right'> <i class="fa fa-bars burgherAction "
+                            aria-hidden="true " ng-click="showMappingBridgeRule=! showMappingBridgeRule "></i></span>
+                </h5>
+                <!-- <p class="card-category ">Handcrafted by our friends from
+                          
+                            </p>-->
+            </div>
+
+            <div class="card-body " ng-hide="showMappingBridgeRule " style="overflow-x:hidden;">
+                <table class="table ">
+                    <thead class=" text-primary ">
+                        <th>
+                            Title
+                        </th>
+
+                        <th>
+                            Source path
+                        </th>
+                        <th>
+                            Source / Target index
+                        </th>
+
+                        <th style="text-align: center">
+                            Enabled / Send Relations
+                        </th>
+                        <th class=" text-center ">
+                        </th>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="el in List ">
+                            <td style="max-width: 100px;">
+                                {{ el.title }}
+                            </td>
+                            <td style="max-width: 100px;">
+                                {{ el.sourcepath }}{{ el.apisearchpath }}
+                            </td>
+                            <td style="max-width: 100px;">
+                                {{ el.sourceindex }} <i class="fa fa-long-arrow-right" aria-hidden="true"></i> {{ el.targetindex }}
+                            </td>
+
+                            <td style="max-width: 100px;text-align: center;">
+                                <i class="fa fa-power-off " ng-class="el.active ? 'text-success' : 'text-danger'" aria-hidden="true"></i>&nbsp;&nbsp;/&nbsp;&nbsp;<i class="fa  " ng-class="el.sendrelation ? ' fa-check' : ' fa-times'" aria-hidden="true"></i><br>                                {{ el.typerelations }}
+                            </td>
+
+                            <td class=" text-center ">
+                                <i class="fa fa-clone cloneAction " aria-hidden="true " ng-click="setupdateSYNC( $index,'clone');  "></i>
+                                <i class="fa fa-pencil updateAction " aria-hidden="true " ng-click="setupdateSYNC( $index);  " ng-confirm-click="Confirm update? "></i>
+                                <i class="fa fa-trash deleteAction " aria-hidden="true " ng-click="removeSYNC( $index) " ng-confirm-click="Confirm delete? "></i>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer ">
+
+            </div>
+        </div>
+    </div>
+</div>

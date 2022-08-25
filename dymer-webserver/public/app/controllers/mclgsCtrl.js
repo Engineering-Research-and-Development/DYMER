@@ -4,7 +4,7 @@ angular.module('mclgsCtrl', [])
         //openLog
         // deleteLog
         /* giaisg */
-
+        let uuidfile = "";
         let statusStandard = "Service is down"
         let stateserv = " text-danger"
         let bdstandard = " Disconnected"
@@ -58,6 +58,7 @@ angular.module('mclgsCtrl', [])
                 msg: "Service is up"
             }
         };
+
         $http.get(baseContextPath + "/checkservice").then(function(rt) {
             $scope.checkservice.webserver.logs = rt.data.data;
         }).catch(function(response) {
@@ -67,6 +68,11 @@ angular.module('mclgsCtrl', [])
             $scope.checkservice.entities.msg = rt.data.message;
             $scope.checkservice.entities.logs = rt.data.data;
             $scope.checkservice.entities.state = " text-success";
+            $http.get(baseContextPath + "/api/entities/uuid").then(function(rtU) {
+                uuidfile = rtU.data.data.uuid;
+            }).catch(function(response) {
+                console.log(response);
+            });
         }).then(function() {
             $http.get(baseContextPath + "/api/entities/api/v1/entity/mongostate").then(function(rts) {
                 $scope.checkservice.entities.db.mongo.css = rts.data.data.css;
@@ -186,12 +192,20 @@ angular.module('mclgsCtrl', [])
                      break;
              }*/
             $http.get(baseContextPath + pathOpLog).then(function(rt) {
-                var options = { 'year': 'numeric', 'month': '2-digit', 'day': '2-digit' };
-                var date = new Date().toLocaleString('en-US', options);
+                //var options = { 'year': 'numeric', 'month': '2-digit', 'day': '2-digit' };
+                //var date = new Date().toLocaleString('en-US', options);
+                //var d = new Date();
+                var d = new Date();
+                //  d = new Date(d.getTime() - 3000000);
+                //var date = d.getFullYear().toString() + "_" + ((d.getMonth() + 1).toString().length == 2 ? (d.getMonth() + 1).toString() : "0" + (d.getMonth() + 1).toString()) + "_" + (d.getDate().toString().length == 2 ? d.getDate().toString() : "0" + d.getDate().toString()) + "_" + (d.getHours().toString().length == 2 ? d.getHours().toString() : "0" + d.getHours().toString()) + "_" + ((parseInt(d.getMinutes() / 5) * 5).toString().length == 2 ? (parseInt(d.getMinutes() / 5) * 5).toString() : "0" + (parseInt(d.getMinutes() / 5) * 5).toString());
+
+                let date = d.toISOString().split('T')[0].replace(/-/g, '_');
+                let time = d.toTimeString().split(' ')[0].replace(/:/g, '_');
+
                 var blob = new Blob([rt.data]);
                 var linkElement = document.createElement('a');
                 var url = window.URL.createObjectURL(blob);
-                let filename = date + "_" + service + "_" + typelog + ".log";
+                let filename = uuidfile + "_" + service + "_" + typelog + "_" + date + "_" + time + ".log";
                 linkElement.setAttribute('href', url);
                 linkElement.setAttribute("download", filename);
 
