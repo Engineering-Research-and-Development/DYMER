@@ -224,6 +224,11 @@
     background-image: none;
 }
 
+.was-validated textarea.form-control:invalid+div.note-editor,
+textarea.form-control.is-invalid+div.note-editor {
+    border-color: #e74a3b;
+}
+
 
 /**/
 

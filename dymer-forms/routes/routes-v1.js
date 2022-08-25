@@ -214,12 +214,18 @@ router.get('/content/:entype/:fileid', function(req, res, next) {
     //console.log(nameFile + ' | get/content/:entype/:fileid |  fileid :', file_id);
     recFile(mongoose.Types.ObjectId(file_id))
         .then(function(result) {
-            res.writeHead(200, {
-                'Content-Type': result.contentType,
-                'Content-Length': result.length,
-                'Content-Disposition': 'filename=' + result.filename
-            });
-            res.end(result.data);
+            if (result != undefined) {
+                res.writeHead(200, {
+                    'Content-Type': result.contentType,
+                    'Content-Length': result.length,
+                    'Content-Disposition': 'filename=' + result.filename
+                });
+                res.end(result.data);
+            } else {
+                res.writeHeader(200, { "Content-Type": "text/html" });
+                res.write("<b>Something went wrong :( </b> . Reload the page. <br> If the problem persists, contact support");
+                res.end();
+            }
         })
         .catch(function(err) {
             console.error("ERROR | " + nameFile + ' | get/content/:entype/:fileid  : ', err);
