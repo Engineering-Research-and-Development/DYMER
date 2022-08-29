@@ -42,7 +42,8 @@
                                 <input type="checkbox" ng-model="configOIDC.active"> Enabled
                             </div>
                             <input type="text" class="form-control col-12" ng-model="configOIDC.host" required>
-
+                            <label class="text-info"> Secret key </label>
+                            <input type="text" class="form-control col-12" ng-model="configOIDC.prop.secretkey">
                             <label class="text-info"> OIDC Name </label>
                             <input type="text" class="form-control col-12" ng-model="configOIDC.prop.oidcname">
                         </div>
