@@ -14,6 +14,7 @@ var jsonParser = bodyParser.json();
 require("../models/permission/DymerAuthenticationRule");
 const DymRule = mongoose.model("DymerAuthenticationRule");
 const axios = require('axios');
+var crypto = require('crypto');
 
 const logger = require('./dymerlogger')
 router.use(bodyParser.json());
@@ -103,7 +104,27 @@ router.get('/userinfo', (req, res) => {
             if (authtype == "jwtparent" || data.idsadm) {
                 var token = data.DYM;
                 if (token != undefined && token != "null" && token != null) {
-                    var decoded = JSON.parse(Buffer.from(token, 'base64').toString());
+                    
+					
+					var decoded;
+
+                    if (el!== undefined && el.prop !== undefined && el.prop.secretkey !== undefined) {
+                        
+                        let hash = crypto.createHash('sha1')
+                        let originalKey = el.prop.secretkey;
+                        let digest = hash.update(originalKey).digest().subarray(0,16)
+                        
+                         var cc = crypto.createDecipheriv('aes-128-ecb', digest, null);
+                        
+                         decoded = JSON.parse(Buffer.concat([cc.update(token, 'base64'), cc.final()]).toString('utf8')) 
+					}
+                    else{
+                        decoded = JSON.parse(Buffer.from(token, 'base64').toString());
+                    }
+					
+					
+					
+					//var decoded = JSON.parse(Buffer.from(token, 'base64').toString());
                     // console.log('decoded', decoded);
                     objuser.email = decoded.email;
                     objuser.id = decoded.email;
