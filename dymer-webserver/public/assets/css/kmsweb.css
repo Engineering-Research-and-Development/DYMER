@@ -1143,3 +1143,16 @@ margin: 4px 0;*/
     white-space: nowrap;
     border: 0;
 }
+
+.rotate-20 {
+    animation: loader 20s infinite linear;
+}
+
+@keyframes loader {
+    0% {
+        rotate: 0deg;
+    }
+    100% {
+        rotate: 359deg;
+    }
+}

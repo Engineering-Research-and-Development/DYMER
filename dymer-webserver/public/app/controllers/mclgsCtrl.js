@@ -20,6 +20,10 @@ angular.module('mclgsCtrl', [])
                     elastic: {
                         msg: bdstandard,
                         css: stateserv
+                    },
+                    redis: {
+                        msg: bdstandard,
+                        css: stateserv
                     }
                 }
             },
@@ -82,6 +86,11 @@ angular.module('mclgsCtrl', [])
             $http.get(baseContextPath + "/api/entities/api/v1/entity/elasticstate").then(function(rts) {
                 $scope.checkservice.entities.db.elastic.css = rts.data.data.css;
                 $scope.checkservice.entities.db.elastic.msg = rts.data.data.label;
+            })
+        }).then(function() {
+            $http.get(baseContextPath + "/api/entities/api/v1/entity/redisstate").then(function(rts) {
+                $scope.checkservice.entities.db.redis.css = rts.data.data.css;
+                $scope.checkservice.entities.db.redis.msg = rts.data.data.label;
             })
         }).catch(function(response) {
             console.log(response);

@@ -9,6 +9,15 @@
                 "ip": "localhost",
                 "port": 1358,
                 "ip_port": "localhost:1358",
+                "cache": {
+                    "protocol": "http",
+                    "host": "127.0.0.1",
+                    "ip": "cache",
+                    "port": 6379,
+                    "user": "redis",
+                    "password": "eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81",
+                    "isEnabled": true
+                },
                 "repository": {
                     "entity": {
                         "type": "elastichsearch",
@@ -55,6 +64,15 @@
                 "context-path": "",
                 "port": 1358,
                 "ip_port": "localhost:1358",
+                "cache": {
+                    "protocol": "http",
+                    "host": "127.0.0.1",
+                    "ip": "cache",
+                    "port": 6379,
+                    "user": "redis",
+                    "password": "eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81",
+                    "isEnabled": true
+                },
                 "repository": {
                     "entity": {
                         "type": "elastichsearch",

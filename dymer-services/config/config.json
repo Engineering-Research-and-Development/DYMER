@@ -7,7 +7,7 @@
                 "app_desc": "dymer services",
                 "protocol": "http",
                 "ip": "localhost",
-                "context-path": "/production",
+                "context-path": "",
                 "port": 5050,
                 "ip_port": "localhost:5050",
                 "repository": {

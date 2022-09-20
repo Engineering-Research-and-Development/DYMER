@@ -104,27 +104,32 @@ router.get('/userinfo', (req, res) => {
             if (authtype == "jwtparent" || data.idsadm) {
                 var token = data.DYM;
                 if (token != undefined && token != "null" && token != null) {
-                    
-					
-					var decoded;
+                    var decoded;
+                    if (el && el.prop !== undefined && el.prop.secretkey !== undefined && el.prop.secretkey != "") {
+                        // decryption
+                        //console.log({ token, secret: el.prop.secretkey })
+                        try {
+                            token = token.replace(/\s/g, "+")
+                            let hash = crypto.createHash('sha1')
+                            let originalKey = el.prop.secretkey;
 
-                    if (el!== undefined && el.prop !== undefined && el.prop.secretkey !== undefined) {
-                        
-                        let hash = crypto.createHash('sha1')
-                        let originalKey = el.prop.secretkey;
-                        let digest = hash.update(originalKey).digest().subarray(0,16)
-                        
-                         var cc = crypto.createDecipheriv('aes-128-ecb', digest, null);
-                        
-                         decoded = JSON.parse(Buffer.concat([cc.update(token, 'base64'), cc.final()]).toString('utf8')) 
-					}
-                    else{
+                            let digest = hash.update(originalKey).digest().subarray(0, 16)
+
+                            let cc = crypto.createDecipheriv('aes-128-ecb', digest, null);
+
+                            decoded = JSON.parse(Buffer.concat([cc.update(token, 'base64'), cc.final()]).toString())
+                        } catch (error) {
+                            //console.log(data)
+                            throw new Error("unable to decrypt token jwtparent")
+                        }
+                    } else {
                         decoded = JSON.parse(Buffer.from(token, 'base64').toString());
                     }
-					
-					
-					
-					//var decoded = JSON.parse(Buffer.from(token, 'base64').toString());
+
+
+
+
+                    //var decoded = JSON.parse(Buffer.from(token, 'base64').toString());
                     // console.log('decoded', decoded);
                     objuser.email = decoded.email;
                     objuser.id = decoded.email;

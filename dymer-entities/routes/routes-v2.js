@@ -10,6 +10,8 @@ const bodyParser = require("body-parser");
 const path = require('path');
 const mongoose = require("mongoose");
 const ObjectId = require('mongoose').Types.ObjectId;
+var crypto = require('crypto')
+const redis = require("redis");
 var extend = require('extend');
 //var router = express.Router();
 //var GridFsStorage = require("multer-gridfs-storage");
@@ -25,7 +27,7 @@ var _ = require('lodash');
 var FormData = require('form-data');
 const jwt = require('jsonwebtoken');
 const nameFile = path.basename(__filename);
-
+var redisClient = require('./redisModule')
 const logger = require('./dymerlogger');
 var db;
 var storage;
@@ -68,15 +70,20 @@ mongoose
         console.error("ERROR | " + nameFile + ` | Error connecting to mongo! Database name: "${mongoURI}"`, err);
         logger.error(nameFile + ` | Error connecting to mongo! Database name: "${mongoURI}" ` + err);
     });
-/*
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- */
+//let redisUrl = 'redis://cache:6379'
+//redisClient.init()
+let redisEnabled = global.configService.cache ? global.configService.cache.isEnabled : false;
+console.log("redisEnabledredisEnabledredisEnabled", redisEnabled)
+redisClient.init(redisEnabled)
+    /*
+     *************************************************************************************************************
+     *************************************************************************************************************
+     *************************************************************************************************************
+     *************************************************************************************************************
+     *************************************************************************************************************
+     *************************************************************************************************************
+     *************************************************************************************************************
+     */
 
 
 /*
@@ -238,6 +245,57 @@ router.get('/elasticstate', util.checkIsAdmin, (req, res) => {
     });
 
 });
+
+router.get('/redisstate', util.checkIsAdmin, async(req, res) => {
+    let ret = new jsonResponse();
+    let redisstate = 0;
+    let dbState = [{
+            value: 0,
+            label: "Disconnected",
+            css: "text-danger"
+        },
+        {
+            value: 1,
+            label: "Connected",
+            css: "text-success"
+        },
+        {
+            value: 2,
+            label: "Connecting",
+            css: "text-info"
+        },
+        {
+            value: 3,
+            label: "Disconnecting",
+            css: "text-warning"
+        },
+        {
+            value: 4,
+            label: "Disabled",
+            css: "text-warning"
+        }
+    ];
+    if (!redisEnabled) {
+        ret.setMessages("redis state");
+        redisstate = 4;
+        ret.setData(dbState.find(f => f.value == redisstate));
+        res.status(200);
+        ret.setSuccess(true);
+        return res.send(ret);
+    }
+    let redisState = await redisClient.ping(redisEnabled);
+    if (redisState) {
+        redisstate = 1;
+    } else {
+        redisstate = 0;
+    }
+
+    ret.setMessages("redis state");
+    ret.setData(dbState.find(f => f.value == redisstate));
+    res.status(200);
+    ret.setSuccess(true);
+    return res.send(ret);
+});
 /*
  *************************************************************************************************************
  *************************************************************************************************************
@@ -247,6 +305,26 @@ router.get('/elasticstate', util.checkIsAdmin, (req, res) => {
  *************************************************************************************************************
  *************************************************************************************************************
  */
+router.post('/invalidatecache/:index', util.checkIsAdmin, async(req, res) => {
+    let index = req.params['index'];
+    await redisClient.invalidateCacheByIndex(index, true);
+    var ret = new jsonResponse();
+    ret.setMessages("invalidated cache");
+    ret.setSuccess(true);
+    //  ret.setExtraData({ "log": err.stack });
+    return res.send(ret);
+
+});
+
+
+router.post('/invalidateallcache', util.checkIsAdmin, async(req, res) => {
+    await redisClient.emptyCache(true);
+    var ret = new jsonResponse();
+    ret.setMessages("invalidated cache");
+    ret.setSuccess(true);
+    //  ret.setExtraData({ "log": err.stack });
+    return res.send(ret);
+});
 
 var getfilesArrays = function(files_arr) {
     return new Promise(function(resolve, reject) {
@@ -1607,8 +1685,8 @@ router.post('/_search', (req, res) => {
     url += act + "/";
     url += index + "/";
     url += queryString;
-    //Marco upload(req, res, async function(err) {
-    upload(req, res, function(err) {
+    //Marco upload(req, res,   function(err) {
+    upload(req, res, async function(err) {
         if (err) {
             return res.end("Error!!!!");
         }
@@ -1784,6 +1862,10 @@ router.post('/_search', (req, res) => {
             //   params["_source_excludes"] = ["description"];
             //console.log(nameFile + ' | _search | params:', JSON.stringify(params));
             logger.info(nameFile + ' | _search | params :' + JSON.stringify(params));
+            let cachedResponse = await redisClient.readCacheByKey(query, redisEnabled)
+            if (cachedResponse && Object.keys(cachedResponse).length != 0) {
+                return res.send(JSON.parse(cachedResponse.response))
+            }
             client.search(params).then(function(resp) {
                 if (err) {
                     console.error("ERROR | " + nameFile + ' | _search | search:', err);
@@ -1823,7 +1905,7 @@ router.post('/_search', (req, res) => {
                    console.log("resp.hits", resp.hits.hits);*/
                 //console.log("recoverRelation", recoverRelation);
                 if (recoverRelation == 'false' || recoverRelation == false) {
-                    filertEntitiesFields(resp.hits.hits, minmodelist, hdymeruser).then(function(nlist) {
+                    filertEntitiesFields(resp.hits.hits, minmodelist, hdymeruser).then(async function(nlist) {
                         // console.log("prepre", nlist);
                         //  ret.setData(nlist);
                         //  return res.send(ret);
@@ -1838,8 +1920,11 @@ router.post('/_search', (req, res) => {
                         ret.setData(nlist);
                         //console.log(nameFile + ' | _search | resp no relations:', JSON.stringify(resp.hits.hits)); 
                         logger.info(nameFile + ' | _search | resp no relations: count:' + resp.hits.hits.length);
+                        let ids = await redisClient.extractIds(ret, redisEnabled)
+                        let indexes = await redisClient.extractIndexes(ret, redisEnabled)
+                        await redisClient.writeCacheByKey(query, dymeruser.id, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)
+                        logger.info(nameFile + ' | _search | resp no relations: response cached  ');
                         return res.send(ret);
-
                     }).catch(function(err) {
                         console.error("ERROR | " + nameFile + ' | _search | checkUnionRelation:', err);
                         logger.error(nameFile + ' | _search | checkUnionRelation : ' + err);
@@ -1869,11 +1954,16 @@ router.post('/_search', (req, res) => {
                                 if (append)
                                     fileterdList.push(element);
                             });
-                            filertEntitiesFields(fileterdList, minmodelist, hdymeruser).then(function(nlist) {
+                            filertEntitiesFields(fileterdList, minmodelist, hdymeruser).then(async function(nlist) {
                                 //  console.log("prepre", nlist);
                                 //console.log(nameFile + ' | _search | resp filter relations:count ', nlist.length);
                                 logger.info(nameFile + ' | _search | resp filter relations:count ' + nlist.length);
                                 ret.setData(nlist);
+                                let ids = await redisClient.extractIds(ret, redisEnabled)
+                                let indexes = await redisClient.extractIndexes(ret, redisEnabled)
+
+                                await redisClient.writeCacheByKey(query, dymeruser.id, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)
+                                logger.info(nameFile + ' | _search | resp filter relations: response cached  ');
                                 return res.send(ret);
                             }).catch(function(err) {
                                 // console.log(nameFile + ' | _search | resp filter relations:count ', resp.hits.hits.length);
@@ -1890,10 +1980,15 @@ router.post('/_search', (req, res) => {
 
                             //console.log(' minmodelist ', minmodelist);
                             //console.log(nameFile + ' | _search | resp no detect relations:count ', resp.hits.hits.length);
-                            logger.info(nameFile + ' | _search | resp no detect relations :count ' + resp.hits.hits.length);
-                            filertEntitiesFields(meatch, minmodelist, hdymeruser).then(function(nlist) {
+                            logger.info(nameFile + ' | _search | resp no detected relations :count ' + resp.hits.hits.length);
+                            filertEntitiesFields(meatch, minmodelist, hdymeruser).then(async function(nlist) {
                                 //  console.log("prepre", nlist);
                                 ret.setData(nlist);
+                                let ids = await redisClient.extractIds(ret, redisEnabled)
+                                let indexes = await redisClient.extractIndexes(ret, redisEnabled)
+
+                                await redisClient.writeCacheByKey(query, dymeruser.id, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)
+                                logger.info(nameFile + ' | _search | resp no detected relations: response cached  ');
                                 return res.send(ret);
                             }).catch(function(err) {
                                 console.error("ERROR | " + nameFile + ' | _search | checkUnionRelation:', err);
@@ -2667,7 +2762,7 @@ router.post('/:enttype', function(req, res) {
                                 delete data.relation;
                             // console.log(nameFile + ' | /:enttype | create | params:', dymeruser.id, JSON.stringify(params));
                             logger.info(nameFile + ' | /:enttype | create | params :' + dymeruser.id + " , " + JSON.stringify(params));
-                            client.index(params, function(err, resp, status) {
+                            client.index(params, async function(err, resp, status) {
                                 if (err) {
                                     console.error("ERROR | " + nameFile + ' | /:enttype | create:', err);
                                     logger.error(nameFile + ' | /:enttype | create : ' + err);
@@ -2698,7 +2793,7 @@ router.post('/:enttype', function(req, res) {
                                     checkServiceHook('after_insert', resp, dymerextrainfo, req);
                                 }, 3000);
 
-
+                                await redisClient.invalidateCacheByIndex(ret.data[0]._index, redisEnabled)
                                 return res.send(ret);
                             });
                         }
@@ -2893,7 +2988,7 @@ router.put('/update/:id', (req, res) => {
                                         id: new_Temp_Entity["_id"],
                                         body: new_Temp_Entity._source,
                                         refresh: 'true'
-                                    }).then(function(resp) {
+                                    }).then(async function(resp) {
                                         //console.log(nameFile + ' | /:id | put | updated :', id, JSON.stringify(resp));
                                         logger.info(nameFile + ' | /:id | put | updated dymeruser.id, id, enity :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(new_Temp_Entity));
                                         logger.info(nameFile + ' | /:id | put | updated dymeruser.id, id, _relationtodeleted :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(_relationtodelete));
@@ -2905,6 +3000,7 @@ router.put('/update/:id', (req, res) => {
                                         //console.log(nameFile + ' | /:id | put | pre check hook id,extraInfo: ', id, JSON.stringify(dymerextrainfo));
                                         logger.info(nameFile + ' | /:id | put | pre check hook| obj, extraInfo:' + dymeruser.id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
                                         checkServiceHook('after_update', objHook, dymerextrainfo, req);
+                                        await redisClient.invalidateCacheById(id, redisEnabled)
                                         return res.send(ret);
                                     }).catch(function(err) {
                                         console.error("ERROR | " + nameFile + ' | /:id | put | id: ', id, err);
@@ -3162,7 +3258,7 @@ router.put('/:id', (req, res) => {
                                             id: new_Temp_Entity["_id"],
                                             body: new_Temp_Entity._source,
                                             refresh: 'true'
-                                        }).then(function(resp) {
+                                        }).then(async function(resp) {
                                             // console.log(nameFile + ' | /:id | put | updated :', id, JSON.stringify(resp));
                                             logger.info(nameFile + ' | /:id | put | updated dymeruser.id, id, enity :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(new_Temp_Entity));
                                             logger.info(nameFile + ' | /:id | put | updated dymeruser.id, id, _relationtodelete :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(_relationtodelete));
@@ -3174,6 +3270,7 @@ router.put('/:id', (req, res) => {
                                             // console.log(nameFile + ' | /:id | put | pre check hook id,extraInfo: ', id, JSON.stringify(dymerextrainfo));
                                             logger.info(nameFile + ' | /:id | put | pre check hook| obj, extraInfo:' + dymeruser.id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
                                             checkServiceHook('after_update', objHook, dymerextrainfo, req);
+                                            await redisClient.invalidateCacheById(id, redisEnabled)
                                             return res.send(ret);
                                         }).catch(function(err) {
                                             console.error("ERROR | " + nameFile + ' | /:id | put | id: ', id, err);
@@ -3642,7 +3739,7 @@ router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
                 }
             }
             client.delete(delarams).then(
-                function(resp) {
+                async function(resp) {
                     //console.log(nameFile + ' | deleteAllEntityByIndex | dymeruser.id, entity removed :', dymeruser.id, JSON.stringify(resp));
                     logger.info(nameFile + ' | deleteAllEntityByIndex | dymeruser.id, entity removed :' + dymeruser.id + " , " + JSON.stringify(resp));
                     gridfs_delete_queue.forEach(function(element) {
@@ -3666,6 +3763,7 @@ router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
                     // console.log(nameFile + ' | deleteAllEntityByIndex | pre check hook id,extraInfo: ', dymeruser.id, JSON.stringify(objHook), JSON.stringify(dymerextrainfo));
                     logger.info(nameFile + ' | deleteAllEntityByIndex | pre check hook id,extraInfo: ' + dymeruser.id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
                     checkServiceHook('after_delete', objHook, dymerextrainfo, req);
+                    await redisClient.invalidateCacheById(ret.data[0]._id, redisEnabled)
                 },
                 function(err) {
                     logger.error(nameFile + ' | deleteAllEntityByIndex | entity remov ,index:' + dymeruser.id + ' , ' + index + ' , ' + err);
@@ -3807,7 +3905,7 @@ router.delete('/:id', (req, res) => {
                                 gridfs_delete_queue.push(element._source[key]["id"]);
                         }
                     }
-                    client.delete(params, function(err, resp, status) {
+                    client.delete(params, async function(err, resp, status) {
                         if (err) {
                             console.error("ERROR | " + nameFile + ' | delete/:id | delete :', err);
                             logger.error(nameFile + ' | delete/:id | delete: ' + err);
@@ -3838,6 +3936,7 @@ router.delete('/:id', (req, res) => {
                         //console.log(nameFile + ' | delete/:id | pre check hook id,extraInfo: ', dymeruser.id, id, JSON.stringify(dymerextrainfo));
                         logger.info(nameFile + ' | delete/:id | pre check hook id,extraInfo: ' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
                         checkServiceHook('after_delete', objHook, dymerextrainfo, req);
+                        await redisClient.invalidateCacheById(ret.data[0]._id, redisEnabled)
                         return res.send(ret);
                     });
                 });

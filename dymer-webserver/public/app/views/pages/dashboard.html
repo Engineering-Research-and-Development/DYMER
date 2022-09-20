@@ -1,12 +1,40 @@
 <div class="row">
     <div class="col-6">
         <div class="row">
+            <div class="col-12">
+                <div class="card card-stats">
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-2 col-md-2">
+                                <div class="icon-big text-left icon-warning">
+                                    <img src="https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/master/screenshots/dymer-logo.png" style="width: 45px;">
+                                </div>
+                            </div>
+                            <div class="col-10 col-md-10">
+
+                                <p class="card-category ">Dymer</p>
+
+                                <div class="row">
+                                    <div class="col-6 col-md-6">Version: <b>{{version}}</b></div>
+                                    <div class="col-6 col-md-6">UUID: <b>{{uuid}}</b></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer ">
+                        <hr>
+                        <!--  <div class="stats">
+                            <i class="fa fa-refresh"></i> Update Now
+                          </div>-->
+                    </div>
+                </div>
+            </div>
             <div class="col-6">
                 <div class="card card-stats">
                     <div class="card-body ">
                         <div class="row">
                             <div class="col-5 col-md-4">
-                                <div class="icon-big text-center icon-warning">
+                                <div class="icon-big text-left icon-warning">
                                     <i class="nc-icon nc-atom text-primary"></i>
                                 </div>
                             </div>
@@ -14,18 +42,19 @@
                                 <div class="numbers">
                                     <p class="card-category">Indices</p>
 
-                                    <p class="card-title">{{totIndices}}
-                                        <div class="spinner-border text-primary" role="status" ng-if=" totIndices==undefined">
-                                            <span class="sr-only">Loading...</span>
-                                        </div>
-                                        <p>
+                                    <p class="card-title">{{totIndices}}</p>
+                                    <div class="spinner-border text-primary" role="status" ng-if=" totIndices==undefined">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="card-footer ">
-                        <hr><small>UUID: <b>{{uuid}}</b></small>
-                        <!--  <div class="stats">
+                        <hr>
+                        <!--<small>UUID: <b>{{uuid}}</b></small>
+                         <div class="stats">
                 <i class="fa fa-refresh"></i> Update Now
               </div>-->
                     </div>
@@ -36,18 +65,18 @@
                     <div class="card-body ">
                         <div class="row">
                             <div class="col-5 col-md-4">
-                                <div class="icon-big text-center icon-warning">
+                                <div class="icon-big text-left icon-warning">
                                     <i class="nc-icon nc-layout-11 text-success"></i>
                                 </div>
                             </div>
                             <div class="col-7 col-md-8">
                                 <div class="numbers">
                                     <p class="card-category">Templates</p>
-                                    <p class="card-title">{{totTemplates}}
-                                        <div class="spinner-border text-success" role="status" ng-if=" totTemplates==undefined">
-                                            <span class="sr-only">Loading...</span>
-                                        </div>
-                                        <p>
+                                    <p class="card-title">{{totTemplates}}</p>
+                                    <div class="spinner-border text-success" role="status" ng-if=" totTemplates==undefined">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -60,25 +89,24 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
+
             <div class="col-6">
                 <div class="card card-stats">
                     <div class="card-body ">
                         <div class="row">
                             <div class="col-5 col-md-4">
-                                <div class="icon-big text-center icon-warning">
+                                <div class="icon-big text-left icon-warning">
                                     <i class="nc-icon nc-tile-56 text-warning"></i>
                                 </div>
                             </div>
                             <div class="col-7 col-md-8">
                                 <div class="numbers">
                                     <p class="card-category">Models</p>
-                                    <p class="card-title">{{totModels}}
-                                        <div class="spinner-border text-warning" role="status" ng-if="totModels==undefined">
-                                            <span class="sr-only">Loading...</span>
-                                        </div>
-                                        <p>
+                                    <p class="card-title">{{totModels}}</p>
+                                    <div class="spinner-border text-warning" role="status" ng-if="totModels==undefined">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -96,18 +124,18 @@
                     <div class="card-body ">
                         <div class="row">
                             <div class="col-5 col-md-4">
-                                <div class="icon-big text-center icon-warning">
+                                <div class="icon-big text-left icon-warning">
                                     <i class="nc-icon nc-world-2 text-info"></i>
                                 </div>
                             </div>
                             <div class="col-7 col-md-8">
                                 <div class="numbers">
                                     <p class="card-category">Entities</p>
-                                    <p class="card-title">{{totEntities}}
-                                        <div class="spinner-border text-info" role="status" ng-if="totEntities==undefined">
-                                            <span class="sr-only">Loading...</span>
-                                        </div>
-                                        <p>
+                                    <p class="card-title">{{totEntities}}</p>
+                                    <div class="spinner-border text-info" role="status" ng-if="totEntities==undefined">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -128,18 +156,18 @@
             <div class="card-body ">
                 <div class="row">
                     <div class="col-5 col-md-4">
-                        <div class="icon-big text-center icon-warning">
+                        <div class="icon-big text-left icon-warning">
                             <i class="fa fa-sitemap text-danger"></i>
                         </div>
                     </div>
                     <div class="col-7 col-md-8">
                         <div class="numbers">
                             <p class="card-category">Relations</p>
-                            <p class="card-title">{{totRelations}}
-                                <div class="spinner-border text-danger" role="status" ng-if=" totRelations==undefined">
-                                    <span class="sr-only">Loading...</span>
-                                </div>
-                                <p>
+                            <p class="card-title">{{totRelations}}</p>
+                            <div class="spinner-border text-danger" role="status" ng-if=" totRelations==undefined">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+
                         </div>
                     </div>
                     <div>
@@ -210,10 +238,13 @@
                                 <td class=" text-center actmodindexdash">
                                     <i class="fa fa-scissors  flushAction" title="Delete Index and all entities" index-entity="{{ el.index }}" ng-click="deleteAllEntityAndIndexByIndex(el,$index)"></i>
                                     <i class="fa fa-trash deleteAction " title="Flush all entities" index-entity="{{ el.index }}" ng-click="deleteAllEntityByIndex(el,$index)"></i>
+                                    <i ng-show="redison" class="fa fa-eraser deleteAction " title="Invalidate cache" index-entity="{{ el.index }}" ng-click="invalidateCache(el,$index)"></i>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                    <button ng-show="redison" class="btn btn-sm" type="button" style="float: right;" ng-click="invalidateAllCache()">Empty
+                        Redis cache</button>
                 </div>
 
 

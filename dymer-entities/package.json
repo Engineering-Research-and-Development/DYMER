@@ -44,6 +44,7 @@
         "path": "0.12.7",
         "pump-promise": "1.0.0",
         "qs": "6.10.1",
+        "redis": "4.3.0",
         "winston": "3.3.3"
     },
     "scripts": {

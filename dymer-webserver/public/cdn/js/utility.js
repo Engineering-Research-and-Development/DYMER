@@ -1,4 +1,5 @@
 var templateslist, kmsdataset, kmsconf, actualItem, actualTemplateType;
+var dymodalmode = "";
 
 function resetDymerStart() {
     templateslist = undefined;
@@ -2159,6 +2160,7 @@ async function editEntity(id) {
         $('body').append(editmodal);
     const grtHtml = grantHtml(perm);
     if (ret.success) {
+        dymodalmode = "edit";
         if (!ret.data.length) {
             $('#entityEdit').modal({
                 show: true,
@@ -2233,6 +2235,7 @@ function closeDymerModal(id) {
         $('#' + id).modal('hide');
         $('#entityEdit .modal-body .contbody').empty();
         $('#entityAdd .modal-body').empty();
+        dymodalmode = "";
     }
     //  } else {
     //      $('#' + id).modal('hide');

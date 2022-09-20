@@ -255,7 +255,7 @@ app.get(util.getContextPath('webserver') + '/info/:key?', (req, res, next) => {
         '<div class="p-5">' + '<div class="row">' +
         '<div class=" col-12">' +
         '<h1 class="h4   mb-4 text-center"  style="color:#023d7d;">Welcome to DYMER</h1>' +
-        '<div class="text-center">' + '<img src="https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/master/screenshots/dymer-logo.png" style="width: 45px;" >' + '<div>' +
+        '<div class="text-center">' + '<img class="rotate-20" src="https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/master/screenshots/dymer-logo.png" style="width: 45px;" >' + '<div>' +
         '<br><small style="color: #8c8985;">DYnamic Information ModElling & Rendering</small>' +
         '</div>' +
         '<div class="  	col-12 p-2" style="color: #8c8985;">' +
@@ -269,7 +269,7 @@ app.get(util.getContextPath('webserver') + '/info/:key?', (req, res, next) => {
         '</div>' +
         '</div>' +
         '</div>' + '</div>' + '</div>' + '</div>';
-    let htmlsend_fo = '</body>' + '</html>';
+    let htmlsend_fo = '</body><link href="public/assets/css/kmsweb.css" rel="stylesheet">' + '</html>';
 
     switch (key) {
         case 'json':

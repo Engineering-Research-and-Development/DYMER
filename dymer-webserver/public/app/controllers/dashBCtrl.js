@@ -1,6 +1,10 @@
 angular.module('dashCtrl', ['nvd3'])
     .controller('dashController', function($scope, $http, $location, $browser, $rootScope) {
         var baseContextPath = $rootScope.globals.contextpath; //$rootScope.site_prefix; //'/d4ptest/'; //$browser.baseHref();
+        $scope.redison = false;
+        $http.get(baseContextPath + '/info/json', {}).then(function(retE) {
+            $scope.version = retE.data.version;
+        });
         $http.get(baseContextPath + '/api2/retriveinfoidpadmin', {
             //$http.get(baseContextPath + '/api2/retriveinfoidp', {
         }).then(function(retE) {
@@ -89,6 +93,7 @@ angular.module('dashCtrl', ['nvd3'])
                 $http.get(baseContextPath + '/api/forms/api/v1/form/', {
                     params: par
                 }).then(function(retM) {
+                    console.log('retM', retM);
                     listModels = retM.data.data;
                     $scope.totModels = listModels.length;
                     listEntities.forEach(function(elEnt) {
@@ -116,6 +121,14 @@ angular.module('dashCtrl', ['nvd3'])
 
         }).catch(function(response) {
             console.log(response.status);
+        }).then(function() {
+            $http.get(baseContextPath + "/api/entities/api/v1/entity/redisstate").then(function(rts) {
+
+                if (rts.data.data.value == 1)
+                    $scope.redison = true;
+            })
+        }).catch(function(response) {
+            console.log(response);
         });
 
         /* giaisg */
@@ -147,6 +160,39 @@ angular.module('dashCtrl', ['nvd3'])
                     $scope.ListRules.splice(ind, 1);
                 }).catch(function(response) {
                     console.log(response.status);
+                });
+            }
+        };
+        $scope.invalidateCache = function(obj) {
+            if (confirm("Are you sure to invalidate the cache for index " + obj.index + "?")) {
+                console.log("deleted ", obj.index);
+                var par = { "index": obj.index };
+                console.log(par);
+                $http.post(`${baseContextPath}/api/entities/api/v1/entity/invalidatecache/${obj.index}`, {
+
+                }).then(function(rt) {
+                    useGritterTool("<b><i class='fa fa-database  '></i> Redis</b>", "invalidated cache for " + obj.index);
+                    //  console.log("invalidated cache 111");
+
+                }).catch(function(response) {
+                    useGritterTool("<b><i class='fa fa-database   '></i> Redis</b>", "Error on invalidate chache", "warning");
+                    //  console.log(response.status);
+                });
+            }
+        };
+
+        $scope.invalidateAllCache = function(obj, ind) {
+            if (confirm("Are you sure to invalidate all cache?")) {
+
+                $http.post(`${baseContextPath}/api/entities/api/v1/entity/invalidateallcache`, {
+
+                }).then(function(rt) {
+                    useGritterTool("<b><i class='fa fa-database   '></i> Redis</b>", "invalidated cache");
+                    //  console.log("invalidated cache");
+
+                }).catch(function(response) {
+                    useGritterTool("<b><i class='fa fa-database   '></i> Redis</b>", "Error on invalidate chache", "warning");
+                    //  console.log(response.status);
                 });
             }
         };
