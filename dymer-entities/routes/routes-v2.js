@@ -11,7 +11,6 @@ const path = require('path');
 const mongoose = require("mongoose");
 const ObjectId = require('mongoose').Types.ObjectId;
 var crypto = require('crypto')
-const redis = require("redis");
 var extend = require('extend');
 //var router = express.Router();
 //var GridFsStorage = require("multer-gridfs-storage");
