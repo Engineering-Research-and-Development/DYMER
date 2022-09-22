@@ -70,8 +70,8 @@ module.exports = {
         let resp = {}
         try {
             resp = await client.hGetAll(hash)
-            logger.info(nameFile + ' | redisModule | reading cache hash: ' + hash);
-            logger.info(nameFile + ' | redisModule | params, retrived the cached response hash' + hash);
+            var userIdcache = await client.hGet(hash, "userId")
+            logger.info(nameFile + ' | redisModule | userIdcache, reading cache hash: ' + userIdcache + ' , ' + hash);
             return resp
         } catch (e) {
             return null

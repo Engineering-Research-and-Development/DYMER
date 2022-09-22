@@ -10,7 +10,8 @@ const bodyParser = require("body-parser");
 const path = require('path');
 const mongoose = require("mongoose");
 const ObjectId = require('mongoose').Types.ObjectId;
-var crypto = require('crypto')
+//var crypto = require('crypto')
+//const redis = require("redis");
 var extend = require('extend');
 //var router = express.Router();
 //var GridFsStorage = require("multer-gridfs-storage");
@@ -72,7 +73,7 @@ mongoose
 //let redisUrl = 'redis://cache:6379'
 //redisClient.init()
 let redisEnabled = global.configService.cache ? global.configService.cache.isEnabled : false;
-console.log("redisEnabledredisEnabledredisEnabled", redisEnabled)
+console.log("redisEnabled", redisEnabled)
 redisClient.init(redisEnabled)
     /*
      *************************************************************************************************************
