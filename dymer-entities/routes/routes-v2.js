@@ -1630,6 +1630,7 @@ let getUserCredential2 = async function(my_authdata) {
 }*/
 //get with with query
 //Marco router.post('/_search', async function(req, res) {
+
 router.post('/_search', (req, res) => {
     var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
     // console.log('TESTSESSION req originalUrl', fullUrl);
@@ -1696,11 +1697,17 @@ router.post('/_search', (req, res) => {
         let source = callData.query.getfields;
         let qoptions = callData.qoptions;
         let recoverRelation = true;
-        //   console.log('********************** qoptions', qoptions);
-        if (qoptions != undefined)
+        let size = 10000;
+        let sort = ["title.keyword:asc"];
+        if (qoptions != undefined) {
             if (qoptions.relations != undefined)
                 recoverRelation = qoptions.relations;
+            if (qoptions.size != undefined)
+                size = qoptions.size;
+            if (qoptions.sort != undefined)
+                sort = qoptions.sort;
             //     console.log('********************** recoverRelation', recoverRelation);
+        }
         let params = (instance) ? instance : {};
         var req_uid = 0;
         var req_gid = 0;
@@ -1853,9 +1860,9 @@ router.post('/_search', (req, res) => {
             }
             if (source != undefined)
                 params["_source"] = source;
-            params["sort"] = ["title.keyword:asc"];
+            params["sort"] = sort;
             params["body"] = query;
-            params["body"].size = 10000;
+            params["body"].size = size;
             //console.log('source', source);
 
             //    params["_source_includes"] = ["*"];
