@@ -16,6 +16,7 @@ Handlebars.registerHelper('loadfile', function(eid, fid, options) {
     tk = localStorage.getItem('DYM');
     if (tk != null)
         return ret += "?tkdym=" + tk + "&tkextra=" + tk_extra;
+    return ret;
 });
 Handlebars.registerHelper('formatDate', function(val, format) {
     return dymerFormatDate(val, format);
