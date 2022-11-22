@@ -18,6 +18,7 @@ angular.module("userApp", [
     "loginCtrl",
     "taxCtrl",
     'ui.tree',
+    "relationsCtrl",
     "configuratorCtrl",
     "permissionCtrl",
     "authenticationConfigCtrl",

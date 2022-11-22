@@ -50,12 +50,23 @@ function detectPermission(req, res, next) {
     //console.log("req.header", req.headers);
     // let cookie = req.cookies['ilmiocookie2'];
     // console.log("cookieMIO", req.headers);
+    var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser;
     var dymeruser;
-    if (hdymeruser == undefined)
-        dymeruser = JSON.parse(Buffer.from(req.cookies["lll"], 'base64').toString());
-    else
-        dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+    try {
+
+        if (hdymeruser == undefined)
+            dymeruser = JSON.parse(Buffer.from(req.cookies["lll"], 'base64').toString());
+        else
+            dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+
+    } catch (error) {
+        logger.error(nameFile + ' | detectPermission | dymeruser:' + error);
+        ret.setMessages("No permission problem");
+        res.status(200);
+        ret.setSuccess(false);
+        return res.send(ret);
+    }
     var urs_uid = dymeruser.id;
     var urs_gid = dymeruser.gid;
     logger.info(nameFile + ' | detectPermission | dymeruser:' + JSON.stringify(dymeruser));
@@ -83,7 +94,7 @@ function detectPermission(req, res, next) {
         isKL = true;
     }*/
     //var pp = jwt.decode(JSON.parse(token));
-    var ret = new jsonResponse();
+
     /*  var pp = undefined;
       if (maybenous == false) {
           if (isKL) { pp = jwt.decode(token); } else {
@@ -235,7 +246,7 @@ app.get(util.getContextPath('form') + "/*", (req, res) => {
 });
 //module.exports = app;
 app.listen(portExpress, () => {
-    //logger.flushAllfile();
+    //logger.flushAllfile(); 
     logger.info(nameFile + " | Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + util.getContextPath('form'));
     console.log("Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path :" + util.getContextPath('form'));
 });

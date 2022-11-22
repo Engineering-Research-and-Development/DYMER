@@ -44,17 +44,22 @@ function generateMapDT(conf) {
     actualTemplateType = conf.viewtype;
     loadMarkers(conf).then(function(ars) {
         //  console.log("ars", ars);
-
-        // if ($("#cont-Map").length) {
-        if ($(retriveIfIsType('map')).length) {
+        let mapElId = $(retriveTargetId('map'));
+        let dtElId = $(retriveTargetId('dt'));
+        if (mapElId.length) {
             generateMap(ars);
         }
-
-        // if ($('#cont-Dt').length) {
-        if ($(retriveTargetId('dt')).length) {
+        if (dtElId.length) {
             generateDT();
         }
-
+        if (mapElId.length && dtElId.length) {
+            dymphases.setSubPhase('view', true, '', "map-dt");
+        } else {
+            if (mapElId.length)
+                dymphases.setSubPhase('view', true, '', "map");
+            if (dtElId.length)
+                dymphases.setSubPhase('view', true, '', "dt");
+        }
     });
 }
 //Marco

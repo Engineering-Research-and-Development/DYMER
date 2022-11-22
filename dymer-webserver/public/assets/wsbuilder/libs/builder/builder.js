@@ -21,6 +21,7 @@ https://github.com/givanz/VvvebJs
 // John Resig - https://johnresig.com/ - MIT Licensed
 (function() {
     var cache = {};
+
     this.tmpl = function tmpl(str, data) {
 
         var fn = /^[-a-zA-Z0-9]+$/.test(str) ?
@@ -77,7 +78,12 @@ function isElement(obj) {
 
 
 var isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
-
+let uuidfile = "";
+$.get(serverUrl + "/api/entities/uuid", function(rtU) {
+    //console.log('rtU', rtU.data);
+    //console.log('rtU.uuid', rtU.data.uuid);
+    uuidfile = rtU.data.uuid;
+});
 if (Vvveb === undefined) var Vvveb = {};
 
 Vvveb.defaultComponent = "_base";
@@ -1721,6 +1727,7 @@ Vvveb.Gui = {
 
         },*/
     download: function() {
+
         var Promise = window.Promise;
         if (!Promise) {
             Promise = JSZip.external.Promise;
@@ -1728,13 +1735,17 @@ Vvveb.Gui = {
         var zip = new JSZip();
         //  var listZip=[];
 
+
         filename = Vvveb.FileManager.pages[Vvveb.FileManager.getCurrentPage()].title + ".html"
             //uriContent = "data:application/octet-stream," + encodeURIComponent(Vvveb.Builder.getBody());
             //  var objzip={'url':uriContent,'filename':filename};
 
         var myPage = Vvveb.FileManager.pages[Vvveb.FileManager.getCurrentPage()];
         zip.file(filename, urlToPromiseZip(myPage.url), { binary: true });
-        var zipName = Vvveb.editorType + '_' + myPage.title + ".zip";
+        var d = new Date();
+        let date = d.toISOString().split('T')[0].replace(/-/g, '_');
+        let time = d.toTimeString().split(' ')[0].replace(/:/g, '_');
+        var zipName = uuidfile + "_" + Vvveb.editorType + '_' + myPage.title + "_" + date + "_" + time + ".zip";
         (myPage.assets).forEach(element => {
             var urlfile = element.url + element.id;
             var unamefile = element.name;

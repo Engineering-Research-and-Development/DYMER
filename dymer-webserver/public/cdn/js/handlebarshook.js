@@ -74,7 +74,7 @@ Handlebars.registerHelper('DymerPaginationPageIndex', function(len, index, optio
 Handlebars.registerHelper('DymerPagination', function(arr, options) {
     let translation = {
         first: "First",
-        prev: "Prevous",
+        prev: "Previous",
         next: "Next",
         last: "Last"
     };

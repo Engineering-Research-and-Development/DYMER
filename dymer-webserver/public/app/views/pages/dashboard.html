@@ -12,7 +12,9 @@
                             </div>
                             <div class="col-10 col-md-10">
 
-                                <p class="card-category ">Dymer</p>
+                                <p class="card-category ">Dymer
+                                    <a href="info" target="_blank" class="updateAction"> <i class="fa fa-sign-in " aria-hidden="true"></i></a>
+                                </p>
 
                                 <div class="row">
                                     <div class="col-6 col-md-6">Version: <b>{{version}}</b></div>
@@ -71,7 +73,9 @@
                             </div>
                             <div class="col-7 col-md-8">
                                 <div class="numbers">
-                                    <p class="card-category">Templates</p>
+                                    <p class="card-category">Templates
+                                        <a href="managetemplate" target="_blank" class="updateAction"> <i class="fa fa-sign-in " aria-hidden="true"></i></a>
+                                    </p>
                                     <p class="card-title">{{totTemplates}}</p>
                                     <div class="spinner-border text-success" role="status" ng-if=" totTemplates==undefined">
                                         <span class="sr-only">Loading...</span>
@@ -101,7 +105,9 @@
                             </div>
                             <div class="col-7 col-md-8">
                                 <div class="numbers">
-                                    <p class="card-category">Models</p>
+                                    <p class="card-category">Models
+                                        <a href="managemodel" target="_blank" class="updateAction"> <i class="fa fa-sign-in " aria-hidden="true"></i></a>
+                                    </p>
                                     <p class="card-title">{{totModels}}</p>
                                     <div class="spinner-border text-warning" role="status" ng-if="totModels==undefined">
                                         <span class="sr-only">Loading...</span>
@@ -130,7 +136,9 @@
                             </div>
                             <div class="col-7 col-md-8">
                                 <div class="numbers">
-                                    <p class="card-category">Entities</p>
+                                    <p class="card-category">Entities
+                                        <a href="listentities" target="_blank" class="updateAction"> <i class="fa fa-sign-in " aria-hidden="true"></i></a>
+                                    </p>
                                     <p class="card-title">{{totEntities}}</p>
                                     <div class="spinner-border text-info" role="status" ng-if="totEntities==undefined">
                                         <span class="sr-only">Loading...</span>
@@ -162,7 +170,9 @@
                     </div>
                     <div class="col-7 col-md-8">
                         <div class="numbers">
-                            <p class="card-category">Relations</p>
+                            <p class="card-category">Relations
+                                <a href="relations" target="_blank" class="updateAction"> <i class="fa fa-sign-in " aria-hidden="true"></i></a>
+                            </p>
                             <p class="card-title">{{totRelations}}</p>
                             <div class="spinner-border text-danger" role="status" ng-if=" totRelations==undefined">
                                 <span class="sr-only">Loading...</span>
@@ -177,6 +187,14 @@
             </div>
             <div class="card-footer ">
                 <hr>
+                <div class="pull-right">
+                    <span class="flushAction" ng-click="deleteAllEntityAndIndexByIndex({index:'entity_relation'})">Delete <i
+                            class="fa fa-scissors  " title="Delete Index and all entities"></i></span>
+                    <span class="deleteAction" ng-click="deleteAllEntityByIndex({index:'entity_relation'})">Flush <i
+                            class="fa fa-trash  " title="Flush all entities"></i></span>
+
+                </div>
+
                 <!--  <div class="stats">
                           <i class="fa fa-refresh"></i> Update Now
                         </div>-->
@@ -200,24 +218,27 @@
             </div>
             <div class="card-body   ">
                 <div class=" ">
-                    <table class="table">
+                    <table class="table table-hover table-sm " id="dtModelsIndex">
                         <thead class=" text-primary">
-                            <th>
-                                index
-                            </th>
-                            <th class=" text-center">
-                                Model
-                            </th>
-                            <th class=" text-center">
-                                Entities
-                            </th>
-                            <th class=" text-center">
-                                Action
-                            </th>
-
+                            <tr>
+                                <th>#</th>
+                                <th>
+                                    index
+                                </th>
+                                <th class=" text-center">
+                                    Model
+                                </th>
+                                <th class=" text-center">
+                                    Entities
+                                </th>
+                                <th class=" text-center">
+                                    Action
+                                </th>
+                            </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="el in ListEntities  | orderBy:'index'">
+                            <tr ng-repeat="el in ListEntities  | orderBy:'-count'">
+                                <td>{{$index+1}}</td>
                                 <td>
                                     {{ el.index }}
                                 </td>
@@ -238,6 +259,8 @@
                                 <td class=" text-center actmodindexdash">
                                     <i class="fa fa-scissors  flushAction" title="Delete Index and all entities" index-entity="{{ el.index }}" ng-click="deleteAllEntityAndIndexByIndex(el,$index)"></i>
                                     <i class="fa fa-trash deleteAction " title="Flush all entities" index-entity="{{ el.index }}" ng-click="deleteAllEntityByIndex(el,$index)"></i>
+                                    <!--<i class="fa fa-download" title="without relations" ng-click="exportentnorel(el,$index)" aria-hidden="true"></i>
+                                    <i class="fa fa-download" title="with relations" ng-click="exportent(el,$index)" aria-hidden="true"></i>-->
                                     <i ng-show="redison" class="fa fa-eraser deleteAction " title="Invalidate cache" index-entity="{{ el.index }}" ng-click="invalidateCache(el,$index)"></i>
                                 </td>
                             </tr>
@@ -264,8 +287,9 @@
             </div>
             <div class="card-body   ">
                 <div class=" ">
-                    <table class="table">
+                    <table class="table  table-hover table-sm " id="dtTemplateIndex">
                         <thead class=" text-primary">
+                            <td>#</td>
                             <th>
                                 Index
                             </th>
@@ -285,6 +309,7 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="el in ListEntities | orderBy:'index' ">
+                                <td>{{$index+1}}</td>
                                 <td>
                                     {{ el.index }} ( {{ el.model.title }} )
                                 </td>

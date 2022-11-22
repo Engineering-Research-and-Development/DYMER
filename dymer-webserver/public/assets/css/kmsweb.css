@@ -1156,3 +1156,13 @@ margin: 4px 0;*/
         rotate: 359deg;
     }
 }
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: none;
+    border: none;
+}

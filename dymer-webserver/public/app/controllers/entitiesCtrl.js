@@ -14,29 +14,44 @@ angular.module('entitiesControllers', [])
         }).catch(function(response) {
             console.log(response.status);
         });
-        $scope.loadHtmlForm = function(obj, index) {
-            //  console.log('index', index);
+        $scope.loadHtmlForm = async function(obj, index) {
+            console.log('index', index);
+            console.log('obj', obj);
             $scope.selected = index;
             $scope.formtitle = obj.title;
             $scope.objCreated = obj.created;
             $("#cont-RenderForm #html-torender").empty();
             $("#cont-RenderForm #appendfiles").empty();
+            listLoadedAdm[obj._id] = {
+                tftemp: []
+            };
+            dymphases.setSubPhase("create", true, "preloadform");
             obj.files.forEach(element => {
                 if (element.contentType == "text/html") {
                     const perm = checkPermission({}, 'create');
                     const grtHtml = grantHtml(perm);
                     $("#cont-RenderForm #html-torender").append(element.data);
                     $(grtHtml).insertBefore($('#entityForm .rendered-form .alert.alertaction'));
-                }
-                if (element.contentType == "text/css") {
-
-                    // $("<style></style>").appendTo("#cont-RenderForm #appendfiles").html(element.data);
+                    dymphases.setSubPhase("create", true, "loadedform");
+                } else {
+                    var splmime = (element.contentType).split("/");
+                    var ftype = splmime[1];
+                    var lkpath = baseContextPath + "/api/forms/api/v1/form/content/" + obj.instance[0]._index + "/" + element._id;
+                    ftype = (ftype == "css") ? "link" : ftype;
+                    if (ftype != "octet-stream")
+                        listLoadedAdm[obj._id].tftemp.push({ domtype: ftype, filename: lkpath, extrattr: [{ key: 'tftemp', value: "rt" }] });
                 }
             });
-            setTimeout(function() {
-                hookReleationForm();
-                $('.selectpicker').selectpicker();
-            }, 800);
+            dymphases.setSubPhase("create", true, "loadhookrelation");
+            await hookReleationForm_Promise();
+            $('.selectpicker').selectpicker();
+            dymphases.setSubPhase("create", true, "loadattachment");
+            await ldFormFiles2(obj._id);
+            dymphases.setSubPhase("create", true, "createForm");
+            /* setTimeout(function() {
+                 hookReleationForm();
+                 $('.selectpicker').selectpicker();
+             }, 800);*/
         };
     })
     .controller('listEntities', function($scope, $http, $rootScope) {
@@ -166,7 +181,6 @@ angular.module('entitiesControllers', [])
             actualItem = el;
             deleteEntity(el._id);
         };
-
 
     }).filter('startFrom', function() {
         return function(input, start) {

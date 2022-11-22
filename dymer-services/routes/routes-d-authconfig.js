@@ -2,6 +2,7 @@ var jsonResponse = require('../jsonResponse');
 var util = require('../utility');
 //var FormData = require('form-data');
 var http = require('http');
+var url = require("url");
 var express = require('express');
 const bodyParser = require("body-parser");
 const path = require('path');
@@ -90,21 +91,50 @@ router.get('/userinfo', (req, res) => {
         },
         username: 'guest@dymer.it',
     };
-    var queryFind = { host: data.referer, active: true };
-    //  console.log('infouse', queryFind);
-    /* DymRule.find({}).then((els) => {
-         console.log('DymRule all', els);
-     });*/
+    //console.log('data.referer', data.referer);
+    let myURLref = new URL(data.referer);
+    let regkey = (myURLref.host == "") ? myURLref.origin : myURLref.host;
+    var queryFind = { host: { "$regex": regkey }, active: true };
+    let requestjsonpath = data.requestjsonpath;
+    //console.log('myURL requestjsonpath', requestjsonpath);
+    //console.log('myURL myURLref', myURLref);
+    let myRequestBaseHost = myURLref.protocol + "//" + myURLref.host;
+    let myRequestBaseUrl = myRequestBaseHost + myURLref.pathname;
+    let myRequestJsonUrl = (requestjsonpath != undefined) ? requestjsonpath.protocol + "//" + requestjsonpath.host + requestjsonpath.pathname : undefined;
+    /*console.log('myURL protocol', myURLref.protocol);
+    console.log('myURL host', myURLref.host);
+    console.log('myURL href ', myURLref.href);
+    console.log('myURL pathname ', myURLref.pathname);
+    console.log('myURL search ', myURLref.search);
+    console.log('queryFind ', queryFind);
+    console.log('myRequestBaseUrl ', myRequestBaseUrl); 
+    console.log('myRequestBaseHost ', myRequestBaseHost);*/
     DymRule.find(queryFind).then((els) => {
-        //   console.log('DymRule', els);
+        //console.log('DymRules', els.length);
+
         if (els.length || data.idsadm) {
-            var el = els[0];
-            // console.log('el', el);
+            let searchObject = els[0];
+            if (els.length > 1) {
+                searchObject = els.find((singoleCnf) => singoleCnf.host == myRequestBaseUrl);
+                if (searchObject == undefined) {
+                    if (myRequestJsonUrl)
+                        searchObject = els.find((singoleCnf) => singoleCnf.host == myRequestJsonUrl);
+                    if (searchObject == undefined) {
+                        searchObject = els.find((singoleCnf) => (singoleCnf.host == myRequestBaseHost || singoleCnf.host == myRequestBaseHost + "/"));
+                    }
+                }
+            }
+            // var el = els[0];
+            let el = searchObject;
+            //console.log('DymRule', el);
+            //console.log('data.idsadm', data.idsadm);
             let authtype = (el == undefined) ? "" : el.authtype;
             if (authtype == "jwtparent" || data.idsadm) {
                 var token = data.DYM;
                 if (token != undefined && token != "null" && token != null) {
                     var decoded;
+                    // console.log("aaaaaaaaaaaa", token, el)
+                    //  console.log("aaaaaaaaaaaa1", (el && el.prop !== undefined && el.prop.secretkey !== undefined && el.prop.secretkey != ""))
                     if (el && el.prop !== undefined && el.prop.secretkey !== undefined && el.prop.secretkey != "") {
                         // decryption
                         //console.log({ token, secret: el.prop.secretkey })
@@ -125,7 +155,7 @@ router.get('/userinfo', (req, res) => {
                     } else {
                         decoded = JSON.parse(Buffer.from(token, 'base64').toString());
                     }
-
+                    //console.log('decoded', decoded);
 
 
 
@@ -217,6 +247,7 @@ router.get('/userinfo', (req, res) => {
                     return res.send(ret);
                 }
             }
+            console.log("OH no ", JSON.stringify(objuser));
         } else {
             ret.setMessages("User detail");
             ret.setData(objuser);

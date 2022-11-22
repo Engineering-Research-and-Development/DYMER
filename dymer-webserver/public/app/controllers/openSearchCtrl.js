@@ -112,7 +112,7 @@ angular.module('openSearchCtrl', [])
         });
         $scope.saveOpnSearchConfig = function(opnconf) {
 
-            //     console.log("opnconf", opnconf);
+            console.log("opnconf", opnconf);
             var dapaPost = opnconf;
             $http({
 
@@ -122,17 +122,23 @@ angular.module('openSearchCtrl', [])
 
             }).then(function successCallback(response) {
 
-                    //           console.log(response.data);
+                    console.log('saveOpnSearchConfig', response);
                     //        console.log("User has update Successfully")
                     response.data.data.forEach(el => {
                         // console.log("ellllll", el);
                         $scope.opnsearch.config[el.servicetype].id = el.id;
                     });
-
+                    if (response.data.success) {
+                        useGritterTool("<b><i class='fa fa-map-signs  '></i> Openness Search Configuration </b>", "[" + opnconf.servicetype +
+                            "] " + response.data.message);
+                    } else {
+                        useGritterTool("<b><i class='fa fa-map-signs  '></i> Openness Search Configuration</b>", response.data.message, "danger");
+                    }
                 },
                 function errorCallback(response) {
 
                     console.log("Error. while created user Try Again!", response);
+                    useGritterTool("<b><i class='fa fa-map-signs  '></i> Openness Search Configuration</b>", "we are sorry but an error has occurred", "danger");
 
                 });
         }
@@ -153,12 +159,16 @@ angular.module('openSearchCtrl', [])
                     response.data.data.forEach(element => {
                         $scope.ListRules.push(element);
                     });
-
+                    if (response.data.success) {
+                        useGritterTool("<b><i class='fa fa-map-signs  '></i> Openness Search Mapping Rule</b>", response.data.message);
+                    } else {
+                        useGritterTool("<b><i class='fa fa-map-signs  '></i> Openness Search Mapping Rule</b>", response.data.message, "danger");
+                    }
                 },
                 function errorCallback(response) {
 
                     console.log("Error. while created user Try Again!", response);
-
+                    useGritterTool("<b><i class='fa fa-map-signs  '></i> Openness Search Mapping Rule</b>", "we are sorry but an error has occurred", "danger");
                 });
 
 
@@ -168,23 +178,32 @@ angular.module('openSearchCtrl', [])
         }
         $scope.removeOpnSearchRule = function(index) {
             var el_id = $scope.ListRules[index];
+            if (confirm("Are you sure to delete the rule for the" + el_id._index + "?")) {
 
-            console.log("el_id", el_id);
-            $http({
 
-                method: 'DELETE',
-                url: baseContextPath + '/api/dservice/api/v1/opn/rule/' + el_id._id
+                console.log("el_id", el_id);
+                $http({
 
-            }).then(function successCallback(response) {
+                    method: 'DELETE',
+                    url: baseContextPath + '/api/dservice/api/v1/opn/rule/' + el_id._id
 
-                    console.log(response.data);
-                    console.log("User has created Successfully", response.data)
-                    $scope.ListRules.splice(index, 1);
-                },
-                function errorCallback(response) {
+                }).then(function successCallback(response) {
 
-                    console.log("Error. while created user Try Again!", response);
+                        console.log(response.data);
+                        console.log("User has created Successfully", response.data)
+                        if (response.data.success) {
+                            useGritterTool("<b><i class='fa fa-map-signs  '></i> Openness Search Mapping Rule</b>", response.data.message);
+                        } else {
+                            useGritterTool("<b><i class='fa fa-map-signs  '></i> Openness Search Mapping Rule</b>", response.data.message, "danger");
+                        }
+                        $scope.ListRules.splice(index, 1);
+                    },
+                    function errorCallback(response) {
 
-                });
+                        console.log("Error. while created user Try Again!", response);
+                        useGritterTool("<b><i class='fa fa-map-signs  '></i> Openness Search Mapping Rule</b>", "we are sorry but an error has occurred", "danger");
+
+                    });
+            }
         }
     });

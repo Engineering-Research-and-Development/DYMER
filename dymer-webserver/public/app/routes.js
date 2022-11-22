@@ -36,6 +36,11 @@ function config($routeProvider, $locationProvider) {
             templateUrl: site_prefix + "/public/app/views/pages/entities/entities.html",
             controller: "listEntities"
         })
+
+    .when(site_prefix + "/relations", {
+            templateUrl: site_prefix + "/public/app/views/pages/entities/relations.html",
+            controller: "relationsController"
+        })
         .when(site_prefix + "/bridge-entities-conf", {
             templateUrl: site_prefix + "/public/app/views/pages/entities/external/configuration.html",
             controller: "bridgeEntitiesController"

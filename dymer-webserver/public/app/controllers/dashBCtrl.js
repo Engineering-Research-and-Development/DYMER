@@ -111,6 +111,10 @@ angular.module('dashCtrl', ['nvd3'])
                         });
                     });
                     $scope.ListEntities = listEntities;
+                    jQuery(document).ready(function() {
+                        jQuery('#dtModelsIndex').DataTable();
+                        jQuery('#dtTemplateIndex').DataTable();
+                    });
                     //  return $scope.listaModels = ret.data.data;
                 }).catch(function(response) {
                     console.log(response.status);
@@ -162,6 +166,22 @@ angular.module('dashCtrl', ['nvd3'])
                     console.log(response.status);
                 });
             }
+        };
+        $scope.exportent = function(obj, ind) {
+
+            /*    console.log("deleted ", obj.index);
+                var par = { "index": obj.index };
+                console.log(par);
+                $http.get(baseContextPath + '/api/entities/api/v1/entity/deleteAllEntityAndIndexByIndex', {
+                    params: par
+                }).then(function (rt) {
+
+                    console.log("deleted done", rt);
+                    $scope.ListRules.splice(ind, 1);
+                }).catch(function (response) {
+                    console.log(response.status);
+                });*/
+
         };
         $scope.invalidateCache = function(obj) {
             if (confirm("Are you sure to invalidate the cache for index " + obj.index + "?")) {

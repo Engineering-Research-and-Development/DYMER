@@ -308,20 +308,21 @@ function loadUserInfo(req, res, next) {
     // console.log('TESTSESSION req ', req);
     // console.log('TESTSESSION req referer', req);
     // console.log('TESTSESSION req referer', req.headers);
-    logger.info(nameFile + ' | loadUserInfo : TESTSESSION req headers' + JSON.stringify(req.headers));
+
     // console.log('TESTSESSION req referer', req.headers.referer);
     // console.log('TESTSESSION req req.headers.authorization', req.headers.authorization);
     // console.log('TESTSESSION req req.headers.Authorization', req.headers.Authorization);
     //  console.log('TESTSESSION req dservice', util.getServiceUrl("dservice"));
     //  console.log('TESTSESSION  req.protocol', req.protocol);
     //console.log('TESTSESSION req host', req.get('host'));
-    logger.info(nameFile + ' | loadUserInfo : TESTSESSION req host, originalUrl' + req.get('host') + " , " + req.originalUrl);
-
+    //logger.info(nameFile + ' | loadUserInfo : req host, originalUrl: ' + req.get('host') + " , " + req.originalUrl);
+    // logger.info(nameFile + ' | loadUserInfo : req headers' + JSON.stringify(req.headers) + " , " + req.url);
+    logger.info(nameFile + ' |loadUserInfo|req url :' + req.headers.referer + "|" + req.url);
     var authuserUrl = util.getServiceUrl("dservice") + "/api/v1/authconfig/userinfo";
     var dymtoken = (req.headers.authorization != undefined) ? req.headers.authorization.split(' ')[1] : undefined;
     var dymtokenAT = req.headers.authorizationtk;
     var dymtoExtraInfo = req.headers.extrainfo;
-
+    let requestjsonpath = (req.headers.requestjsonpath != undefined) ? JSON.parse(req.headers.requestjsonpath) : undefined;
 
     if (req.query.tkdymat != undefined) {
         dymtokenAT = req.query.tkdymat;
@@ -335,7 +336,7 @@ function loadUserInfo(req, res, next) {
 
     //console.log('loadUserInfo authuserUrl', authuserUrl);
     // console.log('loadUserInfo dymtoken', dymtoken);
-    logger.info(nameFile + ' | loadUserInfo : dymtoken' + JSON.stringify(dymtoken));
+    //logger.info(nameFile + ' | loadUserInfo : dymtoken' + JSON.stringify(dymtoken));
     //console.log('loadUserInfo dymtokenAT', dymtokenAT);
     var idsadm = false;
     if (req.cookies["lll"] != undefined) {
@@ -346,10 +347,11 @@ function loadUserInfo(req, res, next) {
     //if (token == undefined || token == 'null')
 
     var referer = req.headers.referer;
-    //  console.log('loadUserInfo pre-reteret', referer);
+    //console.log('loadUserInfo referer', referer);
+    //console.log('loadUserInfo referrer', req.headers.referrer);
 
     if (referer != undefined) {
-        if ((referer).includes(req.host))
+        if ((referer).includes(req.hostname))
             referer = req.get('host');
     }
     /* else {
@@ -358,11 +360,12 @@ function loadUserInfo(req, res, next) {
     let originalRef = (req.headers["reqfrom"] == undefined) ? req.headers.referer : req.headers.reqfrom;
     originalRef = (originalRef == undefined) ? req.get('host') : originalRef;
     //console.log('loadUserInfo post-req.headers', req.headers);
-    logger.info(nameFile + ' | loadUserInfo : post-referer' + req.headers.referer);
-    logger.info(nameFile + ' | loadUserInfo : post-reqfrom' + req.headers["reqfrom"]);
-    logger.info(nameFile + ' | loadUserInfo : originalRef' + originalRef + " , " + typeof originalRef);
-    logger.info(nameFile + ' | --------------------------');
+    /* logger.info(nameFile + ' | loadUserInfo : post-referer' + req.headers.referer);
+     logger.info(nameFile + ' | loadUserInfo : post-reqfrom' + req.headers["reqfrom"]);
+     logger.info(nameFile + ' | loadUserInfo : originalRef' + originalRef + " , " + typeof originalRef);*/
+    //logger.info(nameFile + ' | --------------------------');
 
+    //logger.info(nameFile + ' | loadUserInfo : requestjsonpath' + requestjsonpath);
     /*console.log('loadUserInfo post-referer', req.headers.referer);
     console.log('loadUserInfo post-reqfrom', req.headers["reqfrom"]);
     console.log('loadUserInfo originalRef', originalRef, typeof originalRef);
@@ -378,6 +381,7 @@ function loadUserInfo(req, res, next) {
             'DYMAT': dymtokenAT,
             'referer': originalRef,
             'dymtoExtraInfo': dymtoExtraInfo,
+            'requestjsonpath': requestjsonpath,
             'idsadm': idsadm
         }
     };

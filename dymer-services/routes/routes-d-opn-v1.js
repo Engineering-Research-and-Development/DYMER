@@ -128,7 +128,7 @@ router.post('/addrule', util.checkIsAdmin, function(req, res) {
     }
     var mod = new OpnSearchRule(newObj);
     mod.save().then((el) => {
-        ret.setMessages("Model uploaded successfully");
+        ret.setMessages("Role successfully added");
         ret.addData(el);
         return res.send(ret);
     }).catch((err) => {
