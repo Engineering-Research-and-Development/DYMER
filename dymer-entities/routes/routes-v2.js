@@ -2262,7 +2262,7 @@ router.post('/_search', (req, res) => {
             // logger.info(nameFile + '|_search| params :' + JSON.stringify(params));
             let cachedResponse = await redisClient.readCacheByKey(query, redisEnabled)
             if (cachedResponse && Object.keys(cachedResponse).length != 0) {
-                logger.info(nameFile + '|_search| cachedResponse :' + cachedResponse);
+                logger.info(nameFile + '|_search| cachedResponse ');
                 return res.send(JSON.parse(cachedResponse.response))
             }
             // console.log('paramsNNN', JSON.stringify(params));
