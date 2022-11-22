@@ -102,6 +102,11 @@
                 "context-path": "",
                 "ip": "127.0.0.1",
                 "port": 5050
+            },
+            "form": {
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 4747
             }
         }
     }
