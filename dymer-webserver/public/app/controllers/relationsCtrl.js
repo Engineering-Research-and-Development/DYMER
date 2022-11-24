@@ -151,8 +151,9 @@ angular.module('relationsCtrl', [])
 
 
         $scope.deleteRelationById = function(indexel, obj) {
+            //console.log('obj', obj);
             if (confirm("Are you sure to delete the relation between '" + obj.title1 + "' and '" + obj.title2 + "'?")) {
-                $http.delete(baseContextPath + '/api/entities/api/v1/entity/singlerelation/' + obj._id, {}).then(function(response) {
+                $http.delete(baseContextPath + '/api/entities/api/v1/entity/singlerelation/' + obj._id, { data: obj }).then(function(response) {
                     if (response.data.success) {
                         $scope.listrels.splice(indexel, 1);
                         let tmplist = angular.copy($scope.listrels);

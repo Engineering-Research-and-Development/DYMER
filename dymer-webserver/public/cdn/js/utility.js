@@ -579,14 +579,25 @@ function scriptExists(domtype, attr, value) {
 }
 
 async function onloadFiles2(arr) {
+    let tk = localStorage.getItem('DYMAT');
+    let tk_extra = localStorage.getItem('DYM_EXTRA');
+    let toperm = "";
+    if (tk != null)
+        toperm = "?tkdymat=" + tk + "&tkextra=" + tk_extra;
+    tk = localStorage.getItem('DYM');
+    if (tk != null)
+        toperm = "?tkdym=" + tk + "&tkextra=" + tk_extra;
+
     let promlist = arr.map((obj) => {
         return new Promise(function(resolve, reject) {
-            console.log('onloadFiles2', obj);
+            //console.log('onloadFiles2', obj);
             var attr = "";
             var script = null;
             //  var filename = obj.filename + "?dmts=1";
             var filename = obj.filename;
-            filename += "?dmts=1";
+            // filename += "?dmts=1";
+            if (!filename.includes('cdn'))
+                filename += toperm;
             script = document.createElement(obj.domtype);
             if (obj.domtype == "script" || obj.domtype == 'javascript') { //if filename is a external JavaScript file
                 script = document.createElement("script");
@@ -633,11 +644,19 @@ async function onloadFiles2(arr) {
         });
     })
 
-    return Promise.all(promlist).then(mappedlist => { console.log("tutti i files sono stati caricati", mappedlist); });
+    return Promise.all(promlist).then(mappedlist => { /*console.log("tutti i files sono stati caricati", mappedlist);*/ });
 }
 
 
 async function onloadFiles(arr) {
+    let tk = localStorage.getItem('DYMAT');
+    let tk_extra = localStorage.getItem('DYM_EXTRA');
+    let toperm = "";
+    if (tk != null)
+        toperm = "?tkdymat=" + tk + "&tkextra=" + tk_extra;
+    tk = localStorage.getItem('DYM');
+    if (tk != null)
+        toperm = "?tkdym=" + tk + "&tkextra=" + tk_extra;
     if (arr.length > 0) {
         var obj = arr[0];
         arr.shift();
@@ -645,7 +664,9 @@ async function onloadFiles(arr) {
         var script = null;
         //  var filename = obj.filename + "?dmts=1";
         var filename = obj.filename;
-        filename += "?dmts=1";
+        //    filename += "?dmts=1";
+        if (!filename.includes('cdn'))
+            filename += toperm;
         script = document.createElement(obj.domtype);
         if (obj.domtype == "script" || obj.domtype == 'javascript') { //if filename is a external JavaScript file
             script = document.createElement("script");
@@ -828,13 +849,13 @@ function hookReleationForm(item) {
 async function prePopulateFormEdit_Promise(item) {
     if (typeof dymprepopulate === 'function') {
         let rrs = await dymprepopulate(item);
-        console.log("utility prePopulateFormEdit_Promise fatta");
+        //console.log("utility prePopulateFormEdit_Promise fatta");
         return rrs;
     } else {
         return new Promise(function(resolve, reject) {
-            console.log("non esiste dymprepopulate");
+            //  console.log("non esiste dymprepopulate");
             setTimeout(function() {
-                console.log("aspetto 5 sec");
+                // console.log("aspetto 5 sec");
                 resolve();
 
             }, 5000);
@@ -1367,7 +1388,8 @@ function loadFormList(sourceUrl, target, datapost, action) {
 
 async function ldFormFiles2(id) {
     let rs = await removeTempImport('tftemp').then(async function() {
-        console.log("inizio caricamento file");
+        //  console.log("inizio caricamento file");
+        // return onloadFiles((listLoadedAdm[id].tftemp).slice());
         return onloadFiles2((listLoadedAdm[id].tftemp).slice());
         setTimeout(function() {
             if (typeof afterLoadForm !== "undefined") {
@@ -1375,7 +1397,7 @@ async function ldFormFiles2(id) {
             }
         }, 3000);
     });
-    console.log("ritorno ldFormFiles2");
+    //  console.log("ritorno ldFormFiles2");
     return rs;
 }
 async function ldFormFiles(id) {
@@ -2353,7 +2375,7 @@ async function editEntity(id) {
 
                 dymphases.setSubPhase("edit", true, "loadattachment");
                 await ldFormFiles2(item._id);
-                console.log("dopo aver caricati tutti i files");
+                //    console.log("dopo aver caricati tutti i files");
                 // hookReleationForm(itemToEdit);
                 //NOduplicateRepeatable('#entityEdit', itemToEdit);
                 // }, 2000);
@@ -2366,12 +2388,12 @@ async function editEntity(id) {
                 //  hookReleationForm(itemToEdit);
                 // duplicateRepeatable('#entityEdit', itemToEdit);
                 // }, 10000);
-                console.log("primo");
+                // console.log("primo");
 
                 dymphases.setSubPhase("edit", true, "prepopulateform");
                 let resprepopulate = await prePopulateFormEdit_Promise(itemToEdit);
-                console.log("secondo");
-                console.log("resprepopulate", resprepopulate);
+                // console.log("secondo");
+                //console.log("resprepopulate", resprepopulate);
                 var itemToEdit_ = Object.assign({}, itemToEdit);
                 /*  setTimeout(function() {
                       $('#entityEdit .selectpicker').selectpicker();
@@ -2384,12 +2406,13 @@ async function editEntity(id) {
                   }, 2000);*/
 
                 $('#entityEdit .selectpicker').selectpicker();
-                console.log("vado a modificare");
+                // console.log("vado a modificare");
                 //  populateFormEdit('#entityEdit', itemToEdit, undefined, undefined, itemToEdit_);
                 dymphases.setSubPhase("edit", true, "populateform");
+                //console.log('#entityEdit', itemToEdit, undefined, undefined, itemToEdit_);
                 await populateFormEdit_await('#entityEdit', itemToEdit, undefined, undefined, itemToEdit_);
                 $('#entityEdit .modal-body').hideLoader();
-                console.log("fnito!!!");
+                //console.log("fnito!!!");
                 dymphases.setSubPhase("edit", true, "editForm");
 
                 /*  setTimeout(function() {
@@ -2742,137 +2765,138 @@ function populateFormEdit(frm, item, basename, wasarr, origitem) {
 }
 async function populateFormEdit_await(frm, item, basename, wasarr, origitem) {
     try {
-        //  if (item != null)
-        for await (var [key, value] of Object.entries(item)) {
-            //console.log("basename  ", basename);
-            var tmp = $(frm + ' [name^="data' + basename + '[' + key + ']' + '"]');
-            var extrelPop = "";
-            var actualK = "";
-            if (basename == undefined) {
-                actualK = '[' + key + ']';
-            } else {
-                if (wasarr && $(frm + ' [name^="data' + basename + '[' + key + ']' + '"]').prop("tagName") == "checkbox") {
-                    actualK = basename + '[]';
-                    // populateMatchByValue();
-                    //  continue;
-                    if ($(frm + ' [name^="data' + actualK + '"]').length) {
-                        if ($(frm + ' [name^="data' + actualK + '"]').attr("type") == "checkbox")
-                            extrelPop = '[value="' + value + '"]';
-                    }
-                } else
-                    actualK = basename + '[' + key + ']';
-            }
-            var elPop = $(frm + ' [name="data' + actualK + '"]' + extrelPop);
-            //   console.log("sele", key, value);
-            //   console.log("elPop", elPop);
-            //   console.log("elPop.hasClass('selectpicker')", elPop.hasClass('selectpicker'));
-            if (key == 'relations') {
-                let listRelation = {};
-                for (var i = 0; i < value.length; i++) {
-                    if (listRelation[value[i]._type] == undefined)
-                        listRelation[value[i]._type] = [];
-                    listRelation[value[i]._type].push(value[i]._id);
-                }
-                /*  Object.keys(listRelation).forEach(function(k) {
-                      var r_list = listRelation[k];
-                      for (var i = 0; i < r_list.length; i++) {
-                          var vs = ' [name="data[relation][' + k + '][' + i + '][to]"]';
-                          $(frm + vs).val(r_list[i]).attr("oldval", r_list[i]);
-                      }
-                  });*/
-                Object.keys(listRelation).forEach(function(k) {
-                    var r_list = listRelation[k];
-                    let vs = '[name="data[relation][' + k + '][0][to]"]';
-                    var relElement = $(vs);
-                    if (relElement.hasClass('selectpicker')) {
-
-                        // $(frm + " " + vs).val(r_list);
-                        $(frm + " " + vs).selectpicker('val', r_list);
-                    } else {
-                        for (var i = 0; i < r_list.length; i++) {
-                            vs = ' [name="data[relation][' + k + '][' + i + '][to]"]';
-                            $(frm + vs).val(r_list[i]).attr("oldval", r_list[i]);
+        //console.log('item++', frm, item, basename, wasarr);
+        if (item != null)
+            for await (var [key, value] of Object.entries(item)) {
+                //console.log("basename  ", basename);
+                var tmp = $(frm + ' [name^="data' + basename + '[' + key + ']' + '"]');
+                var extrelPop = "";
+                var actualK = "";
+                if (basename == undefined) {
+                    actualK = '[' + key + ']';
+                } else {
+                    if (wasarr && $(frm + ' [name^="data' + basename + '[' + key + ']' + '"]').prop("tagName") == "checkbox") {
+                        actualK = basename + '[]';
+                        // populateMatchByValue();
+                        //  continue;
+                        if ($(frm + ' [name^="data' + actualK + '"]').length) {
+                            if ($(frm + ' [name^="data' + actualK + '"]').attr("type") == "checkbox")
+                                extrelPop = '[value="' + value + '"]';
                         }
+                    } else
+                        actualK = basename + '[' + key + ']';
+                }
+                var elPop = $(frm + ' [name="data' + actualK + '"]' + extrelPop);
+                //   console.log("sele", key, value);
+                //   console.log("elPop", elPop);
+                //   console.log("elPop.hasClass('selectpicker')", elPop.hasClass('selectpicker'));
+                if (key == 'relations') {
+                    let listRelation = {};
+                    for (var i = 0; i < value.length; i++) {
+                        if (listRelation[value[i]._type] == undefined)
+                            listRelation[value[i]._type] = [];
+                        listRelation[value[i]._type].push(value[i]._id);
                     }
-                });
-                // elPop.val(value);
-                continue;
-            }
-            if (typeof value === 'object') {
-                if (Array.isArray(value)) {
-                    if (value.length > 0) {
+                    /*  Object.keys(listRelation).forEach(function(k) {
+                          var r_list = listRelation[k];
+                          for (var i = 0; i < r_list.length; i++) {
+                              var vs = ' [name="data[relation][' + k + '][' + i + '][to]"]';
+                              $(frm + vs).val(r_list[i]).attr("oldval", r_list[i]);
+                          }
+                      });*/
+                    Object.keys(listRelation).forEach(function(k) {
+                        var r_list = listRelation[k];
+                        let vs = '[name="data[relation][' + k + '][0][to]"]';
+                        var relElement = $(vs);
+                        if (relElement.hasClass('selectpicker')) {
+
+                            // $(frm + " " + vs).val(r_list);
+                            $(frm + " " + vs).selectpicker('val', r_list);
+                        } else {
+                            for (var i = 0; i < r_list.length; i++) {
+                                vs = ' [name="data[relation][' + k + '][' + i + '][to]"]';
+                                $(frm + vs).val(r_list[i]).attr("oldval", r_list[i]);
+                            }
+                        }
+                    });
+                    // elPop.val(value);
+                    continue;
+                }
+                if (typeof value === 'object') {
+                    if (Array.isArray(value)) {
+                        if (value.length > 0) {
+                            if (elPop.hasClass('summernote')) {
+                                if (typeof elPop.summernote === 'function')
+                                    elPop.summernote({ dialogsInBody: true });
+
+                            } else if (elPop.hasClass('selectpicker')) {
+
+                                elPop.selectpicker('val', value);
+                            } else {
+                                var isarr = true;
+                                await populateFormEdit_await(frm, value, actualK, isarr, origitem);
+                            }
+
+                        }
+                    } else {
+                        if (elPop.length) {
+                            if ((elPop).is("input")) {
+                                if ((elPop).attr("type") === 'file') {
+                                    var previewFile = "";
+                                    var baseurlcd = (kmsconfig.cdn).replace('public/cdn/', "");
+                                    var indport = baseurlcd + "api/entities/api/v1/entity/content/";
+                                    var elName = elPop.attr("name");
+                                    var btnDeleteFile = '<i class="fa fa-trash btn  btn-outline-danger  btn-sm  deleteItemSub" style="float: right;" aria-hidden="true" onclick="appendTodeleteId(\'' + value.id + '\',\'' + $(elPop).attr("name") + '\')"></i>';
+                                    var filepathauth = createpathFile(origitem._id, value.id);
+                                    if ((/\.(gif|jpg|jpeg|tiff|png)$/i).test(value.originalname)) {
+                                        previewFile = '<img src="' + filepathauth + '"  class="img-thumbnail" style="max-width:150px;max-heigth:150px"  > ';
+                                        elPop.before('<p fileid="' + value.id + '" style="text-align:center" attachref="' + elName + '">' + previewFile + btnDeleteFile + '<br><span>' + value.originalname + '</span></p>');
+                                    } else {
+                                        previewFile = '<a href="' + filepathauth + '"  target="_blank"> <i class="fa fa-file" aria-hidden="true"></i> ' + value.originalname + '</a> ';
+                                        elPop.before('<p fileid="' + value.id + '"  attachref="' + elName + '"><span> ' + previewFile + '</span>' + btnDeleteFile + '</p>');
+                                    }
+                                    elPop.attr('onchange', 'appendTodeleteId("' + value.id + '","' + $(elPop).attr("name") + '")');
+                                    var to_append = '<div style="display:none"  id="contattach_' + elName + '"> ';
+                                    Object.keys(value).forEach(function(valueObjkey) {
+                                        var attrOblName = elName + '[' + valueObjkey + ']';
+                                        to_append += '<input type="hidden"  name="' + attrOblName + '" value="' + value[valueObjkey] + '">';
+                                    });
+                                    to_append += ' </div>';
+                                    elPop.after(to_append);
+                                } else {
+                                    console.log("non e file ");
+                                    if ((elPop).attr("type") == "checkbox") {
+                                        if (value != null && value != "" && value != undefined)
+                                            (elPop).prop('checked', true);
+                                    } else {
+                                        console.log('(elPop)', (elPop).is("select"));
+                                        elPop.val(value);
+                                    }
+                                }
+                            } else if ((elPop).is("select")) {
+                                console.log("is select");
+                                elPop.val(value).change();
+                            }
+                        } else {
+                            await populateFormEdit_await(frm, value, actualK, undefined, origitem);
+                        }
+                        // populateFormEdit(frm, value, actualK);
+                    }
+                } else {
+                    if ((elPop).attr("type") == "checkbox") {
+                        (elPop).prop('checked', true);
+                    } else if ((elPop).prop('nodeName') == "SELECT") {
+                        elPop.val(value).trigger('change');
+                    } else {
+                        elPop.val(value);
                         if (elPop.hasClass('summernote')) {
                             if (typeof elPop.summernote === 'function')
                                 elPop.summernote({ dialogsInBody: true });
-
-                        } else if (elPop.hasClass('selectpicker')) {
-
-                            elPop.selectpicker('val', value);
-                        } else {
-                            var isarr = true;
-                            await populateFormEdit_await(frm, value, actualK, isarr, origitem);
                         }
-
-                    }
-                } else {
-                    if (elPop.length) {
-                        if ((elPop).is("input")) {
-                            if ((elPop).attr("type") === 'file') {
-                                var previewFile = "";
-                                var baseurlcd = (kmsconfig.cdn).replace('public/cdn/', "");
-                                var indport = baseurlcd + "api/entities/api/v1/entity/content/";
-                                var elName = elPop.attr("name");
-                                var btnDeleteFile = '<i class="fa fa-trash btn  btn-outline-danger  btn-sm  deleteItemSub" style="float: right;" aria-hidden="true" onclick="appendTodeleteId(\'' + value.id + '\',\'' + $(elPop).attr("name") + '\')"></i>';
-                                var filepathauth = createpathFile(origitem._id, value.id);
-                                if ((/\.(gif|jpg|jpeg|tiff|png)$/i).test(value.originalname)) {
-                                    previewFile = '<img src="' + filepathauth + '"  class="img-thumbnail" style="max-width:150px;max-heigth:150px"  > ';
-                                    elPop.before('<p fileid="' + value.id + '" style="text-align:center" attachref="' + elName + '">' + previewFile + btnDeleteFile + '<br><span>' + value.originalname + '</span></p>');
-                                } else {
-                                    previewFile = '<a href="' + filepathauth + '"  target="_blank"> <i class="fa fa-file" aria-hidden="true"></i> ' + value.originalname + '</a> ';
-                                    elPop.before('<p fileid="' + value.id + '"  attachref="' + elName + '"><span> ' + previewFile + '</span>' + btnDeleteFile + '</p>');
-                                }
-                                elPop.attr('onchange', 'appendTodeleteId("' + value.id + '","' + $(elPop).attr("name") + '")');
-                                var to_append = '<div style="display:none"  id="contattach_' + elName + '"> ';
-                                Object.keys(value).forEach(function(valueObjkey) {
-                                    var attrOblName = elName + '[' + valueObjkey + ']';
-                                    to_append += '<input type="hidden"  name="' + attrOblName + '" value="' + value[valueObjkey] + '">';
-                                });
-                                to_append += ' </div>';
-                                elPop.after(to_append);
-                            } else {
-                                console.log("non e file ");
-                                if ((elPop).attr("type") == "checkbox") {
-                                    if (value != null && value != "" && value != undefined)
-                                        (elPop).prop('checked', true);
-                                } else {
-                                    console.log('(elPop)', (elPop).is("select"));
-                                    elPop.val(value);
-                                }
-                            }
-                        } else if ((elPop).is("select")) {
-                            console.log("is select");
-                            elPop.val(value).change();
-                        }
-                    } else {
-                        await populateFormEdit_await(frm, value, actualK, undefined, origitem);
-                    }
-                    // populateFormEdit(frm, value, actualK);
-                }
-            } else {
-                if ((elPop).attr("type") == "checkbox") {
-                    (elPop).prop('checked', true);
-                } else if ((elPop).prop('nodeName') == "SELECT") {
-                    elPop.val(value).trigger('change');
-                } else {
-                    elPop.val(value);
-                    if (elPop.hasClass('summernote')) {
-                        if (typeof elPop.summernote === 'function')
-                            elPop.summernote({ dialogsInBody: true });
                     }
                 }
             }
-        }
-        //console.log("attessssssooooo ultimo");
+            //console.log("attessssssooooo ultimo");
     } catch (error) {
         console.error(error);
     }
@@ -4228,11 +4252,11 @@ function dymerphases(options) {
         return properties.modal.type;
     }
     this.setType = function(type) {
-        console.log('setType', type)
+        // console.log('setType', type)
         properties.type = type;
     }
     this.getType = function() {
-        console.log('getType', properties.type)
+        // console.log('getType', properties.type)
         return properties.type;
     }
     this.getViewtSubPhase = function() {

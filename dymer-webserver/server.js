@@ -317,7 +317,7 @@ function loadUserInfo(req, res, next) {
     //console.log('TESTSESSION req host', req.get('host'));
     //logger.info(nameFile + ' | loadUserInfo : req host, originalUrl: ' + req.get('host') + " , " + req.originalUrl);
     // logger.info(nameFile + ' | loadUserInfo : req headers' + JSON.stringify(req.headers) + " , " + req.url);
-    logger.info(nameFile + ' |loadUserInfo|req url :' + req.headers.referer + "|" + req.url);
+    logger.info(nameFile + ' |loadUserInfo|req url :' + req.headers.referer + "|" + req.method + req.url);
     var authuserUrl = util.getServiceUrl("dservice") + "/api/v1/authconfig/userinfo";
     var dymtoken = (req.headers.authorization != undefined) ? req.headers.authorization.split(' ')[1] : undefined;
     var dymtokenAT = req.headers.authorizationtk;

@@ -714,7 +714,7 @@ let deleteBulkByIds = async function(idsToDelete, index) {
         client.bulk({
             body: bulk
         }).then(function(resp) {
-            console.log("Successful query!");
+            // console.log("Successful query!");
             logger.info(nameFile + '| deleteBulkByIds | ids ' + idsToDelete + ' deleted');
             return resolve(resp);
         }, function(err) {
@@ -1641,8 +1641,12 @@ router.post('/singlerelation/', util.checkIsAdmin, (req, res) => {
             _index2: callData.index2,
         },
         refresh: 'true'
-    }).then(function(resp) {
+    }).then(async function(resp) {
         logger.info(nameFile + '| post singlerelation/:id | dymeruser.id, create :' + dymeruser.id + ' , ' + JSON.stringify(callData));
+        //antonino 
+        await redisClient.invalidateCacheById(callData.id1, redisEnabled)
+        await redisClient.invalidateCacheById(callData.id2, redisEnabled)
+
         ret.setMessages("Relation created!");
         ret.setExtraData(resp);
         return res.send(ret);
@@ -1674,9 +1678,12 @@ router.put('/singlerelation/:id', util.checkIsAdmin, (req, res) => {
             doc: data
         },
         refresh: 'true'
-    }).then(function(resp) {
+    }).then(async function(resp) {
         logger.info(nameFile + '| put singlerelation/:id | dymeruser.id, id updated :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(data));
         ret.setMessages("Relation Updated!");
+        //antonino 
+        await redisClient.invalidateCacheById(callData.id1, redisEnabled)
+        await redisClient.invalidateCacheById(callData.id2, redisEnabled)
         return res.send(ret);
     }).catch(function(err) {
         logger.error(nameFile + '| put singlerelation/:id | dymeruser.id, id update :' + dymeruser.id + ' , ' + id + ' , ' + err);
@@ -1694,44 +1701,43 @@ router.delete('/singlerelation/:id', util.checkIsAdmin, (req, res) => {
     const dymeruser = util.getDymerUser(req, res);
     const dymerextrainfo = dymeruser.extrainfo;
     var delarams = {};
-    deleteBulkByIds([id], 'entity_relation').then(
-            function(resp) {
-                logger.info(nameFile + '| singlerelation | delete| dymeruser.id, relation removed :' + dymeruser.id + " , " + JSON.stringify(resp));
-                ret.setMessages("Relation deleted successfully");
-                ret.addData(resp);
-                //    await redisClient.invalidateCacheById(ret.data[0]._id, redisEnabled)
-                return res.send(ret);
-            },
-            function(err) {
-                logger.error(nameFile + '| singlerelation | delete :' + dymeruser.id + ' , ' + index + ' , ' + err);
-                ret.setSuccess(false);
-                ret.setMessages("Error on delete!");
-                return res.send(ret);
+    //  console.log('callData delete rela', callData);
+    // return res.send(ret);aaaa
+    let paramsCheck = {};
+
+    paramsCheck["body"] = {
+        "query": {
+            "match": {
+                "_id": id
             }
-        )
-        /* delarams["index"] = 'entity_relation';
-         delarams["type"] = 'entity_relation';
-         delarams["id"] = id
-         client.delete(delarams).then(
-             async function(resp) {
-                 logger.info(nameFile + '| singlerelation | delete| dymeruser.id, relation removed :' + dymeruser.id + " , " + JSON.stringify(resp));
-                 ret.setMessages("Relation deleted successfully");
-                 ret.addData(resp);
-                 //    await redisClient.invalidateCacheById(ret.data[0]._id, redisEnabled)
-                 return res.send(ret);
-             },
-             function(err) {
-                 logger.error(nameFile + '| singlerelation | delete :' + dymeruser.id + ' , ' + index + ' , ' + err);
-                 ret.setSuccess(false);
-                 ret.setMessages("Error on delete!");
-                 return res.send(ret);
-             }
-         ).catch(function(err) {
-             logger.error(nameFile + '| singlerelation | delete:' + id + ' , ' + err);
-             ret.setSuccess(false);
-             ret.setMessages("Error on delete!");
-             return res.send(ret);
-         });*/
+        }
+    };
+    paramsCheck["body"].size = 1;
+    client.search(paramsCheck).then(function(respCheck) {
+        if ((respCheck["hits"].hits).length > 0) {
+            var ele = respCheck["hits"].hits[0];
+            deleteBulkByIds([id], 'entity_relation').then(
+                async function(resp) {
+                    logger.info(nameFile + '| singlerelation | delete| dymeruser.id, relation removed :' + dymeruser.id + " , " + JSON.stringify(resp));
+                    ret.setMessages("Relation deleted successfully");
+                    ret.addData(resp);
+                    await redisClient.invalidateCacheById(ele._source._id1, redisEnabled)
+                    await redisClient.invalidateCacheById(ele._source._id2, redisEnabled)
+                    return res.send(ret);
+                },
+                function(err) {
+                    logger.error(nameFile + '| singlerelation | delete :' + dymeruser.id + ' , ' + index + ' , ' + err);
+                    ret.setSuccess(false);
+                    ret.setMessages("Error on delete!");
+                    return res.send(ret);
+                }
+            )
+        }
+    }).catch(function(err) {
+        console.error("ERROR | " + nameFile + '| singlerelation | search:', err);
+        logger.error(nameFile + '| singlerelation | search: ' + err);
+        res.end("");
+    });
 
 
 });
@@ -3155,6 +3161,9 @@ router.post('/:enttype', function(req, res) {
                                 data.properties.tid = "0";
                                 data.properties.created = new Date().toISOString();
                                 data.properties.changed = new Date().toISOString();
+                                data.properties.extrainfo = {};
+                                data.properties.extrainfo.lastupdate = { "uid": urs_uid };
+
                             }
                             if (elDymerUuid == undefined) {
                                 instance.id = util.generateDymerUuid();
@@ -3653,6 +3662,7 @@ router.put('/:id', (req, res) => {
                                 //   ret.setMessages("Error Updated!");
                                 //   return res.send(ret);
                             });
+
                         let resrel = await createBulk(datasetRelation, 'entity_relation');
                         if (!resrel.isSuccess()) {
                             logger.error(nameFile + '| /:id | put | entityid,uid,create relations :' + id + ' , ' + dymeruser.id + ' , ' + JSON.stringify(datasetRelation) + ' , ' + err);

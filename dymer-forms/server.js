@@ -52,6 +52,7 @@ function detectPermission(req, res, next) {
     // console.log("cookieMIO", req.headers);
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser;
+    // console.log('hdymeruser', hdymeruser);
     var dymeruser;
     try {
 
@@ -107,7 +108,7 @@ function detectPermission(req, res, next) {
   
       }
   */
-    //console.log("req.path", req.path);
+    console.log("req.path", req.path);
     // console.log("req.method", req.method);
 
     // console.log("req.params", req.params);
