@@ -5,6 +5,11 @@ angular.module('dashCtrl', ['nvd3'])
         $http.get(baseContextPath + '/info/json', {}).then(function(retE) {
             $scope.version = retE.data.version;
         });
+        $http.get(baseContextPath + '/api/system/logtypes', {}).then(function(retE) {
+            console.log('logtypes', retE);
+            $scope.logstype = retE.data.data.msg;
+        });
+
         $http.get(baseContextPath + '/api2/retriveinfoidpadmin', {
             //$http.get(baseContextPath + '/api2/retriveinfoidp', {
         }).then(function(retE) {

@@ -26,6 +26,7 @@ var dserviceRoutes = require('./routes/dservice');
 var templateRoutes = require('./routes/template');
 var formRoutes = require('./routes/form');
 var entityRoutes = require('./routes/entity');
+var system = require('./routes/routes-v1');
 var publicRoutes = require('./routes/publicfiles');
 var appRoutes = require('./routes/appRoutes');
 //var dauthRoutes = require('./routes/dauth');
@@ -303,9 +304,11 @@ function checkAuthentication(req, res, next) {
 
 function loadUserInfo(req, res, next) {
     cookie = req.cookies;
-    //console.log("cookiecookie", cookie);
+
     // console.log('TESTSESSION', req.session.cc, req.session.cc == undefined);
-    // console.log('TESTSESSION req ', req);
+    //   console.log('TESTSESSION req ', req);
+    //  var isLocal = (req.connection.localAddress === req.connection.remoteAddress);
+    //  console.log('TESTSESSION isLocal ', isLocal);
     // console.log('TESTSESSION req referer', req);
     // console.log('TESTSESSION req referer', req.headers);
 
@@ -317,7 +320,7 @@ function loadUserInfo(req, res, next) {
     //console.log('TESTSESSION req host', req.get('host'));
     //logger.info(nameFile + ' | loadUserInfo : req host, originalUrl: ' + req.get('host') + " , " + req.originalUrl);
     // logger.info(nameFile + ' | loadUserInfo : req headers' + JSON.stringify(req.headers) + " , " + req.url);
-    logger.info(nameFile + ' |loadUserInfo|req url :' + req.headers.referer + "|" + req.method + req.url);
+
     var authuserUrl = util.getServiceUrl("dservice") + "/api/v1/authconfig/userinfo";
     var dymtoken = (req.headers.authorization != undefined) ? req.headers.authorization.split(' ')[1] : undefined;
     var dymtokenAT = req.headers.authorizationtk;
@@ -370,6 +373,7 @@ function loadUserInfo(req, res, next) {
     console.log('loadUserInfo post-reqfrom', req.headers["reqfrom"]);
     console.log('loadUserInfo originalRef', originalRef, typeof originalRef);
     console.log('--------------------------');*/
+    logger.info(nameFile + ' |loadUserInfo|req url :' + originalRef + "|" + req.method + req.url);
     var config = {
         method: 'get',
         url: authuserUrl,
@@ -385,6 +389,7 @@ function loadUserInfo(req, res, next) {
             'idsadm': idsadm
         }
     };
+
     axios(config)
         .then(function(response) {
             //console.log('dymeruser', response.data.data);
@@ -420,6 +425,7 @@ app.use(util.getContextPath('webserver') + "/api/entities/", loadUserInfo, entit
 //app.use(util.getContextPath('webserver') + "/api/entities/", keycloak.protect('realm:app-user'), entityRoutes);
 //m 2021_20_20 app.use(util.getContextPath('webserver') + "/api/private/dservice/", ensureLoggedInOpen, dserviceRoutes);
 app.use(util.getContextPath('webserver') + "/api/dservice/", loadUserInfo, dserviceRoutes);
+app.use(util.getContextPath('webserver') + "/api/system/", loadUserInfo, system);
 app.post(util.getContextPath('webserver') + "/api/test/", loadUserInfo, (req, res, next) => {
     console.log("test");
     next();

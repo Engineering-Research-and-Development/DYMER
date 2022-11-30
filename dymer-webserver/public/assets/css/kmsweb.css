@@ -1166,3 +1166,7 @@ margin: 4px 0;*/
     background: none;
     border: none;
 }
+
+.card .card-header {
+    padding: 15px;
+}

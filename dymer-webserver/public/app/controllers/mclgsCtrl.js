@@ -62,7 +62,10 @@ angular.module('mclgsCtrl', [])
                 msg: "Service is up"
             }
         };
-
+        $scope.configlog = {};
+        $http.get(baseContextPath + '/api/system/logtypes', {}).then(function(retE) {
+            $scope.configlog.consoleactive = retE.data.data.consoleactive;
+        });
         $http.get(baseContextPath + "/checkservice").then(function(rt) {
             $scope.checkservice.webserver.logs = rt.data.data;
         }).catch(function(response) {
@@ -230,6 +233,25 @@ angular.module('mclgsCtrl', [])
         };
 
 
+        $scope.saveConfigLog = function(opnconf) {
+            var dapaPost = opnconf;
+            $http({
 
+                method: 'POST',
+                url: baseContextPath + '/api/system/setlogConfig',
+                data: { data: dapaPost }
+
+            }).then(function successCallback(response) {
+                    if (response.data.success) {
+                        useGritterTool("<b><i class='fa fa-map-signs  '></i> Log setting </b>", response.data.message);
+                    } else {
+                        useGritterTool("<b><i class='fa fa-map-signs  '></i> Log setting</b>", response.data.message, "danger");
+                    }
+                },
+                function errorCallback(response) {
+                    console.log("Error.Try Again!", response);
+                    useGritterTool("<b><i class='fa fa-map-signs  '></i> Openness Search Configuration</b>", "we are sorry but an error has occurred", "danger");
+                });
+        }
 
     });
