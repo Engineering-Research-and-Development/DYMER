@@ -2019,6 +2019,7 @@ let getUserCredential2 = async function(my_authdata) {
 //Marco router.post('/_search', async function(req, res) {
 
 router.post('/_search', (req, res) => {
+    // console.log('_search logger', process.env.DYMER_LOGGER);
     var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
     // console.log('TESTSESSION req originalUrl', fullUrl);
     // console.log(' req.headers.dymeruser', req.headers.dymeruser);
@@ -2250,10 +2251,14 @@ router.post('/_search', (req, res) => {
                 params["_source"] = _source;
             if (qoptions != undefined)
                 if (qoptions.fields != undefined) {
-                    if (qoptions.fields.include != undefined)
-                        params["_source_includes"] = qoptions.fields.include;
-                    if (qoptions.fields.exclude != undefined)
-                        params["_source_excludes"] = qoptions.fields.exclude;
+                    if (source == undefined)
+                        params["_source"] = qoptions.fields.include;
+                    /* if (qoptions.fields.include != undefined) {
+                         params["_source_include"] = qoptions.fields.include;
+                     }
+ 
+                     if (qoptions.fields.exclude != undefined)
+                         params["_source_excludes"] = qoptions.fields.exclude;*/
                 }
 
             params["sort"] = sort;
@@ -3101,8 +3106,8 @@ router.post('/:enttype', function(req, res) {
                         var trq = Object.assign({}, req);
                         var bridgeConf = bE.findByIndex(elIndex);
                         // console.log(nameFile + '| /:enttype | create | bridgeConf:', JSON.stringify(bridgeConf));
-                        logger.info(nameFile + '| /:enttype | create | bridgeConf:' + JSON.stringify(bridgeConf));
                         if (bridgeConf != undefined) {
+                            logger.info(nameFile + '| /:enttype | create | bridgeConf:' + JSON.stringify(bridgeConf));
                             if (trq.files != undefined) {
                                 trq.files.forEach(function(element) {
                                     var ark = replaceAll(element.fieldname, '[', '@@');
@@ -3530,7 +3535,7 @@ router.put('/:id', (req, res) => {
                 return res.send(ret);
             });
         } else {
-            console.log("editValues", editValues)
+            // console.log("editValues", editValues)
             let paramsCheck = {};
             paramsCheck["body"] = {
                 "query": {
@@ -3641,10 +3646,10 @@ router.put('/:id', (req, res) => {
                             });
 
                         }
-                        console.log('listRelation_old_filtered_todelete', listRelation_old_filtered_todelete);
-                        console.log('listRelation_ids_todelete', listRelation_ids_todelete);
-                        console.log('listRelation_New_toadd', listRelation_New_toadd);
-                        console.log('listRelation datasetRelation', datasetRelation);
+                        /* console.log('listRelation_old_filtered_todelete', listRelation_old_filtered_todelete);
+                         console.log('listRelation_ids_todelete', listRelation_ids_todelete);
+                         console.log('listRelation_New_toadd', listRelation_New_toadd);
+                         console.log('listRelation datasetRelation', datasetRelation);*/
 
                         //  listRelation_New_toadd = listRelation_New_ids.filter(a => (!(a.includes(a._source._id1) || listRelation_New_ids.includes(a._source._id2))));
                         //   console.log('listRelation_New_toadd', listRelation_New_toadd);
@@ -3668,7 +3673,8 @@ router.put('/:id', (req, res) => {
                             logger.error(nameFile + '| /:id | put | entityid,uid,create relations :' + id + ' , ' + dymeruser.id + ' , ' + JSON.stringify(datasetRelation) + ' , ' + err);
                         }
                         var new_Temp_Entity = extend({}, oldElement);
-                        new_Temp_Entity._source = editValues;
+                        //console.log('new_Temp_Entity', new_Temp_Entity);
+                        new_Temp_Entity._source = {...editValues };
                         new_Temp_Entity._source.properties = extend(oldElement._source.properties, editValues.properties);
                         if (req.files != undefined)
                             req.files.forEach(function(el) {
@@ -3680,7 +3686,13 @@ router.put('/:id', (req, res) => {
                                 ark.shift();
                                 stringAsKey(new_Temp_Entity._source, ark, el);
                             });
-                        new_Temp_Entity._source.properties.changed = new Date().toISOString();
+                        let dateOld = new Date(oldElement._source.properties.changed);
+                        let dateNew = new Date(editValues.properties.changed);
+                        //console.log("date mod", oldElement._source.properties.changed, editValues.properties.changed);
+                        // console.log("date mod", oldElement._source.properties.changed, editValues.properties.changed);
+                        if (editValues.properties.changed == undefined) {
+                            new_Temp_Entity._source.properties.changed = new Date().toISOString();
+                        }
                         if (!new_Temp_Entity._source.properties.hasOwnProperty('extrainfo'))
                             new_Temp_Entity._source.properties.extrainfo = {};
                         new_Temp_Entity._source.properties.extrainfo.lastupdate = { "uid": dymeruser.id };
@@ -3693,7 +3705,7 @@ router.put('/:id', (req, res) => {
                                 doc: new_Temp_Entity._source
                             }
                         }).then(async function(resp) {
-                            logger.info(nameFile + '| /:id | put | updated dymeruser.id, id,title, entity :' + dymeruser.id + ' , ' + id + ' , ' + new_Temp_Entity._source.title + ' , ' + JSON.stringify(new_Temp_Entity));
+                            logger.info(nameFile + '| /:id | put | updated dymeruser.id, id,title, entity :' + dymeruser.id + ' , ' + id + ' , ' + new_Temp_Entity._source.title);
                             ret.setMessages("Updated!");
                             var objHook = new_Temp_Entity;
                             /* var extraInfo = dymerextrainfo;
@@ -4623,7 +4635,7 @@ router.delete('/:id', (req, res) => {
 //inoltro al microservizio dservice
 function checkServiceHook(EventSource, objSend, extraInfo, req) {
     //insert non ho i dati quindi devo fare un get
-    var url_dservice = util.getServiceUrl("dservice");
+    var url_dservice = util.getServiceUrl("dservice") + '/api/v1/servicehook/checkhook';
     // logger.info(nameFile + '| checkServiceHook | url_dservice,EventSource,objSend: ' + url_dservice + ' , ' + EventSource + ' , ' + JSON.stringify(objSend));
     //logger.info(nameFile + '| checkServiceHook | reqfrom: ' + JSON.stringify(req.headers));
     const headers = {
@@ -4644,7 +4656,7 @@ function checkServiceHook(EventSource, objSend, extraInfo, req) {
             checkUnionRelationV2(resp.hits.hits).then(function(match) {
                 let element = match[0];
                 // console.log('ent match element', JSON.stringify(element));
-                logger.info(nameFile + '| checkServiceHook | ent match element: ' + element._source.title);
+                //logger.info(nameFile + '| checkServiceHook | ent match element: ' + element._source.title);
                 //    match.forEach(element => {
                 if (element.hasOwnProperty("relations")) {
                     if (element.relations.length > 0)
@@ -4666,13 +4678,13 @@ function checkServiceHook(EventSource, objSend, extraInfo, req) {
                     delete element.relations;
                 }
                 // console.log('NEW match', JSON.stringify(element));
-                logger.info(nameFile + '| checkServiceHook | NEW match: ' + JSON.stringify(element));
+                logger.info(nameFile + '| checkServiceHook | rel match, id, title: ' + element._id + element._source.title);
                 // objSend = resp.hits.hits[0];
                 var postObj = {
                     eventSource: EventSource,
                     obj: element
                 };
-                axios.post(url_dservice + '/api/v1/servicehook/checkhook', { data: postObj, "extraInfo": extraInfo }, {
+                axios.post(url_dservice, { data: postObj, "extraInfo": extraInfo }, {
                         headers: headers
                     }).then(response => {
                         //console.log(nameFile + '| checkServiceHook | insert axios.post: ', response);
@@ -4693,7 +4705,7 @@ function checkServiceHook(EventSource, objSend, extraInfo, req) {
             eventSource: EventSource,
             obj: objSend
         };
-        axios.post(url_dservice + '/api/v1/servicehook/checkhook', { data: postObj, "extraInfo": extraInfo }, { headers: headers }).then(response => {
+        axios.post(url_dservice, { data: postObj, "extraInfo": extraInfo }, { headers: headers }).then(response => {
                 //console.log(nameFile + '| checkServiceHook | axios.post: ', response);
                 logger.info(nameFile + '| checkServiceHook | axios.post: ' + response);
             })

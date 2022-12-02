@@ -22,12 +22,14 @@ const { json } = require('body-parser');
 //DymerCronJobRule
 require("../models/permission/DymerCronJobRule");
 const DymRule = mongoose.model("DymerCronJobRule");
+router.use(bodyParser.json({ limit: '50mb', extended: true }))
+router.use(bodyParser.urlencoded({ limit: '100mb', extended: true }))
+    /*router.use(bodyParser.json());
+    router.use(bodyParser.urlencoded({
+        extended: false,
+        limit: '100MB'
+    }));*/
 
-router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({
-    extended: false,
-    limit: '100MB'
-}));
 //   /api/v1/opn/
 /*const mongoURI = util.mongoUrlForm();
 console.log(nameFile + ' | mongoURI :', JSON.stringify(mongoURI));
@@ -459,7 +461,9 @@ var downloadFile = function(url, dest, filename) {
                     filePath.close();
                     resolve();
                 })
-            })
+            }).on('error', err => {
+                console.log('Error: | downloadFile ', err.message);
+            });
         } else {
             http.get(url, (res) => {
                 // Image will be stored at this path
@@ -471,7 +475,9 @@ var downloadFile = function(url, dest, filename) {
                     filePath.close();
                     resolve();
                 })
-            })
+            }).on('error', err => {
+                console.log('Error: | downloadFile ', err.message);
+            });
         }
 
     }).catch(function(err) {
@@ -502,6 +508,7 @@ const removeDir = function(path) {
 
 
 function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action, fileurl) {
+
     var posturl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/" + index;
     if (action == "put")
         posturl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/" + el.instance.id;
@@ -517,11 +524,11 @@ function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action, fileurl) {
             fs.mkdirSync(dir, { recursive: true });
         }
         let fname = fl.filename;
-        //   console.log('fname', fname);
+        // console.log('fname', el.instance.id, fname);
         //    console.log('url', url);
         return downloadFile(url, dir, fname).then(function(result) {
             //logger.error(nameFile + ' test | postMyDataAndFiles | downloadFile : ');
-            console.log('downloadFile', fname, result);
+            console.log('downloadFile', fname);
             // form.append('file', fs.readFileSync(dest), fname);
         }).catch(function(err) {
             console.log("err_a");
@@ -544,11 +551,12 @@ function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action, fileurl) {
             maxContentLength: Infinity,
             maxBodyLength: Infinity,
             data: formdata
+
         };
         // console.log(nameFile + ' | callFwAdapter | invio, ad adapter | conf : ' + JSON.stringify(conf));
         //console.log(nameFile + ' | callFwAdapter | invio, ad adapter | el : ' + action + "-" + posturl + "-" + JSON.stringify(el));
 
-        axios(config)
+        axios(config, { withCredentials: true })
             .then(function(updatedEl) {
                 if (fs.existsSync(dir)) {
                     removeDir(dir);
@@ -1040,6 +1048,7 @@ router.get('/updategid/:entype/:gid/:forceall?', util.checkIsAdmin, (req, res) =
 // '/api/dservice/api/v1/import/fromdymer'
 
 router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
+
     var ret = new jsonResponse();
     var id = req.params.id;
     var myfilter = { "_id": id };
@@ -1131,7 +1140,7 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
             },
             data: formdata_admin
         };
-
+        //console.log(nameFile + ' | prechiamata :' + pt_external);
         axios(config).then(response => {
                 const listaRel = response.data.data;
                 listaRel.forEach(element => { queryInternal.query.query.bool.must[1].ids.values.push(targetprefix + element._id); });
@@ -1257,21 +1266,23 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
                             let userinfo_objJsonStr = JSON.stringify(userinfo);
                             let userinfo_objJsonB64 = Buffer.from(userinfo_objJsonStr).toString("base64");
                             var objToPost = { 'data': singleEntity, 'DYM': userinfo_objJsonB64, 'DYM_EXTRA': extrainfo_objJsonB64 };
+
                             if (elfinded == undefined) {
                                 //add post
                                 if (sameid) {
                                     objToPost.data.instance.id = targetprefix + element._id;
                                 }
                                 // console.log(nameFile + " | get/fromdymer/:id | dateExt > dateInt,aggiungo", JSON.stringify(objToPost));
-                                logger.info(nameFile + ' | Cron Job Import | dateExt > dateInt,aggiungo :' + crnruletitle + "," + JSON.stringify(objToPost));
+                                logger.info(nameFile + ' | Cron Job Import | dateExt > dateInt,aggiungo :' + crnruletitle);
                                 listTopost.push(objToPost);
                             } else {
                                 let dateExt = new Date(element._source.properties.changed);
                                 let dateInt = new Date(elfinded._source.properties.changed);
                                 if (dateExt > dateInt) {
+                                    objToPost.data.instance.id = targetprefix + element._id;
                                     //add put
                                     //console.log(nameFile + " | get/fromdymer/:id | dateExt > dateInt,aggiorno", JSON.stringify(objToPost));
-                                    logger.info(nameFile + ' | Cron Job Import | dateExt > dateInt,aggiorno :' + crnruletitle + "," + JSON.stringify(objToPost));
+                                    logger.info(nameFile + ' | Cron Job Import | dateExt > dateInt,aggiorno :' + element._source.title + "|" + dateExt + ">" + dateInt);
                                     listToput.push(objToPost);
                                 }
                             }
@@ -1279,14 +1290,16 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
                         listTopost.forEach(function(obj, index) {
                             setTimeout(function() {
                                 //console.log(nameFile + " | get/fromdymer/:id | import timeout axios post ", index);
-                                logger.info(nameFile + ' | Cron Job Import  | import timeout axios post' + crnruletitle + "," + index + " " + JSON.stringify(obj.data));
+                                // logger.info(nameFile + ' | Cron Job Import  | import timeout axios post' + crnruletitle + "," + index + " " + JSON.stringify(obj.data));
+                                logger.info(nameFile + ' | Cron Job Import  | import timeout axios post ' + crnruletitle + "," + index);
                                 postMyDataAndFiles(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA, "post", fileurl);
                             }, 2500 * (index + 1));
                         });
                         listToput.forEach(function(obj, index) {
                             setTimeout(function() {
                                 //console.log(nameFile + " | get/fromdymer/:id | import timeout axios put ", index);
-                                logger.info(nameFile + ' | Cron Job Import  | import timeout axios put' + crnruletitle + "," + index + " " + JSON.stringify(obj.data));
+                                //   logger.info(nameFile + ' | Cron Job Import  | import timeout axios put' + crnruletitle + "," + index + " " + JSON.stringify(obj.data));
+                                logger.info(nameFile + ' | Cron Job Import  | import timeout axios put ' + crnruletitle + "," + index);
                                 postMyDataAndFiles(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA, "put", fileurl);
                             }, 3500 * (index + 1));
                         });

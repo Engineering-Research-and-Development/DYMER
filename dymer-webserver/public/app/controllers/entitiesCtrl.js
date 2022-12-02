@@ -9,7 +9,6 @@ angular.module('entitiesControllers', [])
             params: par
         }).then(function(ret) {
             // console.log('Data controller ', ret);
-
             return $scope.listaModels = ret.data.data;
         }).catch(function(response) {
             console.log(response.status);
@@ -54,21 +53,25 @@ angular.module('entitiesControllers', [])
              }, 800);*/
         };
     })
-    .controller('listEntities', function($scope, $http, $rootScope) {
+    .controller('listEntities', function($scope, $http, $location, $rootScope, $timeout) {
         var baseContextPath = $rootScope.globals.contextpath;
-        //  console.log('testing controller listEntities');
+        var paramID = $location.search().id;
+        //console.log('paramID', paramID);
+        if (paramID) {
+            $scope.searchID = paramID;
+            $timeout(function() {
+                var el = document.querySelector('[bdentity="' + paramID + '"]');
+                angular.element(el).triggerHandler('click');
+            }, 1000);
+        }
         $scope.indexEntities = []; // $scope.indexEntities = ["project", "geopoint"];
         $scope.listEntity = [];
-
         $scope.currentPage = 0;
         $scope.pageSize = 10;
-
         //das console.log('get my list');
         //var par = { "query": { "instance._index": { "$ne": "general" } } };
         var par = {
-
             query: {
-
                 "query": {
                     "bool": {
                         "must_not": {
@@ -79,9 +82,7 @@ angular.module('entitiesControllers', [])
                     }
                 }
             }
-
         };
-
         $http.get(baseContextPath + '/api/entities/api/v1/entity/', {
             params: par
         }).then(function(ret) {
@@ -92,8 +93,6 @@ angular.module('entitiesControllers', [])
             ret.data.data.forEach(element => {
                 var n_el = element._index;
                 lst.indexOf(n_el) === -1 ? lst.push(n_el) : "";
-
-
             });
             //   console.log('lst ', lst);
             $scope.indexEntities = lst;
@@ -103,8 +102,6 @@ angular.module('entitiesControllers', [])
         });
         $scope.RenderEntity = function(el, index) {
             //console.log('el.properties', el.properties.owner.uid, el.properties.owner.gid);
-
-
             document.getElementsByName("data[id]")[0].value = el._id;
             document.getElementsByName("data[properties][owner][uid]")[0].value = el.properties.owner.uid;
             document.getElementsByName("data[properties][owner][gid]")[0].value = el.properties.owner.gid;
@@ -115,7 +112,6 @@ angular.module('entitiesControllers', [])
             kmsdataset = undefined;
             var callconf = {
                 query: {
-
                     "query": {
                         "query": {
                             "match": {
@@ -138,7 +134,6 @@ angular.module('entitiesControllers', [])
             drawEntities(callconf);
             $scope.objChanged = el.properties.changed;
             //  $scope.detailObj = el;
-
         };
         $scope.showentitydet = function() {
             $scope.detailObj = actualItem;
@@ -181,7 +176,6 @@ angular.module('entitiesControllers', [])
             actualItem = el;
             deleteEntity(el._id);
         };
-
     }).filter('startFrom', function() {
         return function(input, start) {
             start = +start; //parse to int

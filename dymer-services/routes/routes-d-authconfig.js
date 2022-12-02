@@ -91,15 +91,21 @@ router.get('/userinfo', (req, res) => {
         },
         username: 'guest@dymer.it',
     };
-    //console.log('data.referer', data.referer);
     let myURLref = new URL(data.referer);
-    let regkey = (myURLref.host == "") ? myURLref.origin : myURLref.host;
+    //console.log('myURLref', myURLref);
+    //console.log('data.referer|origin|host', "1" + data.referer, "2" + myURLref.origin, "3" + myURLref.host, data.idsadm);
+
+    let regkey = (myURLref.host == "") ? (myURLref.origin) : myURLref.host;
+    if (regkey == null || regkey == 'null')
+        regkey = data.referer;
     var queryFind = { host: { "$regex": regkey }, active: true };
     let requestjsonpath = data.requestjsonpath;
     //console.log('myURL requestjsonpath', requestjsonpath);
     //console.log('myURL myURLref', myURLref);
     let myRequestBaseHost = myURLref.protocol + "//" + myURLref.host;
     let myRequestBaseUrl = myRequestBaseHost + myURLref.pathname;
+    if (!myRequestBaseUrl.includes('http'))
+        myRequestBaseUrl = data.referer;
     let myRequestJsonUrl = (requestjsonpath != undefined) ? requestjsonpath.protocol + "//" + requestjsonpath.host + requestjsonpath.pathname : undefined;
     /*console.log('myURL protocol', myURLref.protocol);
     console.log('myURL host', myURLref.host);
@@ -109,24 +115,29 @@ router.get('/userinfo', (req, res) => {
     console.log('queryFind ', queryFind);
     console.log('myRequestBaseUrl ', myRequestBaseUrl); 
     console.log('myRequestBaseHost ', myRequestBaseHost);*/
+    //console.log('queryFind', queryFind);
     DymRule.find(queryFind).then((els) => {
-        //console.log('DymRules', els.length);
+        // console.log('DymRules', els);
 
         if (els.length || data.idsadm) {
             let searchObject = els[0];
             if (els.length > 1) {
+                //console.log('myRequestBaseUrl', myRequestBaseUrl);
                 searchObject = els.find((singoleCnf) => singoleCnf.host == myRequestBaseUrl);
                 if (searchObject == undefined) {
-                    if (myRequestJsonUrl)
+                    if (myRequestJsonUrl) {
+                        //console.log('myRequestJsonUrl', myRequestBaseUrl);
                         searchObject = els.find((singoleCnf) => singoleCnf.host == myRequestJsonUrl);
+                    }
                     if (searchObject == undefined) {
+                        //console.log('myRequestBaseHost', myRequestBaseHost);
                         searchObject = els.find((singoleCnf) => (singoleCnf.host == myRequestBaseHost || singoleCnf.host == myRequestBaseHost + "/"));
                     }
                 }
             }
             // var el = els[0];
             let el = searchObject;
-            //console.log('DymRule', el);
+            //console.log('DymRule searchObject', searchObject);
             //console.log('data.idsadm', data.idsadm);
             let authtype = (el == undefined) ? "" : el.authtype;
             if (authtype == "jwtparent" || data.idsadm) {
@@ -182,7 +193,7 @@ router.get('/userinfo', (req, res) => {
                 }
                 ret.setMessages("User detail");
                 ret.setData(objuser);
-                // console.log('objuser', objuser);
+                //console.log('objuser', objuser);
                 return res.send(ret);
             }
             if (authtype == "oidc") {

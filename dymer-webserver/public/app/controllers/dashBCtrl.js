@@ -2,9 +2,17 @@ angular.module('dashCtrl', ['nvd3'])
     .controller('dashController', function($scope, $http, $location, $browser, $rootScope) {
         var baseContextPath = $rootScope.globals.contextpath; //$rootScope.site_prefix; //'/d4ptest/'; //$browser.baseHref();
         $scope.redison = false;
+        $scope.tab = 1;
+        $scope.dtlalestEntCreated = [];
+        $scope.dtlalestEntUpdated = [];
         $http.get(baseContextPath + '/info/json', {}).then(function(retE) {
             $scope.version = retE.data.version;
         });
+        $http.get(baseContextPath + '/api/system/logtypes', {}).then(function(retE) {
+            // console.log('logtypes', retE);
+            $scope.logstype = retE.data.data.msg;
+        });
+
         $http.get(baseContextPath + '/api2/retriveinfoidpadmin', {
             //$http.get(baseContextPath + '/api2/retriveinfoidp', {
         }).then(function(retE) {
@@ -93,7 +101,7 @@ angular.module('dashCtrl', ['nvd3'])
                 $http.get(baseContextPath + '/api/forms/api/v1/form/', {
                     params: par
                 }).then(function(retM) {
-                    console.log('retM', retM);
+                    //console.log('retM', retM);
                     listModels = retM.data.data;
                     $scope.totModels = listModels.length;
                     listEntities.forEach(function(elEnt) {
@@ -284,5 +292,43 @@ angular.module('dashCtrl', ['nvd3'])
 
         };
 
+        let lalestEnt = function(size, sort, idDt, lista) {
 
+            // $scope.indexEntities = []; // $scope.indexEntities = ["project", "geopoint"];
+            // $scope.listEntity = [];
+            //das console.log('get my list');
+            //var par = { "query": { "instance._index": { "$ne": "general" } } };
+
+            let par = {
+                query: {
+                    "query": {
+                        "bool": {
+                            "must_not": {
+                                "match": {
+                                    "_index": "entity_relation"
+                                }
+                            }
+                        }
+                    }
+                },
+                "qoptions": {
+                    "relations": false,
+                    "fields": { "include": ["title", "properties.*"] },
+                    size: size,
+                    sort: sort
+                }
+            };
+            $http.post(baseContextPath + '/api/entities/api/v1/entity/_search', par).then(function(ret) {
+                $scope[lista] = ret.data.data;
+                jQuery(document).ready(function() {
+                    jQuery(idDt).DataTable();
+
+                });
+            }).catch(function(response) {
+                console.log(response.status);
+            });
+        }
+
+        lalestEnt(30, ["properties.created:desc"], '#dtlalestEntCreated', 'dtlalestEntCreated');
+        lalestEnt(30, ["properties.changed:desc"], '#dtlalestEntUpdated', 'dtlalestEntUpdated');
     });
