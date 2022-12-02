@@ -212,14 +212,44 @@
 
 
 <div class="row">
-    <div class="col-md-12">
-        <div class="card ">
-            <div class="card-header ">
-                <h5 class="card-title text-warning">Models<span class="card-category" style="font-size: small;"> vs
-                        indices</span></h5>
 
-            </div>
-            <div class="card-body   ">
+    <div class="col-md-12">
+        <ul class="nav nav-tabs nav-justified navtab-noborder">
+            <li class="nav-item">
+                <a class="nav-link  " ng-class="{active:tab===1}" aria-current="page" ng-click="tab = tab==1 ? a : 1">
+                    <h7 class="card-title text-warning"><i class="nc-icon nc-tile-56 text-warning"></i> Models<span class="card-category" style="font-size: small;"> vs
+                            indices</span></h7>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link  " ng-class="{active:tab===2}" aria-current="page" ng-click="tab = tab==2 ? a : 2">
+                    <h7 class="card-title text-success"><i class="nc-icon nc-layout-11 text-success"></i> Templates
+                        <span class="card-category" style="font-size: small;">
+                            vs
+                            indices</span>
+                    </h7>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link  " ng-class="{active:tab===3}" aria-current="page" ng-click="tab = tab==3 ? a : 3">
+                    <h7 class="card-title text-primary"><i class="nc-icon nc-world-2 text-info"></i> Latest Entities
+                        <span class="card-category" style="font-size: small;">
+                            created</span>
+                    </h7>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link  " ng-class="{active:tab===4}" aria-current="page" ng-click="tab = tab==4 ? a : 4">
+                    <h7 class="card-title text-primary"><i class="nc-icon nc-world-2 text-info"></i> Latest Entities
+                        <span class="card-category" style="font-size: small;">
+                            updated</span>
+                    </h7>
+                </a>
+            </li>
+        </ul>
+        <div class="card " style="border-top-left-radius: 0px;border-top-right-radius: 0px;">
+
+            <div class="card-body   " ng-show="tab === 1">
                 <div class=" ">
                     <table class="table table-hover table-sm " id="dtModelsIndex">
                         <thead class=" text-primary">
@@ -276,39 +306,29 @@
 
 
             </div>
-
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-12">
-        <div class="card ">
-            <div class="card-header ">
-                <h5 class="card-title text-success">Templates <span class="card-category" style="font-size: small;"> vs
-                        indices</span></h5>
-
-            </div>
-            <div class="card-body   ">
+            <div class="card-body   " ng-show="tab === 2">
                 <div class=" ">
                     <table class="table  table-hover table-sm " id="dtTemplateIndex">
                         <thead class=" text-primary">
-                            <td>#</td>
-                            <th>
-                                Index
-                            </th>
-                            <th class=" text-center">
-                                Full Content
-                            </th>
-                            <th class=" text-center">
-                                Preview List
-                            </th>
-                            <th class=" text-center">
-                                General Preview
-                            </th>
-                            <th class=" text-center">
-                                Preview Map
-                            </th>
+                            <tr>
 
+                                <th>#</th>
+                                <th>
+                                    Index
+                                </th>
+                                <th class=" text-center">
+                                    Full Content
+                                </th>
+                                <th class=" text-center">
+                                    Preview List
+                                </th>
+                                <th class=" text-center">
+                                    General Preview
+                                </th>
+                                <th class=" text-center">
+                                    Preview Map
+                                </th>
+                            </tr>
                         </thead>
                         <tbody>
                             <tr ng-repeat="el in ListEntities | orderBy:'index' ">
@@ -359,36 +379,104 @@
                 </div>
 
             </div>
-            <!--<div class="card-footer ">
-              <hr>
-              <div class="stats">
-                <i class="fa fa-history"></i> Updated 3 minutes ago
-              </div>
-            </div>-->
+            <div class="card-body   " ng-show="tab === 3">
+                <div class=" ">
+                    <table class="table  table-hover table-sm " id="dtlalestEntCreated">
+                        <thead class=" text-primary">
+                            <tr>
+
+                                <th>#</th>
+                                <th>
+                                    Index
+                                </th>
+                                <th class=" text-center">
+                                    Title
+                                </th>
+                                <th class=" text-center">
+                                    User
+                                </th>
+                                <th class=" text-center">
+                                    Date
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="el in dtlalestEntCreated | orderBy:'-properties.created' ">
+                                <td>{{$index+1}}</td>
+                                <td>
+                                    {{ el._index }}
+                                </td>
+                                <td>
+                                    {{ el.title }}<br> <small> ID: {{ el._id }} </small>
+                                </td>
+                                <td>
+                                    {{ el.properties.owner.uid }}
+                                </td>
+                                <td>
+                                    <span ng-bind="el.properties.created | date:'MM/dd/yyyy HH:mm:ss'"></span>
+                                </td>
+                                <td>
+                                    <a href="listentities?id={{ el._id }}" target="_blank"><i
+                                            class="fa fa-eye updateAction" aria-hidden="true"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            <div class="card-body   " ng-show="tab === 4">
+                <div class=" ">
+                    <table class="table  table-hover table-sm " id="dtlalestEntUpdated">
+                        <thead class=" text-primary">
+                            <tr>
+
+                                <th>#</th>
+                                <th>
+                                    Index
+                                </th>
+                                <th class=" text-center">
+                                    Title
+                                </th>
+                                <th class=" text-center">
+                                    User
+                                </th>
+                                <th class=" text-center">
+                                    Date
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="el in dtlalestEntUpdated | orderBy:'-el.properties.changed' ">
+                                <td>{{$index+1}}</td>
+                                <td>
+                                    {{ el._index }}
+                                </td>
+                                <td>
+                                    {{ el.title }}<br> <small> ID: {{ el._id }} </small>
+                                </td>
+                                <td>
+                                    <span ng-if="el.properties.extrainfo !== undefined">{{
+                                        el.properties.extrainfo.lastupdate.uid
+                                        }}</span>
+                                    <span ng-if="el.properties.extrainfo === undefined">{{
+                                        el.properties.owner.uid }}</span>
+                                </td>
+                                <td>
+                                    <span ng-bind="el.properties.changed | date:'MM/dd/yyyy HH:mm:ss'"></span>
+                                </td>
+                                <td>
+                                    <a href="listentities?id={{ el._id }}" target="_blank"><i
+                                            class="fa fa-eye updateAction" aria-hidden="true"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
         </div>
     </div>
 </div>
-
-<!--
-
-<form  id="uploadfrom" ng-controller="formCtrl">
-    <label>Titolo</label>
-    <input class="form-control" type="text" name="title" ng-model="myform.title">
-    <br>
-    <label>Author</label>
-    <input class="form-control" type="text" name="author" ng-model="myform.author">
-    <br>
-    <label>Description</label>
-    <input class="form-control" type="text" name="description" ng-model="myform.description">
-    <br>
-    <input id="inp_file" type="file" file-input="files" multiple="multiple" />
-
-    <br>
-    <label>tre</label>
-    <input class="form-control" type="text" name="lol" ng-model="myform.lol">
-    <br>
-    <br>
-    <br>
-    <div id="success">{{success}}</div>
-    <button class="btn btn-mini btn-info text-right" id='upload' ng-click='upload()' >Inserisci</button>
-</form>  -->

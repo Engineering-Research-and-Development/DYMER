@@ -2251,10 +2251,14 @@ router.post('/_search', (req, res) => {
                 params["_source"] = _source;
             if (qoptions != undefined)
                 if (qoptions.fields != undefined) {
-                    if (qoptions.fields.include != undefined)
-                        params["_source_includes"] = qoptions.fields.include;
-                    if (qoptions.fields.exclude != undefined)
-                        params["_source_excludes"] = qoptions.fields.exclude;
+                    if (source == undefined)
+                        params["_source"] = qoptions.fields.include;
+                    /* if (qoptions.fields.include != undefined) {
+                         params["_source_include"] = qoptions.fields.include;
+                     }
+ 
+                     if (qoptions.fields.exclude != undefined)
+                         params["_source_excludes"] = qoptions.fields.exclude;*/
                 }
 
             params["sort"] = sort;

@@ -33,12 +33,12 @@
         <div class="row" id="app-user-perm">
 
             <div class="col-md-3">
-               
-				<label class="text-info">view</label>
+
+                <label class="text-info">view</label>
                 <input type="text" class="form-control col-12" name="app_user_view" id="app_user_view" ng-model="formData.perms.entities.view" ng-value="">
-               
-				
-				<div ng-show="listModels_.length">
+
+
+                <div ng-show="listModels_.length">
                     <label>Entities available <i class="fa fa-bars burgherAction " aria-hidden="true "
 									ng-click="showlistModels_=! showlistModels_ "></i></label>
                     <div class="row" ng-show="showlistModels_ ">
@@ -182,7 +182,7 @@
 				</table> -->
 
 
-        <table class="table ">
+        <table class="table  table-hover table-sm ">
             <thead class=" text-primary ">
                 <th>
                     ROLE
@@ -204,7 +204,7 @@
                 </th>
             </thead>
             <tbody>
-                <tr ng-repeat="el in listPerm ">
+                <tr ng-repeat="el in listPerm | orderBy:'el.role'">
                     <td>
                         <label class="text-info" data-index=" {{el._id}}"> {{el.role}} </label>
                     </td>
