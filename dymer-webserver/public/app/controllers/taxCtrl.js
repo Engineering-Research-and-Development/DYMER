@@ -1,37 +1,8 @@
-/*angular.module('taxCtrl', [])
-    .controller('taxController', function($scope, $http) {
 
-
-        function Controller(ModalService) {
-
-
-            vm.openModal = openModal;
-            vm.closeModal = closeModal;
-
-            initController();
-
-            function initController() {
-                vm.bodyText = 'This text can be updated in modal 1';
-            }
-
-            function openModal(id) {
-                ModalService.Open(id);
-            }
-
-            function closeModal(id) {
-                ModalService.Close(id);
-            }
-        }
-
-    });*/
 angular.module('taxCtrl', [])
-    .controller('taxController', function($scope, $http, $window, $rootScope) {
+    .controller('taxController', function ($scope, $http, $window, $rootScope) {
         var baseContextPath = $rootScope.globals.contextpath;
-        /*(function() {
-            'use strict';
 
-            angular.module('userApp')
-                .controller('taxController', ['$scope', function($scope, $http, $window) {*/
         var newPageModal;
         var nodeDataVocab;
         $scope.showAddVocab = false;
@@ -41,31 +12,35 @@ angular.module('taxCtrl', [])
         }
         $scope.data = [];
 
-        $scope.actionShowHideAddVocab = function() {
+        $scope.actionShowHideAddVocab = function () {
             $scope.showAddVocab = !$scope.showAddVocab;
         };
-        $scope.insertvocab = function(el) {
+        $scope.insertvocab = function (el) {
             console.log('el', el);
-            var newElement = {
-                id: Date.now(),
-                locales: el.locales,
-                nodes: []
-            };
-            if (nodeDataVocab == undefined)
-                $scope.data.push(newElement);
-            else
-                nodeDataVocab.nodes.push(newElement);
-            $scope.newelvocab = {};
-            newPageModal.modal("hide");
-            nodeDataVocab = undefined;
+            if (el.value != undefined) {
+                var newElement = {
+                    id: Date.now(),
+                    locales: el.locales,
+                    value: el.value,
+                    nodes: []
+                };
+                if (nodeDataVocab == undefined)
+                    $scope.data.push(newElement);
+                else
+                    nodeDataVocab.nodes.push(newElement);
+                $scope.newelvocab = {};
+                newPageModal.modal("hide");
+                nodeDataVocab = undefined;
+            }
         };
 
-        $scope.printdata = function(dt) {
+        $scope.printdata = function (dt) {
             console.log('dt', dt);
             console.log('$scope.data', $scope.data);
         }
-        $scope.openModal = function(id, scope, type) {
-            console.log('ìid, scope, type', id, scope, type);
+
+        $scope.openModal = function (id, scope, type) {
+            console.log('id, scope, type', id, scope, type);
             if (scope != undefined)
                 nodeDataVocab = scope.$modelValue;
 
@@ -73,31 +48,44 @@ angular.module('taxCtrl', [])
             newPageModal = $('#' + id);
             if (type == 'update') {
 
-                $scope.editvocab = {};
-                $scope.editvocab.id = nodeDataVocab.id;
-                $scope.editvocab.locales = nodeDataVocab.locales;
+                $scope.editvocab = JSON.parse(JSON.stringify(nodeDataVocab))
+
+                $scope.acceptUpdatedValues = function () {
+                    
+                    if ($scope.editvocab.value) {
+                        nodeDataVocab.id = $scope.editvocab.id
+                        nodeDataVocab.value = $scope.editvocab.value
+                        nodeDataVocab.locales = $scope.editvocab.locales
+                        newPageModal.modal("hide")
+                    }               
+                };
 
             }
-
+            if (type == 'delete') {
+                $scope.deleteItem = scope; //deleteItem used in html
+            }
             newPageModal.modal("show");
-
-
-
         };
-        $scope.remove = function(scope) {
+
+        $scope.remove = function (scope) {
             scope.remove();
+            newPageModal.modal("hide")
         };
 
-        $scope.toggle = function(scope) {
+        $scope.cancel = function () {
+                newPageModal.modal("hide")
+        };
+        
+        $scope.toggle = function (scope) {
             scope.toggle();
         };
 
-        $scope.moveLastToTheBeginning = function() {
+        $scope.moveLastToTheBeginning = function () {
             var a = $scope.data.pop();
             $scope.data.splice(0, 0, a);
         };
 
-        $scope.newSubItem = function(scope) {
+        $scope.newSubItem = function (scope) {
             var nodeData = scope.$modelValue;
             nodeData.nodes.push({
                 id: nodeData.id * 10 + nodeData.nodes.length,
@@ -106,327 +94,102 @@ angular.module('taxCtrl', [])
             });
         };
 
-        $scope.collapseAll = function() {
+        $scope.collapseAll = function () {
             $scope.$broadcast('angular-ui-tree:collapse-all');
         };
 
-        $scope.expandAll = function() {
+        $scope.expandAll = function () {
             $scope.$broadcast('angular-ui-tree:expand-all');
         };
 
-        $scope.saveUpdateVocab = function() {
-            //    var strnotify = '<strong>Vocabulary:</strong> ';
-            //      $.notify(strnotify, { type: 'warning', clickToHide: true });
+        $scope.saveUpdateVocab = function (selectedVocabulary) {
+            let vocabularyID = $scope.vocabularies[selectedVocabulary]._id
+            var serviceurl = '/api/dservice/api/v1/taxonomy';
+
+            $http({
+                url: serviceurl,
+                method: "PUT",
+                data: {
+                    id: vocabularyID,
+                    data: $scope.data
+                }
+            }).then(function (ret) {
+                $scope.vocabularies[selectedVocabulary] = ret
+            }).catch((err) => {
+                console.log(err)
+            })
+
             useGritterTool("Vocabulary", "updated with success")
         };
-        $scope.createVocabulary = function(frm) {
-            console.log('frm', frm);
 
+        $scope.deleteVocab = function (selectedVocabulary) {
 
+            let vocabularyID = $scope.vocabularies[selectedVocabulary]._id
+            var serviceurl = '/api/dservice/api/v1/taxonomy/' + vocabularyID;
 
+            $http({
+                url: serviceurl,
+                method: "DELETE"
+            }).then(function (ret) {
+                $scope.vocabularies.splice(selectedVocabulary, 1)
+                $scope.selectVocab(0, $scope.vocabularies[0])
 
+            }).catch((err) => {
+                console.log(err)
+            })
+
+            newPageModal.modal("hide");
+            useGritterTool("Vocabulary", "deleted with success")
         };
+
+
+        $scope.createVocabulary = function (frm) {
+
+            // rendering name and description form
+            console.log('frm', frm);
+            var serviceUrl = '/api/dservice/api/v1/taxonomy';
+
+            $http({
+                url: serviceUrl,
+                method: "POST",
+                data: frm
+            }).then(function (ret) {
+                $scope.vocabularies.push(ret.data.data)
+                console.log(ret.data.data)
+            }).catch((err) => {
+                console.log(err)
+            });
+        };
+
         $scope.selectedVocab = -1;
-        $scope.selectVocab = function(index, obj) {
+        $scope.selectVocab = function (index, obj) {
             $scope.selectedVocab = index;
             $scope.data = obj.nodes;
             console.log('index, obj', index, obj);
         };
 
-        $scope.loadVocabularies = function() {
-            //carito tutti i vocabolari
+        $scope.loadVocabularies = function () {
+            //retrieve all vocabularies
 
+            var serviceurl = '/api/dservice/api/v1/taxonomy';
+            var par = { "query": { "instance._index": { "$eq": "general" } } };
 
-            /*
-                        let listpages = [];
-                        var serviceurl = '/api/dservice/api/v1/taxonomy';
-                        var par = { "query": { "instance._index": { "$eq": "general" } } };
-                        //  par = {};
-                        $http({
-                            url: serviceurl,
-                            method: "GET",
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                            params: par,
-                        }).then(function(ret) {
-                            //$http.get(serviceurl, this.entData).then(function(ret) {
-                            //	   $http.get(serviceurl, this.entData).then(function(ret) {
-                            console.log('Data controller lists', ret);
+            $http({
+                url: serviceurl,
+                method: "GET",
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                params: par,
+            }).then(function (ret) {
+                $scope.vocabularies = ret.data.data
+                console.log('Data controller lists', ret.data.data);
 
-                        });
-            */
+            }).catch((err) => {
+                console.log(err)
+            }
+            );
 
-
-
-
-
-
-            $scope.vocabularies = [{
-                "_id": 1,
-                title: "primo",
-                nodes: [{
-                    'id': 1,
-                    locales: {
-                        en: { value: "1 EN" },
-                        fr: { value: "1 fr" },
-                        it: { value: "1 it" }
-                    },
-                    'nodes': [{
-                            'id': 11,
-                            locales: {
-                                en: { value: "node1.1 EN" },
-                                fr: { value: "node1.1 fr" },
-                                it: { value: "node1.1 it" }
-                            },
-                            'nodes': [{
-                                'id': 111,
-
-                                locales: {
-                                    en: { value: "111 EN" },
-                                    fr: { value: "111 fr" },
-                                    it: { value: "111 it" }
-                                },
-                                'nodes': []
-                            }]
-                        },
-                        {
-                            'id': 12,
-
-                            locales: {
-                                en: { value: "12 EN" },
-                                fr: { value: "12 fr" },
-                                it: { value: "12 it" }
-                            },
-                            'nodes': []
-                        }
-                    ]
-                }, {
-                    'id': 2,
-
-                    locales: {
-                        en: { value: "2 EN" },
-                        fr: { value: "2 fr" },
-                        it: { value: "2 it" }
-                    },
-                    'nodrop': true, // An arbitrary property to check in custom template for nodrop-enabled
-                    'nodes': [{
-                            'id': 21,
-
-                            locales: {
-                                en: { value: "21 EN" },
-                                fr: { value: "21 fr" },
-                                it: { value: "21 it" }
-                            },
-                            'nodes': []
-                        },
-                        {
-                            'id': 22,
-
-                            locales: {
-                                en: { value: "22 EN" },
-                                fr: { value: "22 fr" },
-                                it: { value: "22 it" }
-                            },
-                            'nodes': []
-                        }
-                    ]
-                }, {
-                    'id': 3,
-
-                    locales: {
-                        en: { value: "3 EN" },
-                        fr: { value: "3 fr" },
-                        it: { value: "3 it" }
-                    },
-                    'nodes': [{
-                        'id': 31,
-
-                        locales: {
-                            en: { value: "31 EN" },
-                            fr: { value: "31 fr" },
-                            it: { value: "31 it" }
-                        },
-                        'nodes': []
-                    }]
-                }]
-            }, {
-                "_id": 2,
-                title: "secondo",
-                nodes: [{
-                    'id': 51,
-                    locales: {
-                        en: { value: "51 EN" },
-                        fr: { value: "51 fr" },
-                        it: { value: "51 it" }
-                    },
-                    'nodes': [{
-                            'id': 511,
-                            locales: {
-                                en: { value: "node51.1 EN" },
-                                fr: { value: "node51.1 fr" },
-                                it: { value: "node51.1 it" }
-                            },
-                            'nodes': [{
-                                'id': 5111,
-
-                                locales: {
-                                    en: { value: "5111 EN" },
-                                    fr: { value: "5111 fr" },
-                                    it: { value: "5111 it" }
-                                },
-                                'nodes': []
-                            }]
-                        },
-                        {
-                            'id': 512,
-
-                            locales: {
-                                en: { value: "512 EN" },
-                                fr: { value: "512 fr" },
-                                it: { value: "512 it" }
-                            },
-                            'nodes': []
-                        }
-                    ]
-                }, {
-                    'id': 52,
-
-                    locales: {
-                        en: { value: "52 EN" },
-                        fr: { value: "52 fr" },
-                        it: { value: "52 it" }
-                    },
-                    'nodrop': true, // An arbitrary property to check in custom template for nodrop-enabled
-                    'nodes': [{
-                            'id': 521,
-
-                            locales: {
-                                en: { value: "521 EN" },
-                                fr: { value: "521 fr" },
-                                it: { value: "521 it" }
-                            },
-                            'nodes': []
-                        },
-                        {
-                            'id': 522,
-
-                            locales: {
-                                en: { value: "522 EN" },
-                                fr: { value: "522 fr" },
-                                it: { value: "522 it" }
-                            },
-                            'nodes': []
-                        }
-                    ]
-                }, {
-                    'id': 53,
-
-                    locales: {
-                        en: { value: "53 EN" },
-                        fr: { value: "53 fr" },
-                        it: { value: "53 it" }
-                    },
-                    'nodes': [{
-                        'id': 531,
-
-                        locales: {
-                            en: { value: "531 EN" },
-                            fr: { value: "531 fr" },
-                            it: { value: "531 it" }
-                        },
-                        'nodes': []
-                    }]
-                }]
-            }]
         };
 
-        $scope.$on('$viewContentLoaded', function() { $scope.loadVocabularies(); });
+        $scope.$on('$viewContentLoaded', function () { $scope.loadVocabularies(); });
 
-        /*   $scope.data = [{
-               'id': 1,
-               locales: {
-                   en: { value: "1 EN" },
-                   fr: { value: "1 fr" },
-                   it: { value: "1 it" }
-               },
-               'nodes': [{
-                       'id': 11,
-                       locales: {
-                           en: { value: "node1.1 EN" },
-                           fr: { value: "node1.1 fr" },
-                           it: { value: "node1.1 it" }
-                       },
-                       'nodes': [{
-                           'id': 111,
-
-                           locales: {
-                               en: { value: "111 EN" },
-                               fr: { value: "111 fr" },
-                               it: { value: "111 it" }
-                           },
-                           'nodes': []
-                       }]
-                   },
-                   {
-                       'id': 12,
-
-                       locales: {
-                           en: { value: "12 EN" },
-                           fr: { value: "12 fr" },
-                           it: { value: "12 it" }
-                       },
-                       'nodes': []
-                   }
-               ]
-           }, {
-               'id': 2,
-
-               locales: {
-                   en: { value: "2 EN" },
-                   fr: { value: "2 fr" },
-                   it: { value: "2 it" }
-               },
-               'nodrop': true, // An arbitrary property to check in custom template for nodrop-enabled
-               'nodes': [{
-                       'id': 21,
-
-                       locales: {
-                           en: { value: "21 EN" },
-                           fr: { value: "21 fr" },
-                           it: { value: "21 it" }
-                       },
-                       'nodes': []
-                   },
-                   {
-                       'id': 22,
-
-                       locales: {
-                           en: { value: "22 EN" },
-                           fr: { value: "22 fr" },
-                           it: { value: "22 it" }
-                       },
-                       'nodes': []
-                   }
-               ]
-           }, {
-               'id': 3,
-
-               locales: {
-                   en: { value: "3 EN" },
-                   fr: { value: "3 fr" },
-                   it: { value: "3 it" }
-               },
-               'nodes': [{
-                   'id': 31,
-
-                   locales: {
-                       en: { value: "31 EN" },
-                       fr: { value: "31 fr" },
-                       it: { value: "31 it" }
-                   },
-                   'nodes': []
-               }]
-           }];*/
     });
-/*  }]);
-
-}());*/

@@ -7,14 +7,18 @@
             'fa-chevron-down': !collapsed
           }"></span></a>
         <!--( <span>ID={{node.id}}</span>)-->
+        <span style="font-size: 12px; font-style: italic;">{{node.value}}</span>
         <div></div>
         <span class="form-group tree-span-lacale-value" ng-repeat="(key, val) in node.locales">
             <img src="../assets/img/flag/{{key}}.png">  {{val.value}}
           </span>
 
+        
 
-        <a class="pull-right btn btn-danger btn-sm" data-nodrag ng-click="remove(this)"><span
-          class="fa fa-times"></span></a>
+        <!-- <a class="pull-right btn btn-danger btn-sm" data-nodrag ng-click="remove(this)"><span
+          class="fa fa-times"></span></a> -->
+          <a class="pull-right btn btn-danger btn-sm" data-nodrag ng-click="openModal('deleteSubItem',this,'delete')" style="margin-right: 8px;"><span
+            class="fa fa-times"></span></a>
         <!--<a class="pull-right btn btn-primary btn-sm" data-nodrag ng-click="newSubItem(this)" style="margin-right: 8px;"><span
           class="fa fa-plus"></span></a>-->
         <a class="pull-right btn btn-primary btn-sm" data-nodrag ng-click="openModal('insertSubItem',this,'insert')" style="margin-right: 8px;"><span
@@ -22,10 +26,12 @@
         <a class="pull-right btn btn-warning btn-sm" data-nodrag ng-click="openModal('updateSubItem',this,'update')"><span
             class="fa fa-pencil"></span></a>
     </div>
+
     <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
         <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'">
         </li>
     </ol>
+
 </script>
 <div class="col-md-12">
     <div class="card ">
@@ -68,8 +74,10 @@
                 <div class="col-12">
                     <h5 class="card-title">Vocabularies</h5>
                     <ul class="nav nav-pills nav-fill">
-                        <li class="nav-item" ng-repeat="singlvoc in vocabularies" ng-click="selectVocab($index,singlvoc)">
-                            <a class="nav-link  " ng-class="{active: $index == selectedVocab}" href="#"><i class="fa fa-book" aria-hidden="true"></i> {{singlvoc.title}}</a>
+                        <li class="nav-item" ng-repeat="singlvoc in vocabularies"
+                            ng-click="selectVocab($index,singlvoc)">
+                            <a class="nav-link  " ng-class="{active: $index == selectedVocab}" href="#"><i
+                                    class="fa fa-book" aria-hidden="true"></i> {{singlvoc.title}}</a>
                         </li>
                     </ul>
 
@@ -84,98 +92,195 @@
 
                     <span class="  btn btn-info btn-sm" ng-click="openModal('insertSubItem')"><span
                             class="fa fa-plus"></span></span>
-                </div>
+                    <div class="col-12 text-left">
 
-                <div class="col-12">
+                        <div ui-tree id="tree-root">
+                            <ol ui-tree-nodes ng-model="data">
+                                <li ng-repeat="node in data" ui-tree-node ng-include="'nodes_renderer.html'"></li>
+                            </ol>
+                        </div>
+                    </div>
 
-                    <div ui-tree id="tree-root">
-                        <ol ui-tree-nodes ng-model="data">
-                            <li ng-repeat="node in data" ui-tree-node ng-include="'nodes_renderer.html'"></li>
-                        </ol>
+                    <div class="col-12 text-right">
+                        <input class="btn btn-info " ng-click="saveUpdateVocab(selectedVocab)" value="Save vocabulary">
+                        <!-- <input class="btn btn-danger " ng-click="deleteVocab(selectedVocab)" value="Delete vocabulary"> -->
+                        <input class="btn btn-danger " ng-click="openModal('deleteVocabulary')"
+                            value="Delete vocabulary">
+
                     </div>
                 </div>
-
-                <div class="col-12 text-right">
-                    <input class="btn btn-info " ng-click="saveUpdateVocab()" value="Save vocabulary">
-
-                </div>
-
             </div>
 
 
+
+            <div class="card-footer ">
+                <hr />
+                <div class="stats"><i class="fa fa-history"></i> Updated 12/05/2019</div>
+            </div>
         </div>
+    </div>
+    <div class="modal fade" id="insertSubItem" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <form>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <p class="modal-title text-primary"> Insert New Element</p>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true"><small><i class="la la-close"></i></small></span>
+                        </button>
+                    </div>
+                    <input type="hidden" ng-model="newelvocab.id">
+                    <div class="modal-body text">
+                        <!---->
 
+                        <div class="row">
+                            <div class="col-2 d-flex flex-wrap align-items-center">
+                                <div class="text-primary">Node Key</div><img style="margin: 0 auto;">
+                            </div>
+                            <div class="col-6" style="padding: 5px 0;"><input required type=" text "
+                                    placeholder="Insert node key here" class="form-control"
+                                    ng-model="newelvocab.value" /></div>
+                        </div>
+                        <hr>
+                        <!---->
 
+                        <div class="row">
+                            <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;"
+                                    src="../assets/img/flag/en.png"></div>
+                            <div class="col-6" style="padding: 5px 0;"><input required type=" text "
+                                    class="form-control" style="margin: 0 auto;"
+                                    ng-model="newelvocab.locales.en.value" /></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;"
+                                    src="../assets/img/flag/it.png" class="align-middle"></div>
+                            <div class="col-6" style="padding: 5px 0;"><input required type=" text "
+                                    class="form-control" ng-model="newelvocab.locales.it.value" /></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;"
+                                    src="../assets/img/flag/fr.png"></div>
+                            <div class="col-6" style="padding: 5px 0;"><input required type=" text "
+                                    class="form-control" ng-model="newelvocab.locales.fr.value" /></div>
+                        </div>
 
-        <div class="card-footer ">
-            <hr />
-            <div class="stats"><i class="fa fa-history"></i> Updated 12/05/2019</div>
+                        <div class="modal-footer ">
+                            <button class="btn btn-primary btn-sm " type="submit "
+                                ng-click="insertvocab(newelvocab) "><i class="la la-check "></i> Save</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
         </div>
     </div>
 </div>
-<div class="modal fade" id="insertSubItem" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <form>
-            <div class="modal-content">
-                <div class="modal-header">
-                    <p class="modal-title text-primary"> Insert New Element</p>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true"><small><i class="la la-close"></i></small></span>
-                  </button>
-                </div>
-                <input type="hidden" ng-model="newelvocab.id">
-                <div class="modal-body text">
-                    <div class="row">
-                        <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/en.png"></div>
-                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" style="margin: 0 auto;" ng-model="newelvocab.locales.en.value" /></div>
-                    </div>
-                    <div class="row">
-                        <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/it.png" class="align-middle"></div>
-                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" ng-model="newelvocab.locales.it.value" /></div>
-                    </div>
-                    <div class="row">
-                        <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/fr.png"></div>
-                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" ng-model="newelvocab.locales.fr.value" /></div>
-                    </div>
 
-                    <div class="modal-footer ">
-                        <button class="btn btn-primary btn-sm " type="submit " ng-click="insertvocab(newelvocab) "><i class="la la-check "></i> Save</button>
-                    </div>
-                </div>
-
-        </form>
-
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="updateSubItem" tabindex="-1" role="dialog">
+<div class="modal fade" id="updateSubItem" tabindex="-1" role="dialog" data-backdrop="static">
     <div class="modal-dialog" role="document">
         <form>
             <div class="modal-content">
                 <div class="modal-header">
                     <p class="modal-title text-primary">Update Element</p>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true"><small><i class="la la-close"></i></small></span>
-                  </button>
+                        <span aria-hidden="true"><small><i class="la la-close"></i></small></span>
+                    </button>
                 </div>
                 <input type="hidden" ng-model="editvocab.id">
                 <div class="modal-body text">
-                    <div class="row">
-                        <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/en.png"></div>
-                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" style="margin: 0 auto;" ng-model="editvocab.locales.en.value" /></div>
-                    </div>
-                    <div class="row">
-                        <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/it.png"></div>
-                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" style="margin: 0 auto;" ng-model="editvocab.locales.it.value" /></div>
-                    </div>
-                    <div class="row">
-                        <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/fr.png"></div>
-                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" style="margin: 0 auto;" ng-model="editvocab.locales.fr.value" /></div>
-                    </div>
 
+                    <!---->
+                    <div class="row">
+                        <div class="col-2 d-flex flex-wrap align-items-center">
+                            <div class="text-primary">Node Key</div><img style="margin: 0 auto;">
+                        </div>
+                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control"
+                                style="margin: 0 auto;" ng-model="editvocab.value" /></div>
+                    </div>
+                    <hr>
+
+                    <!---->
+
+                    <div class="row">
+                        <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;"
+                                src="../assets/img/flag/en.png"></div>
+                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control"
+                                style="margin: 0 auto;" ng-model="editvocab.locales.en.value" /></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;"
+                                src="../assets/img/flag/it.png"></div>
+                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control"
+                                style="margin: 0 auto;" ng-model="editvocab.locales.it.value" /></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;"
+                                src="../assets/img/flag/fr.png"></div>
+                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control"
+                                style="margin: 0 auto;" ng-model="editvocab.locales.fr.value" /></div>
+                    </div>
+                    <!-------------------------------------->
+                    <div class="modal-footer ">
+                        
+                        <button class="btn btn-primary btn-sm " type="submit " ng-click="acceptUpdatedValues()"><i class="la la-check "></i>
+                            OK </button>
+                            <button class="btn btn-primary btn-sm " type="submit " ng-click="cancel()"><i class="la la-check "></i>
+                                CANCEL </button>
+                    </div>
+                    <!-------------------------------------->
                 </div>
-
+            </div>
         </form>
 
-        </div>
     </div>
+</div>
+
+<!-- NEW DELETE WHOLE VOCAB-->
+
+<div class="modal fade" id="deleteVocabulary" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="modal-title text-primary">Delete Vocabulary</p>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><small><i class="la la-close"></i></small></span>
+                </button>
+            </div>
+            <div class="modal-body text">
+                Are you sure you want to delete this Vocabulary?
+            </div>
+            <div class="modal-footer ">
+                <button class="btn btn-primary btn-sm " type="submit " ng-click="deleteVocab(selectedVocab) "><i
+                        class="la la-check "></i> Delete </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- NEW DELETE SUBITEM-->
+
+<div class="modal fade" id="deleteSubItem" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="modal-title text-primary">Delete Element</p>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><small><i class="la la-close"></i></small></span>
+                </button>
+            </div>
+            <div class="modal-body text">
+                Are you sure you want to delete this element?
+            </div>
+            <div class="modal-footer ">
+                <button class="btn btn-primary btn-sm " type="submit " ng-click="remove(deleteItem)"><i
+                        class="la la-check "></i> Delete </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!---->

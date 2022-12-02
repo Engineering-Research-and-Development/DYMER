@@ -66,7 +66,15 @@ const kmsconfig = {
             delete: {
                 id: "/:id"
             }
+        },
+        {
+            type: "taxonomy",
+            endpoint: serverUrl + "/api/dservice/api/v1/taxonomy",
+            post: {
+                search: "/_search"
+            }
         }
+
     ]
 };
 
@@ -935,6 +943,97 @@ function populateHookRelation(x, y, z, w, k, a, b, arObj2, rel) {
         }
     });
 }
+var listTaxonomyForm = {};
+const hookTaxonomy_Promise = function(item) {
+        return new Promise(function(resolve, reject) {
+            var loadedList = {};
+            listTaxonomyForm = loadedList;
+            $('.senderForm [data-totaxonomy]').each(async function(index) {
+                var taxID = $(this).attr('data-totaxonomy');
+                if (loadedList[taxID] == undefined) {
+
+                    var datapost = {
+                        id: taxID
+                    };
+
+                    await actionPostMultipartForm_Promise("taxonomy.search", undefined, datapost, undefined, populateHookTaxonomy, undefined, false, taxID);
+                }
+            });
+            resolve();
+        });
+    }
+    /***********/
+function populateHookTaxonomy(x, y, z, w, k, a, b, arObj2, tax) {
+    listTaxonomyForm[tax] = arObj2.data;
+    $('.senderForm [data-totaxonomy="' + tax + '"]').each(function(inde) {
+        var esxtraAttr = "";
+        var taxName = $(this).attr('name');
+        var isRequired = $(this).attr('required');
+        var optionsText = $(this).attr('data-optiontext');
+        var label = $(this).attr('searchable-label');
+
+        console.log("LABEL: ", $(this).attr('searchable-label'))
+        if (typeof isRequired !== typeof undefined && isRequired !== false) {
+            esxtraAttr += ' required ';
+            $(this).removeAttr('required');
+        }
+        let sel = "";
+        if ($(this)) {
+
+            if ($(this).hasClass("dymertaxonomy")) {
+                let attrismulti = $(this).attr('multiple');
+                let ismulti = (typeof attrismulti !== 'undefined' && attrismulti !== false) ? "multiple" : '';
+                let livesearch = ($(this).attr('data-live-search') == "true") ? 'data-live-search="true"' : '';
+                let actionsbox = ($(this).attr('data-actions-box') == "true") ? 'data-actions-box="true"' : '';
+                let maxoptions = '';
+                let attrmaxoptions = $(this).attr('data-max-options');
+                if (typeof attrmaxoptions !== 'undefined' && attrmaxoptions !== false) {
+                    maxoptions = ($(this).attr('data-max-options') != "") ? 'data-max-options="' + $(this).attr('data-max-options') + '"' : '';
+                }
+
+                //let selpk = '<select class="form-control span12 col-12 selecttaxonomy" name="data[taxonomy][' + tax + '][' + inde + '][to]" ' + '  searchable-label="' + label + '"  class="selecttaxonomy form-control " searchable-override="data[taxonomydymer][' + tax + ']"    ' + ismulti + " " + actionsbox + " " + livesearch + " " + maxoptions + " " + esxtraAttr + " " + ' data-selected-text-format="count"   ></select>';
+                //let selpk = '<select class="form-control span12 col-12 selecttaxonomy" name="data[taxonomy][' + tax + '][' + inde + '][to]" ' + '  searchable-label="' + label + '"  class="selecttaxonomy form-control " searchable-override="data[taxonomydymer][' + tax + ']"    ' + ismulti + " " + actionsbox + " " + livesearch + " " + maxoptions + " " + esxtraAttr + " " + ' data-selected-text-format="count"   ></select>';
+                //let selpk = '<select class="form-control span12 col-12 selectpicker" name="data[taxonomy][' + tax + '][' + inde + '][to]" ' + '  searchable-label="' + label + '"  class="selectpicker form-control " searchable-override="data[taxonomydymer][' + tax + ']"    ' + ismulti + " " + actionsbox + " " + livesearch + " " + maxoptions + " " + esxtraAttr + " " + ' data-selected-text-format="count"   ></select>';
+                let selpk = '<select class="form-control span12 col-12 selectpicker" name="' + taxName + '[' + inde + ']" ' + 'data-taxonomy="' + tax + '"  searchable-label="' + label + '"  class="selectpicker form-control " searchable-override="' + taxName + '"    ' + ismulti + " " + actionsbox + " " + livesearch + " " + maxoptions + " " + esxtraAttr + " " + ' data-selected-text-format="count"   ></select>';
+                sel = $(selpk).appendTo($(this))
+            } else {
+                //    sel = $('<select class="form-control span12 col-12" searchable-multiple="true" searchable-override="data[taxonomydymer][' + tax + ']" searchable="" searchable-label="' + label + '2" name="data[taxonomy][' + tax + '][' + inde + '][to]" onchange="taxChngd($(this))" ' + esxtraAttr + '>').appendTo($(this));
+                // sel = $('<select class="form-control span12 col-12" searchable-multiple="true" searchable-override="data[taxonomydymer][' + tax + ']" searchable="" searchable-label="' + label + '2" name="data[taxonomy][' + tax + '][' + inde + '][to]" onchange="taxChngd($(this))" ' + esxtraAttr + '>').appendTo($(this));
+                sel = $('<select class="form-control span12 col-12" searchable-multiple="true" searchable-override="' + taxName + '" searchable="" searchable-label="' + label + '" name="' + taxName + '[' + inde + ']" onchange="taxChngd($(this))" ' + esxtraAttr + '>').appendTo($(this));
+            }
+
+        }
+        //   sel.append($("<optoption>").attr('value', "").text(""));
+        sel.append($("<option>").attr('value', "").text(""));
+        if (typeof optionsText !== typeof undefined && optionsText !== false) {
+            var tempArrList = [];
+            $.each(listTaxonomyForm[tax], function(ind, value) {
+                tempArrList.push({ "id": "value._id", "txt": "value[optionsText]" });
+            });
+            var orderdList = sortByKeyAsc(tempArrList, "txt");
+            $.each(orderdList, function(ind, value) {
+                sel.append($("<option>").attr('value', value.id).text(value.txt));
+            });
+        } else {
+            $.each(listTaxonomyForm[tax].nodes, function(ind, value) {
+                console.log("listTaxonomyForm[tax].nodes: ", listTaxonomyForm[tax].nodes)
+
+                //sel.append($("<optgroup>").attr("label", value.value));
+                // sel.append($("<option>").attr('value', value.id).text(value.locales.en.value));
+                sel.append($("<option>").attr('value', value.value).text(value.locales.en.value));
+
+                if (value.nodes.length != 0) {
+                    // sel.append($("<optgroup>"));                  
+                    for (internalValue of value.nodes) {
+                        sel.append($("<option>").attr('value', internalValue.value).text("\u00A0" + "\u00A0" + internalValue.locales.en.value));
+                    }
+                }
+                //sel.append($("<option>").attr('value', value.id).text(value.value));
+                //sel.append($("<option>").attr('value', value.value).text("en"));
+            });
+        }
+    });
+}
 
 function sortByKeyAsc(array, key) {
     return array.sort(function(a, b) {
@@ -1098,6 +1197,7 @@ async function loadHtmlForm(sourceUrl, target, datapost, delaytime, action) {
      }, 800);*/
     dymphases.setSubPhase("create", true, "loadhookrelation");
     await hookReleationForm_Promise();
+    hookTaxonomy_Promise();
     setbaseEntityConfig(target);
     return true;
 }
@@ -2382,6 +2482,8 @@ async function editEntity(id) {
 
                 dymphases.setSubPhase("edit", true, "loadhookrelation");
                 await hookReleationForm_Promise(itemToEdit);
+                dymphases.setSubPhase("edit", true, "loadhooktaxonomy");
+                await hookTaxonomy_Promise(itemToEdit);
                 dymphases.setSubPhase("edit", true, "duplicaterepeatable");
                 await duplicateRepeatable_Promise('#entityEdit', itemToEdit); //.then(function() { console.log("duplicated"); });
                 // setTimeout(function() { 
@@ -4470,39 +4572,84 @@ function dymerSearch(options) {
                 if ($(this).attr("dymer-model-visibility") == "private" && d_uid == "guest@dymer.it") {
                     return;
                 }
-                if ($(this).attr("data-torelation") != undefined) {
-                    let rel = $(this).attr('data-torelation');
-                    let esxtraAttr = "";
-                    let datapost = {
-                        instance: { "index": rel },
-                        qoptions: { relations: false }
-                    };
-                    let listToselect = actionPostMultipartForm("entity.search", undefined, datapost, undefined, undefined, undefined, false, undefined);
-                    let inde = 0;
-                    let ismulti = ($(this).attr('searchable-multiple') == "true") ? "multiple" : 'data-max-options="1"';
-                    let isactionsbox = "";
-                    if ($(this).attr('searchable-multiple') == "true") {
-                        isactionsbox = 'data-actions-box="true"';
+                if ($(this).attr("data-torelation") != undefined || $(this).attr("data-totaxonomy") != undefined) {
+                    if ($(this).attr("data-torelation") != undefined) {
+                        let rel = $(this).attr('data-torelation');
+                        let esxtraAttr = "";
+                        let datapost = {
+                            instance: { "index": rel },
+                            qoptions: { relations: false }
+                        };
+                        let listToselect = actionPostMultipartForm("entity.search", undefined, datapost, undefined, undefined, undefined, false, undefined);
+                        let inde = 0;
+                        let ismulti = ($(this).attr('searchable-multiple') == "true") ? "multiple" : 'data-max-options="1"';
+                        let isactionsbox = "";
+                        if ($(this).attr('searchable-multiple') == "true") {
+                            isactionsbox = 'data-actions-box="true"';
+                        }
+
+                        if (listToselect.data.length == 0) {
+                            return;
+                        }
+                        //  console.log('ismulti  rel', $(this).html(), $(this).attr('searchable-multiple'), ismulti);
+                        // let $sel = $('<select class="form-control span12 col-12"  searchable-multiple="' + ismulti + '"  searchable-override="data[relationdymer][' + rel + ']" searchable="" searchable-label="' + $(this).attr('searchable-label') + '" name="data[relation][' + rel + '][' + inde + '][to]"  ' + esxtraAttr + '>').appendTo($(this));
+                        let $sel = $('<select name="data[relationdymer][' + rel + ']" searchable-label="' + $(this).attr('searchable-label') + '" class="selectpicker form-control"  data-live-search="true"  ' + ismulti + ' ' + isactionsbox + ' data-selected-text-format="count"  ></select>').appendTo($(this));
+                        /*if (usePlaceholder)
+                            $sel.append($('<option value="" disabled selected>').attr('value', "").text($(this).attr('searchable-label')));*/
+                        $.each(listToselect.data, function(ind, value) {
+                            // $sel.append($("<option>").attr('value', value._id).text(value.title)); 
+                            // $sel.append($("<option>").attr('data-tokens', value._id).attr('value', value.title).text(value.title));
+                            $sel.append($("<option>").attr('value', value._id).text(value.title));
+                        });
+                        //$sel.attr("filter-id", newId);
+
+                        $sel.attr("searchable-text", $(this).attr("searchable-text"));
+
+                        singleEl = $sel;
+                    } else if ($(this).attr("data-totaxonomy") != undefined) {
+                        let taxID = $(this).attr("data-totaxonomy")
+                        let taxName = $(this).attr("name")
+                        let datapost = {
+                            id: taxID
+                        };
+
+                        let listToselect = actionPostMultipartForm("taxonomy.search", undefined, datapost, undefined, undefined, undefined, false, taxID);
+                        // let listToselect = await actionPostMultipartForm_Promise("taxonomy.search", undefined, datapost, undefined, undefined, undefined, false, taxID);
+                        console.log("listToselect", listToselect)
+                        let inde = 0;
+                        let ismulti = ($(this).attr('searchable-multiple') == "true") ? "multiple" : 'data-max-options="1"';
+                        let isactionsbox = "";
+                        if ($(this).attr('searchable-multiple') == "true") {
+                            isactionsbox = 'data-actions-box="true"';
+                        }
+
+                        if (listToselect.data.length == 0) {
+                            return;
+                        }
+                        //  let $sel = $('<select name="data[taxonomydymer][' + taxID + ']" searchable-label="' + $(this).attr('searchable-label') + '" class="selectpicker form-control"  data-live-search="true"  ' + ismulti + ' ' + isactionsbox + ' data-selected-text-format="count"  ></select>').appendTo($(this));
+                        let $sel = $('<select name="' + taxName + '[' + inde + ']" searchable-label="' + $(this).attr('searchable-label') + '"  searchable-override="' + taxName + '" class="selectpicker form-control"  data-live-search="true"  ' + ismulti + ' ' + isactionsbox + ' data-selected-text-format="count"  ></select>').appendTo($(this));
+
+
+                        $sel.append($("<option>").attr('value', "").text(""));
+                        $.each(listToselect.data.nodes, function(ind, value) {
+
+                            $sel.append($("<option>").attr('value', value.value).text(value.locales.en.value));
+
+                            if (value.nodes.length != 0) {
+
+                                for (internalValue of value.nodes) {
+                                    $sel.append($("<option>").attr('value', internalValue.value).text("\u00A0" + "\u00A0" + internalValue.locales.en.value));
+                                }
+                            }
+
+                        });
+
+                        $sel.attr("searchable-text", $(this).attr("searchable-text"));
+                        singleEl = $sel;
+
+
                     }
 
-                    if (listToselect.data.length == 0) {
-                        return;
-                    }
-                    //  console.log('ismulti  rel', $(this).html(), $(this).attr('searchable-multiple'), ismulti);
-                    // let $sel = $('<select class="form-control span12 col-12"  searchable-multiple="' + ismulti + '"  searchable-override="data[relationdymer][' + rel + ']" searchable="" searchable-label="' + $(this).attr('searchable-label') + '" name="data[relation][' + rel + '][' + inde + '][to]"  ' + esxtraAttr + '>').appendTo($(this));
-                    let $sel = $('<select name="data[relationdymer][' + rel + ']" searchable-label="' + $(this).attr('searchable-label') + '" class="selectpicker form-control"  data-live-search="true"  ' + ismulti + ' ' + isactionsbox + ' data-selected-text-format="count"  ></select>').appendTo($(this));
-                    /*if (usePlaceholder)
-                        $sel.append($('<option value="" disabled selected>').attr('value', "").text($(this).attr('searchable-label')));*/
-                    $.each(listToselect.data, function(ind, value) {
-                        // $sel.append($("<option>").attr('value', value._id).text(value.title)); 
-                        // $sel.append($("<option>").attr('data-tokens', value._id).attr('value', value.title).text(value.title));
-                        $sel.append($("<option>").attr('value', value._id).text(value.title));
-                    });
-                    //$sel.attr("filter-id", newId);
-
-                    $sel.attr("searchable-text", $(this).attr("searchable-text"));
-
-                    singleEl = $sel;
                 } else {
                     if ($(this).is("select")) {
                         if (!$(this).hasClass("selectpicker")) {

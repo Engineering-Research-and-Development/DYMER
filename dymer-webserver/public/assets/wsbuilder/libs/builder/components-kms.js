@@ -1,4 +1,4 @@
-Vvveb.ComponentsGroup["Dymer Model"] = ["dymer/kmsgeopoint", "dymer/kmsrelation", "dymer/dymrelation", "html/mytextinput", "html/dmodelentitytags"];
+Vvveb.ComponentsGroup["Dymer Model"] = ["dymer/kmsgeopoint", "dymer/kmsrelation", "dymer/dymrelation", "html/mytextinput", "html/dmodelentitytags", "dymer/kmstaxonomy"];
 Vvveb.ComponentsGroup["Dymer Template"] = ["dymer/entitystatus", "html/dentitylink", "dymer/dpagination", "html/dimage", "html/dtemplateentitytags"];
 Vvveb.Components.add("dymer/entitystatus", {
     name: "Entity Status",
@@ -569,6 +569,199 @@ Vvveb.Components.extend("_base", "html/mytextinput", {
 });
 
 /* fine giaisg */
+Vvveb.Components.add("dymer/kmstaxonomy", {
+    name: "Taxonomy",
+    attributes: ["data-component-kmstaxonomy"],
+    image: "icons/dymer/taxonomy.svg",
+    dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/dymer/taxonomy.svg" height="50px">',
+    html: '<div class="form-group">' +
+        '<label for="description" class="kms-title-label">Taxonomy</label>' +
+        '<div>' +
+        '<div data-component-kmstaxonomy class="form-group dymertaxonomy" data-totaxonomy="">' +
+        '<span  class="infotaxonomy">Taxonomy</span> <i class="fa fa-code-fork rotandflip infotaxonomy" aria-hidden="true"></i> <span contenteditable="false" class="totaxonomy infotaxonomy">......</span>' +
+        '</div>' +
+        '</div>',
+    listent: false,
+    reapetable: false,
+    actionsbox: false,
+    livesearch: false,
+    maxoptions: "",
+
+    init: function (node) { },
+
+    onChange: function (node, property, value) {
+        console.log(' property, value ', property.key, property, value);
+        if (property.key == "required") {
+            if (value == true) {
+                $(node)[0].attributes.required.value = ""
+            } else {
+                $(node).removeAttr("required")
+            }
+        }
+
+        if (property.key == "listent") {
+            let vocabNames = property.data.options.find(o => o.value == value)
+
+            $(node)
+                .find(".totaxonomy")
+                .html(vocabNames.text);
+        }
+
+        if (property.key == "reapetable") {
+            this[property.key] = value;
+            console.log('$(node)', $(node));
+            if (this.reapetable) {
+                $(node).attr("multiple", "");
+            } else {
+                $(node).removeAttr("multiple");
+            }
+
+        }
+        if (property.key == "actionsbox") {
+            if (value == true) {
+                $(node).attr("data-actions-box", value);
+            } else {
+                $(node).removeAttr("data-actions-box")
+            }
+        }
+        if (property.key == "livesearch") {
+            if (value == false) {
+                $(node).removeAttr("data-live-search")
+            }
+        }
+        return node;
+    },
+
+    properties: [{
+        name: "Live-search",
+        key: "livesearch",
+        htmlAttr: "data-live-search",
+        inputtype: CheckboxInput,
+        init: function (node) {
+            if (node.hasAttribute('data-live-search') && node.getAttribute('data-live-search') == "true") {
+                setTimeout(function () { $('#properties [data-key="livesearch"] #livesearch_check').prop('checked', true); }, 1300)
+            }
+        }
+    },
+    {
+        name: "Actions-box",
+        key: "actionsbox",
+        htmlAttr: "data-actions-box",
+        inputtype: CheckboxInput,
+        init: function (node) {
+            if (node.hasAttribute('data-actions-box') && node.getAttribute('data-actions-box') == "true") {
+                setTimeout(function () { $('#properties [data-key="actionsbox"] #actionsbox_check').prop('checked', true); }, 1300)
+            }
+        }
+    },
+    {
+        name: "Required",
+        key: "required",
+        htmlAttr: "required",
+        inputtype: CheckboxInput,
+        init: function (node) {
+            if (node.hasAttribute('required')) {
+                //setTimeout(function () { $('#required_check').prop('checked', true); }, 2000)
+                setTimeout(function () { $('#properties [data-key="required"] #required_check').prop('checked', true); }, 1300)
+            }
+        },
+    },
+    {
+        name: "Reapetable",
+        key: "reapetable",
+        htmlAttr: "multiple",
+        inputtype: CheckboxInput,
+        init: function (node) {
+            var attr = $(node).attr('multiple');
+            // For some browsers, `attr` is undefined; for others,
+            // `attr` is false.  Check for both.
+            if (typeof attr !== 'undefined' && attr !== false) {
+                setTimeout(function () { $('#properties [data-key="reapetable"] #reapetable_check').prop('checked', true); }, 2000);
+            }
+        }
+    },
+    {
+        name: "Max Options",
+        key: "maxoptions",
+        htmlAttr: "data-max-options",
+        inputtype: TextInput
+    },
+    {
+        name: "List of vocabularies",
+        key: "listent",
+        inputtype: SelectInput,
+        htmlAttr: "data-totaxonomy",
+        beforeInit: function (node) {
+            var _l = this;
+
+            propert = [];
+            angular
+                .injector(["ng", "mainTax.app"])
+                .get("serviceTaxonomy")
+                .chiama()
+                .then(function (ret) {
+
+                    var listVocabularies = ret;
+
+                    // console.log("serviceTaxonomy listVocabularies", listVocabularies);
+                    //    console.log("beforeInit d");
+                    propert.push({
+                        value: "",
+                        text: ""
+                    });
+                    for (key of listVocabularies.values()) {
+                        propert.push({
+                            value: key._id,
+                            text: key.title,
+                        });
+                    }
+                    _l.data.options = propert;
+
+                    return node;
+                }).catch(e => {
+                    console.log("Error: ", e)
+                });
+
+        },
+        data: {
+            extraclass: "btn-cccc",
+            options: []
+        }
+    },
+    {
+        name: "Searchable Label",
+        key: "searchable-label",
+        htmlAttr: "searchable-label",
+        inputtype: TextInput
+    }, {
+        name: "Searchable Text",
+        key: "searchable-text",
+        htmlAttr: "searchable-text",
+        inputtype: TextInput
+    }, {
+        name: "Searchable Element",
+        key: "searchable-element",
+        htmlAttr: "searchable-element",
+        inputtype: CheckboxInput,
+        init: function (node) {
+            if (node.hasAttribute('searchable-element') && node.getAttribute('searchable-element') == "true") {
+                setTimeout(function () { $('#searchable-element_check').prop('checked', true); }, 1300)
+            }
+        }
+    }, {
+        name: "Searchable Multiple",
+        key: "searchable-multiple",
+        htmlAttr: "searchable-multiple",
+        inputtype: CheckboxInput,
+        init: function (node) {
+            if (node.hasAttribute('searchable-multiple') && node.getAttribute('searchable-multiple') == "true") {
+                setTimeout(function () { $('#searchable-multiple_check').prop('checked', true); }, 2000)
+            }
+        }
+    }
+    ]
+});
+
 
 Vvveb.Components.extend("_base", "html/dmodelentitytags", {
     name: "Entity Tags",
