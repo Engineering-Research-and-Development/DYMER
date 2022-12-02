@@ -1644,9 +1644,9 @@ router.post('/singlerelation/', util.checkIsAdmin, (req, res) => {
     }).then(async function(resp) {
         logger.info(nameFile + '| post singlerelation/:id | dymeruser.id, create :' + dymeruser.id + ' , ' + JSON.stringify(callData));
         //antonino 
-        await redisClient.invalidateCacheById(callData.id1, redisEnabled)
-        await redisClient.invalidateCacheById(callData.id2, redisEnabled)
-
+        await redisClient.invalidateCacheById([callData.id1, callData.id2], redisEnabled)
+   //     await redisClient.invalidateCacheById(callData.id2, redisEnabled)
+   
         ret.setMessages("Relation created!");
         ret.setExtraData(resp);
         return res.send(ret);
@@ -1682,8 +1682,8 @@ router.put('/singlerelation/:id', util.checkIsAdmin, (req, res) => {
         logger.info(nameFile + '| put singlerelation/:id | dymeruser.id, id updated :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(data));
         ret.setMessages("Relation Updated!");
         //antonino 
-        await redisClient.invalidateCacheById(callData.id1, redisEnabled)
-        await redisClient.invalidateCacheById(callData.id2, redisEnabled)
+        await redisClient.invalidateCacheById([callData.id1, callData.id2,id], redisEnabled)
+        //await redisClient.invalidateCacheById(callData.id2, redisEnabled)
         return res.send(ret);
     }).catch(function(err) {
         logger.error(nameFile + '| put singlerelation/:id | dymeruser.id, id update :' + dymeruser.id + ' , ' + id + ' , ' + err);
@@ -1721,8 +1721,8 @@ router.delete('/singlerelation/:id', util.checkIsAdmin, (req, res) => {
                     logger.info(nameFile + '| singlerelation | delete| dymeruser.id, relation removed :' + dymeruser.id + " , " + JSON.stringify(resp));
                     ret.setMessages("Relation deleted successfully");
                     ret.addData(resp);
-                    await redisClient.invalidateCacheById(ele._source._id1, redisEnabled)
-                    await redisClient.invalidateCacheById(ele._source._id2, redisEnabled)
+                    await redisClient.invalidateCacheById([ele._source._id1, ele._source._id2, id], redisEnabled)
+                    //await redisClient.invalidateCacheById(ele._source._id2, redisEnabled)
                     return res.send(ret);
                 },
                 function(err) {
@@ -3415,7 +3415,7 @@ router.put('/update/:id', (req, res) => {
                                         //console.log(nameFile + '| /:id | put | pre check hook id,extraInfo: ', id, JSON.stringify(dymerextrainfo));
                                         logger.info(nameFile + '| /:id | put | pre check hook| obj, extraInfo:' + dymeruser.id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
                                         checkServiceHook('after_update', objHook, dymerextrainfo, req);
-                                        await redisClient.invalidateCacheById(id, redisEnabled)
+                                        await redisClient.invalidateCacheById([id], redisEnabled)
                                         return res.send(ret);
                                     }).catch(function(err) {
                                         console.error("ERROR | " + nameFile + '| /:id | put | id: ', id, err);
@@ -3701,7 +3701,7 @@ router.put('/:id', (req, res) => {
                                  extraInfo.extrainfo.emailAddress = dymeruser.id;*/
                             logger.info(nameFile + '| /:id | put | pre check hook| obj, extraInfo:' + dymeruser.id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
                             checkServiceHook('after_update', new_Temp_Entity, dymerextrainfo, req);
-                            await redisClient.invalidateCacheById(id, redisEnabled)
+                            await redisClient.invalidateCacheById([id], redisEnabled)
                             return res.send(ret);
                         }).catch(function(err) {
                             console.error("ERROR | " + nameFile + '| /:id | put | id: ', id, err);
@@ -3940,7 +3940,7 @@ router.put('/oldput/:id', (req, res) => { //to delete
                                             // console.log(nameFile + '| /:id | put | pre check hook id,extraInfo: ', id, JSON.stringify(dymerextrainfo));
                                             logger.info(nameFile + '| /:id | put | pre check hook| obj, extraInfo:' + dymeruser.id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
                                             checkServiceHook('after_update', objHook, dymerextrainfo, req);
-                                            await redisClient.invalidateCacheById(id, redisEnabled)
+                                            await redisClient.invalidateCacheById([id], redisEnabled)
                                             return res.send(ret);
                                         }).catch(function(err) {
                                             console.error("ERROR | " + nameFile + '| /:id | put | id: ', id, err);
@@ -4433,7 +4433,7 @@ router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
                     // console.log(nameFile + '| deleteAllEntityByIndex | pre check hook id,extraInfo: ', dymeruser.id, JSON.stringify(objHook), JSON.stringify(dymerextrainfo));
                     logger.info(nameFile + '| deleteAllEntityByIndex | pre check hook id,extraInfo: ' + dymeruser.id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
                     checkServiceHook('after_delete', objHook, dymerextrainfo, req);
-                    await redisClient.invalidateCacheById(ret.data[0]._id, redisEnabled)
+                    await redisClient.invalidateCacheById([ret.data[0]._id], redisEnabled)
                 },
                 function(err) {
                     logger.error(nameFile + '| deleteAllEntityByIndex | entity remov ,index:' + dymeruser.id + ' , ' + index + ' , ' + err);
@@ -4606,7 +4606,7 @@ router.delete('/:id', (req, res) => {
                         //console.log(nameFile + '| delete/:id | pre check hook id,extraInfo: ', dymeruser.id, id, JSON.stringify(dymerextrainfo));
                         logger.info(nameFile + '| delete/:id | pre check hook id,extraInfo: ' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
                         checkServiceHook('after_delete', objHook, dymerextrainfo, req);
-                        await redisClient.invalidateCacheById(ret.data[0]._id, redisEnabled)
+                        await redisClient.invalidateCacheById([ret.data[0]._id], redisEnabled)
                         return res.send(ret);
                     });
                 });

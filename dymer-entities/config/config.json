@@ -15,7 +15,6 @@
                     "ip": "cache",
                     "port": 6379,
                     "user": "redis",
-                    "password": "eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81",
                     "isEnabled": true
                 },
                 "repository": {
