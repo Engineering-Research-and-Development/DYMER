@@ -1,5 +1,5 @@
 angular.module('mclgsCtrl', [])
-    .controller('mclgsController', function($scope, $http, $location, $browser, $rootScope, $window) {
+    .controller('mclgsController', function ($scope, $http, $location, $browser, $rootScope, $window) {
         var baseContextPath = $rootScope.globals.contextpath; //$rootScope.site_prefix; //'/d4ptest/'; //$browser.baseHref();
         //openLog
         // deleteLog
@@ -63,78 +63,86 @@ angular.module('mclgsCtrl', [])
             }
         };
         $scope.configlog = {};
-        $http.get(baseContextPath + '/api/system/logtypes', {}).then(function(retE) {
+        $http.get(baseContextPath + '/api/system/logtypes', {}).then(function (retE) {
             $scope.configlog.consoleactive = retE.data.data.consoleactive;
+            $scope.configlog.redisactive = retE.data.data.redisactive;
+            
         });
-        $http.get(baseContextPath + "/checkservice").then(function(rt) {
+        $http.get(baseContextPath + "/checkservice").then(function (rt) {
             $scope.checkservice.webserver.logs = rt.data.data;
-        }).catch(function(response) {
+        }).catch(function (response) {
             console.log(response);
         });
-        $http.get(baseContextPath + "/api/entities/checkservice").then(function(rt) {
+        $http.get(baseContextPath + "/api/entities/checkservice").then(function (rt) {
             $scope.checkservice.entities.msg = rt.data.message;
             $scope.checkservice.entities.logs = rt.data.data;
             $scope.checkservice.entities.state = " text-success";
-            $http.get(baseContextPath + "/api/entities/uuid").then(function(rtU) {
+            $http.get(baseContextPath + "/api/entities/uuid").then(function (rtU) {
                 uuidfile = rtU.data.data.uuid;
-            }).catch(function(response) {
+            }).catch(function (response) {
                 console.log(response);
             });
-        }).then(function() {
-            $http.get(baseContextPath + "/api/entities/api/v1/entity/mongostate").then(function(rts) {
+        }).then(function () {
+            $http.get(baseContextPath + "/api/entities/api/v1/entity/mongostate").then(function (rts) {
+                console.log("RTS: ", rts)
                 $scope.checkservice.entities.db.mongo.css = rts.data.data.css;
                 $scope.checkservice.entities.db.mongo.msg = rts.data.data.label;
             })
-        }).then(function() {
-            $http.get(baseContextPath + "/api/entities/api/v1/entity/elasticstate").then(function(rts) {
+        }).then(function () {
+            $http.get(baseContextPath + "/api/entities/api/v1/entity/elasticstate").then(function (rts) {
                 $scope.checkservice.entities.db.elastic.css = rts.data.data.css;
                 $scope.checkservice.entities.db.elastic.msg = rts.data.data.label;
             })
-        }).then(function() {
-            $http.get(baseContextPath + "/api/entities/api/v1/entity/redisstate").then(function(rts) {
+        }).then(function () {
+            $http.get(baseContextPath + "/api/entities/api/v1/entity/redisstate").then(function (rts) {
+                console.log("RTS: ", rts.data.data.css)
                 $scope.checkservice.entities.db.redis.css = rts.data.data.css;
                 $scope.checkservice.entities.db.redis.msg = rts.data.data.label;
+                if (rts.data.data.value == 1 || rts.data.data.value == 1)
+                    $scope.checkservice.entities.db.redis.value = true;
+                else
+                    $scope.checkservice.entities.db.redis.value = false;
             })
-        }).catch(function(response) {
+        }).catch(function (response) {
             console.log(response);
         });
-        $http.get(baseContextPath + "/api/dservice/checkservice").then(function(rt) {
+        $http.get(baseContextPath + "/api/dservice/checkservice").then(function (rt) {
             $scope.checkservice.dservice.msg = rt.data.message;
             $scope.checkservice.dservice.state = " text-success";
             $scope.checkservice.dservice.logs = rt.data.data;
-        }).then(function() {
-            $http.get(baseContextPath + "/api/dservice/api/v1/perm/mongostate").then(function(rts) {
+        }).then(function () {
+            $http.get(baseContextPath + "/api/dservice/api/v1/perm/mongostate").then(function (rts) {
                 $scope.checkservice.dservice.db.mongo.css = rts.data.data.css;
                 $scope.checkservice.dservice.db.mongo.msg = rts.data.data.label;
             })
-        }).catch(function(response) {
+        }).catch(function (response) {
             console.log(response);
         });
-        $http.get(baseContextPath + "/api/forms/checkservice").then(function(rt) {
+        $http.get(baseContextPath + "/api/forms/checkservice").then(function (rt) {
             $scope.checkservice.forms.msg = rt.data.message;
             $scope.checkservice.forms.state = " text-success";
             $scope.checkservice.forms.logs = rt.data.data;
-        }).then(function() {
-            $http.get(baseContextPath + "/api/forms/api/v1/form/mongostate").then(function(rts) {
+        }).then(function () {
+            $http.get(baseContextPath + "/api/forms/api/v1/form/mongostate").then(function (rts) {
                 $scope.checkservice.forms.db.mongo.css = rts.data.data.css;
                 $scope.checkservice.forms.db.mongo.msg = rts.data.data.label;
             })
-        }).catch(function(response) {
+        }).catch(function (response) {
             console.log(response);
         });
-        $http.get(baseContextPath + "/api/templates/checkservice").then(function(rt) {
+        $http.get(baseContextPath + "/api/templates/checkservice").then(function (rt) {
             $scope.checkservice.templates.msg = rt.data.message;
             $scope.checkservice.templates.state = " text-success";
             $scope.checkservice.templates.logs = rt.data.data;
-        }).then(function() {
-            $http.get(baseContextPath + "/api/templates/api/v1/template/mongostate").then(function(rts) {
+        }).then(function () {
+            $http.get(baseContextPath + "/api/templates/api/v1/template/mongostate").then(function (rts) {
                 $scope.checkservice.templates.db.mongo.css = rts.data.data.css;
                 $scope.checkservice.templates.db.mongo.msg = rts.data.data.label;
             })
-        }).catch(function(response) {
+        }).catch(function (response) {
             console.log(response);
         });
-        $scope.deleteLog = function(service, typelog) {
+        $scope.deleteLog = function (service, typelog) {
             if (confirm("Are you sure to flush the " + service + " " + typelog + ".log?")) {
                 let pathOpLog = "";
                 let tpop = "deletelog/";
@@ -166,14 +174,14 @@ angular.module('mclgsCtrl', [])
                      default:
                          break;
                  }*/
-                $http.get(baseContextPath + pathOpLog).then(function(rt) {
+                $http.get(baseContextPath + pathOpLog).then(function (rt) {
                     useGritterTool("<b><i class='nc-icon nc-paper'></i> " + service + " " + typelog + ".log deleted</b>", "");
-                }).catch(function(response) {
+                }).catch(function (response) {
                     console.log(response.status);
                 });
             }
         };
-        $scope.openLog = function(service, typelog) {
+        $scope.openLog = function (service, typelog) {
             let pathOpLog = "";
             let tpop = "openLog/";
             switch (service) {
@@ -203,7 +211,7 @@ angular.module('mclgsCtrl', [])
                  default:
                      break;
              }*/
-            $http.get(baseContextPath + pathOpLog).then(function(rt) {
+            $http.get(baseContextPath + pathOpLog).then(function (rt) {
                 //var options = { 'year': 'numeric', 'month': '2-digit', 'day': '2-digit' };
                 //var date = new Date().toLocaleString('en-US', options);
                 //var d = new Date();
@@ -227,13 +235,13 @@ angular.module('mclgsCtrl', [])
                     "cancelable": false
                 });
                 linkElement.dispatchEvent(clickEvent);
-            }).catch(function(response) {
+            }).catch(function (response) {
                 console.log(response);
             });
         };
 
 
-        $scope.saveConfigLog = function(opnconf) {
+        $scope.saveConfigLog = function (opnconf) {
             var dapaPost = opnconf;
             $http({
 
@@ -242,12 +250,23 @@ angular.module('mclgsCtrl', [])
                 data: { data: dapaPost }
 
             }).then(function successCallback(response) {
-                    if (response.data.success) {
-                        useGritterTool("<b><i class='fa fa-map-signs  '></i> Log setting </b>", response.data.message);
-                    } else {
-                        useGritterTool("<b><i class='fa fa-map-signs  '></i> Log setting</b>", response.data.message, "danger");
-                    }
-                },
+                console.log("resp:", response)
+                if (response.data.success) {
+                    // useGritterTool("<b><i class='fa fa-map-signs  '></i> Log setting </b>", response.data.message);
+
+                    $scope.checkservice.entities.db.redis.msg = response.data.data.redisactive
+
+                        $scope.checkservice.entities.db.redis.css = response.data.data.redisactive.css;
+                        $scope.checkservice.entities.db.redis.msg = response.data.data.redisactive.label;
+
+
+                    useGritterTool("<b><i class='fa fa-map-signs  '></i> Settings </b>", response.data.message);
+                } else {
+
+                    // useGritterTool("<b><i class='fa fa-map-signs  '></i> Log setting</b>", response.data.message, "danger");
+                    useGritterTool("<b><i class='fa fa-map-signs  '></i> Settings </b>", response.data.message, "danger");
+                }
+            },
                 function errorCallback(response) {
                     console.log("Error.Try Again!", response);
                     useGritterTool("<b><i class='fa fa-map-signs  '></i> Openness Search Configuration</b>", "we are sorry but an error has occurred", "danger");

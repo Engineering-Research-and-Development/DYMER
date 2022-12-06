@@ -246,7 +246,60 @@ router.get('/elasticstate', util.checkIsAdmin, (req, res) => {
 
 });
 
-router.get('/redisstate', util.checkIsAdmin, async(req, res) => {
+
+router.patch("/redistoggle", async (req, res) => {
+    redisEnabled = req.body.state;
+    let ret = new jsonResponse();
+    let dbState = [{
+        value: 0,
+        label: "Disconnected",
+        css: "text-danger"
+    },
+    {
+        value: 1,
+        label: "Connected",
+        css: "text-success"
+    },
+    {
+        value: 2,
+        label: "Connecting",
+        css: "text-info"
+    },
+    {
+        value: 3,
+        label: "Disconnecting",
+        css: "text-warning"
+    },
+    {
+        value: 4,
+        label: "Disabled",
+        css: "text-warning"
+    }
+];
+    if(!redisEnabled) {
+        await redisClient.disconnect();
+        redisEnabled = false;
+    } else {
+        await redisClient.init(true);
+        redisEnabled = true;
+    }
+    
+    let redisState = await redisClient.ping(redisEnabled);
+    if (redisState) {
+        redisState = 1;
+    } else {
+        redisState = 4;
+    }
+
+    ret.setMessages("redis state");
+    ret.setData(dbState.find(f => f.value == redisState));
+    res.status(200);
+    ret.setSuccess(true);
+    return res.send(ret);
+})
+
+
+router.get('/redisstate',  async(req, res) => {
     let ret = new jsonResponse();
     let redisstate = 0;
     let dbState = [{

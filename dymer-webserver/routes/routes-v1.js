@@ -10,8 +10,9 @@ const nameFile = path.basename(__filename);
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 const logger = require('./dymerlogger');
+const axios = require('axios')
 
-router.get('/logtypes', (req, res) => {
+router.get('/logtypes', async (req, res) => {
 
     let ret = new jsonResponse();
     let loggerdebug = (process.env.DYMER_LOGGER == undefined) ? false : process.env.DYMER_LOGGER;
@@ -19,20 +20,24 @@ router.get('/logtypes', (req, res) => {
     if (loggerdebug)
         msglog = "file&console";
     ret.setMessages("Logs");
-    ret.setData({ msg: msglog, consoleactive: loggerdebug });
+    ret.setData({ msg: msglog, consoleactive: loggerdebug});
     res.status(200);
     ret.setSuccess(true);
     return res.send(ret);
 });
 
-router.post('/setlogConfig', [util.checkIsDymerUser], (req, res) => {
+router.post('/setlogConfig', [util.checkIsDymerUser], async (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let data = callData.data;
-    process.env.DYMER_LOGGER = data.consoleactive;
+    process.env.DYMER_LOGGER = data.consoleactive;    
     logger.info(nameFile + '  | setlogConfig :' + data.consoleactive);
-    ret.setMessages("Log settings updated");
-    ret.setData({ consoleactive: process.env.DYMER_LOGGER });
+
+    let state = await axios.patch('http://localhost:8080/api/entities/api/v1/entity/redistoggle', {state: data.redisactive})
+    console.log("STATE:", state)
+   // ret.setMessages("Log settings updated");
+    ret.setMessages("Settings updated");
+    ret.setData({ consoleactive: process.env.DYMER_LOGGER, redisactive: state.data.data });
     console.log('setlogConfig', process.env.DYMER_LOGGER);
     return res.send(ret);
 });

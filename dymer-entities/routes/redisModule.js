@@ -8,7 +8,7 @@ let client;
 
 module.exports = {
 
-    init: async function(isEnabled) {
+    init: async function (isEnabled) {
         if (!isEnabled) { return false }
 
         client = redis.createClient({
@@ -30,21 +30,21 @@ module.exports = {
         } catch (e) {
             console.log("Unable to connect to REDIS due to ", e.message)
         }
-
+        return;
     },
-    disconnect: async function() {
+    disconnect: async function () {
         console.log("Disconnecting...")
         try {
             await client.disconnect();
-            console.log(nameFile + ` | redisModule | Connected to REDIS!`)
-            logger.info(nameFile + ` | redisModule | Connected to REDIS!`)
-        } catch (error) {}
-
-        console.log(nameFile + ` | redisModule | Connected to REDIS!`)
-        logger.info(nameFile + ` | redisModule | Connected to REDIS!`)
+            console.log(nameFile + ` | redisModule | Disconnected to REDIS!`)
+            logger.info(nameFile + ` | redisModule | Disconnected to REDIS!`)
+        } catch (error) {
+            console.log("Unable to disconnect from REDIS due to ", error.message)
+        }
+        return;
     },
 
-    ping: async function(isEnabled) {
+    ping: async function (isEnabled) {
 
         if (!isEnabled) { return false }
 
@@ -57,13 +57,13 @@ module.exports = {
 
     },
 
-    cancelKey: async function(key, isEnabled) {
+    cancelKey: async function (key, isEnabled) {
         if (!isEnabled) { return false }
 
         await client.del(key)
     },
 
-    readCacheByKey: async function(query, isEnabled) {
+    readCacheByKey: async function (query, isEnabled) {
 
         if (!isEnabled) { return null }
         let hash = await this.calculateHash(query)
@@ -78,7 +78,7 @@ module.exports = {
         }
     },
 
-    writeCacheByKey: async function(query, userId, origin, response, ids, indexes, typeservice, isEnabled) {
+    writeCacheByKey: async function (query, userId, origin, response, ids, indexes, typeservice, isEnabled) {
         if (!isEnabled) { return false }
         let hash = await this.calculateHash(query)
         console.log(JSON.parse(response))
@@ -98,7 +98,7 @@ module.exports = {
             console.log("Unable to execute REDIS writing operation due to ", e.message)
         }
     },
-    emptyCache: async function(isEnabled) {
+    emptyCache: async function (isEnabled) {
         if (!isEnabled) { return false }
 
         console.log(nameFile + ` | redisModule | Empty Cache`)
@@ -109,10 +109,10 @@ module.exports = {
             console.log("Unable to empty REDIS cache due to ", e.message)
         }
     },
-    calculateHash: async function(query) {
+    calculateHash: async function (query) {
         return crypto.createHash('md5').update(JSON.stringify(query)).digest('hex');
     },
-    extractIds: async function(ret, isEnabled) {
+    extractIds: async function (ret, isEnabled) {
         if (!isEnabled) { return false }
 
         let entitiesIds = [...new Set(ret.data.map(obj => obj._id))]
@@ -121,7 +121,7 @@ module.exports = {
 
         return ids;
     },
-    extractIdsRelations: async function(ret) {
+    extractIdsRelations: async function (ret) {
         // console.log('extractIdsRelations', ret);
         return [...new Set(ret.data.reduce((ids, curr) => {
             if (curr.relations) {
@@ -131,7 +131,7 @@ module.exports = {
             }
         }, []))]
     },
-    extractIndexes: async function(ret, isEnabled) {
+    extractIndexes: async function (ret, isEnabled) {
         if (!isEnabled) { return false }
 
         let entitiesIndexes = [...new Set(ret.data.map(obj => obj._index))]
@@ -140,7 +140,7 @@ module.exports = {
 
         return indexes
     },
-    extractIndexRelations: async function(ret) {
+    extractIndexRelations: async function (ret) {
         return [...new Set(ret.data.reduce((indexes, curr) => {
             if (curr.relations) {
                 return indexes.concat(curr.relations.map(r => r._index))
@@ -149,7 +149,7 @@ module.exports = {
             }
         }, []))]
     },
-    invalidateCacheById: async function(idsToInvalidate, isEnabled) {
+    invalidateCacheById: async function (idsToInvalidate, isEnabled) {
         if (!isEnabled) { return false }
         try {
             let keys = await client.keys('*')
@@ -170,7 +170,7 @@ module.exports = {
             console.log("Unable invalidate REDIS cache due to ", e.message)
         }
     },
-    invalidateCacheByIndex: async function(index, isEnabled) {
+    invalidateCacheByIndex: async function (index, isEnabled) {
         if (!isEnabled) { return false }
         try {
             let keys = await client.keys('*')
@@ -216,5 +216,5 @@ module.exports = {
     //     } catch (e) {
     //         console.log("Unable invalidate REDIS cache due to ", e.message)
     //     }
-   // },
+    // },
 }
