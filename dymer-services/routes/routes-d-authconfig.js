@@ -91,7 +91,15 @@ router.get('/userinfo', (req, res) => {
         },
         username: 'guest@dymer.it',
     };
-    let myURLref = new URL(data.referer);
+    let myURLref;
+    try {
+        myURLref = new URL(data.referer);
+    } catch (error) {
+        myURLref = new URL("http://" + data.referer);
+    }
+
+    logger.info(nameFile + ' | data.referer : ' + data.referer);
+    logger.info(nameFile + ' | myURLref : ' + myURLref);
     //console.log('myURLref', myURLref);
     //console.log('data.referer|origin|host', "1" + data.referer, "2" + myURLref.origin, "3" + myURLref.host, data.idsadm);
 
