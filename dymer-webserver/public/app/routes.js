@@ -14,7 +14,7 @@ function config($routeProvider, $locationProvider) {
     // $rootScope.site_prefix = site_prefix;
     $routeProvider
 
-        .when(site_prefix + "/", {
+        .when(site_prefix + "/dashboard", {
             templateUrl: site_prefix + "/public/app/views/pages/dashboard.html",
             controller: "dashController"
         })
@@ -131,12 +131,20 @@ function config($routeProvider, $locationProvider) {
             templateUrl: site_prefix + "/public/app/views/authentication/views/login.html",
             controller: "loginController"
         })
+        /*  .when(site_prefix + "/login", {
+             templateUrl: site_prefix + "/public/app/views/login.html",
+             controller: "loginController"
+         })*/
         .when(site_prefix + "/querybuilder", {
             templateUrl: site_prefix + "/public/app/views/pages/services/querybuilder.html",
             controller: "queryBController"
         })
+        /*  .when(site_prefix + "/logout", {
+              templateUrl: site_prefix + "/public/app/views/authentication/views/login.html",
+              controller: "logoutController"
+          })*/
         .when(site_prefix + "/logout", {
-            templateUrl: site_prefix + "/public/app/views/authentication/views/login.html",
+            templateUrl: site_prefix + "/public/app/views/login.html",
             controller: "logoutController"
         })
         .when(site_prefix + "/taxonomy", {
@@ -164,7 +172,7 @@ function config($routeProvider, $locationProvider) {
            })*/
         //.otherwise({ redirectTo: site_prefix + "/app/views/pages/dashboard.html" });
         //  .otherwise({ redirectTo: site_prefix + "/dashboard" });
-        .otherwise({ redirectTo: site_prefix + "/" });
+        .otherwise({ redirectTo: site_prefix + "/dashboard" });
     /*.otherwise({
         templateUrl: site_prefix + "/app/views/pages/dashboard.html",
         controller: "dashController"
@@ -177,9 +185,9 @@ function config($routeProvider, $locationProvider) {
 
 }
 
-run.$inject = ['$rootScope', '$location', '$cookies', '$http'];
+run.$inject = ['$rootScope', '$location', '$cookies', '$http', '$window'];
 
-function run($rootScope, $location, $cookies, $http) { // keep user logged in after page refresh
+function run($rootScope, $location, $cookies, $http, $window) { // keep user logged in after page refresh
     //  console.log("parto", development.services.webserver["context-path"]);
     //development.services.webserver["context-path"]
     /*
@@ -226,9 +234,15 @@ function run($rootScope, $location, $cookies, $http) { // keep user logged in af
         // $rootScope.globals.loggedIn = true;
         if (!userislogged) {
             //if (!loggedIn) {
-            //        console.log("!userislogged");
-            $location.path(site_prefix + '/login');
-            // $location.path(site_prefix + '/authenticate');
+            console.log("$location.absUrl()  ", $location.absUrl());
+            console.log("$window.location", $window.location.pathname);
+            if (!$window.location.pathname.includes("login")) {
+                //$location.path(site_prefix + '/login');
+                $window.location.href = (site_prefix + '/login');
+                // $location.path(site_prefix + '/authenticate');}
+
+            }
+            // $location.path(site_prefix + '/login');
             $rootScope.globals.loggedIn = false;
         } else {
             // console.log("si");

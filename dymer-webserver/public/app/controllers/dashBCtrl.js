@@ -237,12 +237,12 @@ angular.module('dashCtrl', ['nvd3'])
                     "name": element.key,
                     "group": element.key
                 };
-
+                // console.log('element', element);
                 if ($scope.data.nodes.find(x => x.name === element.key) == undefined)
                     $scope.data.nodes.push(newitm)
                 element._index2.buckets.forEach(sub => {
 
-                    let newSitm = { "name": sub.key, "group": sub.key };
+                    let newSitm = { "name": sub.key, "group": sub.key, "doc_count": sub.doc_count };
 
                     if ($scope.data.nodes.find(x => x.name === sub.key) == undefined)
                         $scope.data.nodes.push(newSitm)
@@ -252,11 +252,12 @@ angular.module('dashCtrl', ['nvd3'])
             ret.data.data.forEach(element => {
                 let sourc = $scope.data.nodes.find(x => x.name === element.key);
                 element._index2.buckets.forEach(sub => {
+                    //console.log('sub', sub.doc_count);
                     let targ = $scope.data.nodes.find(x => x.name === sub.key);
                     let newLk = {
                         "source": sourc,
                         "target": targ,
-                        "text": sub.doc_count
+                        "title": sub.doc_count
                     };
                     //if ($scope.data.links.indexOf(newLk) === -1)
                     $scope.data.links.push(newLk)
@@ -283,10 +284,24 @@ angular.module('dashCtrl', ['nvd3'])
                         .append("text")
                         .attr("dx", 8)
                         .attr("dy", ".35em")
-                        .text(function(d) { return d.name })
+                        .text(function(d) { return d.name; })
                         .style('font-size', '10px');
                 },
-                linkDist: 120
+                //linkDist: 120,
+                /*linkExtras: function(link) {
+                    link && link
+                        .selectAll("line")
+                        .append("text")
+                        .style("stroke", "#ff000")
+                        .attr("stroke", "#ff0000")
+                        .text(function(d) { console.log("d", d); return d.doc_count; })
+                }*/
+                linkExtras: function(link) {
+                    d3.selectAll("line").append("title")
+                        .text(function(d) { //console.log("d.target.doc_count", d.target.doc_count); 
+                            return d.target.doc_count;
+                        });
+                }
             },
 
 
@@ -313,7 +328,7 @@ angular.module('dashCtrl', ['nvd3'])
                 },
                 "qoptions": {
                     "relations": false,
-                    "fields": { "include": ["title", "properties.*"] },
+                    "fields": { "include": ["title", "properties"] },
                     size: size,
                     sort: sort
                 }

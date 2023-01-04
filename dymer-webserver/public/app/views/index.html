@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <!-- <base href="/d4ptest/" />-->
-    <script>
+    <script nonce="noncevalue">
         var site_prefix = 'site_prefix_value';
     </script>
 
@@ -53,6 +53,7 @@
     <script src="public/app/controllers/loginCtrl.js"></script>
     <script src="public/app/controllers/taxCtrl.js"></script>
     <script src="public/app/services/serviceEntity.js"></script>
+    <script src="public/app/services/serviceTaxonomy.js"></script>
     <script src="public/app/controllers/permissionCtrl.js"></script>
     <script src="public/app/controllers/authenticationConfigCtrl.js"></script>
     <script src="public/app/controllers/importcronjobCtrl.js"></script>
@@ -204,6 +205,10 @@
                                 </li>
                                 <li class="  "> <a class="" href="addentity"><i class="nc-icon nc-ruler-pencil"></i>
                                         <p>Add Entity</p>
+                                    </a>
+                                </li>
+                                <li class="  "> <a class="" href="taxonomy"><i class="fa fa-sitemap"></i>
+                                        <p>Taxonomy</p>
                                     </a>
                                 </li>
                                 <li class="  "> <a class="" href="importfromfile"><i class="nc-icon nc-air-baloon"></i>
@@ -459,7 +464,7 @@
                         <div class="credits ml-auto">
                             <span class="copyright">
                                 ©
-                                <script>
+                                <script nonce="noncevalue">
                                     document.write(new Date().getFullYear())
                                 </script>, Powered by <a href="https://www.eng.it/" target="_blank"> <b>
                                         Engineering</b> </a>
@@ -514,12 +519,7 @@
     <!-- Latest compiled and minified JavaScript -->
     <script src="public/cdn/js/lib/bootstrap-select/bootstrap-select.min.js"></script>
 
-    <script>
-        $(document).ready(function() {
-            // Javascript method's body can be found in public/assets/assets-for-demo/js/demo.js
 
-        });
-    </script>
     <!--<link href="public/assets/gwsbuilder/dist/css/grapes.min.css" rel="stylesheet">
 <script src="public/assets/gwsbuilder/dist/grapes.min.js"></script>
 -->

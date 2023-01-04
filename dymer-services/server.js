@@ -28,7 +28,7 @@ var routes_dymer_sync = require('./routes/routes-d-sync');
 var routes_dymer_hooks = require('./routes/routes-d-servicehooks');
 var routes_dymer_eaggregation = require('./routes/routes-d-eaggregation');
 var routes_dymer_usermap = require('./routes/routes-d-usermap');
-//var routes_dymer_taxonomy = require('./routes/routes-d-taxonomy');
+var routes_dymer_taxonomy = require('./routes/routes-d-taxonomy');
 var routes_dymer_import = require('./routes/routes-d-import');
 //var routes_dymer_importsocs = require('./routes/routes-d-import_socs');
 //var routes_dymer_importhb = require('./routes/routes-d-import_hb');
@@ -54,7 +54,7 @@ app.use(util.getContextPath('dservice') + '/api/v1/fwadapter', routes_dymer_fwad
 app.use(util.getContextPath('dservice') + '/api/v1/sync', routes_dymer_sync);
 app.use(util.getContextPath('dservice') + '/api/v1/servicehook', routes_dymer_hooks);
 app.use(util.getContextPath('dservice') + '/api/v1/eaggregation', routes_dymer_eaggregation);
-//app.use(util.getContextPath('dservice') + '/api/v1/taxonomy', routes_dymer_taxonomy);
+app.use(util.getContextPath('dservice') + '/api/v1/taxonomy', routes_dymer_taxonomy);
 app.use(util.getContextPath('dservice') + '/api/v1/usermap', routes_dymer_usermap);
 app.use(util.getContextPath('dservice') + '/api/v1/import', routes_dymer_import);
 //app.use(util.getContextPath('dservice') + '/api/v1/import_socs', routes_dymer_importsocs);

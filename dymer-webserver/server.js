@@ -97,13 +97,38 @@ app.use(function(req, res, next) {
     //    res.header("X-Frame-Option", "allow-from http://localhost:8080/");
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     res.setHeader('Access-Control-Allow-Credentials', true);
+    var pathname = req.url;
+    //  console.log(pathname);
+    /*if (pathname == (util.getContextPath('webserver') + "/login")) {
+       
+        res.setHeader(
+            'Content-Security-Policy',
+            "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:; script-src 'self'  ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
+        );
+    }*/
+
+    // if (pathname.includes('/app/views/authentication/views/login.html')) {
+    /* if (pathname == (util.getContextPath('webserver') + "/login")) {
+         console.log(pathname);
+         res.setHeader(
+             'Content-Security-Policy',
+             "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:; script-src 'self' 'nonce-8IBTHwOdqNKAWeKl7plt8g==' ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
+         );
+       //res.setHeader(
+       //      'Content-Security-Policy',
+      //       "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:; script-src 'self'  ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
+       //  )
+       //res.setHeader(
+       //      'Content-Security-Policy',
+      //       "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
+       //  );
+         return res.sendFile(path.join(__dirname + "/public/app/views/authentication/views/login.html"));
+     }*/
     next();
 });
 
 app.use(cors());
 app.set('trust proxy', true);
-
-
 
 
 // 
@@ -493,10 +518,56 @@ app.get(util.getContextPath('webserver') + '*', (req, res) => {
     //+ path.join(__dirname + global.gConfig.services.webserver["context-path"] 
     var realPath = (req.originalUrl).split("?");
     var listdata = fs.readFileSync(path.join(__dirname, '/public/app/views/index.html'));
-    if (listdata) {
+    var pathname = req.url;
+    console.log('listdatapathname', pathname, pathname == (util.getContextPath('webserver') + "/login"));
+    /* if (listdata) {
+         listdata = listdata.toString();
+         console.log('listdata', listdata, pathname);
+         res.send(listdata.replace('site_prefix_value', util.getContextPath('webserver')));
+     }*/
+    /*if (pathname == (util.getContextPath('webserver') + "/login")) {
+        var listdata = fs.readFileSync(path.join(__dirname, '/public/app/views/authentication/views/login.html'));
         listdata = listdata.toString();
         res.send(listdata.replace('site_prefix_value', util.getContextPath('webserver')));
-    }
+        listdata = listdata.replace('site_prefix_value', util.getContextPath('webserver'))
+        res.send(listdata);
+    } else {
+        console.log('listdatapathname2', pathname, pathname == (util.getContextPath('webserver') + "/"));
+        //if (pathname == (util.getContextPath('webserver'))) {
+        var listdata = fs.readFileSync(path.join(__dirname, '/public/app/views/index.html'));
+        listdata = listdata.toString();
+        listdata = listdata.replace('site_prefix_value', util.getContextPath('webserver'))
+        res.send(listdata);
+    }*/
+    var listdata = fs.readFileSync(path.join(__dirname, '/public/app/views/index.html'));
+    listdata = listdata.toString();
+    listdata = listdata.replace('site_prefix_value', util.getContextPath('webserver'));
+    let r = 'dym' + (Math.random() + 1).toString(36).substring(7);
+    //  r = "dymzmpky";
+    listdata = listdata.replace(/noncevalue/g, r);
+
+    /* res.setHeader(
+         'Content-Security-Policy',
+         "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:; script-src 'self' 'nonce-" + r + "'  ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
+     );*/
+    /* if (pathname == (util.getContextPath('webserver') + "/login")) {
+         listdata = fs.readFileSync(path.join(__dirname, '/public/app/views/login.html'));
+         listdata = listdata.toString();
+         listdata = listdata.replace('site_prefix_value', util.getContextPath('webserver'))
+         r = 'dym' + (Math.random() + 1).toString(36).substring(7);
+         listdata = listdata.replace(/noncevalue/g, r);
+         res.setHeader(
+             'Content-Security-Policy',
+             "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:; script-src 'self' 'nonce-" + r + "'  ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
+         );/*
+         /* res.setHeader(
+              'Content-Security-Policy',
+              "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:;script-src 'self' 'unsafe-inline' 'unsafe-eval' ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
+          );*/
+    /*
+        }*/
+    res.send(listdata);
+    // }
     //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
     // res.sendFile(global.gConfig.services.webserver["context-path"] + '/public/app/views/index.html');
 });

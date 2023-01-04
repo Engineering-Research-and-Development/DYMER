@@ -712,7 +712,8 @@ let deleteBulkByIds = async function(idsToDelete, index) {
             };
         });
         client.bulk({
-            body: bulk
+            body: bulk,
+            refresh: true
         }).then(function(resp) {
             // console.log("Successful query!");
             logger.info(nameFile + '| deleteBulkByIds | ids ' + idsToDelete + ' deleted');
@@ -1228,7 +1229,7 @@ async function createRelationV2(dataset) {
 function createRelation(newRel) {
     let params = { index: "entity_relation", type: "entity_relation" };
     params["body"] = newRel;
-    //  params["refresh"] = true;
+    params["refresh"] = true;
     logger.info(nameFile + '| createRelation | success:' + JSON.stringify(params));
     client.index(params).then(function(resp) {
         //console.log(nameFile + '| createRelation | success:', JSON.stringify(resp));
@@ -3400,7 +3401,7 @@ router.put('/update/:id', (req, res) => {
                                 params_del["id"] = new_Temp_Entity["_id"];
                                 params_del["index"] = new_Temp_Entity._index;
                                 params_del["type"] = new_Temp_Entity._type;
-                                // params_del["refresh"] = 'true';
+                                params_del["refresh"] = 'true';
                                 client.delete(params_del).then(function(resp) {
                                     client.index({
                                         index: new_Temp_Entity._index,
@@ -3483,6 +3484,7 @@ router.put('/update/:id', (req, res) => {
             return res.send(ret);
         });
 });
+//router.put('/:id', (req, res) => {newput
 router.put('/:id', (req, res) => {
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser
@@ -3644,7 +3646,6 @@ router.put('/:id', (req, res) => {
                                         _index2: key
                                     });
                             });
-
                         }
                         /* console.log('listRelation_old_filtered_todelete', listRelation_old_filtered_todelete);
                          console.log('listRelation_ids_todelete', listRelation_ids_todelete);
@@ -3686,8 +3687,6 @@ router.put('/:id', (req, res) => {
                                 ark.shift();
                                 stringAsKey(new_Temp_Entity._source, ark, el);
                             });
-                        let dateOld = new Date(oldElement._source.properties.changed);
-                        let dateNew = new Date(editValues.properties.changed);
                         //console.log("date mod", oldElement._source.properties.changed, editValues.properties.changed);
                         // console.log("date mod", oldElement._source.properties.changed, editValues.properties.changed);
                         if (editValues.properties.changed == undefined) {
@@ -3703,15 +3702,17 @@ router.put('/:id', (req, res) => {
                             body: {
                                 // put the partial document under the `doc` key
                                 doc: new_Temp_Entity._source
-                            }
+                            },
+                            refresh: 'true'
                         }).then(async function(resp) {
                             logger.info(nameFile + '| /:id | put | updated dymeruser.id, id,title, entity :' + dymeruser.id + ' , ' + id + ' , ' + new_Temp_Entity._source.title);
                             ret.setMessages("Updated!");
-                            var objHook = new_Temp_Entity;
+                            // var objHook = new_Temp_Entity;
+                            console.log('resp update ', resp);
                             /* var extraInfo = dymerextrainfo;
                              if (extraInfo != undefined)
                                  extraInfo.extrainfo.emailAddress = dymeruser.id;*/
-                            logger.info(nameFile + '| /:id | put | pre check hook| obj, extraInfo:' + dymeruser.id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
+                            logger.info(nameFile + '| /:id | put | pre check hook| obj, extraInfo:' + dymeruser.id + ' , ' + JSON.stringify(new_Temp_Entity) + ' , ' + JSON.stringify(dymerextrainfo));
                             checkServiceHook('after_update', new_Temp_Entity, dymerextrainfo, req);
                             await redisClient.invalidateCacheById(id, redisEnabled)
                             return res.send(ret);
@@ -3730,7 +3731,7 @@ router.put('/:id', (req, res) => {
                         return res.send(ret);
                     }
                 } else {
-                    ret.setMessages("You don't have permission");
+                    ret.setMessages("Resource not found");
                     res.status(200);
                     ret.setSuccess(false);
                     return res.send(ret);
@@ -3745,6 +3746,7 @@ router.put('/:id', (req, res) => {
         }
     });
 });
+//router.put('/oldput/:id', (req, res) => { //to delete
 router.put('/oldput/:id', (req, res) => { //to delete
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser
@@ -3832,11 +3834,12 @@ router.put('/oldput/:id', (req, res) => { //to delete
                     logger.info(nameFile + '| /:id | put | permission update | dymeruser.id, id, harpermEdit:' + dymeruser.id + ' , ' + id + ' , ' + harpermEdit);
                     if (harpermEdit) {
                         var ref = undefined;
+                        console.log('editValues ', editValues);
                         if (editValues.relation != undefined) {
                             ref = Object.assign({}, editValues.relation);
                             delete editValues.relation;
                         }
-                        //console.log('editValues.relationtodelete', editValues.relationtodelete);
+                        console.log('editValues.relationtodelete ref', ref);
                         logger.info(nameFile + '| /:id | put | editValues.relationtodelete :' + JSON.stringify(editValues.relationtodelete));
                         var _relationtodelete = undefined;
                         if (editValues.relationtodelete != undefined) {
@@ -3845,7 +3848,7 @@ router.put('/oldput/:id', (req, res) => { //to delete
                             delete editValues.relationtodelete;
                         }
                         if (_relationtodelete == undefined) _relationtodelete = [];
-
+                        console.log("update pre _relationtodelete", _relationtodelete);
                         var _split = data.todelete;
                         var _todeleteObj = data.todeleteObj;
                         if (_split != undefined) {
@@ -3883,17 +3886,22 @@ router.put('/oldput/:id', (req, res) => { //to delete
                                 listSingleRelation(id).then(function(oldrelation) {
                                     if (ref != undefined) {
                                         oldrelation.forEach(function(relel, index) {
-                                            //     console.log("Relation relel", relel);    
+                                            // console.log("Relation relel", relel);
                                             if (relel._source["_id1"] == id) {
                                                 if (ref.hasOwnProperty([relel._source["_index2"]])) {
-                                                    if (!ref[relel._source["_index2"]].includes(relel._source["_id2"])) {
+                                                    console.log("Relation relel1 ", relel, ref[relel._source["_index2"]], !ref[relel._source["_index2"]].includes({ to: relel._source["_id2"] }));
+
+                                                    console.log("Relation relel12 ", relel, ref[relel._source["_index2"]], !ref[relel._source["_index2"]].some(o => { o.to == relel._source["_id2"] }));
+                                                    if (!ref[relel._source["_index2"]].includes({ to: relel._source["_id2"] })) {
                                                         _relationtodelete.push(relel._source["_id2"]);
                                                     }
                                                 }
                                             }
                                             if (relel._source["_id2"] == id) {
                                                 if (ref.hasOwnProperty([relel._source["_index1"]])) {
-                                                    if (!ref[relel._source["_index1"]].includes(relel._source["_id1"])) {
+                                                    console.log("Relation relel2 ", relel, ref[relel._source["_index1"]], !ref[relel._source["_index1"]].includes({ to: relel._source["_id1"] }));
+                                                    console.log("Relation relel22 ", relel, ref[relel._source["_index1"]], !ref[relel._source["_index1"]].some(o => { o.to == relel._source["_id1"] }));
+                                                    if (!ref[relel._source["_index1"]].includes({ to: relel._source["_id1"] })) {
                                                         _relationtodelete.push(relel._source["_id1"]);
                                                     }
                                                 }
@@ -3992,6 +4000,247 @@ router.put('/oldput/:id', (req, res) => { //to delete
             }).catch(function(err) {
                 console.error("ERROR | " + nameFile + '| /:id | put | delete search: ', id, err);
                 logger.error(nameFile + '| /:id | put | delete search: ' + dymeruser.id + ' , ' + id + ' , ' + err);
+                ret.setSuccess(false);
+                ret.setMessages("Error Updated!");
+                return res.send(ret);
+            });
+        }
+    });
+});
+//router.put('/hbput2022/:id', (req, res) => { //to delete
+router.put('/hbput2022/:id', (req, res) => {
+    var ret = new jsonResponse();
+    const hdymeruser = req.headers.dymeruser
+    const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+    const dymerextrainfo = dymeruser.extrainfo;
+    const urs_uid = dymeruser.id;
+    let urs_gid = dymeruser.gid;
+    if (dymerextrainfo != undefined)
+        urs_gid = dymerextrainfo.groupId;
+    upload(req, res, function(err) {
+        if (err) {
+            console.error("ERROR | " + nameFile + '| /:id | put | upload:', err);
+            logger.error(nameFile + '| /:id | put | upload:' + err);
+            ret.setMessages("Upload Error");
+            ret.setSuccess(false);
+            ret.setExtraData({ "log": err.stack });
+            return res.send(ret);
+        }
+        var id = req.params.id;
+        var callData = util.getAllQuery(req);
+        var instance = callData.instance;
+        var data = callData.data;
+        var params = (instance) ? instance : {};
+        var editValues = data;
+        let elIndex = instance.index;
+        var bridgeConf = bE.findByIndex(elIndex);
+        if (bridgeConf != undefined) {
+            var globalData = callData;
+            logger.info(nameFile + '| /:id | put | bridgeConf :' + JSON.stringify(bridgeConf));
+            jsonMappingDymerEntityToExternal(globalData, bridgeConf, "update").then(function(mapdata) {
+                //  console.log("jsonMapper FINALE", JSON.stringify(mapdata));
+                bridgeEsternalEntities(bridgeConf, "update", mapdata).then(function(callresp) {
+                    //console.log(nameFile + '| /:id | put | bridgeEsternalEntities: ', JSON.stringify(mapdata), JSON.stringify(callresp.data));
+                    logger.info(nameFile + '| /:id | put | bridgeEsternalEntities :' + JSON.stringify(mapdata) + " , " + JSON.stringify(callresp.data));
+                    ret.setData(callresp.data);
+                    ret.setMessages("Entity Edited successfully");
+                    return res.send(ret);
+                }).catch(function(error) {
+                    console.error("ERROR | " + nameFile + '| /:id | put | bridgeEsternalEntities:', error);
+                    logger.error(nameFile + '| /:id | put | bridgeEsternalEntities: ' + error);
+                    ret.setSuccess(false);
+                    ret.setMessages("Entity Edit Problem");
+                    return res.send(ret);
+                });
+            }).catch(function(error) {
+                console.error("ERROR | " + nameFile + '| /:id | put | jsonMappingDymerEntityToExternal:', error);
+                logger.error(nameFile + '| /:id | put | jsonMappingDymerEntityToExternal: ' + error);
+                ret.setSuccess(false);
+                ret.setMessages("Entity Edit Problem");
+                return res.send(ret);
+            });
+        } else {
+            // console.log("editValues", editValues)
+            let paramsCheck = {};
+            paramsCheck["body"] = {
+                "query": {
+                    "match": {
+                        "_id": id
+                    }
+                }
+            };
+            paramsCheck["body"].size = 1;
+            client.search(paramsCheck).then(async function(respCheck) {
+                if ((respCheck["hits"].hits).length > 0) {
+                    let oldElement = Object.assign({}, respCheck["hits"].hits[0]);
+                    //console.log('oldElement', oldElement);
+                    //  return res.send(ret);
+                    var checkElemPerm = respCheck["hits"].hits[0]._source.properties;
+                    let harpermEdit = false;
+                    if (checkElemPerm.owner.uid == urs_uid || dymeruser.roles.indexOf("app-admin") > -1)
+                        harpermEdit = true;
+                    if (checkElemPerm.grant != undefined) {
+                        if (checkElemPerm.grant.update != undefined) {
+                            if ((checkElemPerm.grant.update.uid).find(x => x == urs_uid)) {
+                                harpermEdit = true;
+                            }
+                        }
+                    }
+                    //console.log(nameFile + '| /:id | put | permission update:', dymeruser.id, id, harpermEdit);
+                    logger.info(nameFile + '| /:id | put | permission to edit | dymeruser.id, entityid,title, haspermEdit :' + dymeruser.id + ' , ' + id + ' , ' + data.title + ' , ' + harpermEdit);
+                    if (harpermEdit) {
+                        //editValues entity edited
+                        let listRelation_New = (editValues.relation != undefined) ? Object.assign({}, editValues.relation) : {};
+                        delete editValues.relation;
+                        var listRelation_todelete = (editValues.relationtodelete != undefined) ? (editValues.relationtodelete).slice() : [];
+                        delete editValues.relationtodelete;
+
+                        logger.info(nameFile + '| /:id | put | listRelation_New :' + JSON.stringify(listRelation_New));
+                        logger.info(nameFile + '| /:id | put | editValues.relationtodelete :' + JSON.stringify(editValues.relationtodelete));
+                        var _split = data.todelete;
+                        var _todeleteObj = data.todeleteObj;
+                        if (_split != undefined) {
+                            _split.forEach(function(entry) {
+                                recFile(mongoose.Types.ObjectId(entry)).then(function(result) {
+                                        gridFSBucket.delete(mongoose.Types.ObjectId(entry)).then(() => {
+                                                //console.log(nameFile + '| /:id | put | deleted Attachments :', entry);
+                                                logger.info(nameFile + '| /:id | put | deleted Attachments :' + entry);
+                                            })
+                                            .catch(function(err) {
+                                                console.error("ERROR | " + nameFile + '| /:id | put | deleted Attachments :', err);
+                                                logger.error(nameFile + '| /:id | put | deleted Attachments : ' + err);
+                                            });
+                                    })
+                                    .catch(function(err) {
+                                        console.error("ERROR | " + nameFile + '| /:id | put | recFile :', err);
+                                        logger.error(nameFile + '| /:id | put | recFile : ' + err);
+                                        //  res.end("");
+                                    });
+                            });
+                            delete editValues.todelete;
+                            delete editValues.todeleteObj;
+                        }
+                        let listRelation_old = await getAllIdsRelations([oldElement._id]);
+                        // console.log('listRelation_old', listRelation_old);
+                        let listRelation_New_indexes = Object.keys(listRelation_New);
+                        let listRelation_old_filtered = listRelation_old.filter(a => (listRelation_New_indexes.includes(a._source._index1) || listRelation_New_indexes.includes(a._source._index2)));
+                        //   console.log('listRelation_old_filtered', listRelation_old_filtered);
+                        let listRelation_New_ids = [];
+                        for (const [key, value] of Object.entries(listRelation_New)) {
+                            //console.log(`${key}: ${value}`);
+                            listRelation_New_ids = [...new Set([...listRelation_New_ids, ...[...new Set(listRelation_New[key].map(a => {
+                                return a.to
+                            }).filter(x => x != undefined))]])];
+                        }
+                        //   console.log('listRelation_New_indexes', listRelation_New_indexes);
+                        //    console.log('listRelation_New_ids', listRelation_New_ids);
+                        let listRelation_old_filtered_todelete = listRelation_old_filtered.filter(a => (!(listRelation_New_ids.includes(a._source._id1) || listRelation_New_ids.includes(a._source._id2))));
+                        let listRelation_ids_todelete = listRelation_old_filtered_todelete.map(a => {
+                            return a._id
+                        });
+                        let listRelation_New_toadd = {};
+                        let listRelation_Old_ids = [...new Set(listRelation_old.map(a => {
+                            //  console.log('element._id', element._id, a._source._id1, (element._id == a._source._id1));
+                            if (id == a._source._id1)
+                                return a._source._id2
+                            if (id == a._source._id2)
+                                return a._source._id1
+                        }).filter(o => o != undefined))];
+                        let datasetRelation = [];
+                        for (const [key, value] of Object.entries(listRelation_New)) {
+                            listRelation_New_toadd[key] = listRelation_New[key].filter((a, index, arr) => { return !(listRelation_Old_ids.includes(a.to)) })
+                            listRelation_New_toadd[key].forEach(elid => {
+                                if (elid.to !== '')
+                                    datasetRelation.push({
+                                        _index1: elIndex,
+                                        "_id1": id,
+                                        "_id2": elid.to,
+                                        _index2: key
+                                    });
+                            });
+                        }
+                        if (listRelation_ids_todelete.length > 0)
+                            deleteBulkByIds(listRelation_ids_todelete, 'entity_relation').then(
+                                function(resp) {
+                                    logger.info(nameFile + '| /:id | put | id,deleted relations :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(listRelation_old_filtered_todelete));
+                                    logger.info(nameFile + '| singlerelation | delete| dymeruser.id, relation removed :' + dymeruser.id + " , " + JSON.stringify(resp));
+                                },
+                            ).catch(function(err) {
+                                console.error("ERROR | " + nameFile + '| /:id | put | id,deleted relations  ', JSON.stringify(listRelation_old_filtered_todelete), id, err);
+                                logger.error(nameFile + '| /:id | put | id,deleted relations :' + dymeruser.id + ' , ' + JSON.stringify(listRelation_old_filtered_todelete) + ' , ' + err);
+
+                            });
+
+                        let resrel = await createBulk(datasetRelation, 'entity_relation');
+                        if (!resrel.isSuccess()) {
+                            logger.error(nameFile + '| /:id | put | entityid,uid,create relations :' + id + ' , ' + dymeruser.id + ' , ' + JSON.stringify(datasetRelation) + ' , ' + err);
+                        }
+                        var new_Temp_Entity = extend({}, oldElement);
+                        //console.log('new_Temp_Entity', new_Temp_Entity);
+                        new_Temp_Entity._source = {...editValues };
+                        new_Temp_Entity._source.properties = extend(oldElement._source.properties, editValues.properties);
+                        if (req.files != undefined)
+                            req.files.forEach(function(el) {
+                                var ark = replaceAll(el.fieldname, '[', '@@');
+                                var temp_el = el;
+                                delete el.fieldname;
+                                ark = replaceAll(ark, ']', '');
+                                ark = ark.split("@@");
+                                ark.shift();
+                                stringAsKey(new_Temp_Entity._source, ark, el);
+                            });
+                        //console.log("date mod", oldElement._source.properties.changed, editValues.properties.changed);
+                        // console.log("date mod", oldElement._source.properties.changed, editValues.properties.changed);
+                        if (editValues.properties.changed == undefined) {
+                            new_Temp_Entity._source.properties.changed = new Date().toISOString();
+                        }
+                        if (!new_Temp_Entity._source.properties.hasOwnProperty('extrainfo'))
+                            new_Temp_Entity._source.properties.extrainfo = {};
+                        new_Temp_Entity._source.properties.extrainfo.lastupdate = { "uid": dymeruser.id };
+                        client.update({
+                            index: elIndex,
+                            type: elIndex,
+                            id: id,
+                            body: {
+                                // put the partial document under the `doc` key
+                                doc: new_Temp_Entity._source
+                            },
+                            refresh: 'true'
+                        }).then(async function(resp) {
+                            logger.info(nameFile + '| /:id | put | updated dymeruser.id, id,title, entity :' + dymeruser.id + ' , ' + id + ' , ' + new_Temp_Entity._source.title);
+                            ret.setMessages("Updated!");
+                            // var objHook = new_Temp_Entity;
+                            console.log('resp update ', resp);
+                            /* var extraInfo = dymerextrainfo;
+                             if (extraInfo != undefined)
+                                 extraInfo.extrainfo.emailAddress = dymeruser.id;*/
+                            logger.info(nameFile + '| /:id | put | pre check hook| obj, extraInfo:' + dymeruser.id + ' , ' + JSON.stringify(new_Temp_Entity) + ' , ' + JSON.stringify(dymerextrainfo));
+                            checkServiceHook('after_update', new_Temp_Entity, dymerextrainfo, req);
+                            await redisClient.invalidateCacheById(id, redisEnabled)
+                            return res.send(ret);
+                        }).catch(function(err) {
+                            console.error("ERROR | " + nameFile + '| /:id | put | id: ', id, err);
+                            logger.error(nameFile + '| /:id | put | updated dymeruser.id, extraInfo, id,title, entity :' + dymeruser.id + ' , ' + JSON.stringify(dymerextrainfo) + ' , ' + id + ' , ' + new_Temp_Entity._source.title + ' , ' + JSON.stringify(new_Temp_Entity) + " , " + err);
+                            ret.setSuccess(false);
+                            ret.setMessages("Error Updated!");
+                            return res.send(ret);
+                        });
+
+                    } else {
+                        ret.setMessages("Permissions denied");
+                        res.status(200);
+                        ret.setSuccess(false);
+                        return res.send(ret);
+                    }
+                } else {
+                    ret.setMessages("You don't have permission");
+                    res.status(200);
+                    ret.setSuccess(false);
+                    return res.send(ret);
+                }
+            }).catch(function(err) {
+                console.error("ERROR | " + nameFile + '| /:id | put | search entity: ', id, err);
+                logger.error(nameFile + '| /:id | put | search entity: ' + dymeruser.id + ' , ' + id + ' , ' + err);
                 ret.setSuccess(false);
                 ret.setMessages("Error Updated!");
                 return res.send(ret);
@@ -4575,6 +4824,7 @@ router.delete('/:id', (req, res) => {
                     var elToDelete = element;
                     params["index"] = element._index;
                     params["type"] = element._type;
+                    params["refresh"] = true;
                     for (var key in element._source) {
                         if (element._source[key] instanceof Array) {
                             for (var subkey in element._source[key]) {
