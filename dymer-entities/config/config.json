@@ -14,6 +14,7 @@
                     "host": "127.0.0.1",
                     "ip": "cache",
                     "port": 6379,
+                    "password": "eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81",
                     "user": "redis",
                     "isEnabled": true
                 },
