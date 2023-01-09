@@ -277,7 +277,7 @@ pre.code-jquery code {
 }
 
 #vvveb-builder #editAssets-page-modal .tab-content {
-    max-height: 350px;
+   /* max-height: 350px;*/
     overflow-y: scroll;
     overflow-x: hidden;
 }
@@ -887,7 +887,9 @@ pre.code-jquery code {
     resize: vertical !important;
     max-height: none;
 }
-
+#vvveb-builder #editAssets-page-modal textarea.form-control, {
+    max-height: none;
+}
 .containerConfig {
     padding: 10px;
     padding-bottom: 6px;
