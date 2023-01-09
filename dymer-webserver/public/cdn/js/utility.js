@@ -1262,7 +1262,7 @@ function loadModelListToModal(target, index, action) {
     if (datapost != undefined)
         ajax_temp_call.addparams(datapost);
     var ret = ajax_temp_call.send();
-    var newHtml = "<ul>";
+    var newHtml = "";
     var indport = sourceUrl + "/";
     var listClass = "listAddEntityli";
     var listIcon = '<i class="fa fa-eye listAddEntityicon" aria-hidden="true" ></i>';
@@ -1301,11 +1301,11 @@ function loadModelListToModal(target, index, action) {
                 }
             });
             dom_to_render = indport + dom_to_render;
-            newHtml += '<li onclick="loadAddEntityForm(\'' + dom_to_render + '\',\'' + item._id + '\');" class="' + listClass + '">' + item.title + listIcon + '</li>'
+            newHtml += '<button id="addEntityBtn" onclick="loadAddEntityForm(\'' + dom_to_render + '\',\'' + item._id + '\');" type="button" class="btn btn-outline-secondary ' + listClass + '">' + listIcon+' '+ item.title + '</button>'
         });
-        newHtml += "</ul>";
+        newHtml += " ";
         if (!listToLoad.length)
-            newHtml = '<div  class="alert alert-info  "> No data available  </div>';
+            newHtml = '<div  class="alert alert-info  "> No '+item.title+' data available  </div>';
         if (action == undefined) {
             $(target).html("");
             $(target).html(newHtml);
