@@ -22,9 +22,10 @@ var routes = require('./routes/routes-v2');
 var publicRoutes = require('./routes/publicfiles');
 //app.use("/uploads", express.static(path.join(__dirname, 'uploads')));
 //app.use(express.static(__dirname+'/uploads'));
-
+const bodyParser = require("body-parser");
+app.use(express.json())
 var cors = require('cors');
-
+global.logconsole = (process.env.DYMER_LOGGER == undefined) ? false : process.env.DYMER_LOGGER;
 app.use(cors());
 /*app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -132,7 +133,23 @@ app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
     return res.send(ret);
 });
 
+app.get('/logtypes', async(req, res) => {
+    var ret = new jsonResponse();
+    ret.setSuccess(true);
+    let loggerdebug = global.loggerdebug;
+    ret.setData({ consolelog: loggerdebug });
+    ret.setMessages("logtypes");
+    return res.send(ret);
+});
+app.post('/setlogconfig', (req, res) => {
+    var ret = new jsonResponse();
+    logger.ts_infologger(req.body.consoleactive);
+    ret.setMessages("Settings updated");
+    ret.setData({ consoleactive: req.body.consoleactive });
+    return res.send(ret);
+});
 app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
+    var ret = new jsonResponse();
     var filetype = req.params.filetype;
     console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
     return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
@@ -147,7 +164,8 @@ app.get(util.getContextPath('entity') + '/checkservice', util.checkIsAdmin, (req
         },
         error: {
             size: errorsize
-        }
+        },
+        infomicroservice: global.gConfig
     });
     ret.setMessages("Service is up");
     res.status(200);

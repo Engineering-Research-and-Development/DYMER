@@ -168,6 +168,7 @@ var recFile = function(file_id) {
  *************************************************************************************************************
  *************************************************************************************************************
  */
+
 router.get('/dettagliomodel', [util.checkIsDymerUser], (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);

@@ -65,6 +65,9 @@ angular.module('mclgsCtrl', [])
         $scope.configlog = {};
         $http.get(baseContextPath + '/api/system/logtypes', {}).then(function(retE) {
             $scope.configlog.consoleactive = retE.data.data.consoleactive;
+            console.log('retE', retE.data.data.consoleactive);
+            // $scope.configlog.consoleactive = { webserver: false, entity: false, template: false, form: false, service: false };
+            $scope.configlog.redisactive = retE.data.data.redisactive;
         });
         $http.get(baseContextPath + "/checkservice").then(function(rt) {
             $scope.checkservice.webserver.logs = rt.data.data;
@@ -94,6 +97,10 @@ angular.module('mclgsCtrl', [])
             $http.get(baseContextPath + "/api/entities/api/v1/entity/redisstate").then(function(rts) {
                 $scope.checkservice.entities.db.redis.css = rts.data.data.css;
                 $scope.checkservice.entities.db.redis.msg = rts.data.data.label;
+                if (rts.data.data.value == 1 || rts.data.data.value == 1)
+                    $scope.checkservice.entities.db.redis.value = true;
+                else
+                    $scope.checkservice.entities.db.redis.value = false;
             })
         }).catch(function(response) {
             console.log(response);
@@ -231,21 +238,22 @@ angular.module('mclgsCtrl', [])
                 console.log(response);
             });
         };
-
-
         $scope.saveConfigLog = function(opnconf) {
             var dapaPost = opnconf;
             $http({
-
                 method: 'POST',
                 url: baseContextPath + '/api/system/setlogConfig',
                 data: { data: dapaPost }
-
             }).then(function successCallback(response) {
                     if (response.data.success) {
-                        useGritterTool("<b><i class='fa fa-map-signs  '></i> Log setting </b>", response.data.message);
+                        // useGritterTool("<b><i class='fa fa-map-signs  '></i> Log setting </b>", response.data.message);
+                        $scope.checkservice.entities.db.redis.msg = response.data.data.redisactive
+                        $scope.checkservice.entities.db.redis.css = response.data.data.redisactive.css;
+                        $scope.checkservice.entities.db.redis.msg = response.data.data.redisactive.label;
+                        useGritterTool("<b><i class='fa fa-map-signs  '></i> Settings </b>", response.data.message);
                     } else {
-                        useGritterTool("<b><i class='fa fa-map-signs  '></i> Log setting</b>", response.data.message, "danger");
+                        // useGritterTool("<b><i class='fa fa-map-signs  '></i> Log setting</b>", response.data.message, "danger");
+                        useGritterTool("<b><i class='fa fa-map-signs  '></i> Settings </b>", response.data.message, "danger");
                     }
                 },
                 function errorCallback(response) {
@@ -253,5 +261,4 @@ angular.module('mclgsCtrl', [])
                     useGritterTool("<b><i class='fa fa-map-signs  '></i> Openness Search Configuration</b>", "we are sorry but an error has occurred", "danger");
                 });
         }
-
     });

@@ -30,18 +30,18 @@ module.exports = {
         } catch (e) {
             console.log("Unable to connect to REDIS due to ", e.message)
         }
-
+        return;
     },
     disconnect: async function() {
         console.log("Disconnecting...")
         try {
             await client.disconnect();
-            console.log(nameFile + ` | redisModule | Connected to REDIS!`)
-            logger.info(nameFile + ` | redisModule | Connected to REDIS!`)
-        } catch (error) {}
-
-        console.log(nameFile + ` | redisModule | Connected to REDIS!`)
-        logger.info(nameFile + ` | redisModule | Connected to REDIS!`)
+            console.log(nameFile + ` | redisModule | Disconnected to REDIS!`)
+            logger.info(nameFile + ` | redisModule | Disconnected to REDIS!`)
+        } catch (error) {
+            console.log("Unable to disconnect from REDIS due to ", error.message)
+        }
+        return;
     },
 
     ping: async function(isEnabled) {
@@ -81,7 +81,7 @@ module.exports = {
     writeCacheByKey: async function(query, userId, origin, response, ids, indexes, typeservice, isEnabled) {
         if (!isEnabled) { return false }
         let hash = await this.calculateHash(query)
-
+        console.log(JSON.parse(response))
         try {
             await client.hSet(hash, "query", hash);
             await client.hSet(hash, "userId", userId);
@@ -149,7 +149,7 @@ module.exports = {
             }
         }, []))]
     },
-    invalidateCacheById: async function(id, isEnabled) {
+    invalidateCacheById: async function(idsToInvalidate, isEnabled) {
         if (!isEnabled) { return false }
         try {
             let keys = await client.keys('*')
@@ -158,7 +158,7 @@ module.exports = {
                 let idsArray = (await client.hGet(key, 'ids'))
                 let ids = idsArray.split(",")
 
-                if (ids.find(idToDel => idToDel == id)) {
+                if (ids.some(idToDel => idsToInvalidate.includes(idToDel))) {
                     client.del(key)
                     console.log(nameFile + ` | redisModule | invalidating cache at key ${key}`)
                     logger.info(nameFile + ` | redisModule | invalidating cache at key ${key}`)
@@ -189,5 +189,32 @@ module.exports = {
         } catch (e) {
             console.log("Unable invalidate REDIS cache due to ", e.message)
         }
-    }
+    },
+    // updateCacheById: async function(idsToUpdate, isEnabled) {
+    //     if (!isEnabled) { return false }
+    //     try {
+    //         let keys = await client.keys('*')
+
+    //         for (let key of keys) {
+    //             let idsArray = (await client.hGet(key, 'ids'))
+    //             let ids = idsArray.split(",")
+
+    //             if (ids.some(idToUp => idsToUpdate.includes(idToUp))) {
+    //                 // Update key
+    //                 //IDEA: 
+    //                 // check in case of text
+    //                 // 1. rimuovi quel id1 da ids
+    //                 // 2. push id nell'array id2
+    //                 // 3 e 4. Lo stesso per quanto concerne l'altro
+    //                 client.del(key)
+    //                 console.log(nameFile + ` | redisModule | invalidating cache at key ${key}`)
+    //                 logger.info(nameFile + ` | redisModule | invalidating cache at key ${key}`)
+    //             }
+    //         }
+    //         return
+
+    //     } catch (e) {
+    //         console.log("Unable invalidate REDIS cache due to ", e.message)
+    //     }
+    // },
 }

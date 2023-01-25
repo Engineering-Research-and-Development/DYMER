@@ -170,7 +170,7 @@ exports.checkIsAdmin = function(req, res, next) {
     if ((dymeruser.roles.indexOf("app-admin") > -1)) {
         next();
     } else {
-        console.log('checkIsAdmin | No permission:', dymeruser.id, req.originalUrl, req.method, req.url);
+        logger.info('checkIsAdmin | No permission:', dymeruser.id, req.originalUrl, req.method, req.url);
         var ret = new jsonResponse();
         ret.setMessages("No permission");
         // res.status(200);

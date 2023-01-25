@@ -610,7 +610,8 @@ var objectToFormData = function(obj, form, namespace) {
     }
     return fd;
 };
-router.get('/updategeo/:entype', util.checkIsAdmin, (req, res) => {
+//router.get('/updategeo/:entype', util.checkIsAdmin, (req, res) => {
+router.get('/updategeo/:entype', (req, res) => {
     logger.info(nameFile + '| get/updategeo');
     var entype = req.params.entype;
     var ret = new jsonResponse();

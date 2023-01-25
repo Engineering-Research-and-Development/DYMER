@@ -16,7 +16,7 @@ angular.module('taxCtrl', [])
         };
         $scope.insertvocab = function(el) {
             console.log('el', el);
-            if (el.value != undefined) {
+            if (el.value != undefined && el.locales.en) {
                 var newElement = {
                     id: Date.now(),
                     locales: el.locales,
@@ -51,7 +51,7 @@ angular.module('taxCtrl', [])
 
                 $scope.acceptUpdatedValues = function() {
 
-                    if ($scope.editvocab.value) {
+                    if ($scope.editvocab.value && $scope.editvocab.locales.en) {
                         nodeDataVocab.id = $scope.editvocab.id
                         nodeDataVocab.value = $scope.editvocab.value
                         nodeDataVocab.locales = $scope.editvocab.locales
@@ -86,6 +86,7 @@ angular.module('taxCtrl', [])
 
         $scope.newSubItem = function(scope) {
             var nodeData = scope.$modelValue;
+            console.log("nodeData", nodeData)
             nodeData.nodes.push({
                 id: nodeData.id * 10 + nodeData.nodes.length,
                 title: nodeData.title + '.' + (nodeData.nodes.length + 1),
@@ -114,11 +115,10 @@ angular.module('taxCtrl', [])
                 }
             }).then(function(ret) {
                 $scope.vocabularies[selectedVocabulary] = ret
+                useGritterTool("Vocabulary", "updated with success")
             }).catch((err) => {
                 console.log(err)
             })
-
-            useGritterTool("Vocabulary", "updated with success")
         };
 
         $scope.deleteVocab = function(selectedVocabulary) {
@@ -140,27 +140,19 @@ angular.module('taxCtrl', [])
             newPageModal.modal("hide");
             useGritterTool("Vocabulary", "deleted with success")
         };
-
-
         $scope.createVocabulary = function(frm) {
-
             // rendering name and description form
             console.log('frm', frm);
-            var serviceUrl = baseContextPath + '/api/dservice/api/v1/taxonomy';
-
+            var serviceurl = baseContextPath + '/api/dservice/api/v1/taxonomy';
             $http({
-                url: serviceUrl,
+                url: serviceurl,
                 method: "POST",
                 data: frm
             }).then(function(ret) {
                 $scope.vocabularies.push(ret.data.data)
-                if (ret.data.success)
-                    useGritterTool("<b><i class='fa fa-database   '></i> vacabulary</b>", ret.data.message);
-                else
-                    useGritterTool("<b><i class='fa fa-database   '></i> vacabulary</b>", ret.data.message, "warning");
-                console.log(ret)
+                useGritterTool("Vocabulary", "new vocabulary with success")
+                console.log(ret.data.data)
             }).catch((err) => {
-                useGritterTool("<b><i class='fa fa-database   '></i> vacabulary</b>", "Error on vacabulary", "warning");
                 console.log(err)
             });
         };

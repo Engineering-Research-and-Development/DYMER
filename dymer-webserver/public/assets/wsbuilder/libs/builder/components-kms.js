@@ -1,4 +1,4 @@
-Vvveb.ComponentsGroup["Dymer Model"] = ["dymer/kmsgeopoint", "dymer/kmsrelation", "dymer/dymrelation", "dymer/kmstaxonomy", "html/mytextinput", "html/dmodelentitytags"];
+Vvveb.ComponentsGroup["Dymer Model"] = ["dymer/kmsgeopoint", "dymer/kmsrelation", "dymer/dymrelation", "html/mytextinput", "html/dmodelentitytags", "dymer/kmstaxonomy"];
 Vvveb.ComponentsGroup["Dymer Template"] = ["dymer/entitystatus", "html/dentitylink", "dymer/dpagination", "html/dimage", "html/dtemplateentitytags"];
 Vvveb.Components.add("dymer/entitystatus", {
     name: "Entity Status",
@@ -394,7 +394,7 @@ Vvveb.Components.add("dymer/dymrelation", {
                     .chiama()
                     .then(function(ret) {
                         var listIndexes = ret;
-                        console.log("serviceEntity listIndexes", listIndexes);
+                        // console.log("serviceEntity listIndexes", listIndexes);
                         //    console.log("beforeInit d");
                         propert.push({
                             value: "",
@@ -455,7 +455,121 @@ Vvveb.Components.add("dymer/dymrelation", {
         }
     ]
 });
-Vvveb.Components.add("dymer/kmstaxonomy", {
+/* giaisg */
+Vvveb.Components.extend("_base", "html/mytextinput", {
+    name: "Dymer Input",
+    //attributes: { "type": "text" },
+    attributes: ["data-component-dymerinput"],
+    image: "icons/text_input.svg",
+    dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/text_input.png">',
+    html: '<div class="form-group"><label>Text</label><input data-component-dymerinput class="form-control" type="text" ></div></div>',
+    properties: [{
+            name: "Value",
+            key: "value",
+            htmlAttr: "value",
+            inputtype: TextInput
+        }, {
+            name: "Placeholder",
+            key: "placeholder",
+            htmlAttr: "placeholder",
+            inputtype: TextInput
+        }, {
+            name: "Type",
+            key: "type",
+            htmlAttr: "type",
+            inputtype: SelectInput,
+            validValues: ["button", "checkbox", "color", "date", "datetime-local", "email", "file", "hidden", "image", "month", "number", "password", "radio", "range", "reset", "search", "submit", "tel", "text", "time", "url", "week"],
+            data: {
+                options: [
+                    { value: "text", text: "Text" },
+                    { value: "button", text: "Button" },
+                    { value: "checkbox", text: "Checkbox" },
+                    { value: "color", text: "Color" },
+                    { value: "date", text: "Date" },
+                    { value: "datetime-local", text: "Datetime-local" },
+                    { value: "email", text: "Email" },
+                    { value: "file", text: "File" },
+                    { value: "hidden", text: "Hidden" },
+                    { value: "image", text: "Image" },
+                    { value: "month", text: "Month" },
+                    { value: "number", text: "Number" },
+                    { value: "password", text: "Password" },
+                    { value: "radio", text: "Radio" },
+                    { value: "range", text: "Range" },
+                    { value: "reset", text: "Reset" },
+                    { value: "search", text: "Search" },
+                    { value: "submit", text: "Submit" },
+                    { value: "tel", text: "Tel" },
+                    { value: "time", text: "Time" },
+                    { value: "url", text: "Url" },
+                    { value: "week", text: "Week" }
+                ]
+            }
+        }, {
+            name: "Required",
+            key: "required",
+            inputtype: CheckboxInput,
+            init: function(node) {
+                if (node.hasAttribute('required')) {
+                    setTimeout(function() { $('#required_check').prop('checked', true); }, 2000)
+                }
+            }
+        }, {
+            name: "Searchable Label",
+            key: "searchable-label",
+            htmlAttr: "searchable-label",
+            inputtype: TextInput
+        }, {
+            name: "Searchable Override",
+            key: "searchable-override",
+            htmlAttr: "searchable-override",
+            inputtype: TextInput
+        }, {
+            name: "Searchable Text",
+            key: "searchable-text",
+            htmlAttr: "searchable-text",
+            inputtype: TextInput
+        }, {
+
+            name: "Searchable Element",
+            key: "searchable-element",
+            htmlAttr: "searchable-element",
+            inputtype: CheckboxInput,
+            init: function(node) {
+                if (node.hasAttribute('searchable-element') && node.getAttribute('searchable-element') == "true") {
+                    setTimeout(function() { $('#searchable-element_check').prop('checked', true); }, 1300)
+                }
+            }
+
+        },
+        {
+            name: "Searchable Multiple",
+            key: "searchable-multiple",
+            htmlAttr: "searchable-multiple",
+            inputtype: CheckboxInput,
+            init: function(node) {
+                if (node.hasAttribute('searchable-multiple')) {
+                    setTimeout(function() { $('#searchable-multiple_check').prop('checked', true); }, 2000)
+                }
+            }
+        }
+    ],
+    onChange: function(node, property, value) {
+        /*  if (property.key == "searchable-element") {
+              if (value == true) {
+                  $(node).attr("searchable-element", "");
+              } else { $(node).removeAttr("searchable-element"); }
+          } else*/
+        if (property.key == "required") {
+            if (value == true) {
+                $(node).prop("required", true);
+            } else { $(node).removeAttr("required"); }
+        }
+    }
+});
+
+/* fine giaisg */
+Vvveb.Components.extend("_base", "dymer/kmstaxonomy", {
     name: "Taxonomy",
     attributes: ["data-component-kmstaxonomy"],
     image: "icons/dymer/taxonomy.svg",
@@ -648,120 +762,6 @@ Vvveb.Components.add("dymer/kmstaxonomy", {
     ]
 });
 
-/* giaisg */
-Vvveb.Components.extend("_base", "html/mytextinput", {
-    name: "Dymer Input",
-    //attributes: { "type": "text" },
-    attributes: ["data-component-dymerinput"],
-    image: "icons/text_input.svg",
-    dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/text_input.png">',
-    html: '<div class="form-group"><label>Text</label><input data-component-dymerinput class="form-control" type="text" ></div></div>',
-    properties: [{
-            name: "Value",
-            key: "value",
-            htmlAttr: "value",
-            inputtype: TextInput
-        }, {
-            name: "Placeholder",
-            key: "placeholder",
-            htmlAttr: "placeholder",
-            inputtype: TextInput
-        }, {
-            name: "Type",
-            key: "type",
-            htmlAttr: "type",
-            inputtype: SelectInput,
-            validValues: ["button", "checkbox", "color", "date", "datetime-local", "email", "file", "hidden", "image", "month", "number", "password", "radio", "range", "reset", "search", "submit", "tel", "text", "time", "url", "week"],
-            data: {
-                options: [
-                    { value: "text", text: "Text" },
-                    { value: "button", text: "Button" },
-                    { value: "checkbox", text: "Checkbox" },
-                    { value: "color", text: "Color" },
-                    { value: "date", text: "Date" },
-                    { value: "datetime-local", text: "Datetime-local" },
-                    { value: "email", text: "Email" },
-                    { value: "file", text: "File" },
-                    { value: "hidden", text: "Hidden" },
-                    { value: "image", text: "Image" },
-                    { value: "month", text: "Month" },
-                    { value: "number", text: "Number" },
-                    { value: "password", text: "Password" },
-                    { value: "radio", text: "Radio" },
-                    { value: "range", text: "Range" },
-                    { value: "reset", text: "Reset" },
-                    { value: "search", text: "Search" },
-                    { value: "submit", text: "Submit" },
-                    { value: "tel", text: "Tel" },
-                    { value: "time", text: "Time" },
-                    { value: "url", text: "Url" },
-                    { value: "week", text: "Week" }
-                ]
-            }
-        }, {
-            name: "Required",
-            key: "required",
-            inputtype: CheckboxInput,
-            init: function(node) {
-                if (node.hasAttribute('required')) {
-                    setTimeout(function() { $('#required_check').prop('checked', true); }, 2000)
-                }
-            }
-        }, {
-            name: "Searchable Label",
-            key: "searchable-label",
-            htmlAttr: "searchable-label",
-            inputtype: TextInput
-        }, {
-            name: "Searchable Override",
-            key: "searchable-override",
-            htmlAttr: "searchable-override",
-            inputtype: TextInput
-        }, {
-            name: "Searchable Text",
-            key: "searchable-text",
-            htmlAttr: "searchable-text",
-            inputtype: TextInput
-        }, {
-
-            name: "Searchable Element",
-            key: "searchable-element",
-            htmlAttr: "searchable-element",
-            inputtype: CheckboxInput,
-            init: function(node) {
-                if (node.hasAttribute('searchable-element') && node.getAttribute('searchable-element') == "true") {
-                    setTimeout(function() { $('#searchable-element_check').prop('checked', true); }, 1300)
-                }
-            }
-
-        },
-        {
-            name: "Searchable Multiple",
-            key: "searchable-multiple",
-            htmlAttr: "searchable-multiple",
-            inputtype: CheckboxInput,
-            init: function(node) {
-                if (node.hasAttribute('searchable-multiple')) {
-                    setTimeout(function() { $('#searchable-multiple_check').prop('checked', true); }, 2000)
-                }
-            }
-        }
-    ],
-    onChange: function(node, property, value) {
-        /*  if (property.key == "searchable-element") {
-              if (value == true) {
-                  $(node).attr("searchable-element", "");
-              } else { $(node).removeAttr("searchable-element"); }
-          } else*/
-        if (property.key == "required") {
-            if (value == true) {
-                $(node).prop("required", true);
-            } else { $(node).removeAttr("required"); }
-        }
-    }
-});
-
-/* fine giaisg */
 
 Vvveb.Components.extend("_base", "html/dmodelentitytags", {
     name: "Entity Tags",

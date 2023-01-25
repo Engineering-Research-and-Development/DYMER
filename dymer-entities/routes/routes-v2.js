@@ -85,7 +85,6 @@ redisClient.init(redisEnabled)
      *************************************************************************************************************
      */
 
-
 /*
 var storageEngine = multer.diskStorage({
     destination: function(req, file, callback) {
@@ -246,6 +245,56 @@ router.get('/elasticstate', util.checkIsAdmin, (req, res) => {
 
 });
 
+router.patch("/redistoggle", async(req, res) => {
+    redisEnabled = req.body.state;
+    let ret = new jsonResponse();
+    let dbState = [{
+            value: 0,
+            label: "Disconnected",
+            css: "text-danger"
+        },
+        {
+            value: 1,
+            label: "Connected",
+            css: "text-success"
+        },
+        {
+            value: 2,
+            label: "Connecting",
+            css: "text-info"
+        },
+        {
+            value: 3,
+            label: "Disconnecting",
+            css: "text-warning"
+        },
+        {
+            value: 4,
+            label: "Disabled",
+            css: "text-warning"
+        }
+    ];
+    if (!redisEnabled) {
+        await redisClient.disconnect();
+        redisEnabled = false;
+    } else {
+        await redisClient.init(true);
+        redisEnabled = true;
+    }
+
+    let redisState = await redisClient.ping(redisEnabled);
+    if (redisState) {
+        redisState = 1;
+    } else {
+        redisState = 4;
+    }
+
+    ret.setMessages("redis state");
+    ret.setData(dbState.find(f => f.value == redisState));
+    res.status(200);
+    ret.setSuccess(true);
+    return res.send(ret);
+})
 router.get('/redisstate', util.checkIsAdmin, async(req, res) => {
     let ret = new jsonResponse();
     let redisstate = 0;
@@ -387,7 +436,7 @@ var recFile = function(file_id) {
 
 function checkRelation(params, elIndex, elId) {
     var _id1 = elId;
-    // console.log('checkRelation', params, elIndex);
+    //console.log('checkRelation', params, elIndex);
     // console.log(nameFile + '| checkRelation | params:', JSON.stringify(params), elIndex);
     logger.info(nameFile + '| checkRelation | params :' + JSON.stringify(params) + " , " + elIndex);
     let datasetRel = [];
@@ -404,19 +453,17 @@ function checkRelation(params, elIndex, elId) {
             }
             //  console.log('_id2', _id2);
             // console.log('myKey', myKey, elre);
-
-            _id2_list.forEach(singleId2 => {
-                if (singleId2 != "")
-                    datasetRel.push({
-                        _index1: elIndex,
-                        "_id1": _id1,
-                        "_id2": singleId2,
-                        _index2: myKey
-                    });
-                //console.log("avvio controllo", qparams, JSON.stringify(qparams)); 
-            });
-
         }
+        _id2_list.forEach(singleId2 => {
+            if (singleId2 != "")
+                datasetRel.push({
+                    _index1: elIndex,
+                    "_id1": _id1,
+                    "_id2": singleId2,
+                    _index2: myKey
+                });
+            //console.log("avvio controllo", qparams, JSON.stringify(qparams)); 
+        });
     }
     let qparams = {};
     qparams["index"] = "entity_relation";
@@ -456,6 +503,8 @@ function checkRelation(params, elIndex, elId) {
             ]
         }
     };
+    // console.log('checkRelation qparams', qparams);
+    // console.log('checkRelation datasetRel', datasetRel);
     controlAndCreateRel_V2(qparams, datasetRel);
     return true;
 }
@@ -567,6 +616,7 @@ function controlAndCreateRel_V2(qparams, datasetRel) {
                 //console.log("controlAndCreateRel list", resp, JSON.stringify(qparams));
                 if (resp.hits == undefined) {
                     //console.log("CREO resp.hits == undefined");
+                    // console.log('controlAndCreateRel_V2 1 datasetRel', datasetRel);
                     createRelationV2(datasetRel);
                 } else {
                     //console.log("CREO resp.hits != undefined");
@@ -581,6 +631,7 @@ function controlAndCreateRel_V2(qparams, datasetRel) {
                             } else return false;
                         });
                     });
+                    //  console.log('controlAndCreateRel_V2 2 filterdatasetRel', filterdatasetRel);
                     createRelationV2(filterdatasetRel);
                 }
             }, function(err) {
@@ -1192,6 +1243,7 @@ async function createRelationV2(dataset) {
     //   let params = { index: "entity_relation", type: "entity_relation" };
     //   params["body"] = newRel;
     //  params["refresh"] = true;
+    //console.log('createRelationV2', dataset)
     if (dataset.length > 0) {
         const body = dataset.flatMap(doc => [{ index: { "_index": 'entity_relation', "_type": 'entity_relation' } }, doc])
             //const { body: bulkResponse } = await client.bulk({ refresh: true, body })
@@ -1216,9 +1268,10 @@ async function createRelationV2(dataset) {
                 }
             })
             console.log(erroredDocuments)
-            console.error("ERROR | " + nameFile + '| createRelationV2  : ', erroredDocuments);
+                // console.error("ERROR | " + nameFile + '| createRelationV2  : ', erroredDocuments);
             logger.error(nameFile + '| createRelationV2:' + erroredDocuments);
         } else {
+            //  console.log('bulkResponse.items', bulkResponse.items);
             logger.info(nameFile + '| createRelationV2 | success:' + JSON.stringify(dataset));
         }
     } else {
@@ -1644,10 +1697,7 @@ router.post('/singlerelation/', util.checkIsAdmin, (req, res) => {
         refresh: 'true'
     }).then(async function(resp) {
         logger.info(nameFile + '| post singlerelation/:id | dymeruser.id, create :' + dymeruser.id + ' , ' + JSON.stringify(callData));
-        //antonino 
-        await redisClient.invalidateCacheById(callData.id1, redisEnabled)
-        await redisClient.invalidateCacheById(callData.id2, redisEnabled)
-
+        await redisClient.invalidateCacheById([callData.id1, callData.id2], redisEnabled)
         ret.setMessages("Relation created!");
         ret.setExtraData(resp);
         return res.send(ret);
@@ -1682,9 +1732,7 @@ router.put('/singlerelation/:id', util.checkIsAdmin, (req, res) => {
     }).then(async function(resp) {
         logger.info(nameFile + '| put singlerelation/:id | dymeruser.id, id updated :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(data));
         ret.setMessages("Relation Updated!");
-        //antonino 
-        await redisClient.invalidateCacheById(callData.id1, redisEnabled)
-        await redisClient.invalidateCacheById(callData.id2, redisEnabled)
+        await redisClient.invalidateCacheById([callData.id1, callData.id2, id], redisEnabled)
         return res.send(ret);
     }).catch(function(err) {
         logger.error(nameFile + '| put singlerelation/:id | dymeruser.id, id update :' + dymeruser.id + ' , ' + id + ' , ' + err);
@@ -1722,8 +1770,7 @@ router.delete('/singlerelation/:id', util.checkIsAdmin, (req, res) => {
                     logger.info(nameFile + '| singlerelation | delete| dymeruser.id, relation removed :' + dymeruser.id + " , " + JSON.stringify(resp));
                     ret.setMessages("Relation deleted successfully");
                     ret.addData(resp);
-                    await redisClient.invalidateCacheById(ele._source._id1, redisEnabled)
-                    await redisClient.invalidateCacheById(ele._source._id2, redisEnabled)
+                    await redisClient.invalidateCacheById([ele._source._id1, ele._source._id2, id], redisEnabled)
                     return res.send(ret);
                 },
                 function(err) {
@@ -2265,7 +2312,7 @@ router.post('/_search', (req, res) => {
             params["sort"] = sort;
             params["body"] = query;
             params["body"].size = size;
-            //console.log('source', source);
+
 
             // params["_source_includes"] = ["title"];
             //    params["_source_includes"] = ["*"];
@@ -3178,6 +3225,7 @@ router.post('/:enttype', function(req, res) {
                             params["body"] = data;
                             // params["body"].size = 10000;
                             params["refresh"] = true;
+
                             let ref = Object.assign({}, data.relation);
                             if (data != undefined)
                                 delete data.relation;
@@ -3213,7 +3261,6 @@ router.post('/:enttype', function(req, res) {
                                 setTimeout(() => {
                                     checkServiceHook('after_insert', resp, dymerextrainfo, req);
                                 }, 3000);
-
                                 await redisClient.invalidateCacheByIndex(ret.data[0]._index, redisEnabled)
                                 return res.send(ret);
                             });
@@ -3421,7 +3468,7 @@ router.put('/update/:id', (req, res) => {
                                         //console.log(nameFile + '| /:id | put | pre check hook id,extraInfo: ', id, JSON.stringify(dymerextrainfo));
                                         logger.info(nameFile + '| /:id | put | pre check hook| obj, extraInfo:' + dymeruser.id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
                                         checkServiceHook('after_update', objHook, dymerextrainfo, req);
-                                        await redisClient.invalidateCacheById(id, redisEnabled)
+                                        await redisClient.invalidateCacheById([id], redisEnabled)
                                         return res.send(ret);
                                     }).catch(function(err) {
                                         console.error("ERROR | " + nameFile + '| /:id | put | id: ', id, err);
@@ -3714,7 +3761,7 @@ router.put('/:id', (req, res) => {
                                  extraInfo.extrainfo.emailAddress = dymeruser.id;*/
                             logger.info(nameFile + '| /:id | put | pre check hook| obj, extraInfo:' + dymeruser.id + ' , ' + JSON.stringify(new_Temp_Entity) + ' , ' + JSON.stringify(dymerextrainfo));
                             checkServiceHook('after_update', new_Temp_Entity, dymerextrainfo, req);
-                            await redisClient.invalidateCacheById(id, redisEnabled)
+                            await redisClient.invalidateCacheById([id], redisEnabled)
                             return res.send(ret);
                         }).catch(function(err) {
                             console.error("ERROR | " + nameFile + '| /:id | put | id: ', id, err);
@@ -3960,7 +4007,7 @@ router.put('/oldput/:id', (req, res) => { //to delete
                                             // console.log(nameFile + '| /:id | put | pre check hook id,extraInfo: ', id, JSON.stringify(dymerextrainfo));
                                             logger.info(nameFile + '| /:id | put | pre check hook| obj, extraInfo:' + dymeruser.id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
                                             checkServiceHook('after_update', objHook, dymerextrainfo, req);
-                                            await redisClient.invalidateCacheById(id, redisEnabled)
+                                            await redisClient.invalidateCacheById([id], redisEnabled)
                                             return res.send(ret);
                                         }).catch(function(err) {
                                             console.error("ERROR | " + nameFile + '| /:id | put | id: ', id, err);
@@ -4694,7 +4741,7 @@ router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
                     // console.log(nameFile + '| deleteAllEntityByIndex | pre check hook id,extraInfo: ', dymeruser.id, JSON.stringify(objHook), JSON.stringify(dymerextrainfo));
                     logger.info(nameFile + '| deleteAllEntityByIndex | pre check hook id,extraInfo: ' + dymeruser.id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
                     checkServiceHook('after_delete', objHook, dymerextrainfo, req);
-                    await redisClient.invalidateCacheById(ret.data[0]._id, redisEnabled)
+                    await redisClient.invalidateCacheById([ret.data[0]._id], redisEnabled)
                 },
                 function(err) {
                     logger.error(nameFile + '| deleteAllEntityByIndex | entity remov ,index:' + dymeruser.id + ' , ' + index + ' , ' + err);
@@ -4868,7 +4915,7 @@ router.delete('/:id', (req, res) => {
                         //console.log(nameFile + '| delete/:id | pre check hook id,extraInfo: ', dymeruser.id, id, JSON.stringify(dymerextrainfo));
                         logger.info(nameFile + '| delete/:id | pre check hook id,extraInfo: ' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
                         checkServiceHook('after_delete', objHook, dymerextrainfo, req);
-                        await redisClient.invalidateCacheById(ret.data[0]._id, redisEnabled)
+                        await redisClient.invalidateCacheById([ret.data[0]._id], redisEnabled)
                         return res.send(ret);
                     });
                 });

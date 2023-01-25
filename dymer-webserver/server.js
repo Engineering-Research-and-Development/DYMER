@@ -80,7 +80,8 @@ app.get(util.getContextPath('webserver') + '/checkservice', [loadUserInfo, util.
         },
         error: {
             size: errorsize
-        }
+        },
+        infomicroservice: global.configService
     });
     ret.setMessages("Service is up");
     res.status(200);
@@ -519,7 +520,7 @@ app.get(util.getContextPath('webserver') + '*', (req, res) => {
     var realPath = (req.originalUrl).split("?");
     var listdata = fs.readFileSync(path.join(__dirname, '/public/app/views/index.html'));
     var pathname = req.url;
-    console.log('listdatapathname', pathname, pathname == (util.getContextPath('webserver') + "/login"));
+    //  console.log('listdatapathname', pathname, pathname == (util.getContextPath('webserver') + "/login"));
     /* if (listdata) {
          listdata = listdata.toString();
          console.log('listdata', listdata, pathname);

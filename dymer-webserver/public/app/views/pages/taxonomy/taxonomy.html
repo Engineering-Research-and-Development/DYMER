@@ -13,11 +13,11 @@
             <img src="../assets/img/flag/{{key}}.png">  {{val.value}}
           </span>
 
-        
+
 
         <!-- <a class="pull-right btn btn-danger btn-sm" data-nodrag ng-click="remove(this)"><span
           class="fa fa-times"></span></a> -->
-          <a class="pull-right btn btn-danger btn-sm" data-nodrag ng-click="openModal('deleteSubItem',this,'delete')" style="margin-right: 8px;"><span
+        <a class="pull-right btn btn-danger btn-sm" data-nodrag ng-click="openModal('deleteSubItem',this,'delete')" style="margin-right: 8px;"><span
             class="fa fa-times"></span></a>
         <!--<a class="pull-right btn btn-primary btn-sm" data-nodrag ng-click="newSubItem(this)" style="margin-right: 8px;"><span
           class="fa fa-plus"></span></a>-->
@@ -44,7 +44,8 @@
         <div class="card-body ">
             <div class="row">
                 <div class="col-12 text-right">
-                    <a href="" <i class="fa fa-plus-square-o" ng-click="actionShowHideAddVocab()"></i>
+                    <a href="" class="btn btn-info"><i class="fa fa-plus-square-o"
+                            ng-click="actionShowHideAddVocab()"></i>Add New Vocabulary
                     </a>
                 </div>
             </div>
@@ -61,7 +62,7 @@
                             <input type="checkbox" ng-model="form.bindservice"><label> Bind to external service</label>-->
                             <div class="row text-right ">
                                 <div class="col-12 ">
-                                    <input class="btn btn-info " type="submit" value="Add Vocabulary">
+                                    <input class="btn btn-info " type="submit" value="Save Vocabulary">
 
                                 </div>
                             </div>
@@ -74,8 +75,7 @@
                 <div class="col-12">
                     <h5 class="card-title">Vocabularies</h5>
                     <ul class="nav nav-pills nav-fill">
-                        <li class="nav-item" ng-repeat="singlvoc in vocabularies"
-                            ng-click="selectVocab($index,singlvoc)">
+                        <li class="nav-item" ng-repeat="singlvoc in vocabularies" ng-click="selectVocab($index,singlvoc)">
                             <a class="nav-link  " ng-class="{active: $index == selectedVocab}" href="#"><i
                                     class="fa fa-book" aria-hidden="true"></i> {{singlvoc.title}}</a>
                         </li>
@@ -104,8 +104,7 @@
                     <div class="col-12 text-right">
                         <input class="btn btn-info " ng-click="saveUpdateVocab(selectedVocab)" value="Save vocabulary">
                         <!-- <input class="btn btn-danger " ng-click="deleteVocab(selectedVocab)" value="Delete vocabulary"> -->
-                        <input class="btn btn-danger " ng-click="openModal('deleteVocabulary')"
-                            value="Delete vocabulary">
+                        <input class="btn btn-danger " ng-click="openModal('deleteVocabulary')" value="Delete vocabulary">
 
                     </div>
                 </div>
@@ -137,36 +136,26 @@
                             <div class="col-2 d-flex flex-wrap align-items-center">
                                 <div class="text-primary">Node Key</div><img style="margin: 0 auto;">
                             </div>
-                            <div class="col-6" style="padding: 5px 0;"><input required type=" text "
-                                    placeholder="Insert node key here" class="form-control"
-                                    ng-model="newelvocab.value" /></div>
+                            <div class="col-6" style="padding: 5px 0;"><input required type=" text " placeholder="Insert node key here" class="form-control" ng-model="newelvocab.value" /></div>
                         </div>
                         <hr>
                         <!---->
 
                         <div class="row">
-                            <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;"
-                                    src="../assets/img/flag/en.png"></div>
-                            <div class="col-6" style="padding: 5px 0;"><input required type=" text "
-                                    class="form-control" style="margin: 0 auto;"
-                                    ng-model="newelvocab.locales.en.value" /></div>
+                            <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/en.png"></div>
+                            <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" style="margin: 0 auto;" ng-model="newelvocab.locales.en.value" /></div>
                         </div>
                         <div class="row">
-                            <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;"
-                                    src="../assets/img/flag/it.png" class="align-middle"></div>
-                            <div class="col-6" style="padding: 5px 0;"><input required type=" text "
-                                    class="form-control" ng-model="newelvocab.locales.it.value" /></div>
+                            <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/it.png" class="align-middle"></div>
+                            <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" ng-model="newelvocab.locales.it.value" /></div>
                         </div>
                         <div class="row">
-                            <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;"
-                                    src="../assets/img/flag/fr.png"></div>
-                            <div class="col-6" style="padding: 5px 0;"><input required type=" text "
-                                    class="form-control" ng-model="newelvocab.locales.fr.value" /></div>
+                            <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/fr.png"></div>
+                            <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" ng-model="newelvocab.locales.fr.value" /></div>
                         </div>
 
                         <div class="modal-footer ">
-                            <button class="btn btn-primary btn-sm " type="submit "
-                                ng-click="insertvocab(newelvocab) "><i class="la la-check "></i> Save</button>
+                            <button class="btn btn-primary btn-sm " type="submit " ng-click="insertvocab(newelvocab) "><i class="la la-check "></i> Save</button>
                         </div>
                     </div>
                 </div>
@@ -194,38 +183,33 @@
                         <div class="col-2 d-flex flex-wrap align-items-center">
                             <div class="text-primary">Node Key</div><img style="margin: 0 auto;">
                         </div>
-                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control"
-                                style="margin: 0 auto;" ng-model="editvocab.value" /></div>
+                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" style="margin: 0 auto;" ng-model="editvocab.value" /></div>
                     </div>
                     <hr>
 
                     <!---->
 
                     <div class="row">
-                        <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;"
-                                src="../assets/img/flag/en.png"></div>
-                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control"
-                                style="margin: 0 auto;" ng-model="editvocab.locales.en.value" /></div>
+                        <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/en.png"></div>
+                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" style="margin: 0 auto;" ng-model="editvocab.locales.en.value" /></div>
                     </div>
                     <div class="row">
-                        <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;"
-                                src="../assets/img/flag/it.png"></div>
-                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control"
-                                style="margin: 0 auto;" ng-model="editvocab.locales.it.value" /></div>
+                        <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/it.png"></div>
+                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" style="margin: 0 auto;" ng-model="editvocab.locales.it.value" /></div>
                     </div>
                     <div class="row">
-                        <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;"
-                                src="../assets/img/flag/fr.png"></div>
-                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control"
-                                style="margin: 0 auto;" ng-model="editvocab.locales.fr.value" /></div>
+                        <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/fr.png"></div>
+                        <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" style="margin: 0 auto;" ng-model="editvocab.locales.fr.value" /></div>
                     </div>
                     <!-------------------------------------->
                     <div class="modal-footer ">
-                        
-                        <button class="btn btn-primary btn-sm " type="submit " ng-click="acceptUpdatedValues()"><i class="la la-check "></i>
+
+                        <button class="btn btn-primary btn-sm " type="submit " ng-click="acceptUpdatedValues()"><i
+                                class="la la-check "></i>
                             OK </button>
-                            <button class="btn btn-primary btn-sm " type="submit " ng-click="cancel()"><i class="la la-check "></i>
-                                CANCEL </button>
+                        <button class="btn btn-primary btn-sm " type="submit " ng-click="cancel()"><i
+                                class="la la-check "></i>
+                            CANCEL </button>
                     </div>
                     <!-------------------------------------->
                 </div>

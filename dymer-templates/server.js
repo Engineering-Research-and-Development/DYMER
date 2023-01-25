@@ -17,7 +17,7 @@ var publicRoutes = require('./routes/publicfiles');
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });*/
-
+app.use(express.json())
 app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     var filetype = req.params.filetype;
@@ -33,6 +33,21 @@ app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
     //console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
     return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
 });
+app.get('/logtypes', async(req, res) => {
+    var ret = new jsonResponse();
+    ret.setSuccess(true);
+    let loggerdebug = global.loggerdebug;
+    ret.setData({ consolelog: loggerdebug });
+    ret.setMessages("logtypes");
+    return res.send(ret);
+});
+app.post('/setlogconfig', (req, res) => {
+    var ret = new jsonResponse();
+    logger.ts_infologger(req.body.consoleactive);
+    ret.setMessages("Settings updated");
+    ret.setData({ consoleactive: req.body.consoleactive });
+    return res.send(ret);
+});
 app.get(util.getContextPath('template') + '/checkservice', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     let infosize = logger.filesize("info");
@@ -43,7 +58,8 @@ app.get(util.getContextPath('template') + '/checkservice', util.checkIsAdmin, (r
         },
         error: {
             size: errorsize
-        }
+        },
+        infomicroservice: global.gConfig
     });
     ret.setMessages("Service is up");
     res.status(200);

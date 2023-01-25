@@ -1004,7 +1004,7 @@ function populateHookTaxonomy(x, y, z, w, k, a, b, arObj2, tax) {
 
         }
         //   sel.append($("<optoption>").attr('value', "").text(""));
-        sel.append($("<option>").attr('value', "").text(""));
+        //sel.append($("<option>").attr('value', "").text(""));
         if (typeof optionsText !== typeof undefined && optionsText !== false) {
             var tempArrList = [];
             $.each(listTaxonomyForm[tax], function(ind, value) {
@@ -2495,7 +2495,7 @@ async function editEntity(id) {
                 dymphases.setSubPhase("edit", true, "prepopulateform");
                 let resprepopulate = await prePopulateFormEdit_Promise(itemToEdit);
                 // console.log("secondo");
-                //console.log("resprepopulate", resprepopulate);
+                //console.log("resprepopulate", resprepopulate);let filterpos = ($(this).data('filterpos') == undefined) ? 0 : $(this).data('filterpos');
                 var itemToEdit_ = Object.assign({}, itemToEdit);
                 /*  setTimeout(function() {
                       $('#entityEdit .selectpicker').selectpicker();
@@ -4630,7 +4630,7 @@ function dymerSearch(options) {
                         let $sel = $('<select name="' + taxName + '[' + inde + ']" searchable-label="' + $(this).attr('searchable-label') + '"  searchable-override="' + taxName + '" class="selectpicker form-control"  data-live-search="true"  ' + ismulti + ' ' + isactionsbox + ' data-selected-text-format="count"  ></select>').appendTo($(this));
 
 
-                        $sel.append($("<option>").attr('value', "").text(""));
+                        // $sel.append($("<option>").attr('value', "").text(""));
                         $.each(listToselect.data.nodes, function(ind, value) {
 
                             $sel.append($("<option>").attr('value', value.value).text(value.locales.en.value));

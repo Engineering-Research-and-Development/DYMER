@@ -1,279 +1,356 @@
-<div class="row" ng-show="hide">
+<!-- <div class="row" ng-show="show"> -->
+<div class="row">
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
-                <h5 class="card-title">Log setting<span class='pull-right'><i class="fa fa-cogs burgherAction"
+                <!-- <h5 class="card-title">Log setting<span class='pull-right'><i class="fa fa-cogs burgherAction" -->
+                <h5 class="card-title">General Settings<span class='pull-right'><i class="fa fa-cogs burgherAction"
                             ng-click="showConfig = ! showConfig" aria-hidden="true"></i>
                     </span>
                 </h5>
             </div>
             <div class="card-body " ng-show="showConfig">
-
                 <form name="formCONF" id="formCONF">
+                    <h6 class="text-info">Console log</h6>
                     <div class="row">
-                        <div class=" col-12">
-                            <div class="form-group">
-                                <span class="text-info ">
-                                    <input type="checkbox" ng-model="configlog.consoleactive">
-                                    Active log in console <small style="color: #8c8985;">
-                            </div>
+                        <div class=" col-6   ">
+                            <input type="checkbox" ng-model="configlog.consoleactive.webserver"> Webserver Microservice
+                        </div>
+                        <div class="col-6   ">
+                            <input type="checkbox" ng-model="configlog.consoleactive.entity"> Entities Microservice
+                            </small>
+                        </div>
+                        <div class="col-6  ">
+                            <input type="checkbox" ng-model="configlog.consoleactive.service"> Service Microservice
+                        </div>
+                        <div class="col-6 ">
+                            <input type="checkbox" ng-model="configlog.consoleactive.form"> Model Microservice
+                        </div>
+                        <div class="col-6 ">
+                            <input type="checkbox" ng-model="configlog.consoleactive.template"> Template Microservice
+                        </div>
+                    </div>
+                    <hr>
+                    <h6 class="text-info">Redis</h6>
+                    <div class="row">
+                        <div class="col-12  ">
+                            <input type="checkbox" ng-checked="checkservice.entities.db.redis.value" ng-model="configlog.redisactive"> Entities Microservice
                         </div>
                     </div>
                     <div class="row text-right ">
                         <div class="col-12 ">
-                            <span class="btn btn-info " ng-show="!configlog._id"
-                                ng-click="formCONF.$valid && saveConfigLog(configlog)">Save</span>
-                            </div>
+                            <span class="btn btn-info " ng-show="!configlog._id" ng-click="formCONF.$valid && saveConfigLog(configlog)">Save</span>
                         </div>
+                    </div>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <div class="card card-stats">
+            <div class="card-body ">
+                <div class="row">
+                    <div class="col-3 col-md-3">
+                        <div class="icon-big text-center icon-warning">
+                            <i class="nc-icon nc-atom text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="col-9 col-md-9">
+                        <div class="numbers">
+                            <p class="card-category">Webserver Microservice</p>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-7">
+                                <span class=" text-primary"><i class="fa fa-info" aria-hidden="true"></i>
+                                    info.log</span>
+                            </div>
+                            <div class="col-5  text-right">
+                                <i class="fa fa-download dympointer " aria-hidden="true" ng-click="openLog('webserver','info')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush info.log" ng-click="deleteLog('webserver','info')"></i>
+                                <br><small style="color: #8c8985;"> ({{checkservice.webserver.logs.info.size}})</small>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-7">
+                                <span class=" text-danger"><i class="fa fa-exclamation" aria-hidden="true"></i>
+                                    error.log</span>
+                            </div>
+                            <div class="col-5  text-right">
+                                <i class="fa fa-download dympointer" aria-hidden="true" ng-click="openLog('webserver','error')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush error.log" ng-click="deleteLog('webserver','error')"></i>
+                                <br><small style="color: #8c8985;"> ({{checkservice.webserver.logs.error.size}})</small>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer ">
+                <hr>
+                <div class="row">
+                    <div class="col-md-auto"><i class="fa fa-power-off {{checkservice.webserver.state}}" aria-hidden="true"></i> {{checkservice.webserver.msg}}</div>
+                    <div class="col-md-auto"><i class="fa fa-file-text-o" ng-class="{'text-success': configlog.consoleactive.webserver == true,'text-warning': configlog.consoleactive.webserver == false  }" aria-hidden="true"></i> Console</div>
+                </div>
+                <hr style="border-top: 1px dashed #e5e5e5;">
+                <div class="row">
+                    <div class="col-md-auto updateAction">
+                        <span ng-click="showConfigwebserver = ! showConfigwebserver"><i class="fa  fa-info-circle"
+                                aria-hidden="true"></i>
+                            Config</span>
+                    </div>
+                    <div class="col-12">
+                        <pre style="white-space: pre-wrap;" ng-show="showConfigwebserver"> {{checkservice.webserver.logs.infomicroservice | json}}</pre>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-4">
-            <div class="card card-stats">
-                <div class="card-body ">
-                    <div class="row">
-                        <div class="col-3 col-md-3">
-                            <div class="icon-big text-center icon-warning">
-                                <i class="nc-icon nc-atom text-primary"></i>
-                            </div>
-                        </div>
-                        <div class="col-9 col-md-9">
-                            <div class="numbers">
-                                <p class="card-category">Webserver Microservice</p>
-                            </div>
-                            <br>
-                            <div class="row">
-                                <div class="col-7">
-                                    <span class=" text-primary"><i class="fa fa-info" aria-hidden="true"></i>
-                                    info.log</span>
-                                </div>
-                                <div class="col-5  text-right">
-                                    <i class="fa fa-download dympointer " aria-hidden="true" ng-click="openLog('webserver','info')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush info.log" ng-click="deleteLog('webserver','info')"></i>
-                                    <br><small style="color: #8c8985;"> ({{checkservice.webserver.logs.info.size}})</small>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-7">
-                                    <span class=" text-danger"><i class="fa fa-exclamation" aria-hidden="true"></i>
-                                    error.log</span>
-                                </div>
-                                <div class="col-5  text-right">
-                                    <i class="fa fa-download dympointer" aria-hidden="true" ng-click="openLog('webserver','error')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush error.log" ng-click="deleteLog('webserver','error')"></i>
-                                    <br><small style="color: #8c8985;"> ({{checkservice.webserver.logs.error.size}})</small>
-                                </div>
-                            </div>
-
+    <div class="col-4">
+        <div class="card card-stats">
+            <div class="card-body ">
+                <div class="row">
+                    <div class="col-3 col-md-3">
+                        <div class="icon-big text-center icon-warning">
+                            <i class="nc-icon nc-layout-11 text-success"></i>
                         </div>
                     </div>
-                </div>
-                <div class="card-footer ">
-                    <hr><i class="fa fa-power-off {{checkservice.webserver.state}}" aria-hidden="true"></i> {{checkservice.webserver.msg}}
-
-                    <!--  <div class="stats">
-            <i class="fa fa-refresh"></i> Update Now
-          </div>-->
-                </div>
-            </div>
-        </div>
-        <div class="col-4">
-            <div class="card card-stats">
-                <div class="card-body ">
-                    <div class="row">
-                        <div class="col-3 col-md-3">
-                            <div class="icon-big text-center icon-warning">
-                                <i class="nc-icon nc-layout-11 text-success"></i>
-                            </div>
+                    <div class="col-9 col-md-9">
+                        <div class="numbers">
+                            <p class="card-category">Templates Microservice</p>
                         </div>
-                        <div class="col-9 col-md-9">
-                            <div class="numbers">
-                                <p class="card-category">Templates Microservice</p>
-                            </div>
-                            <br>
-                            <div class="row">
-                                <div class="col-7">
-                                    <span class=" text-primary"><i class="fa fa-info" aria-hidden="true"></i>
+                        <br>
+                        <div class="row">
+                            <div class="col-7">
+                                <span class=" text-primary"><i class="fa fa-info" aria-hidden="true"></i>
                                     info.log</span>
-                                </div>
-                                <div class="col-5  text-right">
-                                    <i class="fa fa-download dympointer " aria-hidden="true" ng-click="openLog('templates','info')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush info.log" ng-click="deleteLog('templates','info')"></i>
-                                    <br><small style="color: #8c8985;">
+                            </div>
+                            <div class="col-5  text-right">
+                                <i class="fa fa-download dympointer " aria-hidden="true" ng-click="openLog('templates','info')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush info.log" ng-click="deleteLog('templates','info')"></i>
+                                <br><small style="color: #8c8985;">
                                     ({{checkservice.templates.logs.info.size}})</small>
-                                </div>
                             </div>
-                            <div class="row">
-                                <div class="col-7">
-                                    <span class=" text-danger"><i class="fa fa-exclamation" aria-hidden="true"></i>
+                        </div>
+                        <div class="row">
+                            <div class="col-7">
+                                <span class=" text-danger"><i class="fa fa-exclamation" aria-hidden="true"></i>
                                     error.log</span>
-                                </div>
-                                <div class="col-5  text-right">
-                                    <i class="fa fa-download dympointer" aria-hidden="true" ng-click="openLog('templates','error')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush error.log" ng-click="deleteLog('templates','error')"></i>
-                                    <br><small style="color: #8c8985;">
+                            </div>
+                            <div class="col-5  text-right">
+                                <i class="fa fa-download dympointer" aria-hidden="true" ng-click="openLog('templates','error')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush error.log" ng-click="deleteLog('templates','error')"></i>
+                                <br><small style="color: #8c8985;">
                                     ({{checkservice.templates.logs.error.size}})</small>
-                                </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
-                <div class="card-footer ">
-                    <hr><i class="fa fa-power-off {{checkservice.templates.state}}" aria-hidden="true"></i> {{checkservice.templates.msg}} &nbsp; <i class="fa fa-database {{checkservice.templates.db.mongo.css}}" aria-hidden="true"></i> Mongo {{checkservice.templates.db.mongo.msg}}
-                    <!--  <div class="stats">
-            <i class="fa fa-refresh"></i> Update Now
-          </div>-->
+            </div>
+            <div class="card-footer ">
+                <hr>
+                <div class="row">
+                    <div class="col-md-auto"><i class="fa fa-power-off {{checkservice.templates.state}}" aria-hidden="true"></i> {{checkservice.templates.msg}}</div>
+                    <div class="col-md-auto"><i class="fa fa-database {{checkservice.templates.db.mongo.css}}" aria-hidden="true"></i> Mongo {{checkservice.templates.db.mongo.msg}}
+                    </div>
+                    <div class="col-md-auto"><i class="fa fa-file-text-o" ng-class="{'text-success': configlog.consoleactive.template == true ,'text-warning': configlog.consoleactive.template == false }" aria-hidden="true"></i> Console</div>
+                </div>
+                <hr style="border-top: 1px dashed #e5e5e5;">
+                <div class="row">
+                    <div class="col-md-auto updateAction">
+                        <span ng-click="showConfigtemplates = ! showConfigtemplates"><i class="fa  fa-info-circle"
+                                aria-hidden="true"></i>
+                            Config</span>
+                    </div>
+                    <div class="col-12">
+                        <pre style="white-space: pre-wrap;" ng-show="showConfigtemplates"> {{checkservice.templates.logs.infomicroservice | json}}</pre>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="col-4">
-            <div class="card card-stats">
-                <div class="card-body ">
-                    <div class="row">
-                        <div class="col-3 col-md-3">
-                            <div class="icon-big text-center icon-warning">
-                                <i class="nc-icon nc-tile-56 text-warning"></i>
-                            </div>
+    </div>
+    <div class="col-4">
+        <div class="card card-stats">
+            <div class="card-body ">
+                <div class="row">
+                    <div class="col-3 col-md-3">
+                        <div class="icon-big text-center icon-warning">
+                            <i class="nc-icon nc-tile-56 text-warning"></i>
                         </div>
-                        <div class="col-9 col-md-9">
-                            <div class="numbers">
-                                <p class="card-category">Models Microservice</p>
-                            </div>
-                            <br>
-                            <div class="row">
-                                <div class="col-7">
-                                    <span class=" text-primary"><i class="fa fa-info" aria-hidden="true"></i>
+                    </div>
+                    <div class="col-9 col-md-9">
+                        <div class="numbers">
+                            <p class="card-category">Models Microservice</p>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-7">
+                                <span class=" text-primary"><i class="fa fa-info" aria-hidden="true"></i>
                                     info.log</span>
-                                </div>
-                                <div class="col-5  text-right">
-                                    <i class="fa fa-download dympointer " aria-hidden="true" ng-click="openLog('forms','info')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush info.log" ng-click="deleteLog('forms','info')"></i>
-                                    <br><small style="color: #8c8985;">
+                            </div>
+                            <div class="col-5  text-right">
+                                <i class="fa fa-download dympointer " aria-hidden="true" ng-click="openLog('forms','info')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush info.log" ng-click="deleteLog('forms','info')"></i>
+                                <br><small style="color: #8c8985;">
                                     ({{checkservice.forms.logs.info.size}})</small>
-                                </div>
                             </div>
-                            <div class="row">
-                                <div class="col-7">
-                                    <span class=" text-danger"><i class="fa fa-exclamation" aria-hidden="true"></i>
+                        </div>
+                        <div class="row">
+                            <div class="col-7">
+                                <span class=" text-danger"><i class="fa fa-exclamation" aria-hidden="true"></i>
                                     error.log</span>
-                                </div>
-                                <div class="col-5  text-right">
-                                    <i class="fa fa-download dympointer" aria-hidden="true" ng-click="openLog('forms','error')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush error.log" ng-click="deleteLog('forms','error')"></i>
-                                    <br><small style="color: #8c8985;">
+                            </div>
+                            <div class="col-5  text-right">
+                                <i class="fa fa-download dympointer" aria-hidden="true" ng-click="openLog('forms','error')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush error.log" ng-click="deleteLog('forms','error')"></i>
+                                <br><small style="color: #8c8985;">
                                     ({{checkservice.forms.logs.error.size}})</small>
-                                </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
-                <div class="card-footer ">
-                    <hr><i class="fa fa-power-off {{checkservice.forms.state}}" aria-hidden="true"></i> {{checkservice.forms.msg}} &nbsp; <i class="fa fa-database {{checkservice.forms.db.mongo.css}}" aria-hidden="true"></i> Mongo {{checkservice.forms.db.mongo.msg}}
-                    <!--  <div class="stats">
-                <i class="fa fa-refresh"></i> Update Now
-              </div>-->
+            </div>
+            <div class="card-footer ">
+                <hr>
+                <div class="row">
+                    <div class="col-md-auto"><i class="fa fa-power-off {{checkservice.forms.state}}" aria-hidden="true"></i> {{checkservice.forms.msg}}</div>
+                    <div class="col-md-auto"><i class="fa fa-database {{checkservice.forms.db.mongo.css}}" aria-hidden="true"></i> Mongo {{checkservice.forms.db.mongo.msg}}
+                    </div>
+                    <div class="col-md-auto"><i class="fa fa-file-text-o" ng-class="{'text-success': configlog.consoleactive.form == true ,'text-warning': configlog.consoleactive.form== false }" aria-hidden="true"></i> Console</div>
+                </div>
+                <hr style="border-top: 1px dashed #e5e5e5;">
+                <div class="row">
+                    <div class="col-md-auto updateAction">
+                        <span ng-click="showConfigforms = ! showConfigforms"><i class="fa  fa-info-circle"
+                                aria-hidden="true"></i>
+                            Config</span>
+                    </div>
+                    <div class="col-12">
+                        <pre style="white-space: pre-wrap;" ng-show="showConfigforms"> {{checkservice.forms.logs.infomicroservice | json}}</pre>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-4">
-            <div class="card card-stats">
-                <div class="card-body ">
-                    <div class="row">
-                        <div class="col-3 col-md-3">
-                            <div class="icon-big text-center icon-warning">
-                                <i class="nc-icon nc-world-2 text-info"></i>
-                            </div>
+    </div>
+    <div class="col-4">
+        <div class="card card-stats">
+            <div class="card-body ">
+                <div class="row">
+                    <div class="col-3 col-md-3">
+                        <div class="icon-big text-center icon-warning">
+                            <i class="nc-icon nc-world-2 text-info"></i>
                         </div>
-                        <div class="col-9 col-md-9">
-                            <div class="numbers">
-                                <p class="card-category">Entities Microservice</p>
-                            </div>
-                            <br>
-                            <div class="row">
-                                <div class="col-7">
-                                    <span class=" text-primary"><i class="fa fa-info" aria-hidden="true"></i>
+                    </div>
+                    <div class="col-9 col-md-9">
+                        <div class="numbers">
+                            <p class="card-category">Entities Microservice</p>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-7">
+                                <span class=" text-primary"><i class="fa fa-info" aria-hidden="true"></i>
                                     info.log</span>
-                                </div>
-                                <div class="col-5  text-right">
-                                    <i class="fa fa-download dympointer " aria-hidden="true" ng-click="openLog('entities','info')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush info.log" ng-click="deleteLog('entities','info')"></i>
-                                    <br><small style="color: #8c8985;">
+                            </div>
+                            <div class="col-5  text-right">
+                                <i class="fa fa-download dympointer " aria-hidden="true" ng-click="openLog('entities','info')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush info.log" ng-click="deleteLog('entities','info')"></i>
+                                <br><small style="color: #8c8985;">
                                     ({{checkservice.entities.logs.info.size}})</small>
-                                </div>
                             </div>
-                            <div class="row">
-                                <div class="col-7">
-                                    <span class=" text-danger"><i class="fa fa-exclamation" aria-hidden="true"></i>
+                        </div>
+                        <div class="row">
+                            <div class="col-7">
+                                <span class=" text-danger"><i class="fa fa-exclamation" aria-hidden="true"></i>
                                     error.log</span>
-                                </div>
-                                <div class="col-5  text-right">
-                                    <i class="fa fa-download dympointer" aria-hidden="true" ng-click="openLog('entities','error')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush error.log" ng-click="deleteLog('entities','error')"></i>
-                                    <br><small style="color: #8c8985;">
+                            </div>
+                            <div class="col-5  text-right">
+                                <i class="fa fa-download dympointer" aria-hidden="true" ng-click="openLog('entities','error')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush error.log" ng-click="deleteLog('entities','error')"></i>
+                                <br><small style="color: #8c8985;">
                                     ({{checkservice.entities.logs.error.size}})</small>
-                                </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
-                <div class="card-footer ">
-                    <hr><i class="fa fa-power-off {{checkservice.entities.state}}" aria-hidden="true"></i> {{checkservice.entities.msg}} &nbsp; <i class="fa fa-database {{checkservice.entities.db.mongo.css}}" aria-hidden="true"></i> Mongo {{checkservice.entities.db.mongo.msg}}
-                    &nbsp; <i class="fa fa-database {{checkservice.entities.db.elastic.css}}" aria-hidden="true"></i> Elastic {{checkservice.entities.db.elastic.msg}} &nbsp; <i class="fa fa-database {{checkservice.entities.db.redis.css}}" aria-hidden="true"></i>                    Redis {{checkservice.entities.db.redis.msg}}
-                    <!--  <div class="stats">
-            <i class="fa fa-refresh"></i> Update Now
-          </div>-->
+            </div>
+            <div class="card-footer ">
+                <hr>
+                <div class="row">
+                    <div class="col-md-auto"><i class="fa fa-power-off {{checkservice.entities.state}}" aria-hidden="true"></i> {{checkservice.entities.msg}} </div>
+                    <div class="col-md-auto"> <i class="fa fa-database {{checkservice.entities.db.mongo.css}}" aria-hidden="true"></i> Mongo {{checkservice.entities.db.mongo.msg}}
+                    </div>
+                    <div class="col-md-auto"> <i class="fa fa-database {{checkservice.entities.db.elastic.css}}" aria-hidden="true"></i> Elastic {{checkservice.entities.db.elastic.msg}}</div>
+                    <div class="col-md-auto"> <i class="fa fa-database {{checkservice.entities.db.redis.css}}" aria-hidden="true"></i> Redis {{checkservice.entities.db.redis.msg}}</div>
+                    <div class="col-md-auto"> <i class="fa fa-file-text-o" ng-class="{'text-success': configlog.consoleactive.entity == true,'text-warning': configlog.consoleactive.entity == false  }" aria-hidden="true"></i> Console
+                    </div>
+                </div>
+                <hr style="border-top: 1px dashed #e5e5e5;">
+                <div class="row">
+                    <div class="col-md-auto updateAction">
+                        <span ng-click="showConfigEnt = ! showConfigEnt"><i class="fa  fa-info-circle"
+                                aria-hidden="true"></i> Config</span>
+                    </div>
+                    <div class="col-12">
+                        <pre style="white-space: pre-wrap;" ng-show="showConfigEnt"> {{checkservice.entities.logs.infomicroservice | json}}</pre>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-4">
-            <div class="card card-stats">
-                <div class="card-body ">
-                    <div class="row">
-                        <div class="col-3 col-md-3">
-                            <div class="icon-big text-center icon-warning">
-                                <i class="nc-icon nc-bullet-list-67 text-secondary"></i>
-                            </div>
+    </div>
+    <div class="col-4">
+        <div class="card card-stats">
+            <div class="card-body ">
+                <div class="row">
+                    <div class="col-3 col-md-3">
+                        <div class="icon-big text-center icon-warning">
+                            <i class="nc-icon nc-bullet-list-67 text-secondary"></i>
                         </div>
-                        <div class="col-9 col-md-9">
-                            <div class="numbers">
-                                <p class="card-category">Service Microservice</p>
-                            </div>
-                            <br>
-                            <div class="row">
-                                <div class="col-7">
-                                    <span class=" text-primary"><i class="fa fa-info" aria-hidden="true"></i>
+                    </div>
+                    <div class="col-9 col-md-9">
+                        <div class="numbers">
+                            <p class="card-category">Service Microservice</p>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-7">
+                                <span class=" text-primary"><i class="fa fa-info" aria-hidden="true"></i>
                                     info.log</span>
-                                </div>
-                                <div class="col-5  text-right">
-                                    <i class="fa fa-download dympointer " aria-hidden="true" ng-click="openLog('dservice','info')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush info.log" ng-click="deleteLog('dservice','info')"></i>
-                                    <br><small style="color: #8c8985;">
+                            </div>
+                            <div class="col-5  text-right">
+                                <i class="fa fa-download dympointer " aria-hidden="true" ng-click="openLog('dservice','info')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush info.log" ng-click="deleteLog('dservice','info')"></i>
+                                <br><small style="color: #8c8985;">
                                     ({{checkservice.dservice.logs.info.size}})</small>
-                                </div>
                             </div>
-                            <div class="row">
-                                <div class="col-7">
-                                    <span class=" text-danger"><i class="fa fa-exclamation" aria-hidden="true"></i>
+                        </div>
+                        <div class="row">
+                            <div class="col-7">
+                                <span class=" text-danger"><i class="fa fa-exclamation" aria-hidden="true"></i>
                                     error.log</span>
-                                </div>
-                                <div class="col-5  text-right">
-                                    <i class="fa fa-download dympointer" aria-hidden="true" ng-click="openLog('dservice','error')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush error.log" ng-click="deleteLog('dservice','error')"></i>
-                                    <br> <small style="color: #8c8985;">
-                                    ({{checkservice.dservice.logs.error.size}})</small>
-                                </div>
                             </div>
-
+                            <div class="col-5  text-right">
+                                <i class="fa fa-download dympointer" aria-hidden="true" ng-click="openLog('dservice','error')"></i>&nbsp; &nbsp;<i class="fa fa-trash deleteAction " title="Flush error.log" ng-click="deleteLog('dservice','error')"></i>
+                                <br> <small style="color: #8c8985;">
+                                    ({{checkservice.dservice.logs.error.size}})</small>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer ">
-                    <hr><i class="fa fa-power-off {{checkservice.dservice.state}}" aria-hidden="true"></i> {{checkservice.dservice.msg}} &nbsp; <i class="fa fa-database {{checkservice.dservice.db.mongo.css}}" aria-hidden="true"></i> Mongo {{checkservice.dservice.db.mongo.msg}}
-                    <!--  <div class="stats">
-            <i class="fa fa-refresh"></i> Update Now
-          </div>-->
+            </div>
+            <div class="card-footer ">
+                <hr>
+                <div class="row">
+                    <div class="col-md-auto"><i class="fa fa-power-off {{checkservice.dservice.state}}" aria-hidden="true"></i> {{checkservice.dservice.msg}}
+                    </div>
+                    <div class="col-md-auto"><i class="fa fa-database {{checkservice.dservice.db.mongo.css}}" aria-hidden="true"></i> Mongo {{checkservice.dservice.db.mongo.msg}}
+                    </div>
+                    <div class="col-md-auto"><i class="fa fa-file-text-o" ng-class="{'text-success': configlog.consoleactive.service == true,'text-warning': configlog.consoleactive.service== false  }" aria-hidden="true"></i> Console</div>
+                </div>
+                <hr style="border-top: 1px dashed #e5e5e5;">
+                <div class="row">
+                    <div class="col-md-auto updateAction">
+                        <span ng-click="showConfigdservice = ! showConfigdservice"><i class="fa  fa-info-circle"
+                                aria-hidden="true"></i>
+                            Config</span>
+                    </div>
+                    <div class="col-12">
+                        <pre style="white-space: pre-wrap;" ng-show="showConfigdservice"> {{checkservice.dservice.logs.infomicroservice | json}}</pre>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <div>
-
-        {{filecontent}}
-    </div>
+</div>

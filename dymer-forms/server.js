@@ -21,7 +21,8 @@ const logger = require('./routes/dymerlogger');
 const portExpress = global.configService.port;
 var routes = require('./routes/routes-v1');
 var publicRoutes = require('./routes/publicfiles');
-//app.use(cors());
+app.use(express.json())
+    //app.use(cors());
 app.use(cookieParser());
 app.use(function(req, res, next) {
     /* res.header("Access-Control-Allow-Origin", "*");
@@ -108,7 +109,7 @@ function detectPermission(req, res, next) {
   
       }
   */
-    console.log("req.path", req.path);
+    //console.log("req.path", req.path);
     // console.log("req.method", req.method);
 
     // console.log("req.params", req.params);
@@ -217,6 +218,21 @@ app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
     //console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
     return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
 });
+app.get('/logtypes', async(req, res) => {
+    var ret = new jsonResponse();
+    ret.setSuccess(true);
+    let loggerdebug = global.loggerdebug;
+    ret.setData({ consolelog: loggerdebug });
+    ret.setMessages("logtypes");
+    return res.send(ret);
+});
+app.post('/setlogconfig', (req, res) => {
+    var ret = new jsonResponse();
+    logger.ts_infologger(req.body.consoleactive);
+    ret.setMessages("Settings updated");
+    ret.setData({ consoleactive: req.body.consoleactive });
+    return res.send(ret);
+});
 app.get(util.getContextPath('form') + '/checkservice', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     let infosize = logger.filesize("info");
@@ -227,7 +243,8 @@ app.get(util.getContextPath('form') + '/checkservice', util.checkIsAdmin, (req, 
         },
         error: {
             size: errorsize
-        }
+        },
+        infomicroservice: global.gConfig
     });
     ret.setMessages("Service is up");
     res.status(200);

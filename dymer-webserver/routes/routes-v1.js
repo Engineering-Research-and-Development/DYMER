@@ -7,33 +7,64 @@ const bodyParser = require("body-parser");
 const path = require('path');
 var router = express.Router();
 const nameFile = path.basename(__filename);
+const axios = require('axios');
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 const logger = require('./dymerlogger');
+const { Console } = require('console');
 
-router.get('/logtypes', (req, res) => {
+router.get('/logtypes', async(req, res) => {
 
     let ret = new jsonResponse();
-    let loggerdebug = (process.env.DYMER_LOGGER == undefined) ? false : process.env.DYMER_LOGGER;
+    let loggerdebug_webserver = global.loggerdebug; // (process.env.DYMER_LOGGER == undefined) ? false : process.env.DYMER_LOGGER;
     let msglog = "file";
-    if (loggerdebug)
+
+    let url_entity = util.getServiceUrl("entity") + "/logtypes";
+    let loggerdebug_entity = (await axios.get(url_entity)).data.data.consolelog;
+
+    let url_template = util.getServiceUrl("template") + "/logtypes";
+    let loggerdebug_template = (await axios.get(url_template)).data.data.consolelog;
+    let url_form = util.getServiceUrl("form") + "/logtypes";
+    let loggerdebug_form = (await axios.get(url_form)).data.data.consolelog;
+    let url_service = util.getServiceUrl("dservice") + "/logtypes";
+    let loggerdebug_service = (await axios.get(url_service)).data.data.consolelog;
+    if (loggerdebug_webserver || loggerdebug_entity || loggerdebug_template || loggerdebug_form || loggerdebug_service)
         msglog = "file&console";
     ret.setMessages("Logs");
-    ret.setData({ msg: msglog, consoleactive: loggerdebug });
+    ret.setData({
+        msg: msglog,
+        consoleactive: { webserver: loggerdebug_webserver, entity: loggerdebug_entity, template: loggerdebug_template, form: loggerdebug_form, service: loggerdebug_service }
+    });
     res.status(200);
     ret.setSuccess(true);
     return res.send(ret);
 });
 
-router.post('/setlogConfig', [util.checkIsDymerUser], (req, res) => {
+router.post('/setlogConfig', [util.checkIsDymerUser], async(req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let data = callData.data;
-    process.env.DYMER_LOGGER = data.consoleactive;
-    logger.info(nameFile + '  | setlogConfig :' + data.consoleactive);
-    ret.setMessages("Log settings updated");
-    ret.setData({ consoleactive: process.env.DYMER_LOGGER });
-    console.log('setlogConfig', process.env.DYMER_LOGGER);
+    //global.loggerdebug = data.consoleactive;
+    // console.log('data.consoleactiv', data.consoleactive);
+    logger.info(nameFile + '  | setlogConfig :' + data.consoleactive.webserver);
+    logger.ts_infologger(data.consoleactive.webserver);
+    let url_entity = util.getServiceUrl("entity") + "/setlogconfig";
+    let loggerdebug_entity = await axios.post(url_entity, { consoleactive: data.consoleactive.entity })
+
+    //console.log('loggerdebug_from_entity', loggerdebug_entity.data.data.consoleactive);
+    let url_template = util.getServiceUrl("template") + "/setlogconfig";
+    let loggerdebug_template = await axios.post(url_template, { consoleactive: data.consoleactive.template })
+    let url_form = util.getServiceUrl("form") + "/setlogconfig";
+    let loggerdebug_form = await axios.post(url_form, { consoleactive: data.consoleactive.form })
+    let url_service = util.getServiceUrl("dservice") + "/setlogconfig";
+    let loggerdebug_service = await axios.post(url_service, { consoleactive: data.consoleactive.service })
+
+    var url = util.getServiceUrl("entity") + "/api/v1/entity/redistoggle";
+    let state = await axios.patch(url, { state: data.redisactive })
+        // ret.setMessages("Log settings updated");
+    ret.setMessages("Settings updated");
+    ret.setData({ consoleactive: { webserver: data.consoleactive.webserver, entity: loggerdebug_entity.data.data.consoleactive, template: loggerdebug_template.data.data.consoleactive, form: loggerdebug_form.data.data.consoleactive, service: loggerdebug_service.data.data.consoleactive }, redisactive: state.data.data });
+    console.log('ret.setData', ret.data);
     return res.send(ret);
 });
 

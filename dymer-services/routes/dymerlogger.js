@@ -21,14 +21,9 @@ var debug = winston.createLogger({
 let infoLog = [
     new(winston.transports.File)({ filename: './logs/info.log', level: 'info' })
 ];
-let loggerdebug = process.env.DYMER_LOGGER;
 
-if (loggerdebug != undefined && (loggerdebug == 'true' || loggerdebug == true)) {
-    infoLog = [
-        new(winston.transports.File)({ filename: './logs/info.log', level: 'info' }),
-        new(winston.transports.Console)({ level: 'info' })
-    ]
-}
+let loggerdebug = (process.env.DYMER_LOGGER == undefined) ? false : process.env.DYMER_LOGGER;
+global.loggerdebug = loggerdebug;
 var info = winston.createLogger({
     levels: {
         info: 1
@@ -41,6 +36,8 @@ var info = winston.createLogger({
     ),
     transports: infoLog
 });
+
+
 /*
  transports: [
         new(winston.transports.File)({ filename: './logs/info.log', level: 'info' }),
@@ -85,6 +82,8 @@ var error = winston.createLogger({
         new(winston.transports.Console)({ level: 'error' })
     ]
 */
+console.log('loggerdebug', loggerdebug);
+const consolelog = new winston.transports.Console({ level: 'info' });
 var exports = {
     debug: function(msg) {
         debug.debug(msg);
@@ -101,7 +100,27 @@ var exports = {
     log: function(level, msg) {
         var lvl = exports[level];
         lvl(msg);
+    },
+    ts_infologger: function(logconsole) {
+        if (global.loggerdebug != logconsole) {
+            global.loggerdebug = logconsole;
+            if (logconsole) {
+                info.add(consolelog);
+            } else {
+                info.remove(consolelog);
+            }
+        }
     }
+};
+if (loggerdebug != undefined && (loggerdebug == 'true' || loggerdebug == true)) {
+    exports.ts_infologger(loggerdebug)
+}
+
+exports.setlogconsole = function(typefile) {
+    let typefilepath = './logs/' + typefile + '.log';
+    let fsize = (fs.statSync(typefilepath)).size;
+    fsize = (fsize > 0) ? (fsize / (1024 * 1024)).toFixed(2) : fsize;
+    return fsize + " M";
 };
 exports.filesize = function(typefile) {
     let typefilepath = './logs/' + typefile + '.log';
