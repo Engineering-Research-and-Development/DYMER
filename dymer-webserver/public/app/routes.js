@@ -123,6 +123,9 @@ function config($routeProvider, $locationProvider) {
         .when(site_prefix + "/modelsdoc", {
             templateUrl: site_prefix + "/public/app/views/pages/demos/models.html"
         })
+        .when(site_prefix + "/redisdoc", {
+            templateUrl: site_prefix + "/public/app/views/pages/demos/redis-cache.html"
+        })
         .when(site_prefix + "/dashboard", {
             templateUrl: site_prefix + "/public/app/views/pages/dashboard.html",
             controller: "dashController"

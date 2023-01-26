@@ -1,0 +1,72 @@
+<a id="back-to-top" href="#" class="btn btn-sm back-to-top ng-scope" role="button" onclick="$('.main-panel').scrollTop(0)"><i class="fa fa-chevron-up"></i></a>
+<div class="col-md-12">
+    <div class="card ">
+        <div class="card-header ">
+            <h5 class="card-title">Redis Cache</h5>
+            <div class="card-category">
+                <div>
+                    <a href="#lnkintro" class="text-warning">
+                        <h7> &nbsp;&nbsp;# Introduction
+                        </h7>
+                    </a>
+                    <a href="#lnksetup" class="text-warning">
+                        <h7> &nbsp;&nbsp;# Setup
+                        </h7>
+                    </a>
+                    <a href="#lnkenable" class="text-warning">
+                        <h7> &nbsp;&nbsp;# Enable/Disable
+                        </h7>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body ">
+
+            <h4 id="lnkintro" class="text-info"> Introduction </h4>
+            <div>
+                Entities are stored in the Elastic Search Database; the Entities microservice generates a specific query to retrieve them. As the number of entities stored increases, generating several queries would be an onerous operation, so a cache could improve the
+                performance. The idea is to store the query and the response to avoid executing a previously performed query. If a new query is already stored in the cache, the Redis Module will provide its relative response bypassing the query execution.
+                Of course, different users can obtain different responses according to their own profiles and permissions, so the cache has to store some additional information, like the origin or the user identification.
+
+            </div>
+            <div>
+                <p>
+                    <h4 id="lnksetup" class="text-info"> Setup </h4>
+                </p>
+                <div>
+                    To use the Redis module, you need to enable it from the entities microservice configuration file (\dymer-entities\config\config.json in the json object services.entity). Set the following section:
+
+                    <pre class=" language-javascript" data-language="javascript"><code class=" language-javascript"><span class="token tag">
+"cache": {
+    "protocol": "http",
+    "host": "127.0.0.1",
+    "ip": "cache",
+    "port": &lt;redis port&gt,
+    "user": "redis",
+    "password": "&lt;redis password&gt",
+    "isEnabled": true
+    }                        
+</code></pre>
+                </div>
+            </div>
+            When the microservice turns on, an initialization function is called.
+
+            <div>
+                <p>
+                    <h4 id="lnkenable" class="text-info"> Enable/Disable </h4>
+                </p>
+                <div>
+                    You can enable or disable redis cache from GUI in <b>DASHBOARD > General Settings section</b> In Redis section you can enable or disable it via checkbox
+
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="card-footer ">
+            <hr />
+            <div class="stats"><i class="fa fa-history"></i> Updated 26/01/2023</div>
+        </div>
+    </div>
+</div>
