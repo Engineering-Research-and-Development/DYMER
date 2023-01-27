@@ -246,7 +246,6 @@ router.get('/elasticstate', util.checkIsAdmin, (req, res) => {
 });
 
 router.patch("/redistoggle", async(req, res) => {
-    redisEnabled = req.body.state;
     let ret = new jsonResponse();
     let dbState = [{
             value: 0,
@@ -281,14 +280,19 @@ router.patch("/redistoggle", async(req, res) => {
         await redisClient.init(redisEnabled != req.body.state);
         // redisEnabled = true;
     }
+    let redisState = 0;
+    try {
+        redisState = await redisClient.ping(redisEnabled);
+    } catch (error) {
 
-    let redisState = await redisClient.ping(redisEnabled);
+    }
+
     if (redisState) {
         redisState = 1;
     } else {
         redisState = 4;
     }
-
+    redisEnabled = req.body.state;
     ret.setMessages("redis state");
     ret.setData(dbState.find(f => f.value == redisState));
     res.status(200);
@@ -1278,7 +1282,7 @@ function deleteRelationOneEntityAndIndex_original(_id, _index) {
 }
 async function CacheRelation(datasetRel) {
     //console.log("risponde CACHE RELATION")
-    // console.log("datasetRel: ", datasetRel)
+    console.log("datasetRel: ", datasetRel)
     let newIdstoRel = datasetRel.map((ele) => { return ele._id2 })
     let idEntityAllRel = [];
     let qparams = {};
@@ -1347,7 +1351,7 @@ async function createRelationV2(dataset) {
         } else {
             //  console.log('bulkResponse.items', bulkResponse.items);
             logger.info(nameFile + '| createRelationV2 | success:' + JSON.stringify(dataset));
-            await CacheRelation(dataset)
+            // await CacheRelation(dataset)
         }
     } else {
         logger.info(nameFile + '| createRelationV2 | no relation deteced:');
@@ -2473,6 +2477,7 @@ router.post('/_search', (req, res) => {
                     });
 
                 } else {
+                    //marco-antonino cache
                     checkUnionRelationV2(resp.hits.hits, filterRelationDymer).then(function(meatch) {
                         var fileterdList = meatch; //temp
                         // console.log('meatch', meatch);
@@ -3324,6 +3329,7 @@ router.post('/:enttype', function(req, res) {
                                 logger.info(nameFile + '| /:enttype | create | dymeruser.id, params:' + dymeruser.id + ' , ' + JSON.stringify(params));
                                 logger.info(nameFile + '| /:enttype | create | ref, elIndex, elId:' + JSON.stringify(ref) + ' , ' + elIndex + ' , ' + elId);
                                 try {
+                                    //marco-antonino cache
                                     checkRelation(ref, elIndex, elId);
                                 } catch (error) {
                                     logger.error(nameFile + '| /:enttype | create | checkRelation:' + error);
@@ -3828,12 +3834,12 @@ router.put('/:id', (req, res) => {
                             logger.info(nameFile + '| /:id | put | updated dymeruser.id, id,title, entity :' + dymeruser.id + ' , ' + id + ' , ' + new_Temp_Entity._source.title);
                             ret.setMessages("Updated!");
                             // var objHook = new_Temp_Entity;
-                            console.log('resp update ', resp);
+                            //console.log('resp update2 ', resp);
                             /* var extraInfo = dymerextrainfo;
                              if (extraInfo != undefined)
                                  extraInfo.extrainfo.emailAddress = dymeruser.id;*/
                             logger.info(nameFile + '| /:id | put | pre check hook| obj, extraInfo:' + dymeruser.id + ' , ' + JSON.stringify(new_Temp_Entity) + ' , ' + JSON.stringify(dymerextrainfo));
-                            await CacheRelation(datasetRelation)
+                            //  await CacheRelation(datasetRelation)
                             checkServiceHook('after_update', new_Temp_Entity, dymerextrainfo, req);
                             //await redisClient.invalidateCacheById([id], redisEnabled)
                             for (idToDel of listRelation_ids_todelete) {
@@ -4334,7 +4340,7 @@ router.put('/hbput2022/:id', (req, res) => {
                             logger.info(nameFile + '| /:id | put | updated dymeruser.id, id,title, entity :' + dymeruser.id + ' , ' + id + ' , ' + new_Temp_Entity._source.title);
                             ret.setMessages("Updated!");
                             // var objHook = new_Temp_Entity;
-                            console.log('resp update ', resp);
+                            console.log('resp update 1 ', resp);
                             /* var extraInfo = dymerextrainfo;
                              if (extraInfo != undefined)
                                  extraInfo.extrainfo.emailAddress = dymeruser.id;*/

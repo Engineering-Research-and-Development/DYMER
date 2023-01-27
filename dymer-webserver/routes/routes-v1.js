@@ -64,7 +64,7 @@ router.post('/setlogConfig', [util.checkIsDymerUser], async(req, res) => {
         // ret.setMessages("Log settings updated");
     ret.setMessages("Settings updated");
     ret.setData({ consoleactive: { webserver: data.consoleactive.webserver, entity: loggerdebug_entity.data.data.consoleactive, template: loggerdebug_template.data.data.consoleactive, form: loggerdebug_form.data.data.consoleactive, service: loggerdebug_service.data.data.consoleactive }, redisactive: state.data.data });
-    console.log('ret.setData', ret.data);
+    //console.log('ret.setData', ret.data);
     return res.send(ret);
 });
 
