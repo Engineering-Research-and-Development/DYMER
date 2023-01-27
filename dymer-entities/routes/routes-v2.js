@@ -1282,7 +1282,7 @@ function deleteRelationOneEntityAndIndex_original(_id, _index) {
 }
 async function CacheRelation(datasetRel) {
     //console.log("risponde CACHE RELATION")
-    console.log("datasetRel: ", datasetRel)
+    // console.log("datasetRel: ", datasetRel)
     let newIdstoRel = datasetRel.map((ele) => { return ele._id2 })
     let idEntityAllRel = [];
     let qparams = {};
@@ -1351,7 +1351,7 @@ async function createRelationV2(dataset) {
         } else {
             //  console.log('bulkResponse.items', bulkResponse.items);
             logger.info(nameFile + '| createRelationV2 | success:' + JSON.stringify(dataset));
-            // await CacheRelation(dataset)
+            await CacheRelation(dataset)
         }
     } else {
         logger.info(nameFile + '| createRelationV2 | no relation deteced:');
@@ -2466,10 +2466,12 @@ router.post('/_search', (req, res) => {
                         ret.setData(nlist);
                         //console.log(nameFile + '|_search| resp no relations:', JSON.stringify(resp.hits.hits)); 
                         logger.info(nameFile + '|_search| resp no relations: count:' + resp.hits.hits.length);
-                        let ids = await redisClient.extractIds(ret, redisEnabled)
-                        let indexes = await redisClient.extractIndexes(ret, redisEnabled)
-                        await redisClient.writeCacheByKey(query, dymeruser.id, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)
-                            //logger.info(nameFile + '|_search| resp no relations: response cached  ');
+                        if (redisEnabled) {
+                            let ids = await redisClient.extractIds(ret, redisEnabled)
+                            let indexes = await redisClient.extractIndexes(ret, redisEnabled)
+                            await redisClient.writeCacheByKey(query, dymeruser.id, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)
+                                //logger.info(nameFile + '|_search| resp no relations: response cached  ');
+                        }
                         return res.send(ret);
                     }).catch(function(err) {
                         console.error("ERROR | " + nameFile + '|_search| checkUnionRelation:', err);
@@ -2507,10 +2509,11 @@ router.post('/_search', (req, res) => {
                                 //console.log(nameFile + '|_search| resp filter relations:count ', nlist.length);
                                 logger.info(nameFile + '|_search| resp filter relations:count ' + nlist.length);
                                 ret.setData(nlist);
-                                let ids = await redisClient.extractIds(ret, redisEnabled)
-                                let indexes = await redisClient.extractIndexes(ret, redisEnabled)
-
-                                await redisClient.writeCacheByKey(query, dymeruser.id, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)
+                                if (redisEnabled) {
+                                    let ids = await redisClient.extractIds(ret, redisEnabled)
+                                    let indexes = await redisClient.extractIndexes(ret, redisEnabled)
+                                    await redisClient.writeCacheByKey(query, dymeruser.id, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)
+                                }
                                 logger.info(nameFile + '|_search| resp filter relations: response cached  ');
                                 return res.send(ret);
                             }).catch(function(err) {
@@ -2532,11 +2535,12 @@ router.post('/_search', (req, res) => {
                             filertEntitiesFields(meatch, minmodelist, hdymeruser).then(async function(nlist) {
                                 //  console.log("prepre", nlist);
                                 ret.setData(nlist);
-                                let ids = await redisClient.extractIds(ret, redisEnabled)
-                                let indexes = await redisClient.extractIndexes(ret, redisEnabled)
-
-                                await redisClient.writeCacheByKey(query, dymeruser.id, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)
-                                    //logger.info(nameFile + '|_search| resp no detected relations: response cached  ');
+                                if (redisEnabled) {
+                                    let ids = await redisClient.extractIds(ret, redisEnabled)
+                                    let indexes = await redisClient.extractIndexes(ret, redisEnabled)
+                                    await redisClient.writeCacheByKey(query, dymeruser.id, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)
+                                        //logger.info(nameFile + '|_search| resp no detected relations: response cached  ');
+                                }
                                 return res.send(ret);
                             }).catch(function(err) {
                                 console.error("ERROR | " + nameFile + '|_search| checkUnionRelation:', err);
@@ -3839,11 +3843,15 @@ router.put('/:id', (req, res) => {
                              if (extraInfo != undefined)
                                  extraInfo.extrainfo.emailAddress = dymeruser.id;*/
                             logger.info(nameFile + '| /:id | put | pre check hook| obj, extraInfo:' + dymeruser.id + ' , ' + JSON.stringify(new_Temp_Entity) + ' , ' + JSON.stringify(dymerextrainfo));
-                            //  await CacheRelation(datasetRelation)
                             checkServiceHook('after_update', new_Temp_Entity, dymerextrainfo, req);
-                            //await redisClient.invalidateCacheById([id], redisEnabled)
-                            for (idToDel of listRelation_ids_todelete) {
-                                await redisClient.removeFromCacheById([idToDel], redisEnabled)
+                            if (redisEnabled) {
+                                await redisClient.invalidateCacheById([id], redisEnabled)
+                                for (idToDel of listRelation_ids_todelete) {
+                                    await redisClient.removeFromCacheById([idToDel], redisEnabled)
+                                }
+                                if (datasetRelation.length != 0) {
+                                    await CacheRelation(datasetRelation)
+                                }
                             }
                             return res.send(ret);
                         }).catch(function(err) {
