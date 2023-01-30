@@ -1151,7 +1151,8 @@ function deleteRelationOneEntityAndIndex(_id, _index) {
                     logger.error(nameFile + '| deleteRelationOneEntityAndIndex | delete :' + _index + " , " + _id + " , " + err);
                     console.error("ERROR | " + nameFile + '| deleteRelationOneEntityAndIndex | delete _index, _id:', _index, _id, err);
                 } else {
-                    await removeRelationsFromCache(_id, _index);
+                    if(redisEnabled){
+                    await removeRelationsFromCache(_id, _index);}
                     logger.info(nameFile + '| deleteRelationOneEntityAndIndex :' + _index + " , " + _id);
                 }
             });
