@@ -158,6 +158,10 @@ app.get(util.getContextPath('entity') + '/checkservice', util.checkIsAdmin, (req
     var ret = new jsonResponse();
     let infosize = logger.filesize("info");
     let errorsize = logger.filesize("error");
+  let regex = /(?<!^).(?!$)/g;
+let infomserv = JSON.parse(JSON.stringify(global.gConfig));
+infomserv.services.cache.password = (infomserv.services.cache.password).replace(regex, '*'); user
+infomserv.services.cache.user = (infomserv.services.cache.user).replace(regex, '*'); 
     ret.setData({
         info: {
             size: infosize
@@ -165,7 +169,7 @@ app.get(util.getContextPath('entity') + '/checkservice', util.checkIsAdmin, (req
         error: {
             size: errorsize
         },
-        infomicroservice: global.gConfig
+        infomicroservice: infomserv
     });
     ret.setMessages("Service is up");
     res.status(200);
