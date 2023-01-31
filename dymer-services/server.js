@@ -100,6 +100,10 @@ app.get(util.getContextPath('dservice') + '/checkservice', util.checkIsAdmin, (r
     var ret = new jsonResponse();
     let infosize = logger.filesize("info");
     let errorsize = logger.filesize("error");
+    let regex = /(?<!^).(?!$)/g;
+let infomserv = JSON.parse(JSON.stringify(global.gConfig));
+infomserv.services.opnsearch.d_mail = (infomserv.services.opnsearch.d_mail.replace(regex, '*');
+infomserv.services.opnsearch.d_pwd  = (infomserv.services.opnsearch.d_pwd.replace(regex, '*');
     ret.setData({
         info: {
             size: infosize
@@ -107,7 +111,7 @@ app.get(util.getContextPath('dservice') + '/checkservice', util.checkIsAdmin, (r
         error: {
             size: errorsize
         },
-        infomicroservice: global.gConfig
+        infomicroservice: infomserv
     });
     ret.setMessages("Service is up");
     res.status(200);
