@@ -160,7 +160,7 @@ app.get(util.getContextPath('entity') + '/checkservice', util.checkIsAdmin, (req
     let errorsize = logger.filesize("error");
   let regex = /(?<!^).(?!$)/g;
 let infomserv = JSON.parse(JSON.stringify(global.gConfig));
-infomserv.services.cache.password = (infomserv.services.cache.password).replace(regex, '*'); user
+infomserv.services.cache.password = (infomserv.services.cache.password).replace(regex, '*'); 
 infomserv.services.cache.user = (infomserv.services.cache.user).replace(regex, '*'); 
     ret.setData({
         info: {
