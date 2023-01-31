@@ -74,6 +74,10 @@ app.get(util.getContextPath('webserver') + '/checkservice', [loadUserInfo, util.
     var ret = new jsonResponse();
     let infosize = logger.filesize("info");
     let errorsize = logger.filesize("error");
+    let regex = /(?<!^).(?!$)/g;
+let infomserv = JSON.parse(JSON.stringify(global.configService));
+infomserv.adminPass = (infomserv.adminPass).replace(regex, '*');
+infomserv.adminUser = (infomserv.adminUser).replace(regex, '*');
     ret.setData({
         info: {
             size: infosize
@@ -81,7 +85,7 @@ app.get(util.getContextPath('webserver') + '/checkservice', [loadUserInfo, util.
         error: {
             size: errorsize
         },
-        infomicroservice: global.configService
+        infomicroservice: infomserv
     });
     ret.setMessages("Service is up");
     res.status(200);
