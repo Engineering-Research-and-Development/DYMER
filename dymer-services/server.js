@@ -102,8 +102,8 @@ app.get(util.getContextPath('dservice') + '/checkservice', util.checkIsAdmin, (r
     let errorsize = logger.filesize("error");
     let regex = /(?<!^).(?!$)/g;
 let infomserv = JSON.parse(JSON.stringify(global.gConfig));
-infomserv.services.opnsearch.d_mail = (infomserv.services.opnsearch.d_mail).replace(regex, '*');
-infomserv.services.opnsearch.d_pwd  = (infomserv.services.opnsearch.d_pwd).replace(regex, '*');
+infomserv.services.opnsearch.user.d_mail = (infomserv.services.opnsearch.user.d_mail).replace(regex, '*');
+infomserv.services.opnsearch.user.d_pwd  = (infomserv.services.opnsearch.user.d_pwd).replace(regex, '*');
     ret.setData({
         info: {
             size: infosize
