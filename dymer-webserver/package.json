@@ -1,6 +1,6 @@
 {
     "name": "webserver",
-    "version": "1.0.0",
+    "version": "1.1.2",
     "main": "server.js",
     "dependencies": {
         "angular": "1.8.2",

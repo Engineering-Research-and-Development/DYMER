@@ -45,9 +45,14 @@ module.exports = {
         let pingResp = await client.ping()
         return pingResp == "PONG";
     },
-    cancelKey: async function(key, isEnabled) {
+    cancelKey: async function (key, isEnabled) {
         if (!isEnabled) { return false }
-        await client.del(key)
+        try {
+            await client.del(key)
+        } catch (e) {
+            logger.error(nameFile + ` | redisModule | Unable remove key ${key} in REDIS due to: ${e.message}`)
+            console.error(`Unable remove key ${key} in REDIS due to: ${e.message}`)
+        }
     },
     readCacheByKey: async function(query, isEnabled) {
         if (!isEnabled) { return null }
@@ -77,6 +82,15 @@ module.exports = {
         } catch (e) {
             logger.error(nameFile + ` | redisModule | Unable to execute REDIS writing operation due to: ${e.message}`)
             console.error("Unable to execute REDIS writing operation due to ", e.message)
+        }
+    },
+    writeAllRelations: async function (response, isEnabled) {
+        if (!isEnabled) { return false }
+        try {
+            await client.hSet("RELATIONS", "relations", response);
+        } catch (e) {
+            logger.error(nameFile + ` | redisModule | Unable write relations in REDIS due to: ${e.message}`)
+            console.error("Unable write relations in REDIS due to ", e.message)
         }
     },
     emptyCache: async function(isEnabled) {

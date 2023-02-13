@@ -8,6 +8,8 @@ Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
     return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
 });
 Handlebars.registerHelper('loadfile', function(eid, fid, options) {
+    if(fid==undefined)
+    return "#";
     var ret = (kmsconfig.cdn).replace('public/cdn/', "") + "api/entities/api/v1/entity/contentfile/" + eid + "/" + fid;
     var tk = localStorage.getItem('DYMAT');
     var tk_extra = localStorage.getItem('DYM_EXTRA');

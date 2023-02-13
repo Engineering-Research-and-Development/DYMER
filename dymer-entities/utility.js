@@ -158,7 +158,7 @@ exports.checkIsDymerUser = function(req, res, next) {
     if (hdymeruser == undefined) {
         logger.info(nameFile + ' | checkIsDymerUser | No permission, hdymeruser=undefined :' + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
         var ret = new jsonResponse();
-        ret.setMessages("No permission");
+        ret.setMessages("Sorry, something went wrong: you don't have permission or your authentication has expired");
         // res.status(200);
         ret.setSuccess(false);
         return res.send(ret);
@@ -178,7 +178,7 @@ exports.checkIsAdmin = function(req, res, next) {
     } else {
         logger.info(nameFile + ' | checkIsAdmin | No permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
         var ret = new jsonResponse();
-        ret.setMessages("No permission");
+        ret.setMessages("Sorry, something went wrong: you don't have permission or your authentication has expired");
         // res.status(200);
         ret.setSuccess(false);
         return res.send(ret);

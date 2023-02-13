@@ -75,6 +75,7 @@ mongoose
 let redisEnabled = global.configService.cache ? global.configService.cache.isEnabled : false;
 console.log("redisEnabled", redisEnabled)
 redisClient.init(redisEnabled)
+let cachedRelations;
     /*
      *************************************************************************************************************
      *************************************************************************************************************
@@ -138,6 +139,7 @@ function startElastic() {
                 elasticStatusUp = true;
                 console.log(nameFile + '| Connected to elasticsearch! ', elasticStatusUp);
                 logger.info(nameFile + '| Connected to elasticsearch!  :' + elasticStatusUp);
+                if(redisEnabled) { cacheRelations(redisEnabled); }
             }
             if (!elasticStatusUp) {
                 console.log(nameFile + '| Elasticsearch down!, start setTimeout A', elasticStatusUp);
@@ -279,6 +281,7 @@ router.patch("/redistoggle", async(req, res) => {
     } else {
         await redisClient.init(redisEnabled != req.body.state);
         // redisEnabled = true;
+        cacheRelations(req.body.state);
     }
     let redisState = 0;
     try {
@@ -349,6 +352,11 @@ router.get('/redisstate', util.checkIsAdmin, async(req, res) => {
     ret.setSuccess(true);
     return res.send(ret);
 });
+async function cacheRelations(isRedisActive) {
+    cachedRelations = await retrieveAllRelations();
+    await redisClient.cancelKey("RELATIONS", isRedisActive)
+    await redisClient.writeAllRelations(JSON.stringify(cachedRelations), isRedisActive)
+}
 /*
  *************************************************************************************************************
  *************************************************************************************************************
@@ -418,8 +426,8 @@ var recFile = function(file_id) {
                 };
                 resolve(attachment);
             });
-            bucket.on('error', () => {
-                reject("Error");
+            bucket.on('error', (error) => {
+                reject('FileNotFound: file '+file_id);
             });
         });
     }).catch(function(err) {
@@ -1318,6 +1326,26 @@ async function CacheRelation(datasetRel) {
         }
     })
 }
+async function retrieveAllRelations() {
+    let qparams = {};
+    qparams["index"] = "entity_relation";
+    qparams["type"] = "entity_relation";
+    qparams["body"] = {
+        "query": {
+            "bool": {
+                "must": {
+                    "term": {
+                        "_index": "entity_relation"
+                    }
+                }
+            }
+        },
+        "size": 10000
+    };
+    return client.search(qparams).then(async function (resp) {
+        return resp.hits.hits
+    })
+}
 async function createRelationV2(dataset) {
     //   let params = { index: "entity_relation", type: "entity_relation" };
     //   params["body"] = newRel;
@@ -1914,7 +1942,7 @@ function isValidObjectId(id) {
 }
 router.get('/contentfile/:entityid/:fileid', function(req, res, next) {
     var entityid = req.params.entityid;
-    var file_id = req.params.fileid;
+    var file_id = req.params.fileid; 
     if (!isValidObjectId(file_id)) {
         //console.error("ERROR | " + nameFile + '| get/contentfile/:entityid/:fileid | fileid !isValidObjectId:');
         res.status(404).send('Not Found');
@@ -1952,7 +1980,12 @@ router.get('/contentfile/:entityid/:fileid', function(req, res, next) {
                     logger.info(nameFile + '| contentfile | listpermission:' + JSON.stringify(listperm) + " , " + JSON.stringify(dymeruser));
                     if (listperm.data.view) {
                         recFile(mongoose.Types.ObjectId(file_id))
-                            .then(function(result) {
+                            .then(function(result) { 
+                                if(result==undefined){
+                                   res.status(404).send('Not Found');
+                                return; 
+                                }
+                                
                                 res.writeHead(200, {
                                     'Content-Type': result.contentType,
                                     'Content-Length': result.length,
@@ -2402,7 +2435,7 @@ router.post('/_search', (req, res) => {
             //   params["_source_excludes"] = ["description"];
             //console.log(nameFile + '|_search| params:', JSON.stringify(params));
             // logger.info(nameFile + '|_search| params :' + JSON.stringify(params));
-            let cachedResponse = await redisClient.readCacheByKey(query, redisEnabled)
+            let cachedResponse = await redisClient.readCacheByKey(params, redisEnabled)
             if (cachedResponse && Object.keys(cachedResponse).length != 0) {
                 logger.info(nameFile + '|_search| cachedResponse ');
                 return res.send(JSON.parse(cachedResponse.response))
@@ -2470,8 +2503,7 @@ router.post('/_search', (req, res) => {
                         if (redisEnabled) {
                             let ids = await redisClient.extractIds(ret, redisEnabled)
                             let indexes = await redisClient.extractIndexes(ret, redisEnabled)
-                            await redisClient.writeCacheByKey(query, dymeruser.id, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)
-                                //logger.info(nameFile + '|_search| resp no relations: response cached  ');
+                            await redisClient.writeCacheByKey(params, dymeruser.id, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                //logger.info(nameFile + '|_search| resp no relations: response cached  ');
                         }
                         return res.send(ret);
                     }).catch(function(err) {
@@ -2513,8 +2545,7 @@ router.post('/_search', (req, res) => {
                                 if (redisEnabled) {
                                     let ids = await redisClient.extractIds(ret, redisEnabled)
                                     let indexes = await redisClient.extractIndexes(ret, redisEnabled)
-                                    await redisClient.writeCacheByKey(query, dymeruser.id, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)
-                                }
+                                    await redisClient.writeCacheByKey(params, dymeruser.id, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                }
                                 logger.info(nameFile + '|_search| resp filter relations: response cached  ');
                                 return res.send(ret);
                             }).catch(function(err) {
@@ -2539,8 +2570,7 @@ router.post('/_search', (req, res) => {
                                 if (redisEnabled) {
                                     let ids = await redisClient.extractIds(ret, redisEnabled)
                                     let indexes = await redisClient.extractIndexes(ret, redisEnabled)
-                                    await redisClient.writeCacheByKey(query, dymeruser.id, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)
-                                        //logger.info(nameFile + '|_search| resp no detected relations: response cached  ');
+                                    await redisClient.writeCacheByKey(params, dymeruser.id, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                        //logger.info(nameFile + '|_search| resp no detected relations: response cached  ');
                                 }
                                 return res.send(ret);
                             }).catch(function(err) {
@@ -3361,7 +3391,7 @@ router.post('/:enttype', function(req, res) {
                     }
                 });
             } else {
-                ret.setMessages("No permission");
+                ret.setMessages("Sorry, something went wrong: you don't have permission or your authentication has expired");
                 res.status(200);
                 ret.setSuccess(false);
                 return res.send(ret);
@@ -3769,7 +3799,16 @@ router.put('/:id', (req, res) => {
                         for (const [key, value] of Object.entries(listRelation_New)) {
                             listRelation_New_toadd[key] = listRelation_New[key].filter((a, index, arr) => { return !(listRelation_Old_ids.includes(a.to)) })
                             listRelation_New_toadd[key].forEach(elid => {
-                                if (elid.to !== '')
+                                if (Array.isArray(elid.to)) {
+                                    for (elTo of elid.to) {
+                                        datasetRelation.push({
+                                            _index1: elIndex,
+                                            "_id1": id,
+                                            "_id2": elTo,
+                                            _index2: key
+                                        });
+                                    }
+                                } else if (elid.to !== '')
                                     datasetRelation.push({
                                         _index1: elIndex,
                                         "_id1": id,

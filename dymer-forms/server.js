@@ -188,7 +188,7 @@ function detectPermission(req, res, next) {
                     logger.info(nameFile + ' | detectPermission | NO permission ' + act + ': user = ' + dymeruser.id + " , roles = " + JSON.stringify(roles) + " , permissions = " + JSON.stringify(response.data.data.result));
                     // console.log(nameFile + ' | detectPermission | permission ' + act + ':', dymeruser.id, JSON.stringify(roles), JSON.stringify(response.data.data.result));
                     //console.log("stop", req.path);
-                    ret.setMessages("No permission 2");
+                    ret.setMessages("Sorry, something went wrong: you don't have permission or your authentication has expired");
                     res.status(200);
                     ret.setSuccess(false);
                     return res.send(ret);
