@@ -1561,13 +1561,22 @@ function mapRelationToEntity(listEntities, listmap, listEnRel) {
 };
 var checkUnionRelationV2 = function(originalList, filterRelationDymer) {
     return new Promise(async function(resolve, reject) {
+        /* 
+        if (redisEnabled) {
+            let cachedRel = await redisClient.readCacheByKey({"RELATIONS": "all_relations"}, redisEnabled)
+            if (cachedRel && Object.keys(cachedRel).length != 0) {
+                logger.info(nameFile + '|_search| cachedResponse Relations');
+                return resolve(cachedRel)
+            }
+        }
+         */
         let listIdsquery_ids = originalList.map(a => {
             return a._id
         }).filter(x => x != "");
 
         // console.log('listIdsquery_ids', listIdsquery_ids);
         // return resolve(originalList);
-        let listIdsquery_id1 = originalList.map(a => {
+      /*  let listIdsquery_id1 = originalList.map(a => {
             return {
                 "match": {
                     "_id1": a._id
@@ -1581,7 +1590,7 @@ var checkUnionRelationV2 = function(originalList, filterRelationDymer) {
                 }
             }
         });
-        var union = [...new Set([...listIdsquery_id1, ...listIdsquery_id2])];
+        var union = [...new Set([...listIdsquery_id1, ...listIdsquery_id2])];*/
         //  console.log('listIds', originalList.length, listIds)*/
         let listIds = originalList.map(a => a._id); //ids delle entità
         //console.log('listIds', listIds.length, listIdsquery_ids.length)

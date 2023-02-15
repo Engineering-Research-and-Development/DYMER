@@ -56,6 +56,10 @@ module.exports = {
     },
     readCacheByKey: async function(query, isEnabled) {
         if (!isEnabled) { return null }
+        if(query["RELATIONS"] && query["RELATIONS"] == "all_relations") {
+            let rel = client.hGetAll("RELATIONS")
+            return rel;
+        }
         let hash = await this.calculateHash(query)
         let resp = {}
         try {
@@ -143,6 +147,7 @@ module.exports = {
         try {
             let keys = await client.keys('*')
             for (let key of keys) {
+                if(key == "RELATIONS") {continue;} 
                 let idsArray = await client.hGet(key, 'ids')
                 let ids = idsArray.split(",")
                 if (ids.some(idToDel => idsToInvalidate.includes(idToDel))) {
@@ -158,9 +163,10 @@ module.exports = {
     },
     invalidateCacheByIndex: async function(index, isEnabled) {
         if (!isEnabled) { return false }
-        try {
+        try { 
             let keys = await client.keys('*')
             for (let key of keys) {
+                if(key == "RELATIONS") {continue;} 
                 let indexesArray = (await client.hGet(key, 'indexes'))
                 let indexes = indexesArray.split(",")
                 if (indexes.find(indexToDel => indexToDel == index)) {
@@ -174,15 +180,18 @@ module.exports = {
             logger.error(nameFile + ` | redisModule | Unable invalidate REDIS cache due to: ${e.message}`)
         }
     },
-    updateCacheId: async function(idsToUpadate, indexesToUpdate, isEnable) {
+    updateCacheId: async function (idsToUpadate, indexesToUpdate, isEnable) {
         if (!isEnable) { return false }
         let idRelation = idsToUpadate[idsToUpadate.length - 1]
         try {
             let keys = await client.keys('*')
             for (let key of keys) {
+                if(key == "RELATIONS") {continue;} /**/
                 let relToCheck = JSON.parse(await client.hGet(key, "response"))
+                let rel = JSON.parse(await client.hGet("RELATIONS", "relations")) /**/
                 let element = relToCheck.data.filter(data => data._id == idRelation)[0]
-                if (!element) continue
+                let elementRel = rel.filter(data => data._id == idRelation)[0] /**/
+                if (!element) continue;
                 else {
                     element._id = idsToUpadate[2];
                     element._id1 = idsToUpadate[0];
@@ -190,8 +199,9 @@ module.exports = {
                     element._id2 = idsToUpadate[1];
                     element._index2 = indexesToUpdate[1];
                 }
-                let newValue = JSON.stringify(relToCheck)
+                let newValue = JSON.stringify(relToCheck)              
                 await client.hSet(key, "response", newValue)
+                await client.hSet("RELATIONS", "relations", JSON.stringify(elementRel)) /**/
                 logger.info(nameFile + ` | redisModule | Updated cache key: ${key}`)
             }
         } catch (e) {
@@ -200,7 +210,7 @@ module.exports = {
         }
         return;
     },
-    addRelationCache: async function(ids, indexes, relationId, isEnble) {
+    addRelationCache: async function (ids, indexes, relationId, isEnble) {
         if (!isEnble) { return false }
         logger.info(nameFile + ` | redisModule | Creating new relation`)
         try {
@@ -208,6 +218,7 @@ module.exports = {
             let jsonResponse = "";
             let keys = await client.keys('*')
             for (let key_ of keys) {
+                if(key_ == "RELATIONS") {continue;}   /**/
                 jsonResponse = JSON.parse(await client.hGet(key_, "response"))
                 if (jsonResponse.data[0]._index == "entity_relation") {
                     key = key_;
@@ -229,26 +240,35 @@ module.exports = {
             }
             jsonResponse.data.push(newRelation)
             let newValue = JSON.stringify(jsonResponse)
+
+            let rel = JSON.parse(await client.hGet("RELATIONS", "relations")) /**/
+            rel.push(newRelation) /**/
             await client.hSet(key, "response", newValue)
+            await client.hSet("RELATIONS", "relations", JSON.stringify(rel)) /**/
             logger.info(nameFile + ` | redisModule | New relation cached`)
         } catch (e) {
             console.error(nameFile + ` | redisModule | Unable add new relation in cache due to:`, e)
             logger.error(nameFile + ` | redisModule | Unable add new relation in cache due to:`, e)
         }
     },
-    removeFromCacheById: async function(idsToDelete, isEnable) {
+    removeFromCacheById: async function (idsToDelete, isEnable) {
         if (!isEnable) { return false }
         logger.info(nameFile + ` | redisModule | Deleting relation`)
         let idRelation = idsToDelete[idsToDelete.length - 1]
         try {
             let keys = await client.keys('*')
             for (let key of keys) {
+                if(key == "RELATIONS") {continue;}   /**/
                 let relToCheck = JSON.parse(await client.hGet(key, "response"))
+                let allRel = JSON.parse(await client.hGet("RELATIONS", "relations")) /**/
                 relToCheck.data = relToCheck.data.filter(data => data._id != idRelation)
+                allRel = allRel.filter(data => data._id != idRelation) /**/
                 let newValue = JSON.stringify(relToCheck)
                 await client.hSet(key, "response", newValue)
+                await client.hSet("RELATIONS", "relations", JSON.stringify(allRel)) /**/
                 logger.info(nameFile + ` | redisModule | Element removed`)
             }
+
         } catch (e) {
             console.error(nameFile + ` | redisModule | Unable delete cache due to:`, e)
             logger.error(nameFile + ` | redisModule | Unable delete cache due to:`, e)
