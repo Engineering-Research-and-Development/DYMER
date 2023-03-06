@@ -402,19 +402,19 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="el in dtlalestEntCreated | orderBy:'-properties.created' ">
+                            <tr ng-repeat="el in dtlalestEntCreated | orderBy:'-_source.properties.created' ">
                                 <td>{{$index+1}}</td>
                                 <td>
                                     {{ el._index }}
                                 </td>
                                 <td>
-                                    {{ el.title }}<br> <small> ID: {{ el._id }} </small>
+                                    {{ el._source.title }}<br> <small> ID: {{ el._id }} </small>
                                 </td>
                                 <td>
-                                    {{ el.properties.owner.uid }}
+                                    {{ el._source.properties.owner.uid }}
                                 </td>
                                 <td>
-                                    <span ng-bind="el.properties.created | date:'MM/dd/yyyy HH:mm:ss'"></span>
+                                    <span ng-bind="el._source.properties.created | date:'MM/dd/yyyy HH:mm:ss'"></span>
                                 </td>
                                 <td>
                                     <a href="listentities?id={{ el._id }}" target="_blank"><i
@@ -449,23 +449,23 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="el in dtlalestEntUpdated | orderBy:'-el.properties.changed' ">
+                            <tr ng-repeat="el in dtlalestEntUpdated | orderBy:'-_source.properties.changed' ">
                                 <td>{{$index+1}}</td>
                                 <td>
                                     {{ el._index }}
                                 </td>
                                 <td>
-                                    {{ el.title }}<br> <small> ID: {{ el._id }} </small>
+                                    {{ el._source.title }}<br> <small> ID: {{ el._id }} </small>
                                 </td>
                                 <td>
                                     <span ng-if="el.properties.extrainfo !== undefined">{{
-                                        el.properties.extrainfo.lastupdate.uid
+                                        el._source.properties.extrainfo.lastupdate.uid
                                         }}</span>
                                     <span ng-if="el.properties.extrainfo === undefined">{{
-                                        el.properties.owner.uid }}</span>
+                                        el._source.properties.owner.uid }}</span>
                                 </td>
                                 <td>
-                                    <span ng-bind="el.properties.changed | date:'MM/dd/yyyy HH:mm:ss'"></span>
+                                    <span ng-bind="el._source.properties.changed | date:'MM/dd/yyyy HH:mm:ss'"></span>
                                 </td>
                                 <td>
                                     <a href="listentities?id={{ el._id }}" target="_blank"><i

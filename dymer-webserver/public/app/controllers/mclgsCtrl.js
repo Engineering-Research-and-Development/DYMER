@@ -65,7 +65,7 @@ angular.module('mclgsCtrl', [])
         $scope.configlog = {};
         $http.get(baseContextPath + '/api/system/logtypes', {}).then(function(retE) {
             $scope.configlog.consoleactive = retE.data.data.consoleactive;
-            console.log('retE', retE.data.data.consoleactive);
+           // console.log('retE', retE.data.data.consoleactive);
             // $scope.configlog.consoleactive = { webserver: false, entity: false, template: false, form: false, service: false };
             $scope.configlog.redisactive = retE.data.data.redisactive;
         });
@@ -94,10 +94,12 @@ angular.module('mclgsCtrl', [])
                 $scope.checkservice.entities.db.elastic.msg = rts.data.data.label;
             })
         }).then(function() {
+            console.log("ddddd");
             $http.get(baseContextPath + "/api/entities/api/v1/entity/redisstate").then(function(rts) {
+                console.log("rts",rts);
                 $scope.checkservice.entities.db.redis.css = rts.data.data.css;
                 $scope.checkservice.entities.db.redis.msg = rts.data.data.label;
-                if (rts.data.data.value == 1 || rts.data.data.value == 1)
+                if (rts.data.data.value == 1 )
                     $scope.checkservice.entities.db.redis.value = true;
                 else
                     $scope.checkservice.entities.db.redis.value = false;
@@ -245,12 +247,18 @@ angular.module('mclgsCtrl', [])
                 url: baseContextPath + '/api/system/setlogConfig',
                 data: { data: dapaPost }
             }).then(function successCallback(response) {
-                    if (response.data.success) {
-                        // useGritterTool("<b><i class='fa fa-map-signs  '></i> Log setting </b>", response.data.message);
-                        $scope.checkservice.entities.db.redis.msg = response.data.data.redisactive
-                        $scope.checkservice.entities.db.redis.css = response.data.data.redisactive.css;
-                        $scope.checkservice.entities.db.redis.msg = response.data.data.redisactive.label;
-                        useGritterTool("<b><i class='fa fa-map-signs  '></i> Settings </b>", response.data.message);
+                if (response.data.success) {
+                    console.log(response)
+                    // useGritterTool("<b><i class='fa fa-map-signs  '></i> Log setting </b>", response.data.message);
+                    // $scope.checkservice.entities.db.redis.msg = response.data.data.redisactive
+                    if (response.data.data.redisactive.entity.value == 1) {
+                    $scope.checkservice.entities.db.redis.value = true;
+                    } else {
+                    $scope.checkservice.entities.db.redis.value = false;
+                    }
+                    $scope.checkservice.entities.db.redis.css = response.data.data.redisactive.entity.css;
+                    $scope.checkservice.entities.db.redis.msg = response.data.data.redisactive.entity.label;
+                    useGritterTool("<b><i class='fa fa-map-signs  '></i> Settings </b>", response.data.message);
                     } else {
                         // useGritterTool("<b><i class='fa fa-map-signs  '></i> Log setting</b>", response.data.message, "danger");
                         useGritterTool("<b><i class='fa fa-map-signs  '></i> Settings </b>", response.data.message, "danger");

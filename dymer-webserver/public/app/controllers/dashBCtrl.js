@@ -28,8 +28,8 @@ angular.module('dashCtrl', ['nvd3'])
         //console.log('baseContextPath', baseContextPath + '/api/entities/api/v1/entity/allstats');
 
         $http.get(baseContextPath + '/api/entities/api/v1/entity/allstatsglobal', {
-
-        }).then(function(retE) {
+         }).then(function(retE) {
+          //  console.log('retE',retE);
             var res = retE.data.data;
             let countrela = 0;
             listEntities = res.indices;
@@ -43,6 +43,7 @@ angular.module('dashCtrl', ['nvd3'])
                 return el.index !== "entity_relation";
             });
             $scope.totIndices = listEntities.length;
+          //  console.log('listEntities.length',listEntities.length);
             $scope.totEntities = res.total - countrela;
 
             $scope.totRelations = countrela;
@@ -161,14 +162,14 @@ angular.module('dashCtrl', ['nvd3'])
 
         $scope.deleteAllEntityAndIndexByIndex = function(obj, ind) {
             if (confirm("Are you sure to delete the index '" + obj.index + "' and  entities?")) {
-                console.log("deleted ", obj.index);
+                //console.log("deleted ", obj.index);
                 var par = { "index": obj.index };
-                console.log(par);
+                //console.log(par);
                 $http.get(baseContextPath + '/api/entities/api/v1/entity/deleteAllEntityAndIndexByIndex', {
                     params: par
                 }).then(function(rt) {
 
-                    console.log("deleted done", rt);
+                    //console.log("deleted done", rt);
                     $scope.ListRules.splice(ind, 1);
                 }).catch(function(response) {
                     console.log(response.status);
@@ -193,9 +194,9 @@ angular.module('dashCtrl', ['nvd3'])
         };
         $scope.invalidateCache = function(obj) {
             if (confirm("Are you sure to invalidate the cache for index " + obj.index + "?")) {
-                console.log("deleted ", obj.index);
+                //console.log("deleted ", obj.index);
                 var par = { "index": obj.index };
-                console.log(par);
+                //console.log(par);
                 $http.post(`${baseContextPath}/api/entities/api/v1/entity/invalidatecache/${obj.index}`, {
 
                 }).then(function(rt) {
@@ -334,7 +335,7 @@ angular.module('dashCtrl', ['nvd3'])
                 }
             };
             $http.post(baseContextPath + '/api/entities/api/v1/entity/_search', par).then(function(ret) {
-                $scope[lista] = ret.data.data;
+                $scope[lista] = ret.data.data; 
                 jQuery(document).ready(function() {
                     jQuery(idDt).DataTable();
 

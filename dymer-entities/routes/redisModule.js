@@ -3,9 +3,13 @@ const path = require('path');
 const nameFile = path.basename(__filename);
 const logger = require('./dymerlogger');
 var crypto = require('crypto');
+var jsonResponse = require('../jsonResponse');
+
 let client;
+
 module.exports = {
-    init: async function(isEnabled) {
+    relationsKey: "",
+    init: async function (isEnabled) {
         if (!isEnabled) { return false }
         client = redis.createClient({
             socket: {
@@ -15,64 +19,63 @@ module.exports = {
             password: global.configService.cache.password
         });
         client.on('error', (err) => {
-            logger.error(nameFile + ` | redisModule | REDIS connection lost due to: ${err.message}`)
+            logger.error(nameFile + ` | init | REDIS connection lost due to: ${err.message}`)
             console.error('REDIS connection lost due to: ', err.message);
             this.disconnect(isEnabled)
         });
         try {
             await client.connect();
-            logger.info(nameFile + ` | redisModule | Connected to REDIS!`)
+            global.configService.cache.isEnabled = true;
+            logger.info(nameFile + ` | init | Connected to REDIS!`)
         } catch (e) {
-            logger.error(nameFile + ` | redisModule | Unable to connect to REDIS due to: ${e.message}`)
+            logger.error(nameFile + ` | init | Unable to connect to REDIS due to: ${e.message}`)
             console.error("Unable to connect to REDIS due to ", e.message)
         }
         return;
     },
-    disconnect: async function(isEnabled) {
+    disconnect: async function (isEnabled) {
         if (!isEnabled) { return false }
-        logger.info(nameFile + ` | redisModuleDisconnecting...`)
+        logger.info(nameFile + ` | redis Module Disconnecting...`)
         try {
             await client.disconnect();
-            logger.info(nameFile + ` | redisModule | Disconnected to REDIS!`)
+            global.configService.cache.isEnabled = false;
+            logger.info(nameFile + ` | disconnect | Disconnected to REDIS!`)
         } catch (error) {
-            logger.error(nameFile + ` | redisModule | Unable to disconnect from REDIS due to: ${error.message}`)
+            logger.error(nameFile + ` | disconnect | Unable to disconnect from REDIS due to: ${error.message}`)
             console.error("Unable to disconnect from REDIS due to ", error.message)
         }
         return;
     },
-    ping: async function(isEnabled) {
-        if (!isEnabled) { return false }
+    ping: async function () {
         let pingResp = await client.ping()
-        return pingResp == "PONG";
+        return (pingResp == "PONG");
     },
     cancelKey: async function (key, isEnabled) {
         if (!isEnabled) { return false }
         try {
             await client.del(key)
         } catch (e) {
-            logger.error(nameFile + ` | redisModule | Unable remove key ${key} in REDIS due to: ${e.message}`)
+            logger.error(nameFile + ` | cancelKey | Unable remove key ${key} in REDIS due to: ${e.message}`)
             console.error(`Unable remove key ${key} in REDIS due to: ${e.message}`)
         }
     },
-    readCacheByKey: async function(query, isEnabled) {
+    readCacheByKey: async function (query, isEnabled) {
         if (!isEnabled) { return null }
-        if(query["RELATIONS"] && query["RELATIONS"] == "all_relations") {
-            let rel = client.hGetAll("RELATIONS")
-            return rel;
-        }
         let hash = await this.calculateHash(query)
         let resp = {}
         try {
-            resp = await client.hGetAll(hash)
+            resp = await client.hGet(hash, "response")
             let userIdcache = await client.hGet(hash, "userId")
-            logger.info(nameFile + ' | redisModule | userIdcache, reading cache hash: ' + userIdcache + ' , ' + hash);
-            return resp
+            logger.info(nameFile + ' | readCacheByKey | userIdcache, reading cache hash: ' + userIdcache + ' , ' + hash);
+            let response = JSON.parse(resp)
+            return response
         } catch (e) {
             return null
         }
     },
-    writeCacheByKey: async function(query, userId, origin, response, ids, indexes, typeservice, isEnabled) {
+    writeCacheByKey: async function (query, userId, origin, response, ids, indexes, typeservice, isEnabled) {
         if (!isEnabled) { return false }
+
         let hash = await this.calculateHash(query)
         try {
             await client.hSet(hash, "query", hash);
@@ -82,42 +85,57 @@ module.exports = {
             await client.hSet(hash, "typeservice", typeservice);
             await client.hSet(hash, "ids", ids);
             await client.hSet(hash, "indexes", indexes);
-            logger.info(nameFile + ' | redisModule | writing cache hash: ' + hash);
+            logger.info(nameFile + ' | writeCacheByKey | writing cache hash: ' + hash);
         } catch (e) {
-            logger.error(nameFile + ` | redisModule | Unable to execute REDIS writing operation due to: ${e.message}`)
-            console.error("Unable to execute REDIS writing operation due to ", e.message)
+            logger.error(nameFile + ` | writeCacheByKey | Unable to execute REDIS writing key ${hash} operation due to: ${e.message}`)
+            console.error(`Unable to execute REDIS writing key ${hash} operation due to: ${e.message} `)
         }
     },
-    writeAllRelations: async function (response, isEnabled) {
+    writeAllRelations: async function (response, query, isEnabled) {
         if (!isEnabled) { return false }
+        await this.setRelationKey(query)
+
+        let hash = await this.getRelationKey()
         try {
-            await client.hSet("RELATIONS", "relations", response);
+            await client.hSet(hash, "response", response);
         } catch (e) {
-            logger.error(nameFile + ` | redisModule | Unable write relations in REDIS due to: ${e.message}`)
-            console.error("Unable write relations in REDIS due to ", e.message)
+            logger.error(nameFile + ` | writeAllRelations | Unable to execute REDIS writing key ${hash} operation due to: ${e.message}`)
+            console.error(`Unable to execute REDIS writing key ${hash} operation due to: ${e.message} `)
         }
     },
-    emptyCache: async function(isEnabled) {
+    readAllrelations: async function (hash, listIds, isEnabled) {        
+        if (!isEnabled) { return null }
+        try {
+            let relations = JSON.parse(await client.hGet(hash, "response"))
+            relations = relations.data.filter((item) => ((listIds.includes(item["_source"]["_id1"] )) || (listIds.includes(item["_source"]["_id2"])))); /**/
+            return relations
+        } catch (e) {
+            console.error(`Unable to retrive all relations REDIS cache key ${hash} due to `, e.message)
+            logger.error(nameFile + ` | readAllrelations |Unable to retrive all relations cache key ${hash} due to: ${e.message}`)
+            return []
+        }
+    },
+    emptyCache: async function (isEnabled) {
         if (!isEnabled) { return false }
-        logger.info(nameFile + ` | redisModule | Empty Cache`)
+        logger.info(nameFile + ` | emptyCache | Empty Cache`)
         try {
             await client.flushAll()
         } catch (e) {
             console.error("Unable to empty REDIS cache due to ", e.message)
-            logger.error(nameFile + ` | redisModule |Unable to empty REDIS cache due to: ${e.message}`)
+            logger.error(nameFile + ` | emptyCache |Unable to empty REDIS cache due to: ${e.message}`)
         }
     },
-    calculateHash: async function(query) {
+    calculateHash: async function (query) {
         return crypto.createHash('md5').update(JSON.stringify(query)).digest('hex');
     },
-    extractIds: async function(ret, isEnabled) {
+    extractIds: async function (ret, isEnabled) {
         if (!isEnabled) { return false }
         let entitiesIds = [...new Set(ret.data.map(obj => obj._id))]
         let relationsIds = await this.extractIdsRelations(ret)
         let ids = entitiesIds.concat(relationsIds)
         return ids;
     },
-    extractIdsRelations: async function(ret) {
+    extractIdsRelations: async function (ret) {
         return [...new Set(ret.data.reduce((ids, curr) => {
             if (curr.relations) {
                 return ids.concat(curr.relations.map(r => r._id))
@@ -126,14 +144,14 @@ module.exports = {
             }
         }, []))]
     },
-    extractIndexes: async function(ret, isEnabled) {
+    extractIndexes: async function (ret, isEnabled) {
         if (!isEnabled) { return false }
         let entitiesIndexes = [...new Set(ret.data.map(obj => obj._index))]
         let relationsIndex = await this.extractIndexRelations(ret)
         let indexes = entitiesIndexes.concat(relationsIndex)
         return indexes
     },
-    extractIndexRelations: async function(ret) {
+    extractIndexRelations: async function (ret) {
         return [...new Set(ret.data.reduce((indexes, curr) => {
             if (curr.relations) {
                 return indexes.concat(curr.relations.map(r => r._index))
@@ -142,89 +160,71 @@ module.exports = {
             }
         }, []))]
     },
-    invalidateCacheById: async function(idsToInvalidate, isEnabled) {
+    invalidateCacheById: async function (idsToInvalidate, isEnabled) {
         if (!isEnabled) { return false }
         try {
             let keys = await client.keys('*')
             for (let key of keys) {
-                if(key == "RELATIONS") {continue;} 
+                if (key == this.relationsKey) { continue; }
                 let idsArray = await client.hGet(key, 'ids')
                 let ids = idsArray.split(",")
                 if (ids.some(idToDel => idsToInvalidate.includes(idToDel))) {
                     client.del(key)
-                    logger.info(nameFile + ` | redisModule | invalidating cache at key ${key}`)
+                    logger.info(nameFile + ` | invalidateCacheById | invalidating cache at key ${key}`)
+                   
                 }
             }
             return
         } catch (e) {
-            console.error("Unable invalidate REDIS cache due to ", e.message)
-            logger.error(nameFile + ` | redisModule | Unable invalidate REDIS cache due to: ${e.message}`)
+            console.error("Unable invalidate REDIS cache by ID due to ", e.message)
+            logger.error(nameFile + ` | invalidateCacheById | Unable invalidate REDIS cache by ID due to: ${e.message}`)
         }
     },
-    invalidateCacheByIndex: async function(index, isEnabled) {
+    invalidateCacheByIndex: async function (index, isEnabled) {
         if (!isEnabled) { return false }
-        try { 
+        try {
             let keys = await client.keys('*')
             for (let key of keys) {
-                if(key == "RELATIONS") {continue;} 
+                if (key == this.relationsKey || key == "") { continue; }
                 let indexesArray = (await client.hGet(key, 'indexes'))
                 let indexes = indexesArray.split(",")
                 if (indexes.find(indexToDel => indexToDel == index)) {
                     client.del(key)
-                    logger.info(nameFile + ` | redisModule | invalidating cache at key ${key}`)
+                    logger.info(nameFile + ` | invalidateCacheByIndex | invalidating cache at key ${key}`)
                 }
             }
             return
         } catch (e) {
-            console.error("Unable invalidate REDIS cache due to ", e.message)
-            logger.error(nameFile + ` | redisModule | Unable invalidate REDIS cache due to: ${e.message}`)
+            console.error(`Unable invalidate REDIS cache by index at key ${key} due to: ${e.message}`)
+            logger.error(nameFile + ` | invalidateCacheByIndex | Unable invalidate REDIS cache by index at key ${key} due to: ${e.message}`)
         }
     },
-    updateCacheId: async function (idsToUpadate, indexesToUpdate, isEnable) {
+    updateRelationsCacheById: async function (idsToUpadate, idRelation, indexesToUpdate, isEnable) {
         if (!isEnable) { return false }
-        let idRelation = idsToUpadate[idsToUpadate.length - 1]
         try {
-            let keys = await client.keys('*')
-            for (let key of keys) {
-                if(key == "RELATIONS") {continue;} /**/
-                let relToCheck = JSON.parse(await client.hGet(key, "response"))
-                let rel = JSON.parse(await client.hGet("RELATIONS", "relations")) /**/
-                let element = relToCheck.data.filter(data => data._id == idRelation)[0]
-                let elementRel = rel.filter(data => data._id == idRelation)[0] /**/
-                if (!element) continue;
-                else {
-                    element._id = idsToUpadate[2];
-                    element._id1 = idsToUpadate[0];
-                    element._index1 = indexesToUpdate[0];
-                    element._id2 = idsToUpadate[1];
-                    element._index2 = indexesToUpdate[1];
-                }
-                let newValue = JSON.stringify(relToCheck)              
-                await client.hSet(key, "response", newValue)
-                await client.hSet("RELATIONS", "relations", JSON.stringify(elementRel)) /**/
-                logger.info(nameFile + ` | redisModule | Updated cache key: ${key}`)
-            }
-        } catch (e) {
-            console.error(nameFile + ` | redisModule | Unable update cache due to:`, e)
-            logger.error(nameFile + ` | redisModule | Unable update cache due to:`, e)
+            let relations = await client.hGet(this.relationsKey, "response")
+            let relationsJSON = JSON.parse(relations)
+            let relationToUpdateIndex = relationsJSON.data.findIndex(r => r._id == idRelation)
+            relationsJSON.data[relationToUpdateIndex]._id = idRelation;
+            relationsJSON.data[relationToUpdateIndex]._source._id1 = idsToUpadate[0];
+            relationsJSON.data[relationToUpdateIndex]._source._index1 = indexesToUpdate[0];
+            relationsJSON.data[relationToUpdateIndex]._source._id2 = idsToUpadate[1];
+            relationsJSON.data[relationToUpdateIndex]._source._index2 = indexesToUpdate[1];
+            await client.hSet(this.relationsKey, "response", JSON.stringify(relationsJSON))
+        }catch (e) {
+            console.error(nameFile + ` | updateRelationsCacheById | Unable update cache due to:`, e)
+            logger.error(nameFile + ` | updateRelationsCacheById | Unable update cache due to:`, e)
         }
         return;
     },
     addRelationCache: async function (ids, indexes, relationId, isEnble) {
         if (!isEnble) { return false }
-        logger.info(nameFile + ` | redisModule | Creating new relation`)
+        logger.info(nameFile + ` | addRelationCache | Creating new relation`)
         try {
-            let key = "";
-            let jsonResponse = "";
-            let keys = await client.keys('*')
-            for (let key_ of keys) {
-                if(key_ == "RELATIONS") {continue;}   /**/
-                jsonResponse = JSON.parse(await client.hGet(key_, "response"))
-                if (jsonResponse.data[0]._index == "entity_relation") {
-                    key = key_;
-                    break;
-                }
-            }
+            let key = this.relationsKey;
+            let jsonResponse_ = new jsonResponse();
+            jsonResponse_ = JSON.parse(await client.hGet(key, "response"))
+
             let newRelation = {
                 _index: "entity_relation",
                 _type: "entity_relation",
@@ -233,46 +233,68 @@ module.exports = {
                 sort: [
                     indexes[0]
                 ],
-                _id1: ids[0],
-                _index1: indexes[0],
-                _id2: ids[1],
-                _index2: indexes[1]
+                _source: {
+                    _id1: ids[0],
+                    _index1: indexes[0],
+                    _id2: ids[1],
+                    _index2: indexes[1]
+                }
             }
-            jsonResponse.data.push(newRelation)
-            let newValue = JSON.stringify(jsonResponse)
 
-            let rel = JSON.parse(await client.hGet("RELATIONS", "relations")) /**/
-            rel.push(newRelation) /**/
+            //console.log("newRelation", newRelation)
+
+            jsonResponse_.data.push(newRelation)
+            let newValue = JSON.stringify(jsonResponse_)
             await client.hSet(key, "response", newValue)
-            await client.hSet("RELATIONS", "relations", JSON.stringify(rel)) /**/
-            logger.info(nameFile + ` | redisModule | New relation cached`)
+            logger.info(nameFile + ` | addRelationCache | New relation cached`+ JSON.stringify(newRelation))
         } catch (e) {
-            console.error(nameFile + ` | redisModule | Unable add new relation in cache due to:`, e)
-            logger.error(nameFile + ` | redisModule | Unable add new relation in cache due to:`, e)
+            console.error(nameFile + ` | addRelationCache | Unable add new relation in cache at key ${key} due to:`, e)
+            logger.error(nameFile + ` | addRelationCache | Unable add new relation in cache at key ${key} due to:`, e)
         }
     },
-    removeFromCacheById: async function (idsToDelete, isEnable) {
+    removeRelationsFromCacheById: async function (ids_, isEnable) {
         if (!isEnable) { return false }
-        logger.info(nameFile + ` | redisModule | Deleting relation`)
-        let idRelation = idsToDelete[idsToDelete.length - 1]
+      //  console.log("REDIS | removeRelationsFromCacheById | ids_ ", ids_)
+        logger.info(nameFile + ` | removeRelationsFromCacheById | Deleting relation`)
         try {
-            let keys = await client.keys('*')
-            for (let key of keys) {
-                if(key == "RELATIONS") {continue;}   /**/
-                let relToCheck = JSON.parse(await client.hGet(key, "response"))
-                let allRel = JSON.parse(await client.hGet("RELATIONS", "relations")) /**/
-                relToCheck.data = relToCheck.data.filter(data => data._id != idRelation)
-                allRel = allRel.filter(data => data._id != idRelation) /**/
-                let newValue = JSON.stringify(relToCheck)
-                await client.hSet(key, "response", newValue)
-                await client.hSet("RELATIONS", "relations", JSON.stringify(allRel)) /**/
-                logger.info(nameFile + ` | redisModule | Element removed`)
+            let relToCheck = JSON.parse(await client.hGet(this.relationsKey, "response"))
+            if (ids_.length == 2) {
+                relToCheck.data = relToCheck.data.filter((data) => !((data._source._id1 == ids_[0] && data._source._id2 == ids_[1]) || (data._source._id1 == ids_[1] && data._source._id2 == ids_[0])))
+            } else {
+                relToCheck.data = relToCheck.data.filter((data) => !((data._source._id1 == ids_[0]) || (data._source._id2 == ids_[0])))
             }
-
+            let newValue = JSON.stringify(relToCheck)
+            await client.hSet(this.relationsKey, "response", newValue)
+            logger.info(nameFile + ` | removeRelationsFromCacheById | Element removed`+ids_)
+            logger.info(nameFile + ` | removeRelationsFromCacheById | aggiornata`+ this.relationsKey) 
         } catch (e) {
-            console.error(nameFile + ` | redisModule | Unable delete cache due to:`, e)
-            logger.error(nameFile + ` | redisModule | Unable delete cache due to:`, e)
+            console.error(nameFile + ` | removeRelationsFromCacheById | Unable delete cache key ${this.relationsKey} due to:`, e)
+            logger.error(nameFile + ` | removeRelationsFromCacheById | Unable delete cache key ${this.relationsKey} due to:`, e)
         }
         return false
+    },
+    removeRelationsFromCacheByIndex: async function (index, isEnable) {
+        if (!isEnable) { return false }
+        logger.info(nameFile + ` | removeRelationsFromCacheByIndex | removeRelationsFromCacheByIndex | Deleting relation`)
+        try {
+            let relToCheck = JSON.parse(await client.hGet(this.relationsKey, "response"))
+
+            relToCheck.data = relToCheck.data.filter((data) => !((data._source._index1 == index) || (data._source._index2 == index)))
+
+            let newValue = JSON.stringify(relToCheck)
+            await client.hSet(key, "response", newValue)
+            logger.info(nameFile + ` | removeRelationsFromCacheByIndex | Relations with ${index} removed`)
+
+        } catch (e) {
+            console.error(nameFile + ` | removeRelationsFromCacheByIndex | Unable delete ${index} relations due to:`, e)
+            logger.error(nameFile + ` | removeRelationsFromCacheByIndex | Unable delete ${index} relations due to:`, e)
+        }
+        return false
+    },
+    setRelationKey: async function (query) {
+        this.relationsKey = await this.calculateHash(query)
+    },
+    getRelationKey: async function () {
+        return this.relationsKey
     }
 }

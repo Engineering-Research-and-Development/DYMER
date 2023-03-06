@@ -72,10 +72,10 @@ mongoose
     });
 //let redisUrl = 'redis://cache:6379'
 //redisClient.init()
-let redisEnabled = global.configService.cache ? global.configService.cache.isEnabled : false;
+  redisEnabled = global.configService.cache ? global.configService.cache.isEnabled : false;
 console.log("redisEnabled", redisEnabled)
 redisClient.init(redisEnabled)
-let cachedRelations;
+//let cachedRelations;
     /*
      *************************************************************************************************************
      *************************************************************************************************************
@@ -285,25 +285,22 @@ router.patch("/redistoggle", async(req, res) => {
     }
     let redisState = 0;
     try {
-        redisState = await redisClient.ping(redisEnabled);
-    } catch (error) {
-
-    }
-
+        redisState = await redisClient.ping();
+    } catch (error) { }
     if (redisState) {
         redisState = 1;
     } else {
         redisState = 4;
     }
     redisEnabled = req.body.state;
-    ret.setMessages("redis state");
+    ret.setMessages("redistoggle state",redisEnabled);
     ret.setData(dbState.find(f => f.value == redisState));
     res.status(200);
     ret.setSuccess(true);
     return res.send(ret);
 })
 router.get('/redisstate', util.checkIsAdmin, async(req, res) => {
-    let ret = new jsonResponse();
+    let ret = new jsonResponse(); 
     let redisstate = 0;
     let dbState = [{
             value: 0,
@@ -330,7 +327,7 @@ router.get('/redisstate', util.checkIsAdmin, async(req, res) => {
             label: "Disabled",
             css: "text-warning"
         }
-    ];
+    ]; 
     if (!redisEnabled) {
         ret.setMessages("redis state");
         redisstate = 4;
@@ -339,23 +336,28 @@ router.get('/redisstate', util.checkIsAdmin, async(req, res) => {
         ret.setSuccess(true);
         return res.send(ret);
     }
-    let redisState = await redisClient.ping(redisEnabled);
+    let redisState = await redisClient.ping();
+    ret.setMessages("redisstate state",redisState);
     if (redisState) {
         redisstate = 1;
     } else {
         redisstate = 0;
     }
-
-    ret.setMessages("redis state");
+    //redisEnabled = req.body.state;
     ret.setData(dbState.find(f => f.value == redisstate));
     res.status(200);
     ret.setSuccess(true);
     return res.send(ret);
 });
 async function cacheRelations(isRedisActive) {
-    cachedRelations = await retrieveAllRelations();
-    await redisClient.cancelKey("RELATIONS", isRedisActive)
-    await redisClient.writeAllRelations(JSON.stringify(cachedRelations), isRedisActive)
+    let cachedRelations = await retrieveAllRelations();
+    await redisClient.setRelationKey(cachedRelations[1])
+    await redisClient.cancelKey(await redisClient.getRelationKey(), isRedisActive)
+    
+    let response = JSON.stringify(cachedRelations[0])
+    let query = cachedRelations[1]
+    await redisClient.writeAllRelations(response, query, isRedisActive) /**/
+    //await redisClient.writeAllRelations(JSON.stringify(cachedRelations, isRedisActive)
 }
 /*
  *************************************************************************************************************
@@ -380,10 +382,12 @@ router.post('/invalidatecache/:index', util.checkIsAdmin, async(req, res) => {
 
 router.post('/invalidateallcache', util.checkIsAdmin, async(req, res) => {
     await redisClient.emptyCache(true);
+    let cachedRelations = await retrieveAllRelations();
     var ret = new jsonResponse();
     ret.setMessages("invalidated cache");
     ret.setSuccess(true);
     //  ret.setExtraData({ "log": err.stack });
+    await redisClient.writeAllRelations(JSON.stringify(cachedRelations[0]), cachedRelations[1], true)
     return res.send(ret);
 });
 
@@ -431,7 +435,7 @@ var recFile = function(file_id) {
             });
         });
     }).catch(function(err) {
-        console.error("ERROR | " + nameFile + '| recFile  : ', err);
+       // console.error("ERROR | " + nameFile + '| recFile  : ', err);
         logger.error(nameFile + '| recFile : ' + err);
     });
 }
@@ -910,18 +914,20 @@ function deleteRelationByIndex(index) {
         }
     };
 
-    client.indices.exists({ index: "entity_relation" }, function(err_, resp_, status_) {
+    client.indices.exists({ index: "entity_relation" },  function(err_, resp_, status_) {
         if (status_ == 200) {
             client.deleteByQuery({
                 index: 'entity_relation',
                 body: qrdelete,
                 timeout: "5m"
-            }, function(err, resp, status) {
+            },  async function(err, resp, status) {
                 if (err) {
                     logger.error(nameFile + '| deleteRelationByIndex | delete index:' + index + " , " + err);
                     console.error("ERROR | " + nameFile + '| deleteRelationByIndex | delete:', err);
                 } else {
                     logger.info(nameFile + '| deleteRelationByIndex index:' + index);
+                    if(redisEnabled) {
+                        await redisClient.removeRelationsFromCacheByIndex(index, redisEnabled)}
                 }
             });
 
@@ -1159,8 +1165,10 @@ function deleteRelationOneEntityAndIndex(_id, _index) {
                     logger.error(nameFile + '| deleteRelationOneEntityAndIndex | delete :' + _index + " , " + _id + " , " + err);
                     console.error("ERROR | " + nameFile + '| deleteRelationOneEntityAndIndex | delete _index, _id:', _index, _id, err);
                 } else {
-                    if(redisEnabled){
-                    await removeRelationsFromCache(_id, _index);}
+                    if (redisEnabled) {
+                        //await removeRelationsFromCache(_id, _index);
+                        await redisClient.removeRelationsFromCacheById([_id], redisEnabled);
+                    }
                     logger.info(nameFile + '| deleteRelationOneEntityAndIndex :' + _index + " , " + _id);
                 }
             });
@@ -1175,47 +1183,7 @@ function deleteRelationOneEntityAndIndex(_id, _index) {
         logger.error(nameFile + '| deleteRelationOneEntityAndIndex exists: ' + err);
     });
 }
-async function removeRelationsFromCache(id, index) {
-    //  console.log("#########################")
-    //  console.log("id: ", id)
-    //  console.log("index", index)
-    let idEntityAllRel = [];
-    let qparams = {};
-    qparams["index"] = "entity_relation";
-    qparams["type"] = "entity_relation";
-    qparams["body"] = {
-        "query": {
-            "bool": {
-                "must": [{
-                        "match": {
-                            "_id1.keyword": id
-                        }
-                    },
-                    {
-                        "match": {
-                            "_index1.keyword": index
-                        }
-                    }
-                ],
-                "must_not": [],
-                "should": []
-            }
-        }
-    };
-
-    client.search(qparams).then(async function(resp) {
-        idEntityAllRel = resp.hits.hits.map((ele) => { return ele._id })
-        if (idEntityAllRel.length != 0) {
-            // console.log("idEntityAllRel", idEntityAllRel)
-            for (let idRelation of idEntityAllRel) {
-                await redisClient.removeFromCacheById([idRelation], redisEnabled)
-            }
-        } else {
-            logger.error(nameFile + '| Relation not removed from cache ');
-        }
-    });
-
-}
+ 
 
 function deleteRelationOneEntityAndIndex_original(_id, _index) {
     let params = { index: "entity_relation" };
@@ -1327,6 +1295,8 @@ async function CacheRelation(datasetRel) {
     })
 }
 async function retrieveAllRelations() {
+    let jsonResp = new jsonResponse()
+    
     let qparams = {};
     qparams["index"] = "entity_relation";
     qparams["type"] = "entity_relation";
@@ -1343,7 +1313,11 @@ async function retrieveAllRelations() {
         "size": 10000
     };
     return client.search(qparams).then(async function (resp) {
-        return resp.hits.hits
+        //return resp.hits.hits
+        jsonResp.setData(resp.hits.hits)
+        jsonResp.setMessages("List entities") 
+        let staticQueryRel = {"sort":["_index1.keyword:asc"],"body":{"query":{"bool":{"must":{"term":{"_index":"entity_relation"}}}},"size":10000}}
+        return [jsonResp, staticQueryRel]
     })
 }
 async function createRelationV2(dataset) {
@@ -1380,6 +1354,7 @@ async function createRelationV2(dataset) {
         } else {
             //  console.log('bulkResponse.items', bulkResponse.items);
             logger.info(nameFile + '| createRelationV2 | success:' + JSON.stringify(dataset));
+            if(redisEnabled)
             await CacheRelation(dataset)
         }
     } else {
@@ -1595,7 +1570,18 @@ var checkUnionRelationV2 = function(originalList, filterRelationDymer) {
         let listIds = originalList.map(a => a._id); //ids delle entità
         //console.log('listIds', listIds.length, listIdsquery_ids.length)
         //  let listDocsRelations = await getAllIdsRelations(union); //lista delle entityrelation getAllIdsRelations 
-        let listDocsRelations = await getAllIdsRelations(listIdsquery_ids);
+        let listDocsRelations
+        
+        if (redisEnabled) {
+           // console.log("Sta servendo la cache")
+            listDocsRelations = await redisClient.readAllrelations(await redisClient.getRelationKey(), listIds, redisEnabled)
+           // console.log(listDocsRelations[0])
+        } else {
+            /**/
+         //   console.log("Sto facendo la query")
+            listDocsRelations = await getAllIdsRelations(listIdsquery_ids);
+         //   console.log(listDocsRelations[0])
+        }
         //  console.log('listDocsRelations', listDocsRelations)
         // resolve(originalList);
         let listIdsRelations = [...new Set(listDocsRelations.map(a => {
@@ -1815,7 +1801,11 @@ router.post('/singlerelation/', util.checkIsAdmin, (req, res) => {
     }).then(async function(resp) {
         logger.info(nameFile + '| post singlerelation/:id | dymeruser.id, create :' + dymeruser.id + ' , ' + JSON.stringify(callData));
         //await redisClient.invalidateCacheById([callData.id1, callData.id2], redisEnabled)
-        await redisClient.addRelationCache([callData.id1, callData.id2], [callData.index1, callData.index2], resp._id, redisEnabled)
+        if(redisEnabled){
+            await redisClient.invalidateCacheById([callData.id1, callData.id2, resp._id], redisEnabled)
+            await redisClient.addRelationCache([callData.id1, callData.id2], [callData.index1, callData.index2], resp._id, redisEnabled)
+        }
+       
         ret.setMessages("Relation created!");
         ret.setExtraData(resp);
         return res.send(ret);
@@ -1850,9 +1840,11 @@ router.put('/singlerelation/:id', util.checkIsAdmin, (req, res) => {
     }).then(async function(resp) {
         logger.info(nameFile + '| put singlerelation/:id | dymeruser.id, id updated :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(data));
         ret.setMessages("Relation Updated!");
-        // await redisClient.invalidateCacheById([callData.id1, callData.id2, id], redisEnabled)
+        if(redisEnabled){
+          await redisClient.invalidateCacheById([callData.id1, callData.id2, id], redisEnabled)
         await redisClient.updateCacheId([callData.id1, callData.id2, id], [callData.index1, callData.index2], redisEnabled)
-        return res.send(ret);
+        }
+                return res.send(ret);
     }).catch(function(err) {
         logger.error(nameFile + '| put singlerelation/:id | dymeruser.id, id update :' + dymeruser.id + ' , ' + id + ' , ' + err);
         console.error("ERROR | " + nameFile + '| put singlerelation/:id | dymeruser.id, id update :', dymeruser.id, id, err);
@@ -1889,8 +1881,10 @@ router.delete('/singlerelation/:id', util.checkIsAdmin, (req, res) => {
                     logger.info(nameFile + '| singlerelation | delete| dymeruser.id, relation removed :' + dymeruser.id + " , " + JSON.stringify(resp));
                     ret.setMessages("Relation deleted successfully");
                     ret.addData(resp);
-                    // await redisClient.invalidateCacheById([ele._source._id1, ele._source._id2, id], redisEnabled)
-                    await redisClient.removeFromCacheById([ele._source._id1, ele._source._id2, id], redisEnabled);
+                    if(redisEnabled){
+                        await redisClient.invalidateCacheById([ele._source._id1, ele._source._id2, id], redisEnabled)
+                        await redisClient.removeFromCacheById([ele._source._id1, ele._source._id2, id], redisEnabled);
+                    }  
                     return res.send(ret);
                 },
                 function(err) {
@@ -2076,10 +2070,11 @@ router.get('/allstats/', (req, res) => {
         return res.send(ret);
     });
 });
-router.get('/allstatsglobal/', (req, res) => {
+router.get('/allstatsglobal', (req, res) => {
     var ret = new jsonResponse();
     var params = {};
-    client.indices.stats(params, function(err, resp, status) {
+   
+ client.indices.stats(params, function(err, resp, status) {
         if (err) {
             console.error("ERROR | " + nameFile + '| allstats  :', err);
             logger.error(nameFile + '| allstats : ' + err);
@@ -2087,7 +2082,7 @@ router.get('/allstatsglobal/', (req, res) => {
             ret.setExtraData({ log: err.message });
             ret.setMessages("Entity " + err.displayName);
             return res.send(ret);
-        }
+        } 
         var listEl = resp.indices;
         var totEnt = 0;
         var respData = {
@@ -2100,10 +2095,11 @@ router.get('/allstatsglobal/', (req, res) => {
             respData.indices.push({ index: key, count: value['primaries']['docs']['count'] });
             //  }
         }
+        
         respData.total = totEnt;
-        ret.setData(respData);
+        ret.setData(respData);  
         return res.send(ret);
-    });
+    }); 
 });
 router.get('/relationstat/', (req, res) => {
 
@@ -2254,7 +2250,7 @@ router.post('/_search', (req, res) => {
         let _source = callData.source;
 
         let qoptions = callData.qoptions;
-
+ 
         let recoverRelation = true;
         let size = 10000;
         let sort = ["title.keyword:asc"];
@@ -2444,11 +2440,20 @@ router.post('/_search', (req, res) => {
             //   params["_source_excludes"] = ["description"];
             //console.log(nameFile + '|_search| params:', JSON.stringify(params));
             // logger.info(nameFile + '|_search| params :' + JSON.stringify(params));
-            let cachedResponse = await redisClient.readCacheByKey(params, redisEnabled)
-            if (cachedResponse && Object.keys(cachedResponse).length != 0) {
-                logger.info(nameFile + '|_search| cachedResponse ');
-                return res.send(JSON.parse(cachedResponse.response))
-            }
+            let cachedResponse;
+            // let hash_ = await redisClient.calculateHash(params) //[2602] aggiunto
+             //if (redisEnabled && (hash_ != await redisClient.getRelationKey())) {    //[2602] cambiata la condizione
+       
+             if (redisEnabled) {      
+                 cachedResponse = await redisClient.readCacheByKey(params, redisEnabled)
+                 if (cachedResponse && Object.keys(cachedResponse).length != 0) {
+                    // console.log("entro qui")
+                     logger.info(nameFile + '|_search| cachedResponse ');
+                     //return res.send(JSON.parse(cachedResponse.response))
+                     return res.send(cachedResponse)
+                     //return res.send(cachedResponse)
+                 }
+             }
             // console.log('paramsNNN', JSON.stringify(params));
 
             client.search(params).then(function(resp) {
@@ -2492,20 +2497,20 @@ router.post('/_search', (req, res) => {
                    console.log("unique", unique);
                    console.log("compr_struct", compr_struct);
                    console.log("resp.hits", resp.hits.hits);*/
-                //console.log("recoverRelation", recoverRelation);
+                //console.log("recoverRelation", recoverRelation,JSON.stringify(params) );
                 if (recoverRelation == 'false' || recoverRelation == false) {
                     filertEntitiesFields(resp.hits.hits, minmodelist, hdymeruser).then(async function(nlist) {
                         // console.log("prepre", nlist);
                         //  ret.setData(nlist);
                         //  return res.send(ret);
 
-                        for (var i = 0; i < nlist.length; i++) {
+                      /*  for (var i = 0; i < nlist.length; i++) {
                             var source = nlist[i]._source;
                             delete nlist[i]._source;
                             for (var key in source) {
                                 nlist[i][key] = source[key];
                             }
-                        }
+                        } */
                         ret.setData(nlist);
                         //console.log(nameFile + '|_search| resp no relations:', JSON.stringify(resp.hits.hits)); 
                         logger.info(nameFile + '|_search| resp no relations: count:' + resp.hits.hits.length);
@@ -2521,6 +2526,7 @@ router.post('/_search', (req, res) => {
                     });
 
                 } else {
+                   // console.log("entro qui",query );
                     //marco-antonino cache
                     checkUnionRelationV2(resp.hits.hits, filterRelationDymer).then(function(meatch) {
                         var fileterdList = meatch; //temp
@@ -2555,6 +2561,7 @@ router.post('/_search', (req, res) => {
                                     let ids = await redisClient.extractIds(ret, redisEnabled)
                                     let indexes = await redisClient.extractIndexes(ret, redisEnabled)
                                     await redisClient.writeCacheByKey(params, dymeruser.id, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                }
+                               
                                 logger.info(nameFile + '|_search| resp filter relations: response cached  ');
                                 return res.send(ret);
                             }).catch(function(err) {
@@ -3895,8 +3902,8 @@ router.put('/:id', (req, res) => {
                             checkServiceHook('after_update', new_Temp_Entity, dymerextrainfo, req);
                             if (redisEnabled) {
                                 await redisClient.invalidateCacheById([id], redisEnabled)
-                                for (idToDel of listRelation_ids_todelete) {
-                                    await redisClient.removeFromCacheById([idToDel], redisEnabled)
+                                for (let idToDel of listRelation_old_filtered_todelete) {
+                                    await redisClient.removeRelationsFromCacheById([idToDel._source._id1, idToDel._source._id2], redisEnabled)
                                 }
                                 if (datasetRelation.length != 0) {
                                     await CacheRelation(datasetRelation)
@@ -4830,7 +4837,7 @@ router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
     params_["body"].size = 10000;
     logger.info(nameFile + '| deleteAllEntityByIndex | dymeruser.id, index :' + dymeruser.id + ' , ' + index);
     // console.log(nameFile + '| deleteAllEntityByIndex | dymeruser.id, index :', dymeruser.id, index);
-    client.search(params_).then(function(resp) {
+    client.search(params_).then(async function(resp) {
         if (resp.hits.total == 0) {
             ret.setSuccess(true);
             ret.setMessages("No entity founded");
@@ -4881,13 +4888,16 @@ router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
                     // console.log(nameFile + '| deleteAllEntityByIndex | pre check hook id,extraInfo: ', dymeruser.id, JSON.stringify(objHook), JSON.stringify(dymerextrainfo));
                     logger.info(nameFile + '| deleteAllEntityByIndex | pre check hook id,extraInfo: ' + dymeruser.id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
                     checkServiceHook('after_delete', objHook, dymerextrainfo, req);
-                    await redisClient.invalidateCacheById([ret.data[0]._id], redisEnabled)
+                   // await redisClient.invalidateCacheById([ret.data[0]._id], redisEnabled)
                 },
                 function(err) {
                     logger.error(nameFile + '| deleteAllEntityByIndex | entity remov ,index:' + dymeruser.id + ' , ' + index + ' , ' + err);
                     console.error("ERROR | " + nameFile + '| deleteAllEntityByIndex | entity remov :', dymeruser.id, err);
                 }
             );
+        }
+        if(redisEnabled) {
+            await redisClient.invalidateCacheByIndex([index], redisEnabled)
         }
         return res.send(ret);
     }, function(err) {
@@ -4912,10 +4922,13 @@ router.get('/deleteAllEntityAndIndexByIndex/', util.checkIsAdmin, (req, res) => 
      }*/
     client.indices.delete({
         index: index_,
-    }).then(function(resp) {
+    }).then(async function(resp) {
         //console.log(nameFile + '| deleteAllEntityAndIndexByIndex | index :', dymeruser.id, index_);
         logger.info(nameFile + '| deleteAllEntityAndIndexByIndex | dymeruser.id, index :' + dymeruser.id + ' , ' + index_);
         deleteRelationByIndex(index_);
+        if(redisEnabled) {
+            await redisClient.invalidateCacheByIndex([index], redisEnabled)
+        }
     }, function(err) {
         logger.error(nameFile + '| deleteAllEntityAndIndexByIndex :' + dymeruser.id + ' , ' + err);
         console.error("ERROR | " + nameFile + '| deleteAllEntityAndIndexByIndex :', dymeruser.id, err);
@@ -5055,7 +5068,7 @@ router.delete('/:id', (req, res) => {
                         //console.log(nameFile + '| delete/:id | pre check hook id,extraInfo: ', dymeruser.id, id, JSON.stringify(dymerextrainfo));
                         logger.info(nameFile + '| delete/:id | pre check hook id,extraInfo: ' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
                         checkServiceHook('after_delete', objHook, dymerextrainfo, req);
-                        await redisClient.invalidateCacheById([ret.data[0]._id], redisEnabled)
+                      await redisClient.invalidateCacheById([id], redisEnabled)
                         return res.send(ret);
                     });
                 });

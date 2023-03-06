@@ -541,6 +541,7 @@ class ElTemplate {
                 (el.files).forEach(function(fl, l) {
                     //dom_to_render = (fl.mimetype == "text/html") ? fl.path : dom_to_render;
                     //MArco da valutare
+                    //console.log("fl",fl);
                     var lkpath = indport + "content/" + fl._id;
                     var splmime = (fl.contentType).split("/");
                     var ftype = splmime[1];
@@ -548,8 +549,15 @@ class ElTemplate {
                         dom_to_render = fl.data;
                     else {
                         ftype = (ftype == "css") ? "link" : ftype;
-                        if (ftype != "octet-stream")
-                            t_ar.push({ domtype: ftype, filename: lkpath, extrattr: [] });
+                        if (ftype != "octet-stream"){
+let eltopush={ domtype: ftype, filename: lkpath, extrattr: [],data:{} ,name:fl.filename};
+                         
+                             if(fl.filename=="language.json")
+                             eltopush.data.language=fl.data;
+                             t_ar.push(eltopush); 
+
+                        }
+                           
                     }
                 });
                 var ret2 = dom_to_render;
@@ -657,6 +665,7 @@ async function onloadFiles2(arr) {
 
 
 async function onloadFiles(arr) {
+    
     let tk = localStorage.getItem('DYMAT');
     let tk_extra = localStorage.getItem('DYM_EXTRA');
     let toperm = "";
@@ -668,6 +677,8 @@ async function onloadFiles(arr) {
     if (arr.length > 0) {
         var obj = arr[0];
         arr.shift();
+        if(obj.domtype=="json")
+        return onloadFiles(arr);
         var attr = "";
         var script = null;
         //  var filename = obj.filename + "?dmts=1";
@@ -891,6 +902,12 @@ const hookReleationForm_Promise = function(item) {
 }
 
 function populateHookRelation(x, y, z, w, k, a, b, arObj2, rel) {
+   //mr rel fix
+  // console.log('rel',rel); 
+   //console.log('arObj2',arObj2);
+    var templ_data = flatEsArray(arObj2.data);
+    arObj2.data = templ_data.arr
+    //console.log('templ_data',arObj2);
     listRelationForm[rel] = arObj2.data;
     $('.senderForm [data-torelation="' + rel + '"]').each(function(inde) {
         var esxtraAttr = "";
@@ -1104,6 +1121,9 @@ function loadFilterModel(index, tagFilterObj) {
                     qoptions: { relations: false }
                 };
                 var listToselect = actionPostMultipartForm("entity.search", undefined, datapost, undefined, undefined, undefined, false, undefined);
+                 //mr rel fix
+                 var templ_data = flatEsArray(listToselect.data);
+                 listToselect.data = templ_data.arr;
                 var inde = 0;
                 var ismulti = ($(this).attr('searchable-multiple') == "true") ? true : false;
                 var $sel = $('<select class="form-control span12 col-12"  searchable-multiple="' + ismulti + '"  searchable-override="data[relationdymer][' + rel + ']" searchable="" searchable-label="' + $(this).attr('searchable-label') + '" name="data[relation][' + rel + '][' + inde + '][to]"  ' + esxtraAttr + '>').appendTo($(this));
@@ -1490,12 +1510,12 @@ async function ldFormFiles2(id) {
     let rs = await removeTempImport('tftemp').then(async function() {
         //  console.log("inizio caricamento file");
         // return onloadFiles((listLoadedAdm[id].tftemp).slice());
-        return onloadFiles2((listLoadedAdm[id].tftemp).slice());
+        let onl2=onloadFiles2((listLoadedAdm[id].tftemp).slice()); 
+        if (typeof afterLoadForm !== "undefined") {
         setTimeout(function() {
-            if (typeof afterLoadForm !== "undefined") {
                 afterLoadForm(); //marco after
-            }
-        }, 3000);
+        }, 3000);  }
+        return onl2;
     });
     //  console.log("ritorno ldFormFiles2");
     return rs;
@@ -4579,9 +4599,12 @@ function dymerSearch(options) {
                         let datapost = {
                             instance: { "index": rel },
                             qoptions: { relations: false }
-                        };
+                        }; 
                         let listToselect = actionPostMultipartForm("entity.search", undefined, datapost, undefined, undefined, undefined, false, undefined);
                         let inde = 0;
+                          //mr rel fix
+                        var templ_data = flatEsArray(listToselect.data);
+                        listToselect.data = templ_data.arr;
                         let ismulti = ($(this).attr('searchable-multiple') == "true") ? "multiple" : 'data-max-options="1"';
                         let isactionsbox = "";
                         if ($(this).attr('searchable-multiple') == "true") {

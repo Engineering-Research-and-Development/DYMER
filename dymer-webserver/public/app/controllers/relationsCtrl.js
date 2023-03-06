@@ -107,7 +107,7 @@ angular.module('relationsCtrl', [])
         $scope.setupdateManageRel = function(index, tp) {
             $scope.showConfigAuthentication = true;
             var tmpConf = angular.copy($scope.listrels[index]);
-            $scope.configManageRel = { _id: tmpConf._id, id1: tmpConf._id1, id2: tmpConf._id2, title1: tmpConf.title1, title2: tmpConf.title2, index1: tmpConf._index1, index2: tmpConf._index2 };
+            $scope.configManageRel = { _id: tmpConf._id, id1: tmpConf._source._id1, id2: tmpConf._source._id2, title1: tmpConf.title1, title2: tmpConf.title2, index1: tmpConf._source._index1, index2: tmpConf._source._index2 };
         }
 
         function loadtable(listE) {
@@ -129,12 +129,12 @@ angular.module('relationsCtrl', [])
                 }
             };
             $http.post(baseContextPath + '/api/entities/api/v1/entity/_search', par).then(function(ret) {
-                let lista = ret.data.data;
+                let lista = ret.data.data;  
                 lista.forEach(element => {
-                    let objtitle1 = listE.find(o => o._id == element._id1);
-                    let objtitle2 = listE.find(o => o._id == element._id2);
-                    element["title1"] = (objtitle1 != undefined) ? objtitle1.title : "Entity not found";
-                    element["title2"] = (objtitle2 != undefined) ? objtitle2.title : "Entity not found";
+                    let objtitle1 = listE.find(o => o._id == element._source._id1);
+                    let objtitle2 = listE.find(o => o._id == element._source._id2);
+                    element["title1"] = (objtitle1 != undefined) ? objtitle1._source.title : "Entity not found";
+                    element["title2"] = (objtitle2 != undefined) ? objtitle2._source.title : "Entity not found";
                 });
                 $scope.listrels = lista;
                 jQuery(document).ready(function() {

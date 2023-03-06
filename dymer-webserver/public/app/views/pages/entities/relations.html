@@ -18,8 +18,8 @@
                             </div>
                             <div class="form-group">
                                 <label class="text-info"> Entity 1</label>
-                                <select class="form-control col-12   " ng-change='selectedEntRel("sel1")' ng-model="configManageRel.id1" data-live-search="true" ng-options="ent._id as ent.title group by ent._index for ent in listentities  | orderBy:'title'">
-                                </select>
+                                <select class="form-control col-12   " ng-change='selectedEntRel("sel1")' ng-model="configManageRel.id1" data-live-search="true" ng-options="ent._id as ent._source.title group by ent._index for ent in listentities  | orderBy:'title'">
+                                                                    </select>
                                 <input type="hidden" ng-model="configManageRel.index1">
                                 <input type="hidden" ng-model="configManageRel.title1">
                                 <small class="txtinsta">INDEX : {{configManageRel.index1}}
@@ -28,7 +28,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="text-info"> Entity 2</label>
-                                <select class="form-control col-12   " ng-change='selectedEntRel("sel2")' ng-model="configManageRel.id2" data-live-search="true" ng-options="ent._id as ent.title group by ent._index for ent in listentities | orderBy:'title'">
+                                <select class="form-control col-12   " ng-change='selectedEntRel("sel2")' ng-model="configManageRel.id2" data-live-search="true" ng-options="ent._id as ent._source.title group by ent._index for ent in listentities | orderBy:'_source.title'">
                                 </select>
                                 <input type="hidden" ng-model="configManageRel.index2">
                                 <input type="hidden" ng-model="configManageRel.title2">
@@ -86,17 +86,17 @@
                                     {{ el._id }}
                                 </td>-->
                                 <td class=" text-center">
-                                    {{ el._index1 }}
+                                    {{ el._source._index1 }}
                                 </td>
                                 <td>
-                                    {{ el.title1 }}<br> <small> ID: {{ el._id1 }} </small>
+                                    {{ el.title1 }}<br> <small> ID: {{ el._source._id1 }} </small>
 
                                 </td>
                                 <td class=" text-center">
-                                    {{ el._index2 }}
+                                    {{ el._source._index2 }}
                                 </td>
                                 <td>
-                                    {{ el.title2 }}<br> <small> ID: {{ el._id2 }}</small>
+                                    {{ el.title2 }}<br> <small> ID: {{ el._source._id2 }}</small>
                                 </td>
 
                                 <td class=" text-center actmodindexdash">

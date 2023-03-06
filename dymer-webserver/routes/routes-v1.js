@@ -20,7 +20,9 @@ router.get('/logtypes', async(req, res) => {
     let msglog = "file";
 
     let url_entity = util.getServiceUrl("entity") + "/logtypes";
-    let loggerdebug_entity = (await axios.get(url_entity)).data.data.consolelog;
+    let logsType_entity = (await axios.get(url_entity))
+    let loggerdebug_entity = logsType_entity.data.data.consolelog;
+    let redisactive_entity = logsType_entity.data.data.redisactive;
 
     let url_template = util.getServiceUrl("template") + "/logtypes";
     let loggerdebug_template = (await axios.get(url_template)).data.data.consolelog;
@@ -33,7 +35,8 @@ router.get('/logtypes', async(req, res) => {
     ret.setMessages("Logs");
     ret.setData({
         msg: msglog,
-        consoleactive: { webserver: loggerdebug_webserver, entity: loggerdebug_entity, template: loggerdebug_template, form: loggerdebug_form, service: loggerdebug_service }
+        consoleactive: { webserver: loggerdebug_webserver, entity: loggerdebug_entity, template: loggerdebug_template, form: loggerdebug_form, service: loggerdebug_service },
+        redisactive: {entity: redisactive_entity}  
     });
     res.status(200);
     ret.setSuccess(true);
@@ -42,6 +45,9 @@ router.get('/logtypes', async(req, res) => {
 
 router.post('/setlogConfig', [util.checkIsDymerUser], async(req, res) => {
     var ret = new jsonResponse();
+    try {
+        
+    
     let callData = util.getAllQuery(req);
     let data = callData.data;
     //global.loggerdebug = data.consoleactive;
@@ -60,12 +66,15 @@ router.post('/setlogConfig', [util.checkIsDymerUser], async(req, res) => {
     let loggerdebug_service = await axios.post(url_service, { consoleactive: data.consoleactive.service })
 
     var url = util.getServiceUrl("entity") + "/api/v1/entity/redistoggle";
-    let state = await axios.patch(url, { state: data.redisactive })
+    let state = await axios.patch(url, { state: data.redisactive.entity })
         // ret.setMessages("Log settings updated");
     ret.setMessages("Settings updated");
-    ret.setData({ consoleactive: { webserver: data.consoleactive.webserver, entity: loggerdebug_entity.data.data.consoleactive, template: loggerdebug_template.data.data.consoleactive, form: loggerdebug_form.data.data.consoleactive, service: loggerdebug_service.data.data.consoleactive }, redisactive: state.data.data });
-    //console.log('ret.setData', ret.data);
-    return res.send(ret);
+    ret.setData({ consoleactive: { webserver: data.consoleactive.webserver, entity: loggerdebug_entity.data.data.consoleactive, template: loggerdebug_template.data.data.consoleactive, form: loggerdebug_form.data.data.consoleactive, service: loggerdebug_service.data.data.consoleactive }, redisactive: { entity: state.data.data }});    //console.log('ret.setData', ret.data);
+} catch (error) {
+    ret.setSuccess(false)
+    ret.setMessages("Error");
+}
+    return res.send(ret); 
 });
 
 /*

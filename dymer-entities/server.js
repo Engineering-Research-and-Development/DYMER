@@ -137,7 +137,8 @@ app.get('/logtypes', async(req, res) => {
     var ret = new jsonResponse();
     ret.setSuccess(true);
     let loggerdebug = global.loggerdebug;
-    ret.setData({ consolelog: loggerdebug });
+    let redisValue = global.configService.cache ? global.configService.cache.isEnabled : false;
+    ret.setData({ consolelog: loggerdebug, redisactive: redisValue});
     ret.setMessages("logtypes");
     return res.send(ret);
 });
