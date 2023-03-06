@@ -188,15 +188,16 @@ module.exports = {
                 if (key == this.relationsKey || key == "") { continue; }
                 let indexesArray = (await client.hGet(key, 'indexes'))
                 let indexes = indexesArray.split(",")
-                if (indexes.find(indexToDel => indexToDel == index)) {
+                if (indexes && indexes.find(indexToDel => indexToDel == index)) {
                     client.del(key)
                     logger.info(nameFile + ` | invalidateCacheByIndex | invalidating cache at key ${key}`)
+                    console.log(nameFile + ` | invalidateCacheByIndex | invalidating cache at key ${key}`)
                 }
             }
             return
         } catch (e) {
-            console.error(`Unable invalidate REDIS cache by index at key ${key} due to: ${e.message}`)
-            logger.error(nameFile + ` | invalidateCacheByIndex | Unable invalidate REDIS cache by index at key ${key} due to: ${e.message}`)
+            console.error(`Unable invalidate REDIS cache by index at key due to: ${e.message}`)
+            logger.error(nameFile + ` | invalidateCacheByIndex | Unable invalidate REDIS cache by index due to: ${e.message}`)
         }
     },
     updateRelationsCacheById: async function (idsToUpadate, idRelation, indexesToUpdate, isEnable) {
@@ -213,7 +214,7 @@ module.exports = {
             await client.hSet(this.relationsKey, "response", JSON.stringify(relationsJSON))
         }catch (e) {
             console.error(nameFile + ` | updateRelationsCacheById | Unable update cache due to:`, e)
-            logger.error(nameFile + ` | updateRelationsCacheById | Unable update cache due to:`, e)
+            logger.error(nameFile + ` | updateRelationsCacheById | Unable update cache due to:` + e)
         }
         return;
     },
@@ -249,7 +250,7 @@ module.exports = {
             logger.info(nameFile + ` | addRelationCache | New relation cached`+ JSON.stringify(newRelation))
         } catch (e) {
             console.error(nameFile + ` | addRelationCache | Unable add new relation in cache at key ${key} due to:`, e)
-            logger.error(nameFile + ` | addRelationCache | Unable add new relation in cache at key ${key} due to:`, e)
+            logger.error(nameFile + ` | addRelationCache | Unable add new relation in cache at key ${key} due to:` + e)
         }
     },
     removeRelationsFromCacheById: async function (ids_, isEnable) {
@@ -269,7 +270,7 @@ module.exports = {
             logger.info(nameFile + ` | removeRelationsFromCacheById | aggiornata`+ this.relationsKey) 
         } catch (e) {
             console.error(nameFile + ` | removeRelationsFromCacheById | Unable delete cache key ${this.relationsKey} due to:`, e)
-            logger.error(nameFile + ` | removeRelationsFromCacheById | Unable delete cache key ${this.relationsKey} due to:`, e)
+            logger.error(nameFile + ` | removeRelationsFromCacheById | Unable delete cache key ${this.relationsKey} due to:` + e)
         }
         return false
     },
@@ -286,8 +287,8 @@ module.exports = {
             logger.info(nameFile + ` | removeRelationsFromCacheByIndex | Relations with ${index} removed`)
 
         } catch (e) {
-            console.error(nameFile + ` | removeRelationsFromCacheByIndex | Unable delete ${index} relations due to:`, e)
-            logger.error(nameFile + ` | removeRelationsFromCacheByIndex | Unable delete ${index} relations due to:`, e)
+            console.error(nameFile + ` | removeRelationsFromCacheByIndex | Unable delete ${index} relations due to: ${e}`)
+            logger.error(nameFile + ` | removeRelationsFromCacheByIndex | Unable delete ${index} relations due to: ${e}`)
         }
         return false
     },
