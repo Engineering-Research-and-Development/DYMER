@@ -350,6 +350,7 @@ router.get('/redisstate', util.checkIsAdmin, async(req, res) => {
     return res.send(ret);
 });
 async function cacheRelations(isRedisActive) {
+    await redisClient.emptyCache(true)
     let cachedRelations = await retrieveAllRelations();
     await redisClient.setRelationKey(cachedRelations[1])
     await redisClient.cancelKey(await redisClient.getRelationKey(), isRedisActive)
