@@ -1843,7 +1843,8 @@ router.put('/singlerelation/:id', util.checkIsAdmin, (req, res) => {
         ret.setMessages("Relation Updated!");
         if(redisEnabled){
           await redisClient.invalidateCacheById([callData.id1, callData.id2, id], redisEnabled)
-        await redisClient.updateCacheId([callData.id1, callData.id2, id], [callData.index1, callData.index2], redisEnabled)
+        
+        await redisClient.updateRelationsCacheById([callData.id1, callData.id2, id], [callData.index1, callData.index2], redisEnabled)
         }
                 return res.send(ret);
     }).catch(function(err) {
