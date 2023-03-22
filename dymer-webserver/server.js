@@ -256,9 +256,11 @@ app.post(util.getContextPath('webserver') + '/api2/retriveinfo', loadUserInfo, (
     res.send(objuser);
 });
 app.get(util.getContextPath('webserver') + '/info/:key?', (req, res, next) => {
-    var pjson = require('./package.json');
+   // var pjson = require('./package.json');
     var key = req.params.key;
-    let infodymer = { "version": pjson.version };
+    
+  //  let infodymer = { "version": global.gConfig.dymer.version };
+    let infodymer =  global.gConfig.dymer ;
     let htmlsend_hd =
         '<!DOCTYPE html>' +
         '<html lang="en"><head>' +
@@ -290,7 +292,8 @@ app.get(util.getContextPath('webserver') + '/info/:key?', (req, res, next) => {
         '<br><small style="color: #8c8985;">DYnamic Information ModElling & Rendering</small>' +
         '</div>' +
         '<div class="  	col-12 p-2" style="color: #8c8985;">' +
-        '<br> version ' + infodymer.version + '</div>' +
+        '<br> version ' + infodymer.version +
+        '<br> <small style="color: #8c8985;"> updated date ' + infodymer.updated  + '</small></div>' +
         '<div class="text-center col-12 p-2">' +
         '<span style=" font-size: 12px;">&#169; 2022, Powered by <a href="https://www.eng.it/" target="_blank">' + '<img src="https://www.eng.it/resources/images/logo%20eng.png" style="width: 20px;bottom: 3px;position: relative; "> Engineering</a>' + '</span>' +
         '</div>' +
