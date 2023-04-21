@@ -1295,9 +1295,21 @@ async function CacheRelation(datasetRel) {
         }
     })
 }
+async function checkIndexExists(index) {
+    try {
+      const exists = await client.indices.exists({ index: index });
+      logger.info(nameFile + '| checkIndexExists | Index found:' + index);
+      return exists;
+    } catch (error) {
+      console.error(`Si è verificato un errore: ${error}`);
+      logger.error(nameFile + '| checkIndexExists:' + error);
+    }
+  }
 async function retrieveAllRelations() {
     let jsonResp = new jsonResponse()
-    
+    if(!(await checkIndexExists("entity_relation"))) {
+        return [jsonResp, {}]
+    }
     let qparams = {};
     qparams["index"] = "entity_relation";
     qparams["type"] = "entity_relation";
@@ -1885,7 +1897,7 @@ router.delete('/singlerelation/:id', util.checkIsAdmin, (req, res) => {
                     ret.addData(resp);
                     if(redisEnabled){
                         await redisClient.invalidateCacheById([ele._source._id1, ele._source._id2, id], redisEnabled)
-                        await redisClient.removeFromCacheById([ele._source._id1, ele._source._id2, id], redisEnabled);
+                        await redisClient.removeRelationsFromCacheById([ele._source._id1, ele._source._id2, id], redisEnabled);
                     }  
                     return res.send(ret);
                 },
