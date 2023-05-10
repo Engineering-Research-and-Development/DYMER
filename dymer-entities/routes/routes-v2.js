@@ -1647,37 +1647,87 @@ router.post('/_search', (req, res) => {
             bridgeConf = bE.findByIndex(rr.indextosearch[0]);
         //console.log(nameFile + ' | _search | bridgeConf:', JSON.stringify(bridgeConf));
         logger.info(nameFile + ' | _search | bridgeConf :' + JSON.stringify(bridgeConf));
+        const socsDomain = process.env.SOCS_DOMAIN;
         if (bridgeConf != undefined) {
             if (bridgeConf.api.tokenProvider != undefined) {
                 if (bridgeConf.api.tokenProvider.active == true) {
-                    getCapabilityTokenDEMETER(bridgeConf, "search", dymeruser, undefined, rr, userLocation).then(function (tokenResponse) {
-                        demeterExternalEntities(bridgeConf, "search", tokenResponse.data, dymeruser.extrainfo.token, undefined, rr, userLocation, undefined).then(function (callresp) {
-                            jsonMappingExternalToDymerEntity(callresp.data, bridgeConf, "search").then(function (mapdata) {
-                                let msg = (mapdata.length > 0) ? "List entities" : "Empty list";
-                                ret.setData(mapdata);
-                                ret.setMessages(msg);
-                                return res.send(ret);
+
+                    if (req.headers.referer === socsDomain) {
+                        console.log (' | _search | SOCS | calling SOCS token ')
+                        logger.info(nameFile + ' | _search | SOCS | calling SOCS token ');
+                        var url_dservice = util.getServiceUrl("dservice");
+                        var tokenUrl = url_dservice + "/api/v1/authconfig/getSocsDehToken";
+
+                         axios.get(tokenUrl, {
+                            headers: {
+                                referer: req.headers.referer
+                            }
+                        }).then(token => {
+                            var authToken = token.data.data.access_token.access_token;
+                            var capabiltyToken = token.data.data.universal_cap_token;
+
+                            demeterExternalEntities(bridgeConf, "search", capabiltyToken, authToken, undefined, rr, userLocation, undefined).then(function (callresp) {
+                                jsonMappingExternalToDymerEntity(callresp.data, bridgeConf, "search").then(function (mapdata) {
+                                    let msg = (mapdata.length > 0) ? "List entities" : "Empty list";
+                                    ret.setData(mapdata);
+                                    ret.setMessages(msg);
+                                    return res.send(ret);
+                                }).catch(function (error) {
+                                    console.error("ERROR | " + nameFile + '  | _search | SOCS |  jsonMappingExternalToDymerEntity:', error);
+                                    logger.error(nameFile + ' | _search | SOCS | jsonMappingExternalToDymerEntity : ' + error);
+                                    ret.setSuccess(false);
+                                    ret.setMessages("Entity Mapping Problem");
+                                    return res.send(ret);
+                                });
                             }).catch(function (error) {
-                                console.error("ERROR | " + nameFile + '  | _search | jsonMappingExternalToDymerEntity:', error);
-                                logger.error(nameFile + ' | _search | jsonMappingExternalToDymerEntity : ' + error);
+                                console.error("ERROR | " + nameFile + '  | _search | SOCS | demeterExternalEntities:', error);
+                                logger.error(nameFile + ' | _search | SOCS | bridgeEsternalEntities : ' + error);
                                 ret.setSuccess(false);
-                                ret.setMessages("Entity Mapping Problem");
+                                ret.setMessages("Entity Recovery Problem");
                                 return res.send(ret);
                             });
                         }).catch(function (error) {
-                            console.error("ERROR | " + nameFile + '  | _search | demeterExternalEntities:', error);
-                            logger.error(nameFile + ' | _search | bridgeEsternalEntities : ' + error);
+                            console.error("ERROR | " + nameFile + '  | _search | SOCS | getCapabilityTokenDEMETER:', error);
+                            logger.error(nameFile + ' | _search | SOCS | getCapabilityTokenDEMETER: : ' + error);
                             ret.setSuccess(false);
-                            ret.setMessages("Entity Recovery Problem");
+                            ret.setMessages("Capability Token Problem");
                             return res.send(ret);
                         });
-                    }).catch(function (error) {
-                        console.error("ERROR | " + nameFile + '  | _search | getCapabilityTokenDEMETER:', error);
-                        logger.error(nameFile + ' | _search | getCapabilityTokenDEMETER: : ' + error);
-                        ret.setSuccess(false);
-                        ret.setMessages("Capability Token Problem");
-                        return res.send(ret);
-                    });;
+
+                    }
+                    else {
+                        console.log (' | _search | SOCS | calling regular DEH token ')
+                        logger.info(nameFile + ' | _search | SOCS | calling regular DEH token ');
+                        getCapabilityTokenDEMETER(bridgeConf, "search", dymeruser, undefined, rr, userLocation).then(function (tokenResponse) {
+                            demeterExternalEntities(bridgeConf, "search", tokenResponse.data, dymeruser.extrainfo.token, undefined, rr, userLocation, undefined).then(function (callresp) {
+                                jsonMappingExternalToDymerEntity(callresp.data, bridgeConf, "search").then(function (mapdata) {
+                                    let msg = (mapdata.length > 0) ? "List entities" : "Empty list";
+                                    ret.setData(mapdata);
+                                    ret.setMessages(msg);
+                                    return res.send(ret);
+                                }).catch(function (error) {
+                                    console.error("ERROR | " + nameFile + '  | _search | jsonMappingExternalToDymerEntity:', error);
+                                    logger.error(nameFile + ' | _search | jsonMappingExternalToDymerEntity : ' + error);
+                                    ret.setSuccess(false);
+                                    ret.setMessages("Entity Mapping Problem");
+                                    return res.send(ret);
+                                });
+                            }).catch(function (error) {
+                                console.error("ERROR | " + nameFile + '  | _search | demeterExternalEntities:', error);
+                                logger.error(nameFile + ' | _search | bridgeEsternalEntities : ' + error);
+                                ret.setSuccess(false);
+                                ret.setMessages("Entity Recovery Problem");
+                                return res.send(ret);
+                            });
+                        }).catch(function (error) {
+                            console.error("ERROR | " + nameFile + '  | _search | getCapabilityTokenDEMETER:', error);
+                            logger.error(nameFile + ' | _search | getCapabilityTokenDEMETER: : ' + error);
+                            ret.setSuccess(false);
+                            ret.setMessages("Capability Token Problem");
+                            return res.send(ret);
+                        });
+                    }
+
                 }
             }
             else {
@@ -3250,7 +3300,7 @@ router.post('/:enttype', function (req, res) {
                         logger.info(nameFile + ' | /:enttype | create | bridgeConf:' + JSON.stringify(bridgeConf));
                         if (bridgeConf != undefined) {
                             if (trq.files != undefined) {
-                                trq.files.forEach(function(element) {
+                                trq.files.forEach(function (element) {
                                     var ark = replaceAll(element.fieldname, '[', '@@');
                                     delete element.fieldname;
                                     ark = replaceAll(ark, ']', '');
@@ -3274,7 +3324,7 @@ router.post('/:enttype', function (req, res) {
                                                     ret.setMessages(callresp.data.message);
                                                 }
                                                 return res.send(ret);
-    
+
                                             }).catch(function (error) {
                                                 console.error("ERROR | " + nameFile + '  | /:enttype | create | demeterExternalEntities:', error);
                                                 logger.error(nameFile + ' | /:enttype | create | demeterExternalEntities: ' + error);
@@ -3298,35 +3348,36 @@ router.post('/:enttype', function (req, res) {
                                     });;
                                 }
                             }
-                            else{
-                            jsonMappingDymerEntityToExternal(globalData, bridgeConf, "create", req.files).then(function(mapdata) {
-                                bridgeEsternalEntities(bridgeConf, "create", mapdata, undefined, req.files).then(function(callresp) {
-                                    //console.log(nameFile + ' | /:enttype | create | bridgeEsternalEntities: ', JSON.stringify(mapdata), JSON.stringify(callresp.data));
-                                    logger.info(nameFile + ' | /:enttype | create | bridgeEsternalEntities:' + JSON.stringify(mapdata) + " , " + JSON.stringify(callresp.data));
-                                    ret.setData(callresp.data);
-                                    ret.setMessages("Entity Creted successfully");
-                                    return res.send(ret);
-                                }).catch(function(error) {
-                                    console.error("ERROR | " + nameFile + ' | /:enttype | create | bridgeEsternalEntities:', error);
-                                    logger.error(nameFile + ' | /:enttype | create | bridgeEsternalEntities: ' + error);
+                            else {
+                                jsonMappingDymerEntityToExternal(globalData, bridgeConf, "create", req.files).then(function (mapdata) {
+                                    bridgeEsternalEntities(bridgeConf, "create", mapdata, undefined, req.files).then(function (callresp) {
+                                        //console.log(nameFile + ' | /:enttype | create | bridgeEsternalEntities: ', JSON.stringify(mapdata), JSON.stringify(callresp.data));
+                                        logger.info(nameFile + ' | /:enttype | create | bridgeEsternalEntities:' + JSON.stringify(mapdata) + " , " + JSON.stringify(callresp.data));
+                                        ret.setData(callresp.data);
+                                        ret.setMessages("Entity Creted successfully");
+                                        return res.send(ret);
+                                    }).catch(function (error) {
+                                        console.error("ERROR | " + nameFile + ' | /:enttype | create | bridgeEsternalEntities:', error);
+                                        logger.error(nameFile + ' | /:enttype | create | bridgeEsternalEntities: ' + error);
+                                        ret.setSuccess(false);
+                                        ret.setMessages("Entity Create Problem");
+                                        return res.send(ret);
+                                    });
+                                }).catch(function (error) {
+                                    console.error("ERROR | " + nameFile + ' | /:enttype | create | jsonMappingDymerEntityToExternal:', error);
+                                    logger.error(nameFile + ' | /:enttype | create | jsonMappingDymerEntityToExternal: ' + error);
                                     ret.setSuccess(false);
-                                    ret.setMessages("Entity Create Problem");
+                                    ret.setMessages("Entity Mapping Problem");
                                     return res.send(ret);
                                 });
-                            }).catch(function(error) {
-                                console.error("ERROR | " + nameFile + ' | /:enttype | create | jsonMappingDymerEntityToExternal:', error);
-                                logger.error(nameFile + ' | /:enttype | create | jsonMappingDymerEntityToExternal: ' + error);
-                                ret.setSuccess(false);
-                                ret.setMessages("Entity Mapping Problem");
-                                return res.send(ret);
-                            });
-                        }} else {
+                            }
+                        } else {
                             //fine externale
                             var files_arr = [];
                             var label_index = -1;
                             //  console.log('reqfile', req.files);
                             if (req.files != undefined) {
-                                req.files.forEach(function(element) {
+                                req.files.forEach(function (element) {
                                     var ark = replaceAll(element.fieldname, '[', '@@');
                                     var temp_el = element;
                                     delete element.fieldname;
@@ -3360,7 +3411,7 @@ router.post('/:enttype', function (req, res) {
                                 delete data.relation;
                             // console.log(nameFile + ' | /:enttype | create | params:', dymeruser.id, JSON.stringify(params));
                             logger.info(nameFile + ' | /:enttype | create | params :' + dymeruser.id + " , " + JSON.stringify(params));
-                            client.index(params, function(err, resp, status) {
+                            client.index(params, function (err, resp, status) {
                                 if (err) {
                                     console.error("ERROR | " + nameFile + ' | /:enttype | create:', err);
                                     logger.error(nameFile + ' | /:enttype | create : ' + err);

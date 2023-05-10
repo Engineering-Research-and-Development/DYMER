@@ -1,95 +1,103 @@
 {
-    "development": {
-        "config_id": "development",
-        "services": {
-            "entity": {
-                "app_name": "entity",
-                "app_desc": "dymer entity",
-                "protocol": "http",
-                "ip": "localhost",
-                "port": 1358,
-                "ip_port": "localhost:1358",
-                "repository": {
-                    "entity": {
-                        "type": "elastichsearch",
-                        "protocol": "http",
-                        "ip": "localhost",
-                        "port": 9200
-                    },
-                    "files": {
-                        "type": "mongodb",
-                        "protocol": "http",
-                        "ip": "127.0.0.1",
-                        "port": 27017,
-                        "index_ref": "entity"
-                    },
-                    "entitiesbridge": {
-                        "type": "mongodb",
-                        "protocol": "http",
-                        "ip": "127.0.0.1",
-                        "port": 27017,
-                        "index_ref": "entity"
-                    }
-                }
-            },
-            "dservice": {
-                "protocol": "http",
-                "ip": "localhost",
-                "port": 5050
-            },
-            "form": {
-                "protocol": "http",
-                "ip": "localhost",
-                "port": 4747
-            }
+  "development": {
+    "config_id": "development",
+    "services": {
+      "entity": {
+        "app_name": "entity",
+        "app_desc": "dymer entity",
+        "protocol": "http",
+        "ip": "localhost",
+        "port": 1358,
+        "ip_port": "localhost:1358",
+        "repository": {
+          "entity": {
+            "type": "elastichsearch",
+            "protocol": "http",
+            "ip": "localhost",
+            "port": 9200
+          },
+          "files": {
+            "type": "mongodb",
+            "protocol": "http",
+            "ip": "127.0.0.1",
+            "port": 27017,
+            "index_ref": "entity"
+          },
+          "entitiesbridge": {
+            "type": "mongodb",
+            "protocol": "http",
+            "ip": "127.0.0.1",
+            "port": 27017,
+            "index_ref": "entity"
+          },
+          "socsuser": {
+            "email": "socsdehuser@gmail.com",
+            "password": "socs_deh"
+          }
         }
-    },
-    "production": {
-        "config_id": "production",
-        "services": {
-            "entity": {
-                "app_name": "entity",
-                "app_desc": "dymer entity",
-                "protocol": "http",
-                "ip": "localhost",
-                "context-path": "",
-                "port": 1358,
-                "ip_port": "localhost:1358",
-                "repository": {
-                    "entity": {
-                        "type": "elastichsearch",
-                        "protocol": "http",
-                        "context-path": "",
-                        "ip": "elasticsearch",
-                        "port": 9200
-                    },
-                    "files": {
-                        "type": "mongodb",
-                        "protocol": "http",
-                        "ip": "mongodb",
-                        "port": 27017,
-                        "index_ref": "entity"
-                    },
-                    "entitiesbridge": {
-                        "type": "mongodb",
-                        "protocol": "http",
-                        "ip": "mongodb",
-                        "port": 27017,
-                        "index_ref": "entity"
-                    }
-                }
-            },
-            "dservice": {
-                "protocol": "http",
-                "context-path": "",
-                "ip": "dymer_services",
-                "port": 5050
-            },
-            "form": {
-                "protocol": "http",
-                "ip": "dymer_forms",
-                "port": 4747
-            }
-        }
+      },
+      "dservice": {
+        "protocol": "http",
+        "ip": "localhost",
+        "port": 5050
+      },
+      "form": {
+        "protocol": "http",
+        "ip": "localhost",
+        "port": 4747
+      }
     }
+  },
+  "production": {
+    "config_id": "production",
+    "services": {
+      "entity": {
+        "app_name": "entity",
+        "app_desc": "dymer entity",
+        "protocol": "http",
+        "ip": "localhost",
+        "context-path": "",
+        "port": 1358,
+        "ip_port": "localhost:1358",
+        "repository": {
+          "entity": {
+            "type": "elastichsearch",
+            "protocol": "http",
+            "context-path": "",
+            "ip": "elasticsearch",
+            "port": 9200
+          },
+          "files": {
+            "type": "mongodb",
+            "protocol": "http",
+            "ip": "mongodb",
+            "port": 27017,
+            "index_ref": "entity"
+          },
+          "entitiesbridge": {
+            "type": "mongodb",
+            "protocol": "http",
+            "ip": "mongodb",
+            "port": 27017,
+            "index_ref": "entity"
+          },
+          "socsuser": {
+            "username": "socsuser",
+            "password": "socs_deh"
+          }
+        }
+      },
+      "dservice": {
+        "protocol": "http",
+        "context-path": "",
+        "ip": "dymer_services",
+        "port": 5050
+      },
+      "form": {
+        "protocol": "http",
+        "ip": "dymer_forms",
+        "port": 4747
+      }
+    }
+  }
 }

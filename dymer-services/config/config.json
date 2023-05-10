@@ -15,7 +15,11 @@
                     "ip": "localhost",
                     "port": 27017,
                     "index_ref": "dservice"
-                }
+                },
+                "socsuser": {
+                    "email": "socsdehuser@gmail.com",
+                    "password": "socs_deh"
+                  }
             },
             "webserver": {
                 "app_name": "webserver",
@@ -51,7 +55,11 @@
                     "ip": "mongodb",
                     "port": 27017,
                     "index_ref": "dservice"
-                }
+                },
+                "socsuser": {
+                    "email": "socsdehuser@gmail.com",
+                    "password": "socs_deh"
+                  }
             },
             "webserver": {
                 "app_name": "webserver",

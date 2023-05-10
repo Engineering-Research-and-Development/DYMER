@@ -12,6 +12,7 @@ const jsonPlaceholderProxy = createProxyMiddleware({
         path = path.replace(util.getContextPath('webserver'), util.getContextPath('dservice'));
         path = path.replace("/api/dservice", "");
         path = path.replace("/api/xauth/cacheCapTokens", "/api/v1/authconfig/cacheCapTokens" )
+        path = path.replace("/api/xauth/attachmentToken", "/api/v1/authconfig/getAttachmentToken" )
 
         console.log('inoltro', path);
         return path;
