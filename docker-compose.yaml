@@ -30,6 +30,7 @@ services:
       - RRM_API=${RRM_API}
       - DYMER_UUID=${DYMER_UUID}
       - NODE_ENV=${NODE_ENV}
+      - SOCS_DOMAIN=${SOCS_DOMAIN}
     depends_on:
       - elasticsearch
 
@@ -70,6 +71,7 @@ services:
       - RRM_API=${RRM_API}
       - ACS_SERVER=${ACS_SERVER}
       - NODE_ENV=${NODE_ENV}
+      - SOCS_DOMAIN=${SOCS_DOMAIN}
 
       #################################################
 
