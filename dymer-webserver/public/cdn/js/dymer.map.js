@@ -92,6 +92,7 @@ let mapJsonArrayToGeoJson = function(arr) {
                      var tmp = el.location.coordinates[0];
                      el.location.coordinates = [el.location.coordinates[1], tmp];
                  }*/
+                 if(el.location.coordinates)
                 if (el.location.coordinates[0] != "" && el.location.coordinates[1] != "") {
                     el = mapJsonToGeoJson(el);
                     newArr.push(el);
@@ -221,7 +222,7 @@ let generateDynamicMap = function() {
         //  if (!$("#dynamicMAP").length) {
         //      return resolve("non richiesta");
         //  }
-
+       
         markers = L.markerClusterGroup({
             chunkedLoading: true,
             showCoverageOnHover: false,
@@ -243,6 +244,7 @@ let generateDynamicMap = function() {
                 [-135, -270],
                 [135, 270]
             ],
+            groupmarkers:true,
             fullscreenControl: true
                 // 	fullscreenControlOptions: {
                 //	position: 'topleft'
@@ -583,7 +585,7 @@ function settingMapIcon(obj) {
 
 function populateMap(arrdata) {
     return new Promise(function(resolve, reject) {
-
+        let groupmarkers= kmsconf.map.setting.groupmarkers;
         markers.clearLayers();
         var geoJsonLayer = L.geoJson(arrdata, {
             /*  icon: function(feature, latlng) {
@@ -674,9 +676,13 @@ function populateMap(arrdata) {
 
             }
         });
-
-        markers.addLayer(geoJsonLayer);
-        map.addLayer(markers);
+        if(groupmarkers){
+            markers.addLayer(geoJsonLayer);
+            map.addLayer(markers);
+        }else{
+            map.addLayer(geoJsonLayer);
+        }
+      //  
         // console.log("aggiunti")
         resolve('fatto');
     });
