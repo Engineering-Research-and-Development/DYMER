@@ -49,6 +49,7 @@ services:
       - NODE_ENV=${NODE_ENV}
       - RRM_API=${RRM_API}
       - ACS_SERVER=${ACS_SERVER}
+      - SOCS_DOMAIN=${SOCS_DOMAIN}
     depends_on:
       - mongodb
 
