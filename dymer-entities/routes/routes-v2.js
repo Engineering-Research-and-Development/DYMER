@@ -1651,15 +1651,15 @@ router.post('/_search', (req, res) => {
         if (bridgeConf != undefined) {
             if (bridgeConf.api.tokenProvider != undefined) {
                 if (bridgeConf.api.tokenProvider.active == true) {
-
-                    if (req.headers.referer === socsDomain) {
-                        console.log (' | _search | SOCS | calling SOCS token ')
-                        logger.info(nameFile + ' | _search | SOCS | calling SOCS token ');
+          
+                    if (req.headers.referer.includes(socsDomain)) {
+                        console.log (' | _search | Bridge | calling SOCS token ')
+                        logger.info(nameFile + ' | _search | Bridge | calling SOCS token ');
                         var url_dservice = util.getServiceUrl("dservice");
                         var tokenUrl = url_dservice + "/api/v1/authconfig/getSocsDehToken";
 
                          axios.get(tokenUrl, {
-                            headers: {
+                            headers: {  
                                 referer: req.headers.referer
                             }
                         }).then(token => {
@@ -1696,8 +1696,8 @@ router.post('/_search', (req, res) => {
 
                     }
                     else {
-                        console.log (' | _search | SOCS | calling regular DEH token ')
-                        logger.info(nameFile + ' | _search | SOCS | calling regular DEH token ');
+                        console.log (' | _search | Bridge | calling regular DEH token ')
+                        logger.info(nameFile + ' | _search | Bridge | calling regular DEH token ');
                         getCapabilityTokenDEMETER(bridgeConf, "search", dymeruser, undefined, rr, userLocation).then(function (tokenResponse) {
                             demeterExternalEntities(bridgeConf, "search", tokenResponse.data, dymeruser.extrainfo.token, undefined, rr, userLocation, undefined).then(function (callresp) {
                                 jsonMappingExternalToDymerEntity(callresp.data, bridgeConf, "search").then(function (mapdata) {

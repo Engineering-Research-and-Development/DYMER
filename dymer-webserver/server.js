@@ -259,8 +259,8 @@ app.post(
     );
     var objuser;
 
-    if (req.headers.referer === socsDomain) {
-      getSocsDehToken()
+    if (req.headers.referer.includes(socsDomain)) {
+      getSocsDehToken(req.headers.referer)
         .then((socsDehToken) => {
           console.log("SOCS TOKEN", socsDehToken);
           objuser = {
@@ -307,12 +307,16 @@ app.post(
   }
 );
 
-function getSocsDehToken() {
+function getSocsDehToken(referer) {
   return new Promise((resolve, reject) => {
     const urlinv =
       util.getServiceUrl("dservice") + "/api/v1/authconfig/getSocsDehToken";
     axios
-      .get(urlinv)
+      .get(urlinv, {
+        headers: {
+          referer: referer,
+        },
+      })
       .then((response) => {
         var token = {
           access_token: response.data.data.access_token.access_token,

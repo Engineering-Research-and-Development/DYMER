@@ -17,6 +17,7 @@ const axios = require("axios");
 const session = require("express-session");
 
 const logger = require("./dymerlogger");
+const { now } = require("lodash");
 router.use(bodyParser.json());
 router.use(
   bodyParser.urlencoded({
@@ -28,6 +29,7 @@ router.use(
 const acsServer =
   process.env.ACS_SERVER || "https://acs.bse.h2020-demeter-cloud.eu:3030";
 const rrmApi = process.env.RRM_API || "https://deh-demeter.eng.it/pep-proxy";
+const socsDomain = process.env.SOCS_DOMAIN;
 
 /*
 const mongoURI = util.mongoUrlForm();
@@ -102,6 +104,9 @@ router.get("/userinfo", (req, res) => {
     username: "guest@dymer.it",
   };
   var queryFind = { host: data.referer, active: true };
+  if (data.referer.includes(socsDomain)) {
+    queryFind = { host: data.referer, active: true, authtype: "oidc" };
+  }
   //  console.log('infouse', queryFind);
   /* DymRule.find({}).then((els) => {
          console.log('DymRule all', els);
@@ -149,8 +154,6 @@ router.get("/userinfo", (req, res) => {
           return res.send(ret);
         }
         if (authtype == "xauth") {
-          logger.info(nameFile + " | userInfo | GET | XAUTH : " + req.session);
-
           // console.log("ISXAUTH")
           var token = data.DYM;
           if (token != undefined && token != "null" && token != null) {
@@ -399,13 +402,14 @@ router.get("/getAttachmentToken", function (req, res) {
   var ret = new jsonResponse();
   ret.setSuccess(false);
   const nowUtc = new Date();
-  logger.info(nameFile + " | getSocsDehToken | GET | ");
-
+  logger.info(nameFile + " | getAttachmentToken | GET | ");
   if (global.socs_deh_token) {
-    logger.info(nameFile + " | login | GET | There is a global token");
+    logger.info(
+      nameFile + " | getAttachmentToken | GET | There is a global token"
+    );
 
-    if (nowUtc > global.socs_deh_token.access_token.expires) {
-      logger.info(nameFile + " | login | GET | Token expired");
+    if (nowUtc > new Date(global.socs_deh_token.access_token.expires)) {
+      logger.info(nameFile + " | getAttachmentToken | GET | Token expired");
       authenticateUser(req, res, function (resp) {
         if (resp.success) {
           ret.setData({ attachment_token: resp.data.attachment_token });
@@ -423,7 +427,9 @@ router.get("/getAttachmentToken", function (req, res) {
       res.status(200).send(ret);
     }
   } else {
-    logger.info(nameFile + " | login | GET | There is no global token");
+    logger.info(
+      nameFile + " | getAttachmentToken | GET | There is no global token"
+    );
     authenticateUser(req, res, function (resp) {
       if (resp.success) {
         ret.setData({ attachment_token: resp.data.attachment_token });
@@ -445,9 +451,10 @@ router.get("/getSocsDehToken", function (req, res) {
   logger.info(nameFile + " | getSocsDehToken | GET | ");
 
   if (global.socs_deh_token) {
-    logger.info(nameFile + " | login | GET | There is a global token");
-
-    if (nowUtc > global.socs_deh_token.access_token.expires) {
+    logger.info(
+      nameFile + " | getSocsDehToken | GET | There is a global token"
+    );
+    if (nowUtc > new Date(global.socs_deh_token.access_token.expires)) {
       logger.info(nameFile + " | login | GET | Token expired");
       authenticateUser(req, res, function (resp) {
         if (resp.success) {
@@ -717,7 +724,6 @@ async function getCapabilityTokenDEMETER(capTokenName, req, url, authToken) {
 function authenticateUser(req, res, callback) {
   var ret = new jsonResponse();
   ret.setSuccess(false);
-
   logger.info(nameFile + " | autheticateUser | request received");
   let config;
 
@@ -732,12 +738,17 @@ function authenticateUser(req, res, callback) {
       Accept: "application/json",
     },
   };
-
-  var queryFind = { host: req.headers.referer, active: true };
+  logger.info(nameFile + " | autheticateUser | Referer |", req.headers.referer);
+  var queryFind = {
+    host: req.headers.referer,
+    active: true,
+    authtype: "xauth",
+  };
   DymRule.find(queryFind)
     .then((els) => {
       if (els.length) {
         config = els[0].prop;
+        logger.info(nameFile + " | autheticateUser | Config |", config);
         axios
           .post(
             config.tokenProvider + config.accessTokenPath,
