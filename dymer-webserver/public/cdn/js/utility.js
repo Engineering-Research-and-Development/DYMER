@@ -1357,6 +1357,7 @@ function loadRequireView() {
     if (!(ckaddimport.indexOf(group) > -1))
         arr.push(new Elfile(domtype, filename, callback, useonload, group));
     //filename = "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css";
+    group="bootstrap-select";
     filename = kmsconfig.cdn + "css/lib/bootstrap-select/bootstrap-select.css";
     if (!(ckaddimport.indexOf(group) > -1))
         arr.push(new Elfile(domtype, filename, callback, useonload, group));
@@ -1405,6 +1406,7 @@ function loadRequireView() {
     filename = kmsconfig.cdn + 'js/lib/bootstrap/4.1.3/bootstrap.bundle.min.js';
     if (!(ckaddimport.indexOf(group) > -1))
         arr.push(new Elfile(domtype, filename, callback, useonload));
+    group = "bootstrap-select";
     //filename = 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js';
     filename = kmsconfig.cdn + 'js/lib/bootstrap-select/bootstrap-select.min.js';
     if (!(ckaddimport.indexOf(group) > -1))
