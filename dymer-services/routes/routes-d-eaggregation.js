@@ -113,6 +113,8 @@ router.get('/configs', (req, res) => {
  
 });*/
 router.post('/addrule', function(req, res) {
+    // #swagger.tags = ['Services']
+
     console.log("aggiungo un mapping per onenness search");
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -144,6 +146,8 @@ router.post('/addrule', function(req, res) {
 
 });
 router.get('/rules/', (req, res) => {
+    // #swagger.tags = ['Services']
+
 
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
@@ -170,6 +174,8 @@ function findRule(queryFind, res) {
     })
 }
 router.delete('/rule/:id', (req, res) => {
+    // #swagger.tags = ['Services']
+
     var ret = new jsonResponse();
     var id = req.params.id;
     var myfilter = { "_id": id };
@@ -190,6 +196,8 @@ router.delete('/rule/:id', (req, res) => {
 
 
 router.post('/addToCart', function(req, res) {
+    // #swagger.tags = ['Services']
+
     //controllo se esiste ordine di mia proprietà
     //esiste: faccio un put
     //non esiste: creo 
@@ -357,6 +365,8 @@ router.post('/addToCart', function(req, res) {
     });
 });
 router.post('/removeFromCart', function(req, res) {
+    // #swagger.tags = ['Services']
+
     //controllo se esiste ordine di mia proprietà
     //esiste: faccio un put
     //non esiste: creo 
@@ -453,6 +463,8 @@ router.post('/removeFromCart', function(req, res) {
     });
 });
 router.post('/checkout', function(req, res) {
+    // #swagger.tags = ['Services']
+
     //faccio il put ordine con il set di deleted
     //inoltro al servizio
     var ret = new jsonResponse();
@@ -512,6 +524,8 @@ router.post('/checkout', function(req, res) {
 
 
 router.post('/listener', function(req, res) {
+    // #swagger.tags = ['Services']
+
     // console.log("arrivato listener");
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);

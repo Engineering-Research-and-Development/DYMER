@@ -1,0 +1,854 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "DYMER API",
+    "description": "Documentation of <b>Forms</b> module."
+  },
+  "host": "localhost:0000",
+  "basePath": "/",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/deletelog/{filetype}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "filetype",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/openLog/{filetype}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "filetype",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/logtypes": {
+      "get": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/setlogconfig": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "consoleactive": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/checkservice": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/*": {
+      "get": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/v1/form/uploads/*": {
+      "get": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/form/mongostate": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "dmts",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "act",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/form/dettagliomodel": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "dmts",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "act",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "req",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/form/": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "dmts",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "act",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "req",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "dmts",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "act",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "req",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/form/content/{entype}/{fileid}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "entype",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "fileid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "dmts",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "act",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/form/create": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "dmts",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "act",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "req",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/form/addAsset": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "dmts",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "act",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "req",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/form/update": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "dmts",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "act",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "req",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/form/updatestructure": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "dmts",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "act",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "req",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/form/updateAsset": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "dmts",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "act",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "req",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/form/{id}": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "dmts",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "act",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/form/{id}/{fid}": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "fid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "dmts",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "act",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/mongostate": {
+      "get": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/dettagliomodel": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "req",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "req",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "req",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/content/{entype}/{fileid}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "entype",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "fileid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/create": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "req",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/addAsset": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "req",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/update": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "req",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/updatestructure": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "req",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/updateAsset": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "req",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/{id}": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/{id}/{fid}": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "fid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  }
+}

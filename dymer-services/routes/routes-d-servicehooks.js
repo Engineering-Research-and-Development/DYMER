@@ -39,6 +39,8 @@ mongoose
         console.error("ERROR | " + nameFile + ` | Error connecting to mongo! Database name: "${x.connections[0].name}"`, err);
     });*/
 router.post('/addhook', util.checkIsAdmin, function(req, res) {
+    // #swagger.tags = ['Services']
+
     let callData = util.getAllQuery(req);
     let data = callData.data;
     var ret = new jsonResponse();
@@ -66,6 +68,8 @@ router.post('/addhook', util.checkIsAdmin, function(req, res) {
     })
 });
 router.get('/hooks/', (req, res) => {
+    // #swagger.tags = ['Services']
+
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
     return findHook(queryFind, res);
@@ -89,6 +93,8 @@ function findHook(queryFind, res) {
     })
 }
 router.delete('/hook/:id', util.checkIsAdmin, (req, res) => {
+    // #swagger.tags = ['Services']
+
     var ret = new jsonResponse();
     var id = req.params.id;
     var myfilter = { "_id": id };
@@ -108,6 +114,8 @@ router.delete('/hook/:id', util.checkIsAdmin, (req, res) => {
 });
 
 router.post('/checkhook', function(req, res) {
+    // #swagger.tags = ['Services']
+
     let callData = util.getAllQuery(req);
     let data = callData.data;
     let extraInfo = callData.extraInfo;

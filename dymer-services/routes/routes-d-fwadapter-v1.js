@@ -35,6 +35,8 @@ var storageEngine = multer.diskStorage({
 var upload = multer({ storage: storageEngine }).any();
 
 router.get('/dispatch', util.checkIsAdmin, function(req, res) {
+    // #swagger.tags = ['Services']
+
     var ret = new jsonResponse();
     console.log("req.headers", req.headers["reqfrom"]);
     var pt_internal = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/_search";
@@ -169,6 +171,8 @@ router.get('/dispatch', util.checkIsAdmin, function(req, res) {
 })
 
 router.post('/setConfig', util.checkIsAdmin, function(req, res) {
+    // #swagger.tags = ['Services']
+
     let callData = util.getAllQuery(req);
     let data = callData.data;
     var copiaData = Object.assign({}, data);
@@ -212,6 +216,8 @@ router.post('/setConfig', util.checkIsAdmin, function(req, res) {
 });
 
 router.get('/configs', (req, res) => {
+    // #swagger.tags = ['Services']
+
     var ret = new jsonResponse();
 
     let callData = util.getAllQuery(req);
@@ -237,6 +243,8 @@ router.get('/configs', (req, res) => {
 });
 
 router.post('/listener', function(req, res) {
+    // #swagger.tags = ['Services']
+
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let data = callData.data;

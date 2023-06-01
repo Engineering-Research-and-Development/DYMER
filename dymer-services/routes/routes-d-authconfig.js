@@ -42,6 +42,8 @@ mongoose
     });
 */
 router.get('/', util.checkIsAdmin, (req, res) => {
+    // #swagger.tags = ['Services']
+
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -64,6 +66,8 @@ router.get('/', util.checkIsAdmin, (req, res) => {
 
 
 router.get('/userinfo', (req, res) => {
+    // #swagger.tags = ['Services']
+
     var ret = new jsonResponse();
     let data = req.body;;
     var mygid = 0;
@@ -286,6 +290,8 @@ router.get('/userinfo', (req, res) => {
 });
 
 router.post('/', util.checkIsAdmin, function(req, res) {
+    // #swagger.tags = ['Services']
+
     //router.post('/', function(req, res) {
     let id = req.params.id;
     let callData = util.getAllQuery(req);
@@ -310,6 +316,8 @@ router.post('/', util.checkIsAdmin, function(req, res) {
     })
 });
 router.put('/:id', util.checkIsAdmin, (req, res) => {
+    // #swagger.tags = ['Services']
+
     let id = req.params.id;
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -338,6 +346,8 @@ router.put('/:id', util.checkIsAdmin, (req, res) => {
     );
 });
 router.delete('/:id', util.checkIsAdmin, (req, res) => {
+    // #swagger.tags = ['Services']
+
     var ret = new jsonResponse();
     var id = req.params.id;
     var myfilter = { "_id": id };

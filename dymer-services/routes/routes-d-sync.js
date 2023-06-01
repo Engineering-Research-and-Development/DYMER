@@ -27,6 +27,8 @@ router.use(bodyParser.urlencoded({ limit: '100mb', extended: true }))
     }));*/
 
 router.get('/listrules', util.checkIsAdmin, (req, res) => {
+    // #swagger.tags = ['Services']
+
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -49,6 +51,8 @@ router.get('/listrules', util.checkIsAdmin, (req, res) => {
 });
 
 router.post('/listener', function(req, res) {
+    // #swagger.tags = ['Services']
+
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -128,6 +132,8 @@ router.post('/listener', function(req, res) {
 });
 
 router.post('/:id?', util.checkIsAdmin, function(req, res) {
+    // #swagger.tags = ['Services']
+
     let id = req.params.id;
     let callData = util.getAllQuery(req);
     // let data = callData.data;
@@ -171,6 +177,8 @@ router.post('/:id?', util.checkIsAdmin, function(req, res) {
     }
 });
 router.put('/:id', util.checkIsAdmin, (req, res) => {
+    // #swagger.tags = ['Services']
+
     //console.log("Put cronjob Roles");
     let id = req.params.id;
     logger.info(nameFile + ' | put/sync/:id   :' + id);
@@ -200,6 +208,8 @@ router.put('/:id', util.checkIsAdmin, (req, res) => {
     );
 });
 router.delete('/:id', util.checkIsAdmin, (req, res) => {
+    // #swagger.tags = ['Services']
+
     var ret = new jsonResponse();
     var id = req.params.id;
     var myfilter = { "_id": id };

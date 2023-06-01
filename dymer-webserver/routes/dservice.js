@@ -1,23 +1,23 @@
 var express = require('express');
 var router = express.Router();
-const { createProxyMiddleware } = require('http-proxy-middleware');
+const {createProxyMiddleware} = require('http-proxy-middleware');
 const util = require("../utility");
 //const config = require("../config/config.js"); 
 //var util = require("../utility");
 const jsonPlaceholderProxy = createProxyMiddleware({
-    target: util.getServiceUrl("dservice"),
-    changeOrigin: true, // proxy websockets
-    ws: true,
-    pathRewrite: function(path, req) {
-        path = path.replace(util.getContextPath('webserver'), util.getContextPath('dservice'));
-        path = path.replace("/api/dservice", "");
-        //console.log('inoltro', path);
-        return path;
-    }
+													   target:       util.getServiceUrl("dservice"),
+													   changeOrigin: true, // proxy websockets
+													   ws:           true,
+													   pathRewrite:  function (path, req) {
+														   path = path.replace(util.getContextPath('webserver'), util.getContextPath('dservice'));
+														   path = path.replace("/api/dservice", "");
+														   //console.log('inoltro', path);
+														   return path;
+													   }
 
-});
+												   });
 router.use(
-    jsonPlaceholderProxy
+	jsonPlaceholderProxy
 );
 /*
 router.use(proxy(util.getServiceUrl("form"), {

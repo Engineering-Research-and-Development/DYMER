@@ -1,6 +1,10 @@
 {
     "development": {
         "config_id": "development",
+        "dymer":{
+            "version":"1.1.2",
+            "updated":"2023-03-22"
+        },
         "services": {
             "webserver": {
                 "app_name": "webserver",

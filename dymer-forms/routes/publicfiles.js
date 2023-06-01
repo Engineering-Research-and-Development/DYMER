@@ -7,6 +7,8 @@ const path = require('path');
 /* GET home page. */
 const nameFile = path.basename(__filename);
 router.get("*", cors(), function(req, res, next) {
+    // #swagger.tags = ['Forms']
+
     console.log(nameFile + ' | get  :', req._parsedUrl.pathname);
     res.sendFile(path.join(__dirname + "/../uploads" + req._parsedUrl.pathname));
     // res.sendFile(path.resolve(  "uploads"+ req._parsedUrl.pathname));

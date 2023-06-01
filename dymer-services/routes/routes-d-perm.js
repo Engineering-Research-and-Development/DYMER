@@ -64,6 +64,8 @@ mongoose
 */
 
 router.get('/mongostate', [util.checkIsDymerUser], (req, res) => {
+    // #swagger.tags = ['Services']
+
     let ret = new jsonResponse();
     let dbState = [{
             value: 0,
@@ -94,6 +96,8 @@ router.get('/mongostate', [util.checkIsDymerUser], (req, res) => {
     return res.send(ret);
 });
 router.get('/entityrole/:act/:index', (req, res) => {
+    // #swagger.tags = ['Services']
+
     let act = req.params.act; //azione da passare
     let index = req.params.index; //indice per cercare
     //console.log(req.query.role); //lista dei miei ruoli
@@ -132,6 +136,8 @@ router.get('/entityrole/:act/:index', (req, res) => {
     })
 });
 router.get('/permbyroles', (req, res) => {
+    // #swagger.tags = ['Services']
+
     //role[]
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -171,6 +177,8 @@ router.get('/permbyroles', (req, res) => {
     })
 });
 router.get('/', (req, res) => {
+    // #swagger.tags = ['Services']
+
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -192,6 +200,8 @@ router.get('/', (req, res) => {
 });
 
 router.post('/:id?', util.checkIsAdmin, function(req, res) {
+    // #swagger.tags = ['Services']
+
     let id = req.params.id;
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -235,6 +245,8 @@ router.post('/:id?', util.checkIsAdmin, function(req, res) {
     }
 });
 router.delete('/:id', util.checkIsAdmin, (req, res) => {
+    // #swagger.tags = ['Services']
+
     var ret = new jsonResponse();
     var id = req.params.id;
     var myfilter = { "_id": id };

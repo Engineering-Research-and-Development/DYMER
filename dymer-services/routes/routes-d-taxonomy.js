@@ -30,6 +30,8 @@ var upload = multer()
 router.use(upload.array())
 
 router.get('/', async(req, res) => {
+    // #swagger.tags = ['Services']
+
     var ret = new jsonResponse();
     let els = await mongoose.connection.db.collection("vocab").find().toArray()
     ret.setMessages("List");
@@ -37,6 +39,8 @@ router.get('/', async(req, res) => {
     return res.json(ret)
 });
 router.post('/_search', async(req, res) => {
+    // #swagger.tags = ['Services']
+
     let id = req.body.id
     let objiD = mongoose.Types.ObjectId(id)
     var ret = new jsonResponse();
@@ -47,6 +51,8 @@ router.post('/_search', async(req, res) => {
 });
 
 router.post('/', async(req, res) => {
+    // #swagger.tags = ['Services']
+
     let newVocab = req.body;
     newVocab.nodes = [];
     await mongoose.connection.db.collection("vocab").insertOne(newVocab)
@@ -57,6 +63,8 @@ router.post('/', async(req, res) => {
 });
 
 router.put("/", async(req, res) => {
+    // #swagger.tags = ['Services']
+
     let id = req.body.id
     let objiD = mongoose.Types.ObjectId(id)
     let data = req.body.data
@@ -68,6 +76,8 @@ router.put("/", async(req, res) => {
 })
 
 router.delete("/:id", async(req, res) => {
+    // #swagger.tags = ['Services']
+
     let id = req.params.id
     let objiD = mongoose.Types.ObjectId(id)
     var ret = new jsonResponse();
