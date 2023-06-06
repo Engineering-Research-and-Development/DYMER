@@ -147,7 +147,7 @@ function config($routeProvider, $locationProvider) {
               controller: "logoutController"
           })*/
         .when(site_prefix + "/logout", {
-            templateUrl: site_prefix + "/public/app/views/login.html",
+            templateUrl: site_prefix + "/public/app/views/authentication/views/login.html",
             controller: "logoutController"
         })
         .when(site_prefix + "/taxonomy", {

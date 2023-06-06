@@ -1,6 +1,5 @@
 /******
 //----Config
-
     //parametri_manuali - set di parametri manuali
         var parametri_manuali=new Object();
         parametri_manuali['nameparametro1']="valore parametro1";
@@ -28,8 +27,6 @@
     esempioCall.send();//serializza sia i form che i parametri aggiunti
 
 ******/
-
-
 //console.log("ajax call caricata");
 function Ajaxcall(objurl_, namespace_, params_, type_, mimeType_, container_ids_) {
     var obj = objurl_;
@@ -93,7 +90,6 @@ Ajaxcall.prototype = {
         var datret = {};
         if (this.container_ids.length) {
             for (var k in self_.container_ids) {
-
                 var els = $(self_.container_ids[k]).find(':input').get();
                 $.each(els, function() {
                     if (this.name /*&& !this.disabled*/ && (this.checked || /select|input|textarea/i.test(this.nodeName) || /text|hidden|password/i.test(this.type)) && (!/file/i.test(this.type))) {
@@ -104,46 +100,36 @@ Ajaxcall.prototype = {
                 });
             }
         }
-
-
         return this.getparams();
-
     },
     send: function(callbackfunction) {
-
         var self_ = this;
         //  console.log('a', this.params);
         //  console.log('b', self_.serializeAnything(self_.container_ids[k]));
-
-        //	console.log('this 1',this);
-        //	this.datapost = this.params;
-        //    console.log('this 2', this);
         if (!self_.serializedata)
             return this.ajaxsend(callbackfunction);
         if (this.enctype) {
             //	console.log('enctype', this.enctype, (this.enctype).indexOf('multipart/form-data') !== -1);
             if ((this.enctype).indexOf('multipart/form-data') !== -1) {
-
                 var formdata = new FormData();
                 for (var k in self_.container_ids) {
                     jQuery.each(jQuery(self_.container_ids[k] + ' input[type="file"]'), function(i, file) {
-
                         //var f=$(this).prop('files')[0];
-
                         var c = $(this)[0].files[0];
                         var fname = $(this).attr("name");
-
                         if (c != undefined)
                             formdata.append(fname, c);
                     });
                 }
                 if (self_.container_ids[0] != undefined) {
-                    let a = $(self_.container_ids[0]).serializeJSON();
-                    //       console.log('appendFormdataxxxx', self_.container_ids[0], a);
-
-                    //         console.log("a2", a);
+                  let a = $(self_.container_ids[0]).serializeJSON();
+                  //   let a = $(self_.container_ids[0]).serializeJSON({parseBooleans: true, parseNumbers: true,skipFalsyValuesForTypes: ["string"]});
+                   
+                  //       console.log('appendFormdataxxxx', self_.container_ids[0], a);
+                            console.log("a2", a);
                     appendFormdata(formdata, a);
                     let els = $(self_.container_ids[0]).find(':input').get();
+                    //console.log("els",els);
                     $.each(els, function() {
                         if (this.name && (/select/i.test(this.nodeName))) {
                             let vals = $(this).val();
@@ -168,18 +154,10 @@ Ajaxcall.prototype = {
 }*/
                 }
                 var b = self_.getparams();
+                //console.log("b",b);
                 // console.log('this.getparams',b);
-
                 appendFormdata(formdata, b);
-                /*  for (var pair of formdata.entries()) {
-                              console.log('b',pair[0] + ', ' + pair[1]);
-                  }*/
-                // appendFormdata(formdata, this.params); 
-                /*    for (var pair of formdata.entries()) {
-                        //	console.log("params", pair[0] + ", " + pair[1]);
-                    }*/
                 this.datapost = formdata;
-                // console.log('this.getdatapost',this.datapost); 
                 /*    for (var pair of this.datapost.entries()) {
                             console.log("this.datapost", pair[0] + ", " + pair[1]);
                     }*/
@@ -212,7 +190,6 @@ Ajaxcall.prototype = {
     },
     getparams: function() { return this.params; },
     addparams: function(name_obj) {
-
         var t_array = new Array();
         var type_obj = this.whatIsIt(name_obj);
         //console.log('addparams',name_obj,type_obj);
@@ -229,7 +206,6 @@ Ajaxcall.prototype = {
         }
     },
     addparam: function(name_obj, value) {
-
         var namespace_ = this.getnamespace();
         if (name_obj.indexOf(this.namespace) > -1)
             namespace_ = "";
@@ -295,15 +271,10 @@ Ajaxcall.prototype = {
     flush_datapost: function() { this.datapost = new Object(); },
     flush_container_ids: function() { this.setcontainer_ids(new Array()); },
     ajaxsend: function(callbackfunction) {
-        // 	console.log('this.datapost2', this.datapost);
         var sData = this.datapost;
-        //	for (var pair of  sData.entries()) {
-        //               	console.log("this.sData", pair[0] + ", " + pair[1]);
-        //          }
         if (this.addDataBody)
             sData = JSON.stringify(this.datapost);
         var ret = { "message": "Error", "errorMessage": "", "total": -1, "data": [], "success": false, "stackTrace": "" };
-        //  var xhr = new XMLHttpRequest();
         jQuery.ajax({
             async: false,
             type: this.type,
@@ -330,7 +301,6 @@ Ajaxcall.prototype = {
 
             },
             error: function(jqXHR, textStatus, errorThrown) { //inserire errore ritorno
-
                 ret.stackTrace = errorThrown;
                 ret.errorMessage = textStatus;
                 if (callbackfunction != undefined) {
@@ -341,11 +311,9 @@ Ajaxcall.prototype = {
             },
             beforeSend: function(xhr, opts) {
                 //    console.log('jqXHR1', jqXHR);
-
                 const requestpath = getPageJsonPath();
                 if (requestpath != undefined && requestpath != 'undefined' && requestpath != null && requestpath != 'null') {
                     xhr.setRequestHeader("requestjsonpath", JSON.stringify(requestpath));
-
                 }
                 //  var xtk = etctoken.toString();
                 //  xhr.setRequestHeader("Authorization", "Bearer " + etctoken);
@@ -364,7 +332,6 @@ Ajaxcall.prototype = {
                                 else
                                     xhr.setRequestHeader("Authorization", "Bearer " + jwtlfr2);
                 */
-
                 // xhr.setRequestHeader("Authorization", "Bearer " + etctoken.access_token);
                 //   xhr.setRequestHeader("dymertoken" + etctoken.access_token);
                 //    console.log(' token aggunt', xtk, etctoken);
@@ -377,10 +344,8 @@ Ajaxcall.prototype = {
                         console.log(' keycloak.toke', keycloak.token);
 
                     }
-
                     //  opts.data.append("DymerToken", usertoken);
                 }
-
                 if (callbackfunction != undefined)
                     if (callbackfunction.beforeSend != undefined)
                         opts.data = executeFunctionByName(callbackfunction.beforeSend, window, xhr, opts);
@@ -392,7 +357,6 @@ Ajaxcall.prototype = {
                   // var prendo2 = getResponseHeaders(jqXHR);
                   console.log('xhr.responseURL', xhr.responseURL);
                   console.log('jqXHR4', jqXHR);*/
-
             },
         });
         return ret;
@@ -464,8 +428,6 @@ Ajaxcall.prototype = {
                 } else {
                     self_.addparam(encodeURIComponent(this.name), val);
                 }
-
-
             }
         });
         return this.getparams();
@@ -500,7 +462,6 @@ function getResponseHeaders(jqXHR) {
         this.append('<div class="loading-animation-ajax" ><div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">' +
             '<span class="sr-only">Loading...</span>' +
             '	</div></div>');
-
         if (option != undefined) {
             if (option.cssclass != undefined)
                 this.find('.loading-animation-ajax').addClass(option.cssclass);
@@ -511,7 +472,6 @@ function getResponseHeaders(jqXHR) {
     $.fn.hideLoader = function() {
         this.find('.loading-animation-ajax').remove();
     };
-
     $.fn.extend({
         trackChanges: function() {
             this.removeAttr("tarckchanged");

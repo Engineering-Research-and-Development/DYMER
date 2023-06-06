@@ -266,7 +266,7 @@ router.get('/userinfo', (req, res) => {
                     return res.send(ret);
                 }
             }
-            console.log("OH no ", JSON.stringify(objuser));
+            //console.log("OH no ", JSON.stringify(objuser));
         } else {
             ret.setMessages("User detail");
             ret.setData(objuser);
