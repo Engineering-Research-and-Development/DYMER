@@ -1,279 +1,80 @@
-<div class="row" ng-controller="permissionController">
+<div class="row" >
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
                 <h5 class="card-title">Mapper Permission Configuration<span class='pull-right'>
 				</h5>
-
+				
 			</div>
-
 			<div class="card-body ">
-
-
-
-
-				<!-- <input type="text" class="form-control col-md-3" name="app_user_role" id="app_user_role" ng-model="formData.role">-->
+				<!--Nuovo ruolo--> 
 				<div class="row">
-					<!--<div class=" col-md-3" ><label class="text-info"> IDP Role  </label>
-					 <select ng-model="formData.role" id="roles" class="form-control">
-						<option value="">-</option>
-						<option ng-repeat="el in listRoles" value="{{el.role}}"> {{ el.role}} </option>
-					</select>
-					</div>	-->
 					<input type="hidden" ng-model="formData._id" name="_id" id="_id">
-					<div class=" col-md-3">
-						<label class="text-info"> Role Permission List </label>
-						<input type="text" class="form-control col-12" name="custom_role" id="custom_role"
-							ng-model="formData.role" ng-value="">
-						<span ng-repeat="el in listRoles" value="{{el.role}}"> "{{ el.role}}"</span>
-            </div>
-
-        </div>
-
-        <div class="row" id="app-user-perm">
-
-            <div class="col-md-3">
-
-                <label class="text-info">view</label>
-                <input type="text" class="form-control col-12" name="app_user_view" id="app_user_view" ng-model="formData.perms.entities.view" ng-value="">
-
-
-                <div ng-show="listModels_.length">
-                    <label>Entities available <i class="fa fa-bars burgherAction " aria-hidden="true "
-									ng-click="showlistModels_=! showlistModels_ "></i></label>
-                    <div class="row" ng-show="showlistModels_ ">
-                        <div class="col-12" ng-repeat="el in listModels_"> {{el.title}} ({{el.instance[0]._index}}) <i class="fa fa-arrow-circle-up dympointer" aria-hidden="true" ng-click="copyAddPastIndType(el)"></i></div>
-                    </div>
-
-                </div>
-
-                <!--<div ng-show="listModelsAvailable.length" style="margin-top: 10px;">
-							<label>Models available    <i class="fa fa-bars burgherAction " aria-hidden="true " ng-click="showlistModelsAvailable=! showlistModelsAvailable "></i></label>
-							<div class="row" ng-show="showlistModelsAvailable ">
-								<div class="col-3" ng-repeat="el in listModelsAvailable"> {{el.title}} <i class="fa fa-arrow-circle-up dympointer" aria-hidden="true" ng-click="copyPastIndTypeView(el)"></i></div>
-	
-							</div>
-	
-						</div>-->
-            </div>
-            <div class="col-md-3">
-                <label class="text-info">create</label>
-                <input type="text" class="form-control col-12" name="app_user_create" id="app_user_create" ng-model="formData.perms.entities.create" value="">
-            </div>
-            <div class="col-md-3">
-                <label class="text-info">edit</label>
-                <input type="text" class="form-control col-12" name="app_user_edit" id="app_user_edit" ng-model="formData.perms.entities.edit" value="">
-            </div>
-            <div class="col-md-3">
-                <label class="text-info">delete</label>
-                <input type="text" class="form-control col-12" name="app_user_delete" id="app_user_delete" ng-model="formData.perms.entities.delete" value="">
-            </div>
-
-            <!-- <div class="col-md-3">
-						<div class="form-group" ><label class="text-info">Model </label>
-						<select ng-model="formData.model" id="model" class="form-control">
-                            <option value="">-</option>
-                            <option ng-repeat="el in listModels_" value="{{el._id}}"> {{ el.title}} </option>
-                        </select>
-						</div>
-				    </div> -->
-            <!--<div class="col-md-4">
+					<div class=" col-4">
+						<input type="text" class="form-control col-12" name="custom_role" placeholder="new role name" id="custom_role" ng-model="formData.role" ng-value="">
+					</div>
+					<div class="col-6 text-left ">
 					 
-						<div class="form-group"style=" border: 1px solid #ddd;
-						padding: 5px; font-size: 15px; ">
-							<label class="checkbox" ><input type="checkbox" name="view" id="view" ng-model="formData.app_user.view"> view</label>
-							<label class="checkbox" ><input type="checkbox" name="create" id="create" ng-model="formData.app_user.create"> create</label>
-							<label class="checkbox" ><input type="checkbox" name="edit" id="edit" ng-model="formData.app_user.edit"> edit</label>
-							<label class="checkbox" ><input type="checkbox" name="delete" id="delete" ng-model="formData.app_user.delete"> delete</label>
-						
-						</div>
+						<a class="btn btn-sm_ btn-primary" target="_blank" style="    margin: 0;" href="" ng-click="saveconfigrules(formData) ">  Add role</a>
+				 
 					</div>
-					<div class="col-md-4">
-						<label class="text-info">App-admin Role Permission  </label> 
-						<div class="form-group" style=" border: 1px solid #ddd;
-						padding: 5px; font-size: 15px; ">
-							<label class="checkbox" ><input type="checkbox" name="view" id="view" ng-model="formData.app_admin.view"> view</label>
-							<label class="checkbox" ><input type="checkbox" name="create" id="create" ng-model="formData.app_admin.create"> create</label>
-							<label class="checkbox" ><input type="checkbox" name="edit" id="edit" ng-model="formData.app_admin.edit"> edit</label>
-							<label class="checkbox" ><input type="checkbox" name="delete" id="delete" ng-model="formData.app_admin.delete"> delete</label>
-						
-						</div>
-					</div>
-					<div class="col-md-1">
-						<label class="text-info">   </label> 
-						<div class="form-group">
-							<btn class="btn btn-sm btn-outline-warning btn-round btn-icon" ng-click="saveconfigrules(formData) "  ><i class="fa fa-plus" aria-hidden="true"></i></btn>
-
-							 
-						</div>
-					</div> -->
-
-
-
-        </div>
-
-        <div class="row text-right ">
-            <div class="col-12 ">
-                <a class="btn btn-sm btn-primary" target="_blank" href="" ng-click="saveconfigrules(formData) "><i class="fa fa-floppy-o" aria-hidden="true"></i> Save
-							config</a>
-            </div>
-        </div>
-
-
-        </br>
-        <!--<label class="text-info">App-admin Role Permission  </label> 
-			   	<input type="hidden" class="form-control col-12" name="id_admin" id="id_admin" ng-model="formDataAdmin._id" value=""> 
+        		</div>
 				
-				<input type="text" class="form-control col-12" name="app_admin_role" id="app_admin_role" ng-model="formData.role" value="app-admin">
-				
-				<div class="row" id="app-admin-perm">
-				 		
-					<div class="col-md-3"> 
-						<label class="text-info">view</label>
-						<input type="text" class="form-control col-12" name="app_admin_view" id="app_admin_view" ng-model="formData.perms.entities.view" ng-value="{{listModels_}}">
-						{{listModels_}}
-					</div>
-					<div class="col-md-3"> 
-						<label class="text-info">create</label>
-						<input type="text" class="form-control col-12" name="app_admin_create" id="app_admin_create" ng-model="formData.perms.entities.create" value="{{listModels_}}">
-						{{listModels_}}
-					</div>
-					<div class="col-md-3"> 
-						<label class="text-info">edit</label>
-						<input type="text" class="form-control col-12" name="app_admin_edit" id="app_admin_edit" ng-model="formData.perms.entities.edit" value="{{listModels_}}">
-						{{listModels_}}
-					</div>
-					<div class="col-md-3"> 
-						<label class="text-info">delete</label>
-						<input type="text" class="form-control col-12" name="app_admin_delete" id="app_admin_delete" ng-model="formData.perms.entities.delete" value="{{listModels_}}">
-						{{listModels_}}
-					</div>
-
-					 
-
-
-
-				</div>
-				<div class="row text-right ">
-					<div class="col-12 ">
-							<a class="btn btn-sm btn-primary" target="_blank" href="" ng-click="saveconfigrules(formData) "><i class="fa fa-floppy-o" aria-hidden="true"></i> Save config</a>
-				    </div>
-				</div>-->
-        </br>
-        <!-- 	Permission - app-user
-				<table class="table ">
+				<br/> 
+				<table class="table    table-sm  ">
 					<thead class=" text-primary ">
 						<th>
-							Index
+							ROLE
 						</th>
-						<th>
-							app-user
+						<th ng-repeat="(key, val) in typerole.perms.entities " class="text-center" >
+							{{ key}}
 						</th>
-						<th>
-							app-admin
+						<th class=" text-center ">
 						</th>
-
-
 					</thead>
 					<tbody>
-
-
+						<tr ng-repeat="el in listPerm | orderBy:'el.role'" class="nopadding">
+							<td class="nopadding">
+								<!--ROLE-->
+								<label class="text-info" data-index="{{el._id}}">&nbsp;<i class="nc-icon nc-badge" style="
+									top: 1px;
+									position: relative;
+								"></i><span  style="
+									font-weight: bold;
+								"> {{el.role}} </span></label>
+								<!--ENTITY-->
+								<div ng-repeat="element in el.elements" class="divodd" >
+									&nbsp;&nbsp;&nbsp;{{ element.entity }}
+								</div>	
+							</td>
+							 <td ng-repeat="(key, val) in typerole.perms.entities " class="nopadding" >
+								<div  class="text-center "><label ><span ng-if="!$parent.$first">{{ key}}</span> </label></div>
+								<div ng-repeat="ent in el.elements"   class="text-center divodd">
+								   <!--{{ ent.entity }} -->
+								 <div ng-repeat="element in el.elements  | filter:{ entity:  ent.entity  }: true">
+									<!-- <div>{{ element}}</div>     -->
+									<div ng-repeat="prm in element.functions | filter:{ operations:key }: true" >
+										<!--<div>F:_{{ key}}_{{ prm}}_</div>   -->
+										<div ng-if="prm.checked == true">
+											<!--<input id="select_{{element.functions[2][key]}}" name="select_{{element.functions[2][key]}}" value="{{ ent.entity }}" type="checkbox" ng-click="changePermission($parent.$parent.$index ,key, $event, ent.entity)" checked>	-->
+											<input style="cursor: pointer;" type="checkbox" checked ng-click="changePermission(el, key, $event, ent.entity)">	
+										</div>
+										<div ng-if="prm.checked == false">
+											<input  style="cursor: pointer;" type="checkbox" ng-click="changePermission(el, key, $event, ent.entity)">	
+										</div>
+									</div>
+								</div>
+								</div>	
+							</td> 
+							<td  class="text-center nopadding "> 
+								<!--BUTTONS-->
+								 <span  style="cursor: pointer;"  class="btn-sm btn-primary"  ng-click="saveRole($index, formData)"><i class="fa fa-save " aria-hidden="true"></i>  Save </span> 
+								 <br><br><span  style="cursor: pointer;"  class="btn-sm btn-danger"  ng-click="removeRole($index)"><i class="fa fa-trash " aria-hidden="true"></i> Delete</span> 
+							</td>				
+						</tr>
 					</tbody>
-				</table> -->
-
-
-        <table class="table  table-hover table-sm ">
-            <thead class=" text-primary ">
-                <th>
-                    ROLE
-                </th>
-                <th>
-                    View
-                </th>
-                <th>
-                    Create
-                </th>
-                <th>
-                    Edit
-                </th>
-                <th>
-                    Delete
-                </th>
-                <th class=" text-center ">
-
-                </th>
-            </thead>
-            <tbody>
-                <tr ng-repeat="el in listPerm | orderBy:'el.role'">
-                    <td>
-                        <label class="text-info" data-index=" {{el._id}}"> {{el.role}} </label>
-                    </td>
-                    <td>
-                        {{el.perms.entities.view}}
-                    </td>
-                    <td>
-                        {{el.perms.entities.create}}
-                    </td>
-                    <td>
-                        {{el.perms.entities.edit}}
-                    </td>
-                    <td>
-                        {{el.perms.entities.delete}}
-                    </td>
-                    <td class=" text-center ">
-                        <btn class="btn btn-sm btn-outline-warning btn-round btn-icon" ng-click="editRole($index, formData)"><i class="fa fa-pencil" aria-hidden="true"></i></btn>
-
-                        <btn class="btn btn-sm btn-outline-success btn-round btn-icon" ng-click="removeRole($index)"><i class="fa fa-trash" aria-hidden="true"></i></btn>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-
-
-
-
-
-        <!--	<div ng-repeat="el in listPerm " class="contRules" >
-					  
-					 
-					 
-					 
-					 
-					 
-
-					<label class="text-info"><label>Role:</label> {{el.role}}  </label> 
-			  	
-					<label class="text-info">Perms Entities:</label>
-					
-						<div class="row">
-								
-							<div class="col-md-2"> 
-								<div><label>view:</label>{{el.perms.entities.view}} </div>
-							</div>
-							<div class="col-md-2"> 
-								<div><label>create:</label>{{el.perms.entities.create}} </div>
-							</div>
-							<div class="col-md-2"> 
-								<div><label>edit:</label>{{el.perms.entities.edit}} </div>
-							</div>
-							<div class="col-md-2"> 
-								<div><label>delete:</label>{{el.perms.entities.delete}} </div>
-
-							</div>
-							<div class="col-md-2"> 
-								<div><label>delete:</label>{{el.perms.entities.delete}} </div>
-
-							</div>
-							
-
-
-
-						</div>
-				</div>
-			-->
-
-    </div>
-</div>
-</div>
+				</table>
+    		</div>
+		</div>
+	</div>
 </div>

@@ -421,17 +421,17 @@ function loadUserInfo(req, res, next) {
 	// console.log('loadUserInfo req.query.tkdymat', req.query.tkdymat);
 	//  console.log('loadUserInfo req.query.tkdym', req.query.tkdym);
 
-	//console.log('loadUserInfo authuserUrl', authuserUrl);
-	// console.log('loadUserInfo dymtoken', dymtoken);
-	//logger.info(nameFile + ' | loadUserInfo : dymtoken' + JSON.stringify(dymtoken));
-	//console.log('loadUserInfo dymtokenAT', dymtokenAT);
-	var idsadm = false;
-	if (req.cookies["lll"] != undefined) {
-		dymtoken = req.cookies["lll"];
-		idsadm = true;
-	}
-	//console.log('TESTSESSION req dymtoken', dymtoken);
-	//if (token == undefined || token == 'null')
+    //console.log('loadUserInfo authuserUrl', authuserUrl);
+    // console.log('loadUserInfo dymtoken', dymtoken);
+    //logger.info(nameFile + ' | loadUserInfo : dymtoken' + JSON.stringify(dymtoken));
+    //console.log('loadUserInfo dymtokenAT', dymtokenAT);
+    var idsadm = false;
+    if (req.cookies["lll"] != undefined) {
+        dymtoken = req.cookies["lll"];
+        idsadm = true;
+    }
+     console.log('TESTSESSION req dymtoken', dymtoken);
+    //if (token == undefined || token == 'null')
 
 	var referer = req.headers.referer;
 	//console.log('loadUserInfo referer', referer);
