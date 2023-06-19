@@ -27,6 +27,7 @@ var routes_dymer_fwadapter = require('./routes/routes-d-fwadapter-v1');
 var routes_dymer_sync = require('./routes/routes-d-sync');
 var routes_dymer_hooks = require('./routes/routes-d-servicehooks');
 var routes_dymer_eaggregation = require('./routes/routes-d-eaggregation');
+var routes_dymer_workflow = require('./routes/routes-d-workflow');
 var routes_dymer_usermap = require('./routes/routes-d-usermap');
 var routes_dymer_taxonomy = require('./routes/routes-d-taxonomy');
 var routes_dymer_import = require('./routes/routes-d-import');
@@ -37,6 +38,7 @@ var routes_dymer_permission = require('./routes/routes-d-perm');
 var publicRoutes = require('./routes/publicfiles');
 var routes_dymer_configtool = require('./routes/routes-d-configtool');
 var routes_dymer_authconfig = require('./routes/routes-d-authconfig');
+var routes_dymer_duser = require('./routes/routes-d-users');
 app.use(express.json())
     //app.use(cors());
 app.use(function(req, res, next) {
@@ -55,6 +57,7 @@ app.use(util.getContextPath('dservice') + '/api/v1/fwadapter', routes_dymer_fwad
 app.use(util.getContextPath('dservice') + '/api/v1/sync', routes_dymer_sync);
 app.use(util.getContextPath('dservice') + '/api/v1/servicehook', routes_dymer_hooks);
 app.use(util.getContextPath('dservice') + '/api/v1/eaggregation', routes_dymer_eaggregation);
+app.use(util.getContextPath('dservice') + '/api/v1/workflow', routes_dymer_workflow);
 app.use(util.getContextPath('dservice') + '/api/v1/taxonomy', routes_dymer_taxonomy);
 app.use(util.getContextPath('dservice') + '/api/v1/usermap', routes_dymer_usermap);
 app.use(util.getContextPath('dservice') + '/api/v1/import', routes_dymer_import);
@@ -64,6 +67,7 @@ app.use(util.getContextPath('dservice') + '/api/v1/perm', routes_dymer_permissio
 //app.use(util.getContextPath('dservice') + '/api/v1/importp4t', routes_dymer_importp4t);
 app.use(util.getContextPath('dservice') + '/api/v1/configtool', routes_dymer_configtool);
 app.use(util.getContextPath('dservice') + '/api/v1/authconfig', routes_dymer_authconfig);
+app.use(util.getContextPath('dservice') + '/api/v1/duser', routes_dymer_duser);
 app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     var filetype = req.params.filetype;

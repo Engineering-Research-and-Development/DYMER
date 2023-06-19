@@ -13,5 +13,8 @@ mongoose.model("OpnSearchRule", {
     mapping: {
         type: Object,
         require: true
-    }
+    },sendnotification: {
+        type: Boolean,
+        require: true
+    },
 });

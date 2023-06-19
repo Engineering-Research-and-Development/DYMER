@@ -113,7 +113,7 @@ function detectPermission(req, res, next) {
    */
 }
 
-app.get('/uuid', util.checkIsAdmin, (req, res) => {
+app.get('/uuid', util.checkIsPortalUser, (req, res) => {
     var ret = new jsonResponse();
     const uuid = util.getDymerUuid();
     ret.setData({ 'uuid': uuid });
@@ -161,10 +161,12 @@ app.get(util.getContextPath('entity') + '/checkservice', util.checkIsAdmin, (req
     let errorsize = logger.filesize("error");
   let regex = /(?<!^).(?!$)/g;
 let infomserv = JSON.parse(JSON.stringify(global.gConfig));
+if(infomserv.services.entity.hasOwnProperty('cache')){
     if(infomserv.services.entity.cache.hasOwnProperty('password'))
-infomserv.services.entity.cache.password = (infomserv.services.entity.cache.password).replace(regex, '*'); 
-  if(infomserv.services.entity.cache.hasOwnProperty('user'))
-infomserv.services.entity.cache.user = (infomserv.services.entity.cache.user).replace(regex, '*'); 
+        infomserv.services.entity.cache.password = (infomserv.services.entity.cache.password).replace(regex, '*'); 
+    if(infomserv.services.entity.cache.hasOwnProperty('user'))
+        infomserv.services.entity.cache.user = (infomserv.services.entity.cache.user).replace(regex, '*'); 
+}
     ret.setData({
         info: {
             size: infosize

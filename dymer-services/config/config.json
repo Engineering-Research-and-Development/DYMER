@@ -32,7 +32,11 @@
                     "d_mail": "test@liferay.com",
                     "d_pwd": "1234"
                 }
-            }
+            },"entity": {
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 1358
+            } 
         }
     },
     "production": {
@@ -69,7 +73,11 @@
                     "d_mail": "test@liferay.com",
                     "d_pwd": "1234"
                 }
-            }
+            },"entity": {
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 1358
+            } 
         }
     }
 }

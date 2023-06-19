@@ -39,6 +39,7 @@ app.use(function(req, res, next) {
 function detectPermission(req, res, next) {
     //  next();
     //  return;
+    console.log("req.query", req.query);
     /* console.log("controllo", );
      console.log("req.ip", req.ip);
      console.log("req.originalurl", req.originalurl);
@@ -53,7 +54,7 @@ function detectPermission(req, res, next) {
     // console.log("cookieMIO", req.headers);
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser;
-    // console.log('hdymeruser', hdymeruser);
+     console.log('hdymeruser', hdymeruser);
     var dymeruser;
     try {
 
@@ -149,7 +150,7 @@ function detectPermission(req, res, next) {
     var tocont = false;
     if (req.query.dmts != undefined)
         tocont = true;
-    if (roles.indexOf("app-admin") > -1 || tocont) {
+    if (roles.indexOf("app-admin") > -1 ||roles.indexOf("app-content-curator") > -1 || tocont) {
         next();
     } else {
         act = "create";

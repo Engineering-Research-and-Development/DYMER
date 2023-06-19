@@ -105,6 +105,12 @@ angular.module('dymerHooksCtrl', [])
                         servicePath: "/api/dservice/api/v1/sync/listener"
                     }
                 }
+                if (modService == "workflow") {
+                    dataPost.service = {
+                        serviceType: modService,
+                        servicePath: "/api/dservice/api/v1/workflow/listener"
+                    }
+                }
                 $http({
                     method: 'POST',
                     url: baseContextPath + '/api/dservice/api/v1/servicehook/addhook',

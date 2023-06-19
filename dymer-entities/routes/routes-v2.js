@@ -1958,6 +1958,7 @@ function isValidObjectId(id) {
     return false;
 }
 router.get('/contentfile/:entityid/:fileid', function(req, res, next) {
+   
     var entityid = req.params.entityid;
     var file_id = req.params.fileid; 
     if (!isValidObjectId(file_id)) {
@@ -2201,6 +2202,65 @@ let getUserCredential2 = async function(my_authdata) {
 //get with with query
 //Marco router.post('/_search', async function(req, res) {
 
+async function checkPermissionByAction(usr, index, act) {   
+    var url_dservice = util.getServiceUrl("dservice") + '/api/v1/perm/permbyroles'; // Get micro-service endpoint
+    let response = await axios.get(url_dservice, { params: { role: usr.roles } }) // Get permission for those roles
+
+    let perms = response.data.data
+    let queryFilter;
+
+    permForIndex = (!index) || perms?.[act]?.includes(index)
+    if (permForIndex) {
+        queryFilter = null;
+    } else {
+        queryFilter = {
+            "match_phrase": {
+                "properties.owner.uid": usr.id
+            }
+        }
+    }
+    return queryFilter
+}
+
+async function addPermConstraints(usr, query) {
+    var url_dservice = util.getServiceUrl("dservice") + '/api/v1/perm/permbyroles'; // Get micro-service endpoint
+    let response = await axios.get(url_dservice, { params: { role: usr.roles } }) // Get permissions for those roles
+    let perms = response.data.data
+    let queryFileter;
+    let index = query?.bool?.must?.[0]?.term?._index
+    if (!perms?.view?.includes(index)) { // User doesn't have permission to view the specified index        
+        queryFileter = {
+            "match_phrase": {
+                "properties.owner.uid": usr.id
+            }
+        }
+    } else {
+        queryFileter = {
+            "terms": {
+                "_index": perms.view
+            }
+        }
+    }
+    return queryFileter;
+}
+router.post('/redisroleupdate', async (req, res) => {
+    let resp = new jsonResponse()
+    try {
+        let role = util.getAllQuery(req)
+        resp.setSuccess(true)
+        resp.setMessages('Success')
+        if (redisEnabled) {
+            let rediskeys = await redisClient.getkeysByRoles(role.updated, redisEnabled)
+            if (rediskeys.length != 0) {
+                await redisClient.cancelKey(rediskeys, redisEnabled)
+            }
+        }
+    } catch (error) {
+        resp.setSuccess(false)
+        resp.setMessages("Unable to receive perms-data")
+    }
+    return res.send(resp)
+})
 router.post('/_search', (req, res) => {
     // console.log('_search logger', process.env.DYMER_LOGGER);
     var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
@@ -2423,9 +2483,11 @@ router.post('/_search', (req, res) => {
                             }]
                         }
                     }
-                };
+                }; 
                 if (my_oldquery != null) {
-                    query.query.bool.must.push(my_oldquery);
+                    query.query.bool.must.push(my_oldquery);             
+                    let permFilter = await addPermConstraints(dymeruser, my_oldquery)
+                    query.query.bool.must.push(permFilter);
                 }
             }
             if (source != undefined)
@@ -2454,10 +2516,14 @@ router.post('/_search', (req, res) => {
             //   params["_source_excludes"] = ["description"];
             //console.log(nameFile + '|_search| params:', JSON.stringify(params));
             // logger.info(nameFile + '|_search| params :' + JSON.stringify(params));
+            let permFilterByAction = await checkPermissionByAction(dymeruser, params.index, act)
+             if (permFilterByAction) {
+                 query.query.bool.must.push(permFilterByAction);
+             }
             let cachedResponse;
             // let hash_ = await redisClient.calculateHash(params) //[2602] aggiunto
              //if (redisEnabled && (hash_ != await redisClient.getRelationKey())) {    //[2602] cambiata la condizione
-       
+             
              if (redisEnabled) {      
                  cachedResponse = await redisClient.readCacheByKey(params, redisEnabled)
                  if (cachedResponse && Object.keys(cachedResponse).length != 0) {
@@ -2531,7 +2597,7 @@ router.post('/_search', (req, res) => {
                         if (redisEnabled) {
                             let ids = await redisClient.extractIds(ret, redisEnabled)
                             let indexes = await redisClient.extractIndexes(ret, redisEnabled)
-                            await redisClient.writeCacheByKey(params, dymeruser.id, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                //logger.info(nameFile + '|_search| resp no relations: response cached  ');
+                            await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                //logger.info(nameFile + '|_search| resp no relations: response cached  ');
                         }
                         return res.send(ret);
                     }).catch(function(err) {
@@ -2574,7 +2640,7 @@ router.post('/_search', (req, res) => {
                                 if (redisEnabled) {
                                     let ids = await redisClient.extractIds(ret, redisEnabled)
                                     let indexes = await redisClient.extractIndexes(ret, redisEnabled)
-                                    await redisClient.writeCacheByKey(params, dymeruser.id, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                }
+                                    await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                }
                                
                                 logger.info(nameFile + '|_search| resp filter relations: response cached  ');
                                 return res.send(ret);
@@ -2600,7 +2666,7 @@ router.post('/_search', (req, res) => {
                                 if (redisEnabled) {
                                     let ids = await redisClient.extractIds(ret, redisEnabled)
                                     let indexes = await redisClient.extractIndexes(ret, redisEnabled)
-                                    await redisClient.writeCacheByKey(params, dymeruser.id, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                        //logger.info(nameFile + '|_search| resp no detected relations: response cached  ');
+                                    await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                        //logger.info(nameFile + '|_search| resp no detected relations: response cached  ');
                                 }
                                 return res.send(ret);
                             }).catch(function(err) {
@@ -3370,6 +3436,7 @@ router.post('/:enttype', function(req, res) {
                             }
                             let params = (instance) ? instance : {};
                             params["body"] = data;
+                            console.log("data",data);
                             // params["body"].size = 10000;
                             params["refresh"] = true;
                             let ref = Object.assign({}, data.relation);
@@ -3611,7 +3678,7 @@ router.put('/update/:id', (req, res) => {
                                              extraInfo.extrainfo.emailAddress = dymeruser.id;*/
                                         //console.log(nameFile + '| /:id | put | pre check hook id,extraInfo: ', id, JSON.stringify(dymerextrainfo));
                                         logger.info(nameFile + '| /:id | put | pre check hook| obj, extraInfo:' + dymeruser.id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
-                                        checkServiceHook('after_update', objHook, dymerextrainfo, req);
+                                        checkServiceHook('after_update', objHook, dymerextrainfo, req,oldElement);
                                         // await redisClient.invalidateCacheById([id], redisEnabled)
                                         return res.send(ret);
                                     }).catch(function(err) {
@@ -3913,7 +3980,9 @@ router.put('/:id', (req, res) => {
                              if (extraInfo != undefined)
                                  extraInfo.extrainfo.emailAddress = dymeruser.id;*/
                             logger.info(nameFile + '| /:id | put | pre check hook| obj, extraInfo:' + dymeruser.id + ' , ' + JSON.stringify(new_Temp_Entity) + ' , ' + JSON.stringify(dymerextrainfo));
-                            checkServiceHook('after_update', new_Temp_Entity, dymerextrainfo, req);
+                            let originalElement = Object.assign({}, oldElement);
+                            originalElement._source.relations=listRelation_old;
+                            checkServiceHook('after_update', new_Temp_Entity, dymerextrainfo, req,originalElement);
                             if (redisEnabled) {
                                 await redisClient.invalidateCacheById([id], redisEnabled)
                                 for (let idToDel of listRelation_old_filtered_todelete) {
@@ -4759,10 +4828,13 @@ router.patch('/:id', async(req, res, next) => {
                             type: element["_type"],
                             body: { doc: data },
                             refresh: 'true'
-                        }).then(function(resp) {
+                        }).then( async function(resp) {
                             logger.info(nameFile + '| patch/:id | dymeruser.id, id updated :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(data));
                             //console.log(nameFile + '| patch/:id | dymeruser.id, id updated :', dymeruser.id, id);
                             ret.setMessages("Updated!");
+                            if (redisEnabled) {
+                                await redisClient.invalidateCacheById([id], redisEnabled)
+                            }
                             return res.send(ret);
                         }).catch(function(err) {
                             logger.error(nameFile + '| patch/:id | dymeruser.id, id update :' + dymeruser.id + ' , ' + id + ' , ' + err);
@@ -5081,7 +5153,7 @@ router.delete('/:id', (req, res) => {
                              extraInfo.extrainfo.emailAddress = dymeruser.id;*/
                         //console.log(nameFile + '| delete/:id | pre check hook id,extraInfo: ', dymeruser.id, id, JSON.stringify(dymerextrainfo));
                         logger.info(nameFile + '| delete/:id | pre check hook id,extraInfo: ' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(objHook) + ' , ' + JSON.stringify(dymerextrainfo));
-                        checkServiceHook('after_delete', objHook, dymerextrainfo, req);
+                        checkServiceHook('after_delete', objHook, dymerextrainfo, req,elToDelete);
                       await redisClient.invalidateCacheById([id], redisEnabled)
                         return res.send(ret);
                     });
@@ -5097,7 +5169,7 @@ router.delete('/:id', (req, res) => {
     });
 });
 //inoltro al microservizio dservice
-function checkServiceHook(EventSource, objSend, extraInfo, req) {
+function checkServiceHook(EventSource, objSend, extraInfo, req,originalElement) {
     //insert non ho i dati quindi devo fare un get
     var url_dservice = util.getServiceUrl("dservice") + '/api/v1/servicehook/checkhook';
     // logger.info(nameFile + '| checkServiceHook | url_dservice,EventSource,objSend: ' + url_dservice + ' , ' + EventSource + ' , ' + JSON.stringify(objSend));
@@ -5148,7 +5220,7 @@ function checkServiceHook(EventSource, objSend, extraInfo, req) {
                     eventSource: EventSource,
                     obj: element
                 };
-                axios.post(url_dservice, { data: postObj, "extraInfo": extraInfo }, {
+                axios.post(url_dservice, { data: postObj, "extraInfo": extraInfo, "origindata":originalElement, "originheader":  req.headers }, {
                         headers: headers
                     }).then(response => {
                         //console.log(nameFile + '| checkServiceHook | insert axios.post: ', response);

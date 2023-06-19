@@ -17,7 +17,7 @@ const logger = require('./routes/dymerlogger');
 var jsonResponse = require('./jsonResponse');
 //USO OIDC  
 //var passport = require('passport')
-//const router=express.Router();
+const router=express.Router();
 //const appRoutes=require('./app/routes/api')(router);
 const jwt = require('jsonwebtoken');
 var axios = require('axios');
@@ -50,10 +50,10 @@ app.use(session({
 
 
 var recoverForms = require("./routes/formfiles");
-
+const contextPath = util.getContextPath('webserver');
 
 var publicdemoDonwlonad = require("./routes/demodownloads");
-app.get(util.getContextPath('webserver') + '/deletelog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {
+app.get('/deletelog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {
     var ret = new jsonResponse();
     var filetype = req.params.filetype;
     // const dymeruser = util.getDymerUser(req, res);
@@ -65,12 +65,12 @@ app.get(util.getContextPath('webserver') + '/deletelog/:filetype', [loadUserInfo
     return res.send(ret);
 });
 
-app.get(util.getContextPath('webserver') + '/openLog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {
+app.get('/openLog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {
     var filetype = req.params.filetype;
     //console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
     return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
 });
-app.get(util.getContextPath('webserver') + '/checkservice', [loadUserInfo, util.checkIsAdmin], (req, res) => {
+app.get('/checkservice', [loadUserInfo, util.checkIsPortalUser], (req, res) => {
     var ret = new jsonResponse();
     let infosize = logger.filesize("info");
     let errorsize = logger.filesize("error");
@@ -104,7 +104,7 @@ app.use(function(req, res, next) {
     res.setHeader('Access-Control-Allow-Credentials', true);
     var pathname = req.url;
     //  console.log(pathname);
-    /*if (pathname == (util.getContextPath('webserver') + "/login")) {
+    /*if (pathname == ("/login")) {
        
         res.setHeader(
             'Content-Security-Policy',
@@ -113,7 +113,7 @@ app.use(function(req, res, next) {
     }*/
 
     // if (pathname.includes('/app/views/authentication/views/login.html')) {
-    /* if (pathname == (util.getContextPath('webserver') + "/login")) {
+    /* if (pathname == ("/login")) {
          console.log(pathname);
          res.setHeader(
              'Content-Security-Policy',
@@ -137,13 +137,13 @@ app.set('trust proxy', true);
 
 
 // 
-app.use(util.getContextPath('webserver') + "/public/", express.static(path.join(__dirname.replace(util.getContextPath('webserver'), ""), "public/")));
-app.use(util.getContextPath('webserver') + "/app/", express.static(path.join(__dirname.replace(util.getContextPath('webserver'), ""), "app/")));
-app.use(util.getContextPath('webserver') + "/public/", publicRoutes);
-app.use(util.getContextPath('webserver') + "/app/", appRoutes);
-app.use(util.getContextPath('webserver') + "/api/portalwebpage/", dohtmlpage);
+app.use("/public/", express.static(path.join(__dirname.replace(contextPath, ""), "public/")));
+app.use("/app/", express.static(path.join(__dirname.replace(contextPath, ""), "app/")));
+app.use("/public/", publicRoutes);
+app.use("/app/", appRoutes);
+app.use("/api/portalwebpage/", dohtmlpage);
 
-app.get(util.getContextPath('webserver') + '/api2/retriveinfoidpadmin', (req, res, next) => {
+app.get('/api2/retriveinfoidpadmin', (req, res, next) => {
     if (true) {
         //      console.log("retriveinfo.AAAAAAAAAAAAAAA", pp);
         var objuser = {
@@ -162,7 +162,8 @@ app.get(util.getContextPath('webserver') + '/api2/retriveinfoidpadmin', (req, re
         obj_isi.roles = objuser.roles;
         let base64DYM = new Buffer(JSON.stringify(objuser)).toString("base64")
         let base64DYMisi = new Buffer(JSON.stringify(obj_isi)).toString("base64")
-        var objtoSend = { "DYM": base64DYM, "DYMisi": base64DYMisi }
+        let dr_value = new Buffer(JSON.stringify(obj_isi.roles)).toString("base64");
+        var objtoSend = { "DYM": base64DYM, "DYMisi": base64DYMisi, "d_rl": dr_value }
         objtoSend.d_uid = objuser.id;
         objtoSend.d_appuid = 0;
         objtoSend.d_gid = objuser.gid;
@@ -176,7 +177,7 @@ app.get(util.getContextPath('webserver') + '/api2/retriveinfoidpadmin', (req, re
     // res.send(req.session.passport.user);
 
 });
-app.get(util.getContextPath('webserver') + '/api2/retriveinfoidp', (req, res, next) => {
+app.get('/api2/retriveinfoidp', (req, res, next) => {
 
     //   console.log("--------INIZIO retriveinfoIDP--------------");
     //   console.log("retriveinfo", req.session);
@@ -229,7 +230,7 @@ app.get(util.getContextPath('webserver') + '/api2/retriveinfoidp', (req, res, ne
     // res.send(req.session.passport.user);
 
 });
-app.post(util.getContextPath('webserver') + '/api2/retriveinfo', loadUserInfo, (req, res, next) => {
+app.post('/api2/retriveinfo', loadUserInfo, (req, res, next) => {
     //   res.send({ "ttttttt": "rrrrrrrrr" });
 
     // console.log("retriveinfo", req.headers);
@@ -255,7 +256,7 @@ app.post(util.getContextPath('webserver') + '/api2/retriveinfo', loadUserInfo, (
     logger.info(nameFile + ' | /api2/retriveinfo :' + JSON.stringify(objuser));
     res.send(objuser);
 });
-app.get(util.getContextPath('webserver') + '/info/:key?', (req, res, next) => {
+app.get('/info/:key?', (req, res, next) => {
    // var pjson = require('./package.json');
     var key = req.params.key;
     
@@ -438,10 +439,10 @@ function loadUserInfo(req, res, next) {
             next();
         });
 }
-app.use(util.getContextPath('webserver') + "/api/portalweb/", authenticateRoutes);
+app.use("/api/portalweb/", authenticateRoutes);
 
-/*app.use(util.getContextPath('webserver') + "/public/", express.static(path.join(__dirname.replace('\routes', ""), "..")));
-app.use(util.getContextPath('webserver') + "/app/", express.static(path.join(__dirname.replace('\routes', ""), "..")));
+/*app.use("/public/", express.static(path.join(__dirname.replace('\routes', ""), "..")));
+app.use("/app/", express.static(path.join(__dirname.replace('\routes', ""), "..")));
 */ //
 
 //app.use('/',appRoutes); 
@@ -451,20 +452,20 @@ app.use(util.getContextPath('webserver') + "/app/", express.static(path.join(__d
 //app.use('/portalweb/', portalwebRoutes);
 //console.log('global.gConfig.services.webserver["context-path"]', util.getContextPath('webserver'));
 //console.log('__dirname', __dirname);
-app.use(util.getContextPath('webserver') + '/api/templates/', loadUserInfo, templateRoutes);
-app.use(util.getContextPath('webserver') + "/api/forms/", loadUserInfo, formRoutes);
-app.use(util.getContextPath('webserver') + "/api/entities/", loadUserInfo, entityRoutes);
-//app.use(util.getContextPath('webserver') + "/api/entities/", checkAuthentication, entityRoutes);
-//app.use(util.getContextPath('webserver') + "/api/entities/", keycloak.protect('realm:app-user'), entityRoutes);
-//m 2021_20_20 app.use(util.getContextPath('webserver') + "/api/private/dservice/", ensureLoggedInOpen, dserviceRoutes);
-app.use(util.getContextPath('webserver') + "/api/dservice/", loadUserInfo, dserviceRoutes);
-app.use(util.getContextPath('webserver') + "/api/system/", loadUserInfo, system);
-app.post(util.getContextPath('webserver') + "/api/test/", loadUserInfo, (req, res, next) => {
+app.use('/api/templates/', loadUserInfo, templateRoutes);
+app.use("/api/forms/", loadUserInfo, formRoutes);
+app.use("/api/entities/", loadUserInfo, entityRoutes);
+//app.use("/api/entities/", checkAuthentication, entityRoutes);
+//app.use("/api/entities/", keycloak.protect('realm:app-user'), entityRoutes);
+//m 2021_20_20 app.use("/api/private/dservice/", ensureLoggedInOpen, dserviceRoutes);
+app.use("/api/dservice/", loadUserInfo, dserviceRoutes);
+app.use("/api/system/", loadUserInfo, system);
+app.post("/api/test/", loadUserInfo, (req, res, next) => {
     console.log("test");
     next();
     //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
 });
-//app.use(util.getContextPath('webserver') + "/api/auth/", dauthRoutes);
+//app.use("/api/auth/", dauthRoutes);
 
 const parseToken = raw => {
     if (!raw || typeof raw !== 'string') return null;
@@ -480,21 +481,21 @@ const parseToken = raw => {
 };
 //app.use(global.gConfig.services.webserver["context-path"] + '/public/cdn/', publicRoutes);
 //app.use(global.gConfig.services.webserver["context-path"] + 'public/cdn/', publicRoutes);
-//app.use(util.getContextPath('webserver') + '/public/cdn', publicRoutes);
-//app.use(util.getContextPath('webserver') + '/public/cdn', publicRoutes);
-//app.use(util.getContextPath('webserver') + '/public/', publicRoutes);
-app.use(util.getContextPath('webserver') + "/demodownload/", publicdemoDonwlonad);
+//app.use('/public/cdn', publicRoutes);
+//app.use('/public/cdn', publicRoutes);
+//app.use('/public/', publicRoutes);
+app.use("/demodownload/", publicdemoDonwlonad);
 //app.use("/recoverForms/", recoverForms);0
-/*app.get(util.getContextPath('webserver') + "/login", ensureLoggedIn, (req, res, next) => {
-    // console.log("router.get");
+/*app.get("/login", ensureLoggedIn, (req, res, next) => {
+    // console.log("app.get");
     next();
     //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
 });
 */
 
 
-app.get(util.getContextPath('webserver') + "/public/cdn/*", (req, res, next) => {
-    // console.log("router.get");
+app.get("/public/cdn/*", (req, res, next) => {
+    // console.log("app.get");
     next();
     //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
 });
@@ -506,14 +507,14 @@ const testRules = (req) => {
         return 'realm:app-user';
         // return t 
     }
-    //app.get(util.getContextPath('webserver') + '*', keycloak.protect(testRules(req)), (req, res) => {
-    //app.get(util.getContextPath('webserver') + '*', keycloak.protect('realm:app-user'), (req, res) => {
+    //app.get('*', keycloak.protect(testRules(req)), (req, res) => {
+    //app.get('*', keycloak.protect('realm:app-user'), (req, res) => {
 
-//app.get(util.getContextPath('webserver') + '*', require('connect-ensure-login').ensureLoggedIn('/'), (req, res) => {
-//app.get(util.getContextPath('webserver') + '*', ensureLoggedInOpen, (req, res) => {
-app.get(util.getContextPath('webserver') + '*', (req, res) => {
-    //app.get(util.getContextPath('webserver') + '*', passport.authenticate("oidc"), (req, res) => {
-    //app.get(util.getContextPath('webserver') + '*', keycloak.protect('realm:app-user'), (req, res) => {
+//app.get('*', require('connect-ensure-login').ensureLoggedIn('/'), (req, res) => {
+//app.get('*', ensureLoggedInOpen, (req, res) => {
+app.get('*', (req, res) => {
+    //app.get('*', passport.authenticate("oidc"), (req, res) => {
+    //app.get('*', keycloak.protect('realm:app-user'), (req, res) => {
     /*console.log(
          "session server", req.session
      ); */
@@ -527,20 +528,20 @@ app.get(util.getContextPath('webserver') + '*', (req, res) => {
     var realPath = (req.originalUrl).split("?");
     var listdata = fs.readFileSync(path.join(__dirname, '/public/app/views/index.html'));
     var pathname = req.url;
-    //  console.log('listdatapathname', pathname, pathname == (util.getContextPath('webserver') + "/login"));
+    //  console.log('listdatapathname', pathname, pathname == ("/login"));
     /* if (listdata) {
          listdata = listdata.toString();
          console.log('listdata', listdata, pathname);
          res.send(listdata.replace('site_prefix_value', util.getContextPath('webserver')));
      }*/
-    /*if (pathname == (util.getContextPath('webserver') + "/login")) {
+    /*if (pathname == ("/login")) {
         var listdata = fs.readFileSync(path.join(__dirname, '/public/app/views/authentication/views/login.html'));
         listdata = listdata.toString();
         res.send(listdata.replace('site_prefix_value', util.getContextPath('webserver')));
         listdata = listdata.replace('site_prefix_value', util.getContextPath('webserver'))
         res.send(listdata);
     } else {
-        console.log('listdatapathname2', pathname, pathname == (util.getContextPath('webserver') + "/"));
+        console.log('listdatapathname2', pathname, pathname == ("/"));
         //if (pathname == (util.getContextPath('webserver'))) {
         var listdata = fs.readFileSync(path.join(__dirname, '/public/app/views/index.html'));
         listdata = listdata.toString();
@@ -549,7 +550,7 @@ app.get(util.getContextPath('webserver') + '*', (req, res) => {
     }*/
     var listdata = fs.readFileSync(path.join(__dirname, '/public/app/views/index.html'));
     listdata = listdata.toString();
-    listdata = listdata.replace('site_prefix_value', util.getContextPath('webserver'));
+    listdata = listdata.replace('site_prefix_value', contextPath);
     let r = 'dym' + (Math.random() + 1).toString(36).substring(7);
     //  r = "dymzmpky";
     listdata = listdata.replace(/noncevalue/g, r);
@@ -558,7 +559,7 @@ app.get(util.getContextPath('webserver') + '*', (req, res) => {
          'Content-Security-Policy',
          "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:; script-src 'self' 'nonce-" + r + "'  ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
      );*/
-    /* if (pathname == (util.getContextPath('webserver') + "/login")) {
+    /* if (pathname == ("/login")) {
          listdata = fs.readFileSync(path.join(__dirname, '/public/app/views/login.html'));
          listdata = listdata.toString();
          listdata = listdata.replace('site_prefix_value', util.getContextPath('webserver'))
@@ -580,21 +581,25 @@ app.get(util.getContextPath('webserver') + '*', (req, res) => {
     // res.sendFile(global.gConfig.services.webserver["context-path"] + '/public/app/views/index.html');
 });
 //global.gConfig.services.webserver["context-path"]
+
+//app.use(contextPath, router)
+const root = express();
+root.use(contextPath, app);
 if (util.ishttps('webserver')) {
     const Httpsoptions = {
         key: fs.readFileSync(path.join(__dirname, 'ssl', 'server.key')),
         cert: fs.readFileSync(path.join(__dirname, 'ssl', 'server.crt'))
     };
     https.createServer(Httpsoptions, app).listen(portExpress, () => {
-        logger.info(nameFile + " | Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + util.getContextPath('webserver'));
-        console.log("Up and running-- this is " + global.configService.protocol + " " + global.configService.app_name + " service on port:" + global.configService.port + " context-path:" + util.getContextPath('webserver'));
+        logger.info(nameFile + " | Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + contextPath);
+        console.log("Up and running-- this is " + global.configService.protocol + " " + global.configService.app_name + " service on port:" + global.configService.port + " context-path:" + contextPath);
         // console.log(`${global.gConfig.services.webserver.port} listening on port ${global.gConfigt}`);
     });
 } else {
-    app.listen(portExpress, () => {
+    root.listen(portExpress, () => {
         // logger.error("testtt");
         logger.info(nameFile + " | Up and running-- this is " + global.configService.protocol + " " +
-            global.configService.app_name + " service on port:" + global.configService.port + " context-path:" + util.getContextPath('webserver'));
+            global.configService.app_name + " service on port:" + global.configService.port + " context-path:" + contextPath);
         console.log("Up and running-- this is " + global.configService.protocol + " " +
             global.configService.app_name + " service on port:" + global.configService.port + " context-path:" + util.getContextPath('webserver'));
         // console.log(`${global.gConfig.services.webserver.port} listening on port ${global.gConfigt}`);

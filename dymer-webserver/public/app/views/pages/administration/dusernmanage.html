@@ -1,0 +1,99 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Manage User<span class='pull-right'><i
+                            class="fa fa-cogs burgherAction"
+                            ng-click="showConfigUser = ! showConfigUser" aria-hidden="true"></i>
+                    </span>
+                </h5>
+            </div>
+            <div class="card-body " ng-show="showConfigUser">
+             
+                <form name="formconfigUrs" id="formconfigUrs"> 
+                    <div class="row">
+                        <div class=" col-12">
+                            <label class="text-info">Name Surname</label>
+                            <div class="text-info pull-right"><input type="checkbox" ng-model="configUrs.active"> Enabled
+                            </div>
+                            <input type="text" class="form-control col-12" ng-model="configUrs.username" required>
+                            <label class="text-info">Password</label>
+                            <input type="text" class="form-control col-12" ng-model="configUrs.password">
+                            <label class="text-info">Email</label>
+                            <input type="email" class="form-control col-12" ng-model="configUrs.email"> 
+                            <label class="text-info">Role</label>
+                            <select ng-model="configUrs.roles" class="form-control ">
+                                <option value="app-admin">app-admin</option>
+                                <option value="app-content-curator">app-content-curator</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row text-right ">
+                        <div class="col-12 ">
+                            <span class="btn btn-info " ng-show="!configUrs._id" ng-click="formconfigUrs.$valid && saveConfigDUser(configUrs)">Save</span> 
+                            <span class="btn btn-danger " ng-show="!configUrs._id" ng-click="configUrs = {}">Cancel</span>
+                        </div>
+                    </div>
+                </form>
+                 
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row ">
+    <div class="col-md-12 ">
+        <div class="card ">
+            <div class="card-header ">
+                <h4 class="card-title ">Users </h4>
+            </div>
+            <div class="card-body " ng-hide="showMappingBridgeRule " style="overflow-x:hidden;">
+                <table class="table ">
+                    <thead class=" text-primary ">
+                        <th>
+                            Name Surname
+                        </th>
+                        <th>
+                            Password
+                        </th>
+                        <th>
+                            Email
+                        </th>
+                        <th>Role </th>
+                        <th  class=" text-center ">Enabled</th>
+                        <th class=" text-center ">
+                        </th>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="el in ListUsers ">
+                            <td style="max-width: 100px;">
+                                {{ el.username }}
+                            </td>
+                            <td style="max-width: 100px;">
+                                {{ el.password  }}
+                            </td>
+                            <td style="max-width: 100px;">
+                                {{ el.email }}
+                            </td>
+
+                            <td> 
+                              
+                                <span  ng-repeat="rl in el.roles ">
+                                    {{rl.role  }}
+                                </span>
+                            </td>
+                            <td style="max-width: 100px;text-align: center;">
+                                <i class="fa fa-power-off " ng-class="el.active ? 'text-success' : 'text-danger'" aria-hidden="true"></i> <br>                                {{ el.typerelations }}
+                            </td>
+                            <td class=" text-center ">
+                               <i class="fa fa-trash deleteAction " aria-hidden="true " ng-click="removeConfigDUser( $index) " ng-confirm-click="Confirm delete? "></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer ">
+
+            </div>
+        </div>
+    </div>
+</div>

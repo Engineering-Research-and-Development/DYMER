@@ -22,6 +22,7 @@ angular.module("userApp", [
     "configuratorCtrl",
     "permissionCtrl",
     "authenticationConfigCtrl",
+    "dusernmanageCtrl",
     "importcronjobCtrl",
     "syncCtrl",
     "mclgsCtrl"

@@ -191,12 +191,29 @@ router.get('/', (req, res) => {
     })
 });
 
-router.post('/:id?', util.checkIsAdmin, function(req, res) {
+router.post('/:id?', util.checkIsAdmin, async function(req, res) {
     let id = req.params.id;
     let callData = util.getAllQuery(req);
     let data = callData.data;
     var copiaData = Object.assign({}, data);
     var ret = new jsonResponse();
+    let exRole = await DymRule.findOne({ "role": callData.data.role })
+    if (exRole) {
+        let oldPerms = exRole.perms.entities;
+        let newPerms = callData.data.perms.entities
+        if (JSON.stringify(oldPerms) !== JSON.stringify(newPerms)) { //se non hai cambiato nulla, non fare la query
+            const EntitiesURL = util.getServiceUrl("entity") + "/api/v1/entity/redisroleupdate";
+            try {
+                await axios.post(EntitiesURL, { updated: callData.data.role });
+            } catch (e) {
+                console.error("ERROR | " + nameFile + " | post | updateOne ", err);
+                logger.error(nameFile + ' | post | updateOne  : ' + err);
+                ret.setSuccess(false);
+                ret.setMessages("Model Error");
+                return res.send(ret);
+            }
+        }
+    }
     if (id != undefined) {
         var myfilter = { "_id": mongoose.Types.ObjectId(id) };
         logger.info(nameFile + ' | post | updateOne : ' + JSON.stringify(myfilter));

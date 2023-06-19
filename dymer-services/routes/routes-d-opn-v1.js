@@ -124,7 +124,8 @@ router.post('/addrule', util.checkIsAdmin, function(req, res) {
     var newObj = {
         _index: data.op_index,
         _type: data.op_type,
-        mapping: data.op_mapping
+        mapping: data.op_mapping,
+        sendnotification: data.sendnotification
     }
     var mod = new OpnSearchRule(newObj);
     mod.save().then((el) => {
@@ -201,7 +202,8 @@ router.post('/listener', function(req, res) {
     OpnSearchRule.find(queryFind).then((els) => {
         ret.setMessages("List");
         ret.setData(els);
-        postAssettOpenness(eventSource[1], data.obj, els[0], extraInfo);
+        let singleRule= els[0]
+        postAssettOpenness(eventSource[1], data.obj, singleRule, extraInfo);
     }).catch((err) => {
         if (err) {
             console.error("ERROR | " + nameFile + " | post/listener :", err);
@@ -222,8 +224,9 @@ function postAssettOpenness(typeaction, obj, rule, extraInfo) {
         //console.log('postAssettOpenness els', els);
         if (els.length > 0) {
             try {
-
-
+                let notify=true;
+                if(rule.sendnotification===false)
+                notify= rule.sendnotification ;
                 var el = els[0];
                 var companyId = (extraInfo != undefined) ? extraInfo.companyId : opnConfUtil.user.d_gid;
                 var userId = (extraInfo != undefined) ? extraInfo.userId : opnConfUtil.user.d_uid;
@@ -260,7 +263,8 @@ function postAssettOpenness(typeaction, obj, rule, extraInfo) {
                         "id": obj._id,
                         "url": url_base_entity, //url del dymer
                         "title": assetTitle,
-                        "extContent": assetextContent
+                        "extContent": assetextContent,
+                        "notify":notify
                     };
                     logger.info(nameFile + ' | postAssettOpenness | insert/update Json openness: ' + JSON.stringify(objToAssett));
                     // console.log(nameFile + ' | postAssettOpenness | insert/update Json openness', JSON.stringify(objToAssett));
@@ -273,6 +277,7 @@ function postAssettOpenness(typeaction, obj, rule, extraInfo) {
                         "index": obj._index,
                         "type": obj._type,
                         "id": obj._id,
+                        "notify":notify
                     };
                     logger.info(nameFile + ' | postAssettOpenness | delete Json openness: ' + JSON.stringify(objToAssett));
                     // console.log(nameFile + ' | postAssettOpenness | delete Json openness', JSON.stringify(objToAssett));

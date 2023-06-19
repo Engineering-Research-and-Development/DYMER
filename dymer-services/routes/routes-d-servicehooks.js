@@ -111,6 +111,8 @@ router.post('/checkhook', function(req, res) {
     let callData = util.getAllQuery(req);
     let data = callData.data;
     let extraInfo = callData.extraInfo;
+    let origindata = callData.origindata;
+    let originheader = callData.originheader; 
     var queryFind = {};
     var eventSource = data.eventSource;
     var queryFind = {
@@ -134,7 +136,7 @@ router.post('/checkhook', function(req, res) {
             logger.info(nameFile + ' | post/checkhook | HookModel: chek el' + JSON.stringify(el));
             var pt = wbsUrl + el.service.servicePath;
             // pt = el.service.servicePath; 
-            axios.post(pt, { 'data': data, "extraInfo": extraInfo }, {
+            axios.post(pt, { 'data': data, "extraInfo": extraInfo,"origindata":origindata, "originheader":  originheader }, {
                     headers: headers
                 }).then(response => {
                     // console.log("checkhook resp axios ", response);

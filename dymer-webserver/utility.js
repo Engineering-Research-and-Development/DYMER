@@ -134,6 +134,23 @@ exports.checkIsAdmin = function(req, res, next) {
         return res.send(ret);
     }
 }
+exports.checkIsPortalUser = function(req, res, next) {
+    const hdymeruser = req.headers.dymeruser;
+    const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+    //console.log("dymeruser", dymeruser);
+    if ((dymeruser.roles.indexOf("app-admin") > -1)||(dymeruser.roles.indexOf("app-content-curator") > -1)) {
+        logger.info(nameFile + ' | checkIsAdmin | Yes permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
+        next();
+    } else {
+        //console.log('checkIsAdmin | No permission:', dymeruser.id, req.originalUrl, req.method, req.url);
+        logger.info(nameFile + ' | checkIsAdmin | No permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
+        var ret = new jsonResponse();
+        ret.setMessages("Sorry, something went wrong: you don't have permission or your authentication has expired");
+        // res.status(200);
+        ret.setSuccess(false);
+        return res.send(ret);
+    }
+}
 exports.getDymerUser = function(req, res, next) {
     const hdymeruser = req.headers.dymeruser;
     if (hdymeruser == undefined) {
