@@ -2202,24 +2202,94 @@ let getUserCredential2 = async function(my_authdata) {
 //get with with query
 //Marco router.post('/_search', async function(req, res) {
 
-async function checkPermissionByAction(usr, index, act) {   
-    var url_dservice = util.getServiceUrl("dservice") + '/api/v1/perm/permbyroles'; // Get micro-service endpoint
-    let response = await axios.get(url_dservice, { params: { role: usr.roles } }) // Get permission for those roles
-
-    let perms = response.data.data
-    let queryFilter;
-
-    permForIndex = (!index) || perms?.[act]?.includes(index)
-    if (permForIndex) {
-        queryFilter = null;
-    } else {
-        queryFilter = {
-            "match_phrase": {
-                "properties.owner.uid": usr.id
-            }
+async function checkPermissionByAction(usr, index, act) {  
+     console.log("Sono entrato in checkPermissionByAction",usr)
+var url_dservice = util.getServiceUrl("dservice") + '/api/v1/perm/permbyroles'; // Get micro-service endpoint
+let response = await axios.get(url_dservice, { params: { role: usr.roles } }) // Get permission for those roles
+console.log("params1: ",  usr.roles  );
+let perms = response.data.data
+console.log("perms2: ", perms);
+if(!perms.hasOwnProperty("view")){
+    return   {
+        "bool": {
+            "must": [{
+                "terms": {
+                    "_index": [""],
+                }
+            }]
         }
     }
-    return queryFilter
+}
+var listIndexes = [...new Set([...perms.view, ...perms.edit, ...perms.delete])];
+var listIndEdt = [...new Set([ ...perms.edit, ...perms.delete])];
+console.log("permsA: ", listIndexes, listIndexes.length == 0);
+console.log("listIndEdt: ", listIndEdt, listIndEdt.length == 0);
+let queryFilter
+
+if (listIndexes.length == 0) {
+    queryFilter = {
+        "bool": {
+            "must": [{
+                "terms": {
+                    "_index": [""],
+                }
+            }]
+        }
+    }
+} else {
+    // console.log("checkPermissionByAction perms ", perms)
+    queryFilter = {
+        "bool": {
+            "must": [{
+                "terms": {
+                    "_index": listIndexes,
+                }
+            }]
+        }
+    }
+    if(listIndEdt.length>0){
+        queryFilter = {
+            "bool": {
+                "must": [{
+                    "terms": {
+                        "_index": listIndEdt,
+                    }
+                }],
+                "must_not": [{
+                    "match_phrase": {
+                        "properties.owner.uid": usr.id
+                    }
+                }]
+            }
+        }
+
+       
+      /*  listIndEdt.forEach(element => {
+            let smplqr={
+                "bool": {   
+                    "must_not": [{
+                        "match_phrase": {
+                            "properties.owner.uid": usr.id
+                        }
+                    }]
+                }
+            }
+            queryFilter.bool.must.push()
+        });*/
+    }
+    /*{
+                "bool": {  // solo se abbiamo edit o delete di quella entity
+                    "must_not": [{
+                        "match_phrase": {
+                            "properties.owner.uid": usr.id
+                        }
+                    }]
+                }
+            } */
+}
+
+
+return queryFilter;
 }
 
 async function addPermConstraints(usr, query) {
@@ -2271,7 +2341,7 @@ router.post('/_search', (req, res) => {
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
-    //  logger.info(nameFile + '|_search| dymeruser :' + JSON.stringify(dymeruser));
+       logger.info(nameFile + '|_search| dymeruser :' + JSON.stringify(dymeruser));
 
     /* 
         const authHeader = req.headers.authorization;
@@ -2486,9 +2556,19 @@ router.post('/_search', (req, res) => {
                 }; 
                 if (my_oldquery != null) {
                     query.query.bool.must.push(my_oldquery);             
-                    let permFilter = await addPermConstraints(dymeruser, my_oldquery)
-                    query.query.bool.must.push(permFilter);
+                  //  let permFilter = await addPermConstraints(dymeruser, my_oldquery)
+                   // query.query.bool.must.push(permFilter);
                 }
+                let permFilterByAction = await checkPermissionByAction(dymeruser, params.index, act)
+                console.log("permFilterByAction ", JSON.stringify(permFilterByAction))
+              //  permFilterByAction=false;
+                if (permFilterByAction) {
+                    //query.query.bool.must[0].bool.should.push(permFilterByAction);
+                  //  query.query.bool.must[0].bool.must.push(permFilterByAction);
+                  query.query.bool.must.push(permFilterByAction);             
+                   
+                }
+                console.log("QUERY ", JSON.stringify(query.query))
             }
             if (source != undefined)
                 params["_source"] = source;
@@ -2516,10 +2596,10 @@ router.post('/_search', (req, res) => {
             //   params["_source_excludes"] = ["description"];
             //console.log(nameFile + '|_search| params:', JSON.stringify(params));
             // logger.info(nameFile + '|_search| params :' + JSON.stringify(params));
-            let permFilterByAction = await checkPermissionByAction(dymeruser, params.index, act)
+          /*  let permFilterByAction = await checkPermissionByAction(dymeruser, params.index, act)
              if (permFilterByAction) {
                  query.query.bool.must.push(permFilterByAction);
-             }
+             }*/
             let cachedResponse;
             // let hash_ = await redisClient.calculateHash(params) //[2602] aggiunto
              //if (redisEnabled && (hash_ != await redisClient.getRelationKey())) {    //[2602] cambiata la condizione

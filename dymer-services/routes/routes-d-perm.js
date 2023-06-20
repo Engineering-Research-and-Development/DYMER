@@ -156,8 +156,9 @@ router.get('/permbyroles', (req, res) => {
             return res.send(ret);
         } else {
             ret.setMessages(message);
-            ret.setData(grpPermEnt);
-            return res.send(ret);
+           // ret.setData(grpPermEnt);
+           ret.setData({}); 
+           return res.send(ret);
         }
     }).catch((err) => {
         if (err) {

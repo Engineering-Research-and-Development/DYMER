@@ -239,6 +239,7 @@ app.post('/api2/retriveinfo', loadUserInfo, (req, res, next) => {
     // console.log("req.hostname", req.hostname);
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+    //console.log('hdymeruser2',hdymeruser);
     res.clearCookie("DYMisi");
     res.cookie("dymercookie", 'value', { expire: 360000 + Date.now() });
 
@@ -250,7 +251,8 @@ app.post('/api2/retriveinfo', loadUserInfo, (req, res, next) => {
         "d_uid": dymeruser.id,
         "d_appuid": dymeruser.app_id,
         "d_gid": dymeruser.gid,
-        "d_rl": dr_value
+        "d_rl": dr_value,
+        "DYM":hdymeruser
     };
     // console.log("api retriveinfo", JSON.stringify(objuser));
     logger.info(nameFile + ' | /api2/retriveinfo :' + JSON.stringify(objuser));
@@ -426,7 +428,7 @@ function loadUserInfo(req, res, next) {
 
     axios(config)
         .then(function(response) {
-            //console.log('dymeruser', response.data.data);
+             console.log('dymeruserAA', response.data.data);
             req.headers["dymeruser"] = new Buffer(JSON.stringify(response.data.data)).toString("base64");
             //if (req.headers["reqfrom"] == undefined || req.headers["reqfrom"] == 'undefined')
             if (req.headers["reqfrom"] == undefined)
