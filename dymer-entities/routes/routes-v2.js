@@ -2207,10 +2207,11 @@ async function checkPermissionByAction(usr, index, act) {
 var url_dservice = util.getServiceUrl("dservice") + '/api/v1/perm/permbyroles'; // Get micro-service endpoint
 let response = await axios.get(url_dservice, { params: { role: usr.roles } }) // Get permission for those roles
 console.log("params1: ",  usr.roles  );
+let permret={ };
 let perms = response.data.data
 console.log("perms2: ", perms);
 if(!perms.hasOwnProperty("view")){
-    return   {
+    permret.condm=  {
         "bool": {
             "must": [{
                 "terms": {
@@ -2219,77 +2220,68 @@ if(!perms.hasOwnProperty("view")){
             }]
         }
     }
+    return permret;
 }
 var listIndexes = [...new Set([...perms.view, ...perms.edit, ...perms.delete])];
 var listIndEdt = [...new Set([ ...perms.edit, ...perms.delete])];
 console.log("permsA: ", listIndexes, listIndexes.length == 0);
 console.log("listIndEdt: ", listIndEdt, listIndEdt.length == 0);
 let queryFilter
-
-if (listIndexes.length == 0) {
-    queryFilter = {
-        "bool": {
-            "must": [{
-                "terms": {
-                    "_index": [""],
-                }
-            }]
-        }
-    }
-} else {
-    // console.log("checkPermissionByAction perms ", perms)
-    queryFilter = {
-        "bool": {
-            "must": [{
-                "terms": {
-                    "_index": listIndexes,
-                }
-            }]
-        }
-    }
-    if(listIndEdt.length>0){
-        queryFilter = {
-            "bool": {
-                "must": [{
-                    "terms": {
-                        "_index": listIndEdt,
-                    }
-                }],
-                "must_not": [{
-                    "match_phrase": {
-                        "properties.owner.uid": usr.id
-                    }
-                }]
-            }
-        }
-
-       
-      /*  listIndEdt.forEach(element => {
-            let smplqr={
-                "bool": {   
-                    "must_not": [{
-                        "match_phrase": {
-                            "properties.owner.uid": usr.id
+permret.listind=listIndexes;
+        /*if (listIndexes.length == 0) {
+            permret.condm = {
+                "bool": {
+                    "must": [{
+                        "terms": {
+                            "_index": [""],
                         }
                     }]
                 }
             }
-            queryFilter.bool.must.push()
-        });*/
-    }
-    /*{
-                "bool": {  // solo se abbiamo edit o delete di quella entity
-                    "must_not": [{
-                        "match_phrase": {
-                            "properties.owner.uid": usr.id
+            return permret;
+        } else {
+            // console.log("checkPermissionByAction perms ", perms)
+            permret.condm  = {
+                "bool": {
+                    "must": [{
+                        "terms": {
+                            "_index": listIndexes,
                         }
                     }]
                 }
-            } */
-}
+            }
+            permret.condm  = [  {
+                "bool": {
+                    "should": [
+                        {
+                        "terms": {
+                            "_index": listIndexes,
+                        }
+                    }]
+                }
+            }]
+            
+        //   return queryFilter;
+            if(listIndEdt.length>0){
+                permret.conds = {
+                    "bool": {
+                        "must": [{
+                            "terms": {
+                                "_index": listIndEdt,
+                            }
+                        }],
+                        "must_not": [{
+                            "match_phrase": {
+                                "properties.owner.uid": usr.id
+                            }
+                        }]
+                    }
+                }
+        */
+ 
 
 
-return queryFilter;
+return permret;
 }
 
 async function addPermConstraints(usr, query) {
@@ -2460,6 +2452,7 @@ router.post('/_search', (req, res) => {
 
             if (!isadmin) {
                 var my_oldquery = query.query;
+                let permFilterByAction = await checkPermissionByAction(dymeruser, params.index, act)
                 /*
                 STATUS  Published 1
                         Not Published 2
@@ -2484,6 +2477,10 @@ router.post('/_search', (req, res) => {
                                             }, {
                                                 "match": {
                                                     "properties.visibility": "0"
+                                                }
+                                            },{
+                                                "terms": {
+                                                    "_index": permFilterByAction.listind,
                                                 }
                                             }]
                                         }
@@ -2559,15 +2556,19 @@ router.post('/_search', (req, res) => {
                   //  let permFilter = await addPermConstraints(dymeruser, my_oldquery)
                    // query.query.bool.must.push(permFilter);
                 }
-                let permFilterByAction = await checkPermissionByAction(dymeruser, params.index, act)
+                
                 console.log("permFilterByAction ", JSON.stringify(permFilterByAction))
+        /*
               //  permFilterByAction=false;
                 if (permFilterByAction) {
+                    if(permFilterByAction.hasOwnProperty("conds"))
+                    query.query.bool.must[0].bool.should.push(permFilterByAction.conds);
                     //query.query.bool.must[0].bool.should.push(permFilterByAction);
                   //  query.query.bool.must[0].bool.must.push(permFilterByAction);
-                  query.query.bool.must.push(permFilterByAction);             
-                   
-                }
+                //  query.query.bool.must.push(permFilterByAction);      
+                //query.query.bool.must[0].bool.should.push(permFilterByAction);       
+                query.query.bool.must.push(permFilterByAction.condm);       
+                }*/
                 console.log("QUERY ", JSON.stringify(query.query))
             }
             if (source != undefined)
