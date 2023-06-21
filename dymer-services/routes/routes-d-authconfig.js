@@ -152,7 +152,7 @@ router.get('/userinfo', (req, res) => {
                 var token = data.DYM;
                 if (token != undefined && token != "null" && token != null) {
                     var decoded;
-                     console.log("aaaaaaaaaaaa", token, el)
+                  //   console.log("aaaaaaaaaaaa", token, el)
                     //  console.log("aaaaaaaaaaaa1", (el && el.prop !== undefined && el.prop.secretkey !== undefined && el.prop.secretkey != ""))
                     if (el && el.prop !== undefined && el.prop.secretkey !== undefined && el.prop.secretkey != "") {
                         // decryption
@@ -174,7 +174,7 @@ router.get('/userinfo', (req, res) => {
                     } else {
                         decoded = JSON.parse(Buffer.from(token, 'base64').toString());
                     }
-                     console.log('decoded', decoded);
+                     //console.log('decoded', decoded);
 
 
 
@@ -196,7 +196,7 @@ router.get('/userinfo', (req, res) => {
                     //  objuser.extrainfo = decoded.extrainfo;
                     
                     let listrRoles= decoded.roles ;
-                    console.log('listrRoles', listrRoles);
+                    //console.log('listrRoles', listrRoles);
                     listrRoles.forEach(element => {
                         let trole=""
                          if(element.hasOwnProperty("role"))
@@ -209,7 +209,7 @@ router.get('/userinfo', (req, res) => {
                       
                     
                     
-                    console.log('objuser.roles',objuser.roles);
+                  //  console.log('objuser.roles',objuser.roles);
                     objuser.username = decoded.username;
                 }
                 ret.setMessages("User detail");

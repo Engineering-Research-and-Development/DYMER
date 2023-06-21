@@ -258,7 +258,7 @@ function run($rootScope, $location, $cookies, $http, $window) { // keep user log
  
         var permissions = nextRoute && nextRoute.permission;
         if(!permissions) return
-        console.log("permissions = ", permissions)
+        //console.log("permissions = ", permissions)
         let loggedUserRoles = JSON.parse(window.atob(unescape(encodeURIComponent(localStorage.d_rl)))).map(o => o.role);                     
         if (!loggedUserRoles || !permissions.some(p => loggedUserRoles.includes(p))) {
           $location.path('dashboard')

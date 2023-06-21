@@ -31,7 +31,7 @@ router.post('/login',
         var ret = new jsonResponse();
         ret.setSuccess(false);
         // ret.setMessages("Invalid Credential. Please double-check and try again. ");
-        console.log('AAAAAAAAAAAAAAAAA');
+      //  console.log('AAAAAAAAAAAAAAAAA');
         let body = req.body;
         let params = req.params;
         let query = req.query;

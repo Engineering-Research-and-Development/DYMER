@@ -2522,7 +2522,7 @@ async function editEntity(id) {
                 dymphases.setSubPhase("edit", true, "prepopulateform");
                 let resprepopulate_ = await prePopulateFormEdit_Promise(itemToEdit);
                
-                console.log("resprepopulate",resprepopulate_);
+              //console.log("resprepopulate",resprepopulate_);
                 //console.log("resprepopulate", resprepopulate);let filterpos = ($(this).data('filterpos') == undefined) ? 0 : $(this).data('filterpos');
                 var itemToEdit_ = Object.assign({}, itemToEdit);
                 /*  setTimeout(function() {

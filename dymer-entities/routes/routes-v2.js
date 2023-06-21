@@ -2203,13 +2203,11 @@ let getUserCredential2 = async function(my_authdata) {
 //Marco router.post('/_search', async function(req, res) {
 
 async function checkPermissionByAction(usr, index, act) {  
-     console.log("Sono entrato in checkPermissionByAction",usr)
 var url_dservice = util.getServiceUrl("dservice") + '/api/v1/perm/permbyroles'; // Get micro-service endpoint
 let response = await axios.get(url_dservice, { params: { role: usr.roles } }) // Get permission for those roles
-console.log("params1: ",  usr.roles  );
 let permret={ };
 let perms = response.data.data
-console.log("perms2: ", perms);
+//console.log("perms2: ", perms);
 if(!perms.hasOwnProperty("view")){
     permret.condm=  {
         "bool": {
@@ -2223,10 +2221,7 @@ if(!perms.hasOwnProperty("view")){
     return permret;
 }
 var listIndexes = [...new Set([...perms.view, ...perms.edit, ...perms.delete])];
-var listIndEdt = [...new Set([ ...perms.edit, ...perms.delete])];
-console.log("permsA: ", listIndexes, listIndexes.length == 0);
-console.log("listIndEdt: ", listIndEdt, listIndEdt.length == 0);
-let queryFilter
+//var listIndEdt = [...new Set([ ...perms.edit, ...perms.delete])];
 permret.listind=listIndexes;
         /*if (listIndexes.length == 0) {
             permret.condm = {
@@ -2557,7 +2552,7 @@ router.post('/_search', (req, res) => {
                    // query.query.bool.must.push(permFilter);
                 }
                 
-                console.log("permFilterByAction ", JSON.stringify(permFilterByAction))
+              //  console.log("permFilterByAction ", JSON.stringify(permFilterByAction))
         /*
               //  permFilterByAction=false;
                 if (permFilterByAction) {
@@ -2569,7 +2564,7 @@ router.post('/_search', (req, res) => {
                 //query.query.bool.must[0].bool.should.push(permFilterByAction);       
                 query.query.bool.must.push(permFilterByAction.condm);       
                 }*/
-                console.log("QUERY ", JSON.stringify(query.query))
+             //   console.log("QUERY ", JSON.stringify(query.query))
             }
             if (source != undefined)
                 params["_source"] = source;
@@ -3517,7 +3512,7 @@ router.post('/:enttype', function(req, res) {
                             }
                             let params = (instance) ? instance : {};
                             params["body"] = data;
-                            console.log("data",data);
+                          //  console.log("data",data);
                             // params["body"].size = 10000;
                             params["refresh"] = true;
                             let ref = Object.assign({}, data.relation);

@@ -12,7 +12,7 @@ angular.module('loginCtrl', []).controller('loginController', function($scope, $
         //$rootScope.globals.loggedIn = true;
         $http.post(baseContextPath + '/api/portalweb/authenticate', { username: _username, password: _password })
         .then(function successCallback(response) {
-            console.log("response.data", response.data)
+          //  console.log("response.data", response.data)
             $rootScope.globals.loggedIn = true;
             $rootScope.roles = JSON.parse(window.atob(unescape(encodeURIComponent(response.data["d_rl"])))).map(o => o.role)
             var expireDate = new Date();
@@ -28,7 +28,7 @@ angular.module('loginCtrl', []).controller('loginController', function($scope, $
             localStorage.setItem('d_appuid', response.data.d_appuid);
             localStorage.setItem('d_gid', response.data.d_gid);
             //user response.data["user"]
-            console.log("response.data", response.data.user)
+           // console.log("response.data", response.data.user)
             $rootScope.globals.loggedUser =  response.data.user ;
          //   $cookies.put("dusername",  response.data.user.username, { expires: expireDate });
         /*$http.post(baseContextPath + '/api/portalweb/authenticate', { username: _username, password: _password })
