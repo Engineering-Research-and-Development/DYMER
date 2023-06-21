@@ -382,7 +382,7 @@ function postNotification(conf, postObj,opnConfUtil) {
         }; 
 
         console.log("INVIATA NOTIFICA",callurl, postObj, configqq)
-        return true;
+       
         axios.post(callurl, postObj, configqq)
             .then(function(response) {
                 logger.info(nameFile + ' | postNotification | POST | response ' + callurl + " , " + response);
