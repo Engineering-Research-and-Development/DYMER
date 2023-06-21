@@ -84,11 +84,11 @@ let encryptedText = cipher.update(password, "utf-8", "hex");
 encryptedText += cipher.final("hex");
 password=encryptedText
     var queryFind ={ "email": email,"password":password,"active": true };
-    console.log('data',data);
-    console.log('queryFind',queryFind);
+   // console.log('data',data);
+   // console.log('queryFind',queryFind);
     DymerUser.find(queryFind).then((els) => {
         ret.setMessages("List");
-    console.log('checklogin',els);
+    //console.log('checklogin',els);
         ret.setData(els);
         console.log(ret);
         return res.send(ret);

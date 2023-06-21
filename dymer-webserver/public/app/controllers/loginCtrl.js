@@ -22,6 +22,7 @@ angular.module('loginCtrl', []).controller('loginController', function($scope, $
             localStorage.setItem('DYM', response.data["DYM"]);
             localStorage.setItem('DYMisi', response.data["DYMisi"]);
             localStorage.setItem('d_rl', response.data["d_rl"]);
+            localStorage.setItem('d_lp', response.data["d_lp"]);
             document.cookie = "lll=" + response.data["DYM"];
             document.cookie = "DYMisi=" + response.data["DYMisi"];
             localStorage.setItem('d_uid', response.data.d_uid);
@@ -59,6 +60,7 @@ angular.module('loginCtrl', []).controller('loginController', function($scope, $
     localStorage.removeItem('d_appuid')
     localStorage.removeItem('d_gid')
     localStorage.removeItem('d_rl')
+    localStorage.removeItem('d_lp')
     localStorage.removeItem('d_uid')
     localStorage.removeItem('DYM')
     localStorage.removeItem('DYMisi')

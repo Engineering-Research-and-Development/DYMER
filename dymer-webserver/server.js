@@ -230,7 +230,7 @@ app.get('/api2/retriveinfoidp', (req, res, next) => {
     // res.send(req.session.passport.user);
 
 });
-app.post('/api2/retriveinfo', loadUserInfo, (req, res, next) => {
+app.post('/api2/retriveinfo', loadUserInfo,async (req, res, next) => {
     //   res.send({ "ttttttt": "rrrrrrrrr" });
 
     // console.log("retriveinfo", req.headers);
@@ -247,12 +247,19 @@ app.post('/api2/retriveinfo', loadUserInfo, (req, res, next) => {
     const authHeader = req.headers.authorization;
     var obj_isi = {};
     let dr_value = new Buffer(JSON.stringify(dymeruser.roles)).toString("base64");
+    var url_dservice = util.getServiceUrl("dservice") + '/api/v1/perm/permbyroles'; // Get micro-service endpoint
+let response_perm = await axios.get(url_dservice, { params: { role: dymeruser.roles } })
+console.log(response_perm.data.data);
+console.log('dymeruser.roles',dymeruser.roles);
+let listprm_value= new Buffer(JSON.stringify(response_perm.data.data)).toString("base64");
+console.log(response_perm.data.data);
     var objuser = {
         "d_uid": dymeruser.id,
         "d_appuid": dymeruser.app_id,
         "d_gid": dymeruser.gid,
         "d_rl": dr_value,
-        "DYM":hdymeruser
+        "DYM":hdymeruser,
+        "d_lp":listprm_value
     };
     // console.log("api retriveinfo", JSON.stringify(objuser));
     logger.info(nameFile + ' | /api2/retriveinfo :' + JSON.stringify(objuser));

@@ -67,7 +67,18 @@ router.post('/authenticate',async function (req, res) {
     let base64DYM = new Buffer(JSON.stringify(loggedUser)).toString("base64")
     let base64DYMisi = new Buffer(JSON.stringify(obj_isi)).toString("base64")
     let dr_value = new Buffer(JSON.stringify(obj_isi.roles)).toString("base64");
-    var objtoSend = { "DYM": base64DYM, "DYMisi": base64DYMisi, "d_rl": dr_value,"user": loggedUser }
+    var url_dservice = util.getServiceUrl("dservice") + '/api/v1/perm/permbyroles'; // Get micro-service endpoint
+   console.log(' loggedUser.roles', loggedUser.roles);
+   let lsrole=[]
+   loggedUser.roles.forEach(element => {
+    lsrole.push(element.role)
+});
+    let response_perm = await axios.get(url_dservice, { params: { role: lsrole } })
+    console.log('response_perm', response_perm.data);
+   
+    let listprm_value= new Buffer(JSON.stringify( response_perm.data.data)).toString("base64");
+    //MMMMMMMMMMMMMMMMMMMMM
+    var objtoSend = { "DYM": base64DYM, "DYMisi": base64DYMisi, "d_rl": dr_value,"user": loggedUser,"d_lp":listprm_value }
     res.send(objtoSend);
     return;
 });
