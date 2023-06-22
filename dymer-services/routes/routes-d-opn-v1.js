@@ -119,7 +119,7 @@ router.get('/configs', (req, res) => {
 });
 router.post('/addrule', util.checkIsAdmin, function(req, res) {
     let callData = util.getAllQuery(req);
-    let data = callData.data;
+    let data = callData.data; 
     var ret = new jsonResponse();
     var newObj = {
         _index: data.op_index,

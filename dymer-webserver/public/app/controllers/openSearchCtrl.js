@@ -78,19 +78,12 @@ angular.module('openSearchCtrl', [])
             }
         };
 
-
-
         $http.get(baseContextPath + '/api/dservice/api/v1/opn/rules', {}).then(function(retE) {
-
-            console.log("rere", retE);
             $scope.ListRules = retE.data.data;
             //return $scope.listEntity = templ_data.arr;
         });
         $http.get(baseContextPath + '/api/dservice/api/v1/opn/configs', {}).then(function(retE) {
-
-
-            var listconf = retE.data.data;
-            console.log("opnsearch.config", retE);
+            var listconf = retE.data.data; 
             listconf.forEach(el => {
                 $scope.opnsearch.config[el.servicetype].id = el._id;
                 $scope.opnsearch.config[el.servicetype].configuration = el.configuration;
@@ -143,9 +136,10 @@ angular.module('openSearchCtrl', [])
                 });
         }
         $scope.createOpnSearchRule = function(rule) {
-            var dapaPost = rule;
+            var dapaPost = rule; 
             dapaPost.op_mapping = JSON.parse(dapaPost.op_mapping);
-            //    console.log('rule creato', dapaPost);
+            if(dapaPost.sendnotification==undefined)
+            dapaPost.sendnotification=false 
             $http({
 
                 method: 'POST',
