@@ -1796,7 +1796,7 @@ var fetchSingleRelation = function(element) {
         logger.error(nameFile + '| fetchSingleRelation | promise : ' + err);
     });
 };
-router.post('/singlerelation/', util.checkIsAdmin, (req, res) => {
+router.post('/singlerelation/', util.checkIsPortalUser, (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     const dymeruser = util.getDymerUser(req, res);
@@ -1830,7 +1830,7 @@ router.post('/singlerelation/', util.checkIsAdmin, (req, res) => {
         return res.send(ret);
     });
 })
-router.put('/singlerelation/:id', util.checkIsAdmin, (req, res) => {
+router.put('/singlerelation/:id', util.checkIsPortalUser, (req, res) => {
     let id = req.params.id;
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -1867,7 +1867,7 @@ router.put('/singlerelation/:id', util.checkIsAdmin, (req, res) => {
         return res.send(ret);
     });
 })
-router.delete('/singlerelation/:id', util.checkIsAdmin, (req, res) => {
+router.delete('/singlerelation/:id', util.checkIsPortalUser, (req, res) => {
     let id = req.params.id;
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -2360,7 +2360,7 @@ router.post('/_search', (req, res) => {
     var queryString = "";
     var hasperm = false;
     var isadmin = false;
-    if (dymeruser.roles.indexOf("app-admin") > -1) {
+    if ((dymeruser.roles.indexOf("app-admin") > -1)||(dymeruser.roles.indexOf("app-content-curator") > -1)) {
         hasperm = true;
         isadmin = true;
     }
@@ -3819,13 +3819,16 @@ router.put('/update/:id', (req, res) => {
         });
 });
 //router.put('/:id', (req, res) => {newput
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     const dymerextrainfo = dymeruser.extrainfo;
     const urs_uid = dymeruser.id;
     let urs_gid = dymeruser.gid;
+    let url_dservice = util.getServiceUrl("dservice") + '/api/v1/perm/permbyroles'; // Get micro-service endpoint
+    let response = await axios.get(url_dservice, { params: { role: dymeruser.roles } }) // Get permission for those roles
+    let editPerms = response.data.data.edit
     if (dymerextrainfo != undefined)
         urs_gid = dymerextrainfo.groupId;
     upload(req, res, function(err) {
@@ -3888,7 +3891,7 @@ router.put('/:id', (req, res) => {
                     //  return res.send(ret);
                     var checkElemPerm = respCheck["hits"].hits[0]._source.properties;
                     let harpermEdit = false;
-                    if (checkElemPerm.owner.uid == urs_uid || dymeruser.roles.indexOf("app-admin") > -1)
+                    if (checkElemPerm.owner.uid == urs_uid || dymeruser.roles.indexOf("app-admin") > -1 || dymeruser.roles.indexOf("app-content-curator") > -1 || editPerms.includes(elIndex))
                         harpermEdit = true;
                     if (checkElemPerm.grant != undefined) {
                         if (checkElemPerm.grant.update != undefined) {
@@ -5099,11 +5102,14 @@ router.get('/deleteAllEntityAndIndexByIndex/', util.checkIsAdmin, (req, res) => 
 
 /**/
 //delete by id
-router.delete('/:id', (req, res) => {
+router.delete('/:id',async (req, res) => {
     let id = req.params.id;
     var ret = new jsonResponse();
     const dymeruser = util.getDymerUser(req, res);
     const dymerextrainfo = dymeruser.extrainfo;
+    let url_dservice = util.getServiceUrl("dservice") + '/api/v1/perm/permbyroles'; // Get micro-service endpoint
+    let response = await axios.get(url_dservice, { params: { role: dymeruser.roles } }) // Get permission for those roles
+    let deletePerms = response.data.data.delete
     /*const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     const dymerextrainfo = dymeruser.extrainfo;
@@ -5182,6 +5188,7 @@ router.delete('/:id', (req, res) => {
             qparams["body"].size = 10000;
             var gridfs_delete_queue = [];
             client.search(qparams).then(function(resp) {
+                let hasperDel = false;
                 resp["hits"].hits.forEach((element) => {
                     var elToDelete = element;
                     params["index"] = element._index;
@@ -5199,6 +5206,10 @@ router.delete('/:id', (req, res) => {
                                 gridfs_delete_queue.push(element._source[key]["id"]);
                         }
                     }
+                    if (elToDelete._source.properties.owner.uid == urs_uid || dymeruser.roles.indexOf("app-admin") > -1 || dymeruser.roles.indexOf("app-content-curator") > -1 || deletePerms.includes(elToDelete._index)) {
+                        hasperDel = true
+                    }
+                    if(hasperDel) {
                     client.delete(params, async function(err, resp, status) {
                         if (err) {
                             console.error("ERROR | " + nameFile + '| delete/:id | delete :', err);
@@ -5233,6 +5244,11 @@ router.delete('/:id', (req, res) => {
                       await redisClient.invalidateCacheById([id], redisEnabled)
                         return res.send(ret);
                     });
+                } else {
+                    ret.setSuccess(false);
+                    ret.setMessages("You don't have permission");
+                    return res.send(ret);
+                }
                 });
             });
             /*.catch(function(err) {
