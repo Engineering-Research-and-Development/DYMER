@@ -176,7 +176,7 @@ router.get('/', (req, res) => {
     let queryFind = callData.query;
     //console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
     logger.info(nameFile + '  | get  | queryFind:' + JSON.stringify(queryFind));
-    Template.find(queryFind).collation({ locale: "en" }).sort({ title: +1 }).then((templates) => {
+    Template.find(queryFind, {}).collation({ locale: "en" }).sort({ title: +1 }).then((templates) => {
         //Template.find(queryFind).then((templates) => {
         // console.log('dat', JSON.stringify(templates));
         var actions = templates.map(getfilesArrays);
@@ -418,10 +418,48 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
                     ret.setExtraData({ newAssetId: element.id });
                     return res.send(ret);
                 }).catch(function(err) {
-                    ret.setSuccess(false);
+                   /* ret.setSuccess(false);
                     console.error("ERROR | " + nameFile + ' | post/updateAsset | delete  : ', err);
                     logger.error(nameFile + ' | post/updateAsset | delete  : ' + err);
-                    ret.setMessages("Template Error");
+                    ret.setMessages("Template Error");*/
+                     /*MG - Se l'asset non viene trovato, accedo per recuperare il suo id aggiornato, 
+                           in modo da poterlo eliminare
+                    INIZIO MODIFICHE*/
+                    //ret.setSuccess(false);
+                    //console.error("ERROR | " + nameFile + ' | post/updateAsset | delete  : ', err);
+                    //logger.error(nameFile + ' | post/updateAsset | delete  : ' + err);
+                    //ret.setMessages("Template Error");
+                    Template.find(myfilter).then((Models) => {
+                        var actions = Models.map(getfilesArrays);
+                        var results = Promise.all(actions);
+                        results.then(function(data) {
+                            data.forEach(d => {
+                                var found = false;
+                                d.files.forEach(file => {
+                                    if (file.filename == element.filename && !found){
+                                        found = true;
+                                        var myquery = { "$pull": { "files": mongoose.Types.ObjectId(file._id) } };
+                                        Template.updateOne(myfilter, myquery,
+                                            function(err, raw) {
+                                                if (err) {
+                                                    cconsole.error("ERROR | " + nameFile + ' | post/updateAsset | delete  : ', err);
+                                                    logger.error(nameFile + ' | post/updateAsset | delete  : ' + err);
+                                                } else {
+                                                    gridFSBucket.delete(mongoose.Types.ObjectId(file._id)).then(() => {
+                                                        logger.info(nameFile + ' | post/updateAsset  | Template Updated file._id :' + file._id);
+                                                    });
+                                                }
+                                            }
+                                        );
+                                    }
+                                });
+                            });
+                        })
+                    }).catch(function(err) {
+                        console.error("ERROR | " + nameFile + ' | post/updateAsset | delete  : ', err);
+                        logger.error(nameFile + ' | post/updateAsset | delete  : ' + err);
+                    });
+                    /*MG - FINE MODIFICHE*/
                     return res.send(ret);
                 });
             }

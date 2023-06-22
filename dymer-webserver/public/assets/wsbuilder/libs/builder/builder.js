@@ -1873,9 +1873,9 @@ Vvveb.FileManager = {
                 });
                 $.notify('<strong>Attachment updated!</strong> ');
                 /*MG - Aggiunto reload della pagina*/
-                setTimeout(function() {
+               /* setTimeout(function() {
                     window.reloadMe();
-                }, 2000);
+                }, 2000);*/
             } else {
                 $.notify('<strong>Attachment  Do not updated!</strong> ', { type: 'warning' });
             }

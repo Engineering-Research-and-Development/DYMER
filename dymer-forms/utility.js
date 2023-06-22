@@ -136,6 +136,7 @@ exports.stringAsKey = function(obj, arrkey, element) {
     }
 }
 exports.checkIsDymerUser = function(req, res, next) {
+    console.log( 'hdymeruser' ,req.headers.dymeruser); 
     const hdymeruser = req.headers.dymeruser;
     if (hdymeruser == undefined) {
         logger.info(nameFile + ' | checkIsDymerUser | No permission, hdymeruser=undefined :' + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));

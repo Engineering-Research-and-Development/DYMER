@@ -74,10 +74,10 @@ router.post('/authenticate',async function (req, res) {
     lsrole.push(element.role)
 });
     let response_perm = await axios.get(url_dservice, { params: { role: lsrole } })
-    console.log('response_perm', response_perm.data);
+    //console.log('response_perm', response_perm.data);
    
     let listprm_value= new Buffer(JSON.stringify( response_perm.data.data)).toString("base64");
-    //MMMMMMMMMMMMMMMMMMMMM
+  
     var objtoSend = { "DYM": base64DYM, "DYMisi": base64DYMisi, "d_rl": dr_value,"user": loggedUser,"d_lp":listprm_value }
     res.send(objtoSend);
     return;

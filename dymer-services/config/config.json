@@ -36,6 +36,20 @@
                 "protocol": "http",
                 "ip": "localhost",
                 "port": 1358
+            } ,
+            "form": {
+                "app_name": "form",
+                "app_desc": "dymer form", 
+                "protocol": "http",
+                "ip": "localhost",
+                "port":4747
+            },
+            "template": {
+                "app_name": "template",
+                "app_desc": "dymer template", 
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 4545
             } 
         }
     },

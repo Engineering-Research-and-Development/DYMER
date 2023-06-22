@@ -194,8 +194,8 @@ router.get('/', [util.checkIsDymerUser], (req, res) => {
     logger.info(nameFile + ' | get | queryFind: ' + JSON.stringify(queryFind));
     //let queryFind = (Object.keys(callData.query).length === 0) ? {} : JSON.parse(callData.query);
     //let queryFind = (Object.keys(callData.query).length === 0) ? {} : callData.query;
-    Model.find(queryFind).collation({ locale: "en" }).sort({ title: +1 }).then((Models) => {
-        // console.log('Models', Models);
+    Model.find(queryFind, {}).collation({ locale: "en" }).sort({ title: +1 }).then((Models) => {
+       // console.log('Models', Models);
         var actions = Models.map(getfilesArrays);
         var results = Promise.all(actions); // pass array of promises
         results.then(function(dat) {
@@ -256,7 +256,9 @@ router.post('/', util.checkIsAdmin, function(req, res) {
             author: data.author,
             description: data.description,
             posturl: data.posturl,
-            instance: data.instance,
+            instance: data.instance, 
+            /*MG - Cron - Funzione di import MODEL/TEMPLATES - Aggiungo la struttura - Inizio*/
+            structure: data.structure,
             files: files_arr
         }
         var mod = new Model(newObj);
@@ -482,10 +484,48 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
                     ret.setExtraData({ newAssetId: element.id });
                     return res.send(ret);
                 }).catch(function(err) {
-                    ret.setSuccess(false);
+                     /*MG - Se l'asset non viene trovato, accedo per recuperare il suo id aggiornato, 
+                           in modo da poterlo eliminare
+                    INIZIO MODIFICHE*/
+                    //ret.setSuccess(false);
+                    //console.error("ERROR | " + nameFile + ' | post/updateAsset | delete  : ', err);
+                    //logger.error(nameFile + ' | post/updateAsset | delete  : ' + err);
+                    //ret.setMessages("Model Error");
+                    Model.find(myfilter).then((Models) => {
+                        var actions = Models.map(getfilesArrays);
+                        var results = Promise.all(actions);
+                        results.then(function(data) {
+                            data.forEach(d => {
+                                var found = false;
+                                d.files.forEach(file => {
+                                    if (file.filename == element.filename && !found){
+                                        found = true;
+                                        var myquery = { "$pull": { "files": mongoose.Types.ObjectId(file._id) } };
+                                        Model.updateOne(myfilter, myquery,
+                                            function(err, raw) {
+                                                if (err) {
+                                                    cconsole.error("ERROR | " + nameFile + ' | post/updateAsset | delete  : ', err);
+                                                    logger.error(nameFile + ' | post/updateAsset | delete  : ' + err);
+                                                } else {
+                                                    gridFSBucket.delete(mongoose.Types.ObjectId(file._id)).then(() => {
+                                                        logger.info(nameFile + ' | post/updateAsset  | Model Updated file._id :' + file._id);
+                                                    });
+                                                }
+                                            }
+                                        );
+                                    }
+                                });
+                            });
+                        })
+                    }).catch(function(err) {
+                        console.error("ERROR | " + nameFile + ' | post/updateAsset | delete  : ', err);
+                        logger.error(nameFile + ' | post/updateAsset | delete  : ' + err);
+                    });
+                    /*MG - FINE MODIFICHE*/
+                  /*  ret.setSuccess(false);
                     console.error("ERROR | " + nameFile + ' | post/updateAsset | delete  : ', err);
                     logger.error(nameFile + ' | post/updateAsset | delete  : ' + err);
-                    ret.setMessages("Model Error");
+                    ret.setMessages("Model Error");*/
                     return res.send(ret);
                 });
             }

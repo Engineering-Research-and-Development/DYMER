@@ -249,10 +249,7 @@ app.post('/api2/retriveinfo', loadUserInfo,async (req, res, next) => {
     let dr_value = new Buffer(JSON.stringify(dymeruser.roles)).toString("base64");
     var url_dservice = util.getServiceUrl("dservice") + '/api/v1/perm/permbyroles'; // Get micro-service endpoint
 let response_perm = await axios.get(url_dservice, { params: { role: dymeruser.roles } })
-console.log(response_perm.data.data);
-console.log('dymeruser.roles',dymeruser.roles);
 let listprm_value= new Buffer(JSON.stringify(response_perm.data.data)).toString("base64");
-console.log(response_perm.data.data);
     var objuser = {
         "d_uid": dymeruser.id,
         "d_appuid": dymeruser.app_id,

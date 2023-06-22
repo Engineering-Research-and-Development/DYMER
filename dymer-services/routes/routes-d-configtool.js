@@ -387,7 +387,7 @@ function findRuleConfig(queryFind, res) {
 }
 
 router.get('/getconfig/', (req, res) => {
-    console.log(req);
+   // console.log(req);
     console.log('get-d-config', "invoco config rules");
     //  let callData = util.getAllQuery(req);
     //let queryFind = callData.query;

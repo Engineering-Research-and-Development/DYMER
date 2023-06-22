@@ -51,7 +51,7 @@ router.get('/', (req, res) => {
             element.password=(  element.password).replace(regex, '*');
         });*/
         ret.setData(els);
-        console.log(ret);
+       // console.log(ret);
         return res.send(ret);
     }).catch((err) => {
         if (err) {
@@ -90,7 +90,7 @@ password=encryptedText
         ret.setMessages("List");
     //console.log('checklogin',els);
         ret.setData(els);
-        console.log(ret);
+      //  console.log(ret);
         return res.send(ret);
     }).catch((err) => {
         if (err) {
