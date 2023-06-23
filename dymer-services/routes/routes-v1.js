@@ -12,24 +12,26 @@ var router = express.Router();
 const nameFile = path.basename(__filename);
 //var GridFsStorage = require("multer-gridfs-storage");
 router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({ extended: true }));
-router.post('/checkServiceBinded', function(req, res) {
-    // #swagger.tags = ['Services']
+router.use(bodyParser.urlencoded({extended: true}));
+router.post('/checkServiceBinded', function (req, res) {
+	// #swagger.tags = ['Services']
+	// #swagger.path = '/api/dservice/checkServiceBinded'
 
-    console.log("aggiungo un mapping per onenness search");
-    var ret = new jsonResponse();
-    let callData = util.getAllQuery(req);
-    let data = callData.data;
-    //  data.
-    return res.send(ret);
+	console.log("aggiungo un mapping per onenness search");
+	var ret = new jsonResponse();
+	let callData = util.getAllQuery(req);
+	let data = callData.data;
+	//  data.
+	return res.send(ret);
 });
 
-router.get('/', function(req, res) {
-    // #swagger.tags = ['Services']
+router.get('/', function (req, res) {
+	// #swagger.tags = ['Services']
+	// #swagger.path = '/api/dservice/'
 
-    console.log("recupero tutti i servizi opensearch");
-    var ret = new jsonResponse();
-    return res.send(ret);
+	console.log("recupero tutti i servizi opensearch");
+	var ret = new jsonResponse();
+	return res.send(ret);
 });
 
 module.exports = router;

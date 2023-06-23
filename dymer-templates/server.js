@@ -40,6 +40,7 @@ const serverUrl = global.configService.protocol + "://" + host + contextPath + d
 app.use(express.json())
 app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
 	// #swagger.tags = ['Templates']
+	// #swagger.path = '/api/templates/api/v1/template/deletelog/{filetype}'
 
 	var ret = new jsonResponse();
 	var filetype = req.params.filetype;
@@ -52,6 +53,7 @@ app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
 
 app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
 	// #swagger.tags = ['Templates']
+	// #swagger.path = '/api/templates/api/v1/template/openLog/{filetype}'
 
 	var filetype = req.params.filetype;
 	//console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
@@ -59,6 +61,7 @@ app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
 });
 app.get('/logtypes', async (req, res) => {
 	// #swagger.tags = ['Templates']
+	// #swagger.path = '/api/templates/api/v1/template/logtypes'
 
 	var ret = new jsonResponse();
 	ret.setSuccess(true);
@@ -69,6 +72,7 @@ app.get('/logtypes', async (req, res) => {
 });
 app.post('/setlogconfig', (req, res) => {
 	// #swagger.tags = ['Templates']
+	// #swagger.path = '/api/templates/api/v1/template/setlogconfig'
 
 	var ret = new jsonResponse();
 	logger.ts_infologger(req.body.consoleactive);
@@ -78,6 +82,7 @@ app.post('/setlogconfig', (req, res) => {
 });
 app.get('/checkservice', util.checkIsAdmin, (req, res) => {
 	// #swagger.tags = ['Templates']
+	// #swagger.path = '/api/templates/api/v1/template/checkservice'
 
 	var ret = new jsonResponse();
 	let infosize = logger.filesize("info");
@@ -100,6 +105,7 @@ app.use('/api/v1/template/uploads/', publicRoutes);
 app.use('/api/v1/template', routes);
 app.get('/*', (req, res) => {
 	// #swagger.tags = ['Templates']
+	// #swagger.path = '/api/templates/api/v1/template/*'
 
 	var ret = new jsonResponse();
 	//console.error('ERROR |  /* : ', "Api error 404", req.path);

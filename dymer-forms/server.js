@@ -227,6 +227,7 @@ function detectPermission(req, res, next) {
 
 app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
 	// #swagger.tags = ['Forms']
+	// #swagger.path = '/api/forms/deletelog/{filetype}'
 
 	var ret = new jsonResponse();
 	var filetype = req.params.filetype;
@@ -239,13 +240,16 @@ app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
 
 app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
 	// #swagger.tags = ['Forms']
+	// #swagger.path = '/api/forms/openLog/{filetype}'
 
 	var filetype = req.params.filetype;
 	//console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
 	return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
 });
+
 app.get('/logtypes', async (req, res) => {
 	// #swagger.tags = ['Forms']
+	// #swagger.path = '/api/forms/logtypes'
 
 	var ret = new jsonResponse();
 	ret.setSuccess(true);
@@ -254,8 +258,10 @@ app.get('/logtypes', async (req, res) => {
 	ret.setMessages("logtypes");
 	return res.send(ret);
 });
+
 app.post('/setlogconfig', (req, res) => {
 	// #swagger.tags = ['Forms']
+	// #swagger.path = '/api/forms/setlogconfig'
 
 	var ret = new jsonResponse();
 	logger.ts_infologger(req.body.consoleactive);
@@ -263,8 +269,10 @@ app.post('/setlogconfig', (req, res) => {
 	ret.setData({consoleactive: req.body.consoleactive});
 	return res.send(ret);
 });
+
 app.get('/checkservice', util.checkIsAdmin, (req, res) => {
 	// #swagger.tags = ['Forms']
+	// #swagger.path = '/api/forms/checkservice'
 
 	var ret = new jsonResponse();
 	let infosize = logger.filesize("info");
@@ -283,10 +291,12 @@ app.get('/checkservice', util.checkIsAdmin, (req, res) => {
 	ret.setSuccess(true);
 	return res.send(ret);
 });
+
 app.use('/api/v1/form/uploads/', publicRoutes);
 app.use('/api/v1/form', detectPermission, routes);
 app.get('/*', (req, res) => {
 	// #swagger.tags = ['Forms']
+	// #swagger.path = '/api/forms/*'
 
 	var ret = new jsonResponse();
 	//console.error('ERROR | /* : ', "Api error 404", req.path);
@@ -296,6 +306,7 @@ app.get('/*', (req, res) => {
 	ret.setSuccess(false);
 	return res.send(ret);
 });
+
 //module.exports = app;
 
 const root = express();

@@ -137,6 +137,7 @@ function detectPermission(req, res, next) {
 
 app.get('/uuid', util.checkIsAdmin, (req, res) => {
 	// #swagger.tags = ['Entities']
+	// #swagger.path = '/api/entities/uuid'
 
 	var ret = new jsonResponse();
 	const uuid = util.getDymerUuid();
@@ -145,8 +146,10 @@ app.get('/uuid', util.checkIsAdmin, (req, res) => {
 	ret.setMessages("uuid");
 	return res.send(ret);
 });
+
 app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
 	// #swagger.tags = ['Entities']
+	// #swagger.path = '/api/entities/deletelog/{filetype}'
 
 	var ret = new jsonResponse();
 	var filetype = req.params.filetype;
@@ -161,6 +164,7 @@ app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
 
 app.get('/logtypes', async (req, res) => {
 	// #swagger.tags = ['Entities']
+	// #swagger.path = '/api/entities/logtypes'
 
 	var ret = new jsonResponse();
 	ret.setSuccess(true);
@@ -170,8 +174,10 @@ app.get('/logtypes', async (req, res) => {
 	ret.setMessages("logtypes");
 	return res.send(ret);
 });
+
 app.post('/setlogconfig', (req, res) => {
 	// #swagger.tags = ['Entities']
+	// #swagger.path = '/api/entities/setlogconfig'
 
 	var ret = new jsonResponse();
 	logger.ts_infologger(req.body.consoleactive);
@@ -179,51 +185,55 @@ app.post('/setlogconfig', (req, res) => {
 	ret.setData({consoleactive: req.body.consoleactive});
 	return res.send(ret);
 });
+
 app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
 	// #swagger.tags = ['Entities']
+	// #swagger.path = '/api/entities/openLog/{filetype}'
 
 	var ret = new jsonResponse();
 	var filetype = req.params.filetype;
 	console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
 	return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
 });
+
 app.get('/checkservice', util.checkIsAdmin, (req, res) => {
 	// #swagger.tags = ['Entities']
+	// #swagger.path = '/api/entities/checkservice'
 
 	var ret = new jsonResponse();
 	let infosize = logger.filesize("info");
 	let errorsize = logger.filesize("error");
 	let regex = /(?<!^).(?!$)/g;
 	let infomserv = JSON.parse(JSON.stringify(global.gConfig));
-	if (infomserv.services.entity.cache.hasOwnProperty('password'))
-		infomserv.services.entity.cache.password = (infomserv.services.entity.cache.password).replace(regex, '*');
-	if (infomserv.services.entity.cache.hasOwnProperty('user'))
-		infomserv.services.entity.cache.user = (infomserv.services.entity.cache.user).replace(regex, '*');
+	if (infomserv.services.entity.cache.hasOwnProperty('password')) infomserv.services.entity.cache.password = (infomserv.services.entity.cache.password).replace(regex, '*');
+	if (infomserv.services.entity.cache.hasOwnProperty('user')) infomserv.services.entity.cache.user = (infomserv.services.entity.cache.user).replace(regex, '*');
 	ret.setData({
-					info:             {
+					info:     {
 						size: infosize
-					},
-					error:            {
-						size: errorsize
-					},
-					infomicroservice: infomserv
+					}, error: {
+			size: errorsize
+		}, infomicroservice:  infomserv
 				});
 	ret.setMessages("Service is up");
 	res.status(200);
 	ret.setSuccess(true);
 	return res.send(ret);
 });
+
 app.use('/api/v1/entity/uploads/', publicRoutes);
 app.use('/api/v1/entity', routes);
 //app.use('/api/endpointtest', routestest);
 app.get('/', (req, res) => {
 	// #swagger.tags = ['Entities']
+	// #swagger.path = '/api/entities/'
 
 	// res.sendFile(path.resolve(__dirname, "usr/share/www/html/", "index.html"));
 	res.send("this is    our main andpoint Entities");
 });
+
 app.get('/*', (req, res) => {
 	// #swagger.tags = ['Entities']
+	// #swagger.path = '/api/entities/*'
 
 	var ret = new jsonResponse();
 	ret.setMessages("Api error 404");
