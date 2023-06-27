@@ -209,7 +209,7 @@ router.get('/', (req, res) => {
 
 router.post('/:id?', util.checkIsAdmin, async function(req, res) {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/api/v1/perm/{id}'
+    // #swagger.path = '/api/dservice/api/v1/perm/{id?}'
 
     let id = req.params.id;
     let callData = util.getAllQuery(req);

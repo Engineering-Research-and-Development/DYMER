@@ -708,6 +708,23 @@
         }
       }
     },
+    "/api/v1/entity/redisroleupdate": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "req",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/entities/api/v1/entity/_search": {
       "post": {
         "tags": [
@@ -2635,6 +2652,27 @@
         }
       }
     },
+    "/api/dservice/api/v1/workflow/listener": {
+      "post": {
+        "tags": [
+          "Services"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "reqfrom",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "req",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
     "/api/dservice/api/v1/taxonomy/": {
       "get": {
         "tags": [
@@ -2836,7 +2874,7 @@
         }
       }
     },
-    "/api/dservice/api/v1/import/cronjob/{id}": {
+    "/api/dservice/api/v1/import/cronjob/{id?}": {
       "post": {
         "tags": [
           "Services"
@@ -2844,7 +2882,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "id?",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2865,7 +2903,9 @@
             "description": "OK"
           }
         }
-      },
+      }
+    },
+    "/api/dservice/api/v1/import/cronjob/{id}": {
       "put": {
         "tags": [
           "Services"
@@ -2986,7 +3026,7 @@
         }
       }
     },
-    "/api/dservice/api/v1/import/updategid/{entype}/{gid}/{forceall}": {
+    "/api/dservice/api/v1/import/updategid/{entype}/{gid}/{forceall?}": {
       "get": {
         "tags": [
           "Services"
@@ -3006,7 +3046,7 @@
             "type": "string"
           },
           {
-            "name": "forceall",
+            "name": "forceall?",
             "in": "path",
             "required": true,
             "type": "string"
@@ -3178,7 +3218,7 @@
         }
       }
     },
-    "/api/dservice/api/v1/perm/{id}": {
+    "/api/dservice/api/v1/perm/{id?}": {
       "post": {
         "tags": [
           "Services"
@@ -3186,7 +3226,7 @@
         "description": "",
         "parameters": [
           {
-            "name": "id",
+            "name": "id?",
             "in": "path",
             "required": true,
             "type": "string"
@@ -3207,7 +3247,9 @@
             "description": "OK"
           }
         }
-      },
+      }
+    },
+    "/api/dservice/api/v1/perm/{id}": {
       "delete": {
         "tags": [
           "Services"
@@ -3485,6 +3527,122 @@
           }
         }
       },
+      "delete": {
+        "tags": [
+          "Services"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/dservice/api/v1/duser/": {
+      "get": {
+        "tags": [
+          "Services"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "req",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Services"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "req",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "dymeruser",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "password": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/dservice/api/v1/duser/checklogin": {
+      "post": {
+        "tags": [
+          "Services"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "req",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/dservice/api/v1/duser/{id}": {
       "delete": {
         "tags": [
           "Services"
@@ -4175,24 +4333,23 @@
         }
       }
     },
-    "/info/{key}": {
+    "/info/{key?}": {
       "get": {
         "tags": [
           "Webserver"
         ],
-        "description": "DYMER Infos Welcome page",
+        "description": "",
         "parameters": [
           {
-            "name": "key",
+            "name": "key?",
             "in": "path",
             "required": true,
-            "type": "string",
-            "description": "Type JSON or HTML"
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "JSON or HTML infos"
+            "description": "OK"
           }
         }
       }

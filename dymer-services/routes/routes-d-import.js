@@ -130,7 +130,7 @@ function stopJob(campaignId) {
 
 router.post('/cronjob/:id?', util.checkIsAdmin, function(req, res) {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/api/v1/import/cronjob/{id}'
+    // #swagger.path = '/api/dservice/api/v1/import/cronjob/{id?}'
 
     let id = req.params.id;
     let callData = util.getAllQuery(req);
@@ -1091,7 +1091,7 @@ router.get('/generateuser', util.checkIsAdmin, (req, res) => {
 
 router.get('/updategid/:entype/:gid/:forceall?', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/api/v1/import/updategid/{entype}/{gid}/{forceall}'
+    // #swagger.path = '/api/dservice/api/v1/import/updategid/{entype}/{gid}/{forceall?}'
 
     logger.info(nameFile + '| get/updategid');
     var entype = req.params.entype;
