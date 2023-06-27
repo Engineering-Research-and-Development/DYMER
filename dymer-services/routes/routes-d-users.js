@@ -40,6 +40,9 @@ mongoose
     });
 *///, util.checkIsPortalUser
 router.get('/', (req, res) => {
+    // #swagger.tags = ['Services']
+    // #swagger.path = '/api/dservice/api/v1/duser/'
+
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -64,7 +67,11 @@ router.get('/', (req, res) => {
         }
     })
 });
+
 router.post('/checklogin' , function(req, res) {
+    // #swagger.tags = ['Services']
+    // #swagger.path = '/api/dservice/api/v1/duser/checklogin'
+
     let id = req.params.id;
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -127,6 +134,9 @@ mod.password=mystr;
 });
  
 router.post('/', util.checkIsAdmin, function(req, res) {
+    // #swagger.tags = ['Services']
+    // #swagger.path = '/api/dservice/api/v1/duser/'
+
     let id = req.params.id;
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -178,6 +188,9 @@ mod.password=mystr;*/
 });
  
 router.delete('/:id', util.checkIsAdmin, (req, res) => {
+    // #swagger.tags = ['Services']
+    // #swagger.path = '/api/dservice/api/v1/duser/{id}'
+
     var ret = new jsonResponse();
     var id = req.params.id;
     var myfilter = { "_id": id };
@@ -197,4 +210,5 @@ router.delete('/:id', util.checkIsAdmin, (req, res) => {
         }
     })
 });
+
 module.exports = router;

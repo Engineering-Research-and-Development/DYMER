@@ -229,6 +229,9 @@ if (typeof String.prototype.parseFunction != 'function') {
 */
 
 router.post('/listener',async function(req, res) {
+    // #swagger.tags = ['Services']
+    // #swagger.path = '/api/dservice/api/v1/workflow/listener'
+
     console.log('listenerwf');
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);

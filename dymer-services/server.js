@@ -79,8 +79,7 @@ app.use('/api/v1/sync', routes_dymer_sync);
 app.use('/api/v1/servicehook', routes_dymer_hooks);
 app.use('/api/v1/eaggregation', routes_dymer_eaggregation);
 app.use('/api/v1/workflow', routes_dymer_workflow);
-//TODO correggere il link
-app.use(util.getContextPath('dservice') + '/api/v1/taxonomy', routes_dymer_taxonomy);
+app.use('/api/v1/taxonomy', routes_dymer_taxonomy);
 app.use('/api/v1/usermap', routes_dymer_usermap);
 app.use('/api/v1/import', routes_dymer_import);
 //app.use('/api/v1/import_socs', routes_dymer_importsocs);
@@ -89,8 +88,7 @@ app.use('/api/v1/perm', routes_dymer_permission);
 //app.use('/api/v1/importp4t', routes_dymer_importp4t);
 app.use('/api/v1/configtool', routes_dymer_configtool);
 app.use('/api/v1/authconfig', routes_dymer_authconfig);
-//TODO correggere il link
-app.use(util.getContextPath('dservice') + '/api/v1/duser', routes_dymer_duser);
+app.use('/api/v1/duser', routes_dymer_duser);
 app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Services']
     // #swagger.path = '/api/dservice/deletelog/{filetype}'
