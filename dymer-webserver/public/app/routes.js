@@ -43,52 +43,64 @@ function config($routeProvider, $locationProvider) {
         })
         .when(site_prefix + "/bridge-entities-conf", {
             templateUrl: site_prefix + "/public/app/views/pages/entities/external/configuration.html",
-            controller: "bridgeEntitiesController"
+            controller: "bridgeEntitiesController",
+            permission: ["app-admin" ]
         })
         .when(site_prefix + "/importfromfile", {
             templateUrl: site_prefix + "/public/app/views/pages/entities/import_file.html",
-            controller: "entitiesImport_ff"
+            controller: "entitiesImport_ff",
+            permission: ["app-admin" ]
         })
         .when(site_prefix + "/configurator", {
             templateUrl: site_prefix + "/public/app/views/pages/configtool/configurator.html",
-            controller: "confController"
+            controller: "confController",
+            permission: ["app-admin" ]
         })
         .when(site_prefix + "/listconfig", {
             templateUrl: site_prefix + "/public/app/views/pages/configtool/listconfig.html",
-            controller: "confListController"
+            controller: "confListController",
+            permission: ["app-admin" ]
         })
         .when(site_prefix + "/templates", {
             templateUrl: site_prefix + "/public/app/views/pages/templates/templates.html",
-            controller: "listTempl"
+            controller: "listTempl",
+            permission: ["app-admin" ]
 
         })
         .when(site_prefix + "/hooks", {
             templateUrl: site_prefix + "/public/app/views/pages/entities/hooks.html",
-            controller: "dymerHooksController"
+            controller: "dymerHooksController",
+            permission: ["app-admin" ]
         })
         .when(site_prefix + "/opennessearch", {
             templateUrl: site_prefix + "/public/app/views/pages/services/opsearch.html",
-            controller: "openSearchController"
+            controller: "openSearchController",
+            permission: ["app-admin" ]
         })
         .when(site_prefix + "/fwadapter", {
             templateUrl: site_prefix + "/public/app/views/pages/services/fwadapter.html",
-            controller: "fwadapterController"
+            controller: "fwadapterController",
+            permission: ["app-admin" ]
         })
         .when(site_prefix + "/eaggregation", {
             templateUrl: site_prefix + "/public/app/views/pages/services/eaggregation.html",
-            controller: "eaggregationController"
+            controller: "eaggregationController",
+            permission: ["app-admin" ]
         })
         .when(site_prefix + "/managetemplate", {
             templateUrl: site_prefix + "/public/app/views/pages/templates/managetemplate.html",
-            controller: "manageTemplate"
+            controller: "manageTemplate",
+            permission: ["app-admin" ]
         })
         .when(site_prefix + "/models", {
             templateUrl: site_prefix + "/public/app/views/pages/forms/forms.html",
-            controller: "listForm"
+            controller: "listForm",
+            permission: ["app-admin" ]
         })
         .when(site_prefix + "/managemodel", {
             templateUrl: site_prefix + "/public/app/views/pages/forms/managemodels.html",
-            controller: "manageModel"
+            controller: "manageModel",
+            permission: ["app-admin" ]
         })
 
     .when(site_prefix + "/modeldoc", {
@@ -152,23 +164,33 @@ function config($routeProvider, $locationProvider) {
         })
         .when(site_prefix + "/taxonomy", {
             templateUrl: site_prefix + "/public/app/views/pages/taxonomy/taxonomy.html",
-            controller: "taxController"
+            controller: "taxController",
+            permission: ["app-admin" ]
         })
         .when(site_prefix + "/permissionmanage", {
             templateUrl: site_prefix + "/public/app/views/pages/administration/permissionmanage.html",
-            controller: "permissionController"
+            controller: "permissionController",
+            permission: ["app-admin" ]
         })
         .when(site_prefix + "/authenticationconfig", {
             templateUrl: site_prefix + "/public/app/views/pages/administration/configuration/authentication.html",
-            controller: "authenticationConfigController"
+            controller: "authenticationConfigController",
+            permission: ["app-admin" ]
         })
         .when(site_prefix + "/importcronjob", {
             templateUrl: site_prefix + "/public/app/views/pages/services/importcronjob.html",
-            controller: "importcronjobController"
+            controller: "importcronjobController",
+            permission: ["app-admin" ]
         })
         .when(site_prefix + "/sync", {
             templateUrl: site_prefix + "/public/app/views/pages/services/sync.html",
-            controller: "syncController"
+            controller: "syncController",
+            permission: ["app-admin" ]
+        })
+        .when(site_prefix + "/dusernmanage", {
+            templateUrl: site_prefix + "/public/app/views/pages/administration/dusernmanage.html",
+            controller: "dusernmanageController",
+            permission: ["app-admin" ]
         })
         /*   .when(site_prefix + "/authenticate", {
                templateUrl: site_prefix + "/authenticate"
@@ -199,11 +221,16 @@ function run($rootScope, $location, $cookies, $http, $window) { // keep user log
             username: username,
             authdata: authdata
         }
-    };*/
-    //  console.log("test ciao");
+    };*/ 
     $rootScope.name = 'anonymous';
+    $rootScope.roles = localStorage.d_rl ? JSON.parse(window.atob(unescape(encodeURIComponent(localStorage.d_rl)))).map(o => o.role) : [];    
+    let usr=localStorage.DYM ? JSON.parse(window.atob(unescape(encodeURIComponent(localStorage.DYM))))  : {};
+    $rootScope.loggedUser = usr;
+    $rootScope.hasPermission = (...permittedRoles) => {
+        return $rootScope.roles.some(p => permittedRoles.includes(p))
+    }
     $rootScope.globals = {
-        currentUser: {}
+        currentUser: usr
     };
     $rootScope.globals = {
         loggedIn: false
@@ -227,18 +254,28 @@ function run($rootScope, $location, $cookies, $http, $window) { // keep user log
               $location.path('/login');
           }
       });*/
+      $rootScope.$on('$routeChangeStart', function (event, nextRoute, current) {     
+ 
+        var permissions = nextRoute && nextRoute.permission;
+        if(!permissions) return
+        //console.log("permissions = ", permissions)
+        let loggedUserRoles = JSON.parse(window.atob(unescape(encodeURIComponent(localStorage.d_rl)))).map(o => o.role);                     
+        if (!loggedUserRoles || !permissions.some(p => loggedUserRoles.includes(p))) {
+          $location.path('dashboard')
+        } 
+    });
     $rootScope.$on('$locationChangeStart', function(event, next, current) {
         // redirect to login page if not logged in and trying to access a restricted page
-
+       // console.log("locationChangeStart");
         var loggedIn = $rootScope.globals.loggedIn;
         var userislogged = $cookies.get("dUserLogged");
-
-        //      console.log("userislogged", userislogged);
+//var usrlgg=$cookies.get("dusername"); 
+             //  console.log("reload", dusername);
         // $rootScope.globals.loggedIn = true;
         if (!userislogged) {
             //if (!loggedIn) {
-            console.log("$location.absUrl()  ", $location.absUrl());
-            console.log("$window.location", $window.location.pathname);
+         //   console.log("$location.absUrl()  ", $location.absUrl());
+          //  console.log("$window.location", $window.location.pathname);
             if (!$window.location.pathname.includes("login")) {
                 //$location.path(site_prefix + '/login');
                 $window.location.href = (site_prefix + '/login');
@@ -249,6 +286,9 @@ function run($rootScope, $location, $cookies, $http, $window) { // keep user log
             $rootScope.globals.loggedIn = false;
         } else {
             // console.log("si");
+        //    $rootScope.globals.loggedUser =   usrlgg ;
+        let usr=localStorage.DYM ? JSON.parse(window.atob(unescape(encodeURIComponent(localStorage.DYM))))  : {};
+        $rootScope.loggedUser = usr;
             $rootScope.globals.loggedIn = true;
         }
     });

@@ -50,13 +50,24 @@ module.exports = {
         let pingResp = await client.ping()
         return (pingResp == "PONG");
     },
-    cancelKey: async function (key, isEnabled) {
+    cancelKey: async function (keys, isEnabled) {
         if (!isEnabled) { return false }
-        try {
-            await client.del(key)
-        } catch (e) {
-            logger.error(nameFile + ` | cancelKey | Unable remove key ${key} in REDIS due to: ${e.message}`)
-            console.error(`Unable remove key ${key} in REDIS due to: ${e.message}`)
+        if (Array.isArray(keys)) {
+            for (let key of keys) {
+                try {
+                    await client.del(key)
+                } catch (e) {
+                    logger.error(nameFile + ` | cancelKey | Unable remove key ${key} in REDIS due to: ${e.message}`)
+                    console.error(`Unable remove key ${key} in REDIS due to: ${e.message}`)
+                }
+            }
+        } else {
+            try {
+                await client.del(keys)
+            } catch (e) {
+                logger.error(nameFile + ` | cancelKey | Unable remove key ${keys} in REDIS due to: ${e.message}`)
+                console.error(`Unable remove key ${keys} in REDIS due to: ${e.message}`)
+            }
         }
     },
     readCacheByKey: async function (query, isEnabled) {
@@ -73,13 +84,35 @@ module.exports = {
             return null
         }
     },
-    writeCacheByKey: async function (query, userId, origin, response, ids, indexes, typeservice, isEnabled) {
+    getkeysByRoles: async function (role, isEnable) {
+        // per ogni ruolo in roles cerca le chiavi che lo contengono
+        if (!isEnable) { return false }
+        logger.info(nameFile + ` | getkeysByRoles | Finding keys`)
+        let keyToInvalidate = [];
+        try {
+            let keys = await client.keys('*')
+            for (let key of keys) {
+                if (key == this.relationsKey || key == "") { continue; }
+                let rolesPerKey = JSON.parse((await client.hGet(key, 'roles')))
+                if (rolesPerKey.includes(role)) {
+                    keyToInvalidate.push(key)
+                }
+            }
+            //  console.log(keyToInvalidate, keyToInvalidate.length)
+        } catch (e) {
+            console.error(`Unable to find REDIS cache by roles due to: ${e.message}`)
+            logger.error(nameFile + ` | invalidateCacheByIndex | Unable to find REDIS cache by roles due to: ${e.message}`)
+        }
+        return keyToInvalidate;
+    },
+    writeCacheByKey: async function (query, dymerUser, origin, response, ids, indexes, typeservice, isEnabled) {
         if (!isEnabled) { return false }
 
         let hash = await this.calculateHash(query)
         try {
             await client.hSet(hash, "query", hash);
-            await client.hSet(hash, "userId", userId);
+            await client.hSet(hash, "userId", dymerUser.id);
+            await client.hSet(hash, "roles", JSON.stringify(dymerUser.roles)); //
             await client.hSet(hash, "origin", origin);
             await client.hSet(hash, "response", response);
             await client.hSet(hash, "typeservice", typeservice);

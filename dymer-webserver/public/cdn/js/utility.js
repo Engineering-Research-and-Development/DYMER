@@ -1982,13 +1982,15 @@ function drawEntities(conf) {
 
 function getrendRole(perm) {
     var owner = "";
-    if (perm.edit) {
+    if (perm.edit || perm.delete) {
         if (perm.isowner)
-            owner = '<i class="fa fa-user icon-action" title="Owner" ></i>';
-        else if (perm.isadmin)
-            owner = '<i class="fa fa-user-circle-o icon-action" title="Admin" ></i>';
-        else
-            owner = '<i class="fa fa-user-o icon-action" title="co-editor"  ></i>';
+        return '<i class="fa fa-user icon-action" title="Owner" ></i>';
+          if (perm.isadmin)
+          return '<i class="fa fa-user-circle icon-action" title="Admin" ></i>';
+          if (perm.iscurator)
+          return '<i class="fa fa-user-circle-o icon-action" title="Editor" ></i>';
+         
+          return '<i class="fa fa-user-o icon-action" title="co-editor"  ></i>';
     }
     return owner;
 }
@@ -2100,13 +2102,16 @@ function checkPermission(actualItem, act) {
     let d_uid = localStorage.getItem("d_uid");
     let d_gid = localStorage.getItem("d_gid");
     let d_rl = localStorage.getItem("d_rl");
+    let d_lp =  JSON.parse(atob( localStorage.getItem("d_lp")));
+    console.log("d_lp",d_lp);
     var entPerm = {
         isowner: false,
         view: false,
         edit: false,
         delete: false,
         managegrant: false,
-        isadmin: false
+        isadmin: false,
+        iscurator:false
     };
     if (typeof d_uid == 'undefined') {
         entPerm.view = true;
@@ -2154,6 +2159,24 @@ function checkPermission(actualItem, act) {
         entPerm.managegrant = true;
         return entPerm;
     }
+    let is_spr=false;
+    let actualIndex=actualItem._index;
+    if(d_lp.edit.includes(actualIndex) ){
+        entPerm.view = true;
+        entPerm.edit = true;
+        entPerm.iscurator =true;
+    }
+    if(d_lp.delete.includes(actualIndex) ){
+        entPerm.view = true;
+        entPerm.delete = true;
+        entPerm.iscurator =true;
+        
+    }
+    if( entPerm.iscurator ){
+       
+         return entPerm;
+    }
+  
     if (typeof actualItem.properties.grant != 'undefined') {
         var entGrant = actualItem.properties.grant;
         if (entGrant.hasOwnProperty("update"))
@@ -2178,12 +2201,14 @@ function checkPermission(actualItem, act) {
         // }*/
 
     }
-    if (d_uid != entOwner.uid && d_gid == entOwner.gid) {
+    
+    if (d_uid != entOwner.uid && d_gid == entOwner.gid && !is_spr) {
         entPerm.view = true;
         entPerm.edit = false;
         entPerm.delete = false;
         return entPerm;
     }
+    
     return entPerm;
 }
 
@@ -2522,7 +2547,7 @@ async function editEntity(id) {
                 dymphases.setSubPhase("edit", true, "prepopulateform");
                 let resprepopulate_ = await prePopulateFormEdit_Promise(itemToEdit);
                
-                console.log("resprepopulate",resprepopulate_);
+              //console.log("resprepopulate",resprepopulate_);
                 //console.log("resprepopulate", resprepopulate);let filterpos = ($(this).data('filterpos') == undefined) ? 0 : $(this).data('filterpos');
                 var itemToEdit_ = Object.assign({}, itemToEdit);
                 /*  setTimeout(function() {

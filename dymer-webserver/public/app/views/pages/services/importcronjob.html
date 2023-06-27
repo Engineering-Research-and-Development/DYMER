@@ -85,14 +85,49 @@
                                         if there are multiple dymer sources an id conflict
                                         could occur)</small>
                             </div>
-
-
                             <div class="form-group">
                                 <input type="checkbox" ng-model="configCONJOB.importrelation">
                                 <span class="text-info ">Import relations </span><small style="color: #8c8985;"> (only
                                     the first level of
                                     relations will be imported
                                     not the entities)</small>
+                            </div>
+                            <div class="form-group">
+                                <input type="checkbox" ng-model="configCONJOB.importentities">
+                                <span class="text-info ">Import entities </span><small style="color: #8c8985;"></small>
+                            </div>
+                            <div class="form-group"> <label class="text-info"> Condition</label><small style="color: #8c8985;"> (write here your js code. the code must <b>return true</b>
+                                or <b>false</b>. <b>true</b> if the entity is to be submitted <b>false</b>
+                                otherwise.
+                                the variable <b>entity</b> is the entity object that you can use for your controls
+                                and
+                                can be manipulated before sending. Below the json structure of the entity in the
+                                entity
+                                variable (<b>obj</b>) : 
+                                {
+                                    instance: {
+                                      index: '&lt;entity-index&gt;',
+                                      type: '&lt;entity-type&gt;',
+                                      id: '&lt;entity-id&gt;'
+                                    },
+                                    data: {
+                                      title: '&lt;entity-title&gt;',
+                                      description: '&lt;entity-description&gt;',
+                                      author: '&lt;entity-author&gt;',
+                                      ...
+                                    }
+                                }
+                                <textarea type="text" class="form-control col-12" ng-model="configCONJOB.condition"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <input type="checkbox" ng-model="configCONJOB.importmodel">
+                                <span class="text-info ">Import model </span><small style="color: #8c8985;"></small>
+                                <small style="color: #8c8985;"> (model will be created or updated if it already exists).</small>
+                            </div>
+                            <div class="form-group">
+                                <input type="checkbox" ng-model="configCONJOB.importtemplates">
+                                <span class="text-info ">Import templates </span><small style="color: #8c8985;"></small>
+                                <small style="color: #8c8985;"> (templates will be created or updated if they already exist).</small>
                             </div>
                             <div class="form-group" ng-show="configCONJOB.importrelation"><label class="text-info">
                                     Indexes </label><small style="color: #8c8985;"> (indexes

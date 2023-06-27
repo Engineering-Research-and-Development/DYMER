@@ -126,7 +126,7 @@ Ajaxcall.prototype = {
                   //   let a = $(self_.container_ids[0]).serializeJSON({parseBooleans: true, parseNumbers: true,skipFalsyValuesForTypes: ["string"]});
                    
                   //       console.log('appendFormdataxxxx', self_.container_ids[0], a);
-                            console.log("a2", a);
+                          //  console.log("a2", a);
                     appendFormdata(formdata, a);
                     let els = $(self_.container_ids[0]).find(':input').get();
                     //console.log("els",els);

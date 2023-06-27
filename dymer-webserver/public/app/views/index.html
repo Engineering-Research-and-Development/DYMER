@@ -56,6 +56,7 @@
     <script src="public/app/services/serviceTaxonomy.js"></script>
     <script src="public/app/controllers/permissionCtrl.js"></script>
     <script src="public/app/controllers/authenticationConfigCtrl.js"></script>
+    <script src="public/app/controllers/dusernmanageCtrl.js"></script>
     <script src="public/app/controllers/importcronjobCtrl.js"></script>
     <script src="public/app/controllers/syncCtrl.js"></script>
     <script src="public/app/controllers/mclgsCtrl.js"></script>
@@ -90,7 +91,7 @@
             <div class="logo">
                 <a href="/" class="simple-text logo-mini">
                     <div class="logo-image-small">
-                        <img src="public/assets/img/logo-small.png">
+                        <img src="public\cdn\img\dymer-logo.png" class="rounded-circle">
                     </div>
                 </a>
                 <a href="/" class="simple-text logo-normal">
@@ -104,7 +105,7 @@
                             <i class="nc-icon nc-chart-bar-32"></i>
                             <p>Dashboard</p>
                         </a>
-                        <div class=" kmssublist">
+                        <div class=" kmssublist"  ng-show="hasPermission('app-admin' )">
                             <ul class="">
                                 <li class="  ">
                                     <a href="mclgs"><i class="nc-icon nc-paper"></i>
@@ -115,14 +116,14 @@
                         </div>
                     </li>
 
-                    <li>
+                    <li  ng-show="hasPermission('app-admin' )">
                         <a href="#" class="haschild">
 
                             <i class="fa fa-lock"></i>
                             <p>Permissions</p>
 
                         </a>
-                        <div class=" kmssublist">
+                        <div class=" kmssublist"  >
                             <ul class="">
                                 <li class="  ">
                                     <a href="authenticationconfig"><i class="fa fa-key"></i>
@@ -134,48 +135,50 @@
                                         <p>Roles</p>
                                     </a>
                                 </li>
-
+                                <li class="  ">
+                                    <a href="dusernmanage"><i class="nc-icon nc-single-02"></i>
+                                        <p>Dymer User</p>
+                                    </a>
+                                </li>
 
                             </ul>
                         </div>
                     </li>
-                    <li>
+                    <li  ng-show="hasPermission('app-admin' )">
                         <a href="#" class="haschild">
                             <i class="nc-icon nc-layout-11"></i>
                             <p>Templates</p>
                         </a>
                         <div class=" kmssublist">
                             <ul class="">
-                                <li class="  ">
-                                    <a class="" href="templates"><i class="nc-icon nc-bullet-list-67 lg "></i>
-                                        <p>List Template</p>
-                                    </a>
-                                </li>
-
                                 <li class=" "> <a href="managetemplate" target="_self"><i
                                             class="nc-icon nc-ruler-pencil"></i>
                                         <p>Manage Templates</p>
                                     </a>
                                 </li>
+                                <li class="  ">
+                                    <a class="" href="templates"><i class="nc-icon nc-bullet-list-67 lg "></i>
+                                        <p>List Template</p>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </li>
-                    <li>
+                    <li  ng-show="hasPermission('app-admin' )">
                         <a href="#" class="haschild">
                             <i class="nc-icon nc-tile-56"></i>
                             <p>Models</p>
                         </a>
                         <div class=" kmssublist">
                             <ul class="">
-                                <li class="  ">
-                                    <a class="" href="models"><i class="nc-icon nc-bullet-list-67 lg "></i>
-                                        <p>List Models</p>
-                                    </a>
-                                </li>
-
                                 <li class="  "> <a class="" href="managemodel" target="_self"><i
                                             class="nc-icon nc-ruler-pencil"></i>
                                         <p>Manage Models</p>
+                                    </a>
+                                </li>
+                                <li class="  ">
+                                    <a class="" href="models"><i class="nc-icon nc-bullet-list-67 lg "></i>
+                                        <p>List Models</p>
                                     </a>
                                 </li>
                                 <li class="  "> <a class="" href="modeldoc" target="_self"><i
@@ -207,11 +210,11 @@
                                         <p>Add Entity</p>
                                     </a>
                                 </li>
-                                <li class="  "> <a class="" href="taxonomy"><i class="fa fa-sitemap"></i>
+                                <li class="  "  ng-show="hasPermission('app-admin' )"> <a class="" href="taxonomy"><i class="fa fa-sitemap"></i>
                                         <p>Taxonomy</p>
                                     </a>
                                 </li>
-                                <li class="  "> <a class="" href="importfromfile"><i class="nc-icon nc-air-baloon"></i>
+                                <li class="  "  ng-show="hasPermission('app-admin' )"> <a class="" href="importfromfile"><i class="nc-icon nc-air-baloon"></i>
                                         <p>Import</p>
                                     </a>
                                 </li>
@@ -221,7 +224,7 @@
                                     </a>
                                 </li>
 
-                                <li class="  ">
+                                <li class="  "  ng-show="hasPermission('app-admin' )">
                                     <a class="" href="hooks"> <i class="fa fa-toggle-on" aria-hidden="true"></i>
                                         <p>Hook</p>
                                     </a>
@@ -230,7 +233,7 @@
                         </div>
                     </li>
                     <!---->
-                    <li>
+                    <li class="ng-hide"  ng-show="hasPermission('app-admin' )">
                         <a href="#" class="haschild">
                             <i class="fa fa-wrench"></i>
                             <p>Config Tool</p>
@@ -251,25 +254,9 @@
                             </ul>
                         </div>
                     </li>
-                    <li>
-                        <a href="#" class="haschild">
-                            <!--<i class="fa fa-ravelry" aria-hidden="true"></i>-->
-                            <i class="nc-icon nc-vector" aria-hidden="true"></i>
-                            <p>Bridge Entities</p>
-                        </a>
-                        <div class=" kmssublist">
-                            <ul class="">
-                                <li class="  ">
-                                    <a class="" href="bridge-entities-conf"><i class="fa fa-cogs"
-                                            aria-hidden="true"></i>
-                                        <p>Configuration</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
+                   
                     <!---->
-                    <li>
+                    <li  ng-show="hasPermission('app-admin' )">
                         <a href="#" class="haschild">
                             <i class="nc-icon nc-box"></i>
                             <p>Services</p>
@@ -277,13 +264,9 @@
                         <div class=" kmssublist">
                             <ul class="">
                                 <li class="  ">
-                                    <a class="" href="opennessearch"><i class="fa fa-map-signs  "></i>
-                                        <p>Openness Search</p>
-                                    </a>
-                                </li>
-                                <li class="  ">
-                                    <a class="" href="fwadapter"><i class="nc-icon nc-planet"></i>
-                                        <p>FW-Adapter</p>
+                                    <a class="" href="bridge-entities-conf"><i class="nc-icon nc-vector"
+                                            aria-hidden="true"></i>
+                                        <p>Bridge Entities</p>
                                     </a>
                                 </li>
                                 <li class="  ">
@@ -293,10 +276,20 @@
                                     </a>
                                 </li>
                                 <li class="  ">
+                                    <a class="" href="fwadapter"><i class="nc-icon nc-planet"></i>
+                                        <p>FW-Adapter</p>
+                                    </a>
+                                </li>
+                                <li class="  ">
                                     <a class="" href="importcronjob"><i class="fa fa-refresh" aria-hidden="true"></i>
                                         <p>Import Dymer</p>
                                     </a>
                                 </li>
+                                <li class="  ">
+                                    <a class="" href="opennessearch"><i class="fa fa-map-signs  "></i>
+                                        <p>Openness Search</p>
+                                    </a>
+                                </li>  
                                 <li class="  ">
                                     <a class="" href="sync"><i class="fa fa-retweet" aria-hidden="true"></i>
                                         <p>Sync Dymer</p>
@@ -383,6 +376,7 @@
                         </span>
                         <span class="navbar-brand">DYnamic information ModElling & Rendering</span>
                     </div>
+                    
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-bar navbar-kebab"></span>
                         <span class="navbar-toggler-bar navbar-kebab"></span>
@@ -399,6 +393,9 @@
                                 </div>
                             </div>
                         </form>-->
+                        <div>
+                            Benvenuto {{loggedUser.username}} 
+                        </div>
                         <ul class="navbar-nav">
                             <!--  <li class="nav-item">
                                 <a class="nav-link btn-magnify" href="#pablo">

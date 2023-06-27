@@ -32,7 +32,25 @@
                     "d_mail": "test@liferay.com",
                     "d_pwd": "1234"
                 }
-            }
+            },"entity": {
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 1358
+            } ,
+            "form": {
+                "app_name": "form",
+                "app_desc": "dymer form", 
+                "protocol": "http",
+                "ip": "localhost",
+                "port":4747
+            },
+            "template": {
+                "app_name": "template",
+                "app_desc": "dymer template", 
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 4545
+            } 
         }
     },
     "production": {
@@ -69,7 +87,11 @@
                     "d_mail": "test@liferay.com",
                     "d_pwd": "1234"
                 }
-            }
+            },"entity": {
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 1358
+            } 
         }
     }
 }

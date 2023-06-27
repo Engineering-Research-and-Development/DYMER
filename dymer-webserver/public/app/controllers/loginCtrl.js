@@ -7,17 +7,39 @@ angular.module('loginCtrl', []).controller('loginController', function($scope, $
         var _username = $scope.vm.username;
         var _password = $scope.vm.password;
         $rootScope.globals.loggedIn = false;
+        $rootScope.globals.loggedUser ={}
         var baseContextPath = $rootScope.globals.contextpath;
         //$rootScope.globals.loggedIn = true;
-
         $http.post(baseContextPath + '/api/portalweb/authenticate', { username: _username, password: _password })
+        .then(function successCallback(response) {
+          //  console.log("response.data", response.data)
+            $rootScope.globals.loggedIn = true;
+            $rootScope.roles = JSON.parse(window.atob(unescape(encodeURIComponent(response.data["d_rl"])))).map(o => o.role)
+            var expireDate = new Date();
+            expireDate.setDate(expireDate.getDate() + 1);
+            $cookies.put("dUserLogged", true, { expires: expireDate });
+            $location.path(baseContextPath + '/');  
+            localStorage.setItem('DYM', response.data["DYM"]);
+            localStorage.setItem('DYMisi', response.data["DYMisi"]);
+            localStorage.setItem('d_rl', response.data["d_rl"]);
+            localStorage.setItem('d_lp', response.data["d_lp"]);
+            document.cookie = "lll=" + response.data["DYM"];
+            document.cookie = "DYMisi=" + response.data["DYMisi"];
+            localStorage.setItem('d_uid', response.data.d_uid);
+            localStorage.setItem('d_appuid', response.data.d_appuid);
+            localStorage.setItem('d_gid', response.data.d_gid);
+            //user response.data["user"]
+           // console.log("response.data", response.data.user)
+            $rootScope.globals.loggedUser =  response.data.user ;
+         //   $cookies.put("dusername",  response.data.user.username, { expires: expireDate });
+        /*$http.post(baseContextPath + '/api/portalweb/authenticate', { username: _username, password: _password })
             .then(function successCallback(response) {
 
                 $rootScope.globals.loggedIn = true;
                 var expireDate = new Date();
                 expireDate.setDate(expireDate.getDate() + 1);
                 $cookies.put("dUserLogged", true, { expires: expireDate });
-                $location.path(baseContextPath + '/');
+                $location.path(baseContextPath + '/');*/
             }, function errorCallback(response) {
 
                 $rootScope.globals.loggedIn = false;
@@ -35,6 +57,13 @@ angular.module('loginCtrl', []).controller('loginController', function($scope, $
     angular.forEach(cookies, function(v, k) {
         $cookies.remove(k);
     });
+    localStorage.removeItem('d_appuid')
+    localStorage.removeItem('d_gid')
+    localStorage.removeItem('d_rl')
+    localStorage.removeItem('d_lp')
+    localStorage.removeItem('d_uid')
+    localStorage.removeItem('DYM')
+    localStorage.removeItem('DYMisi')
     $rootScope.globals.loggedIn = false;
     $location.path('login');
 });

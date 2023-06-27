@@ -13,7 +13,7 @@ angular.module('dashCtrl', ['nvd3'])
             $scope.logstype = retE.data.data.msg;
         });
 
-        $http.get(baseContextPath + '/api2/retriveinfoidpadmin', {
+       /* $http.get(baseContextPath + '/api2/retriveinfoidpadmin', {
             //$http.get(baseContextPath + '/api2/retriveinfoidp', {
         }).then(function(retE) {
             localStorage.setItem('DYM', retE.data["DYM"]);
@@ -23,7 +23,7 @@ angular.module('dashCtrl', ['nvd3'])
             localStorage.setItem('d_uid', retE.data.d_uid);
             localStorage.setItem('d_appuid', retE.data.d_appuid);
             localStorage.setItem('d_gid', retE.data.d_gid);
-        })
+        })*/
         var listEntities = [];
         //console.log('baseContextPath', baseContextPath + '/api/entities/api/v1/entity/allstats');
 
