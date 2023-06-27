@@ -97,7 +97,6 @@ router.post('/setusermap', function (req, res) {
 		})
 });
 
-
 router.post('/addusermap', function (req, res) {
 	// #swagger.tags = ['Services']
 	// #swagger.path = '/api/dservice/api/v1/usermap/addusermap'
@@ -139,7 +138,6 @@ router.post('/addusermap', function (req, res) {
 
 });
 
-
 router.get('/findbyemail/:email', function (req, res) {
 	// #swagger.tags = ['Services']
 	// #swagger.path = '/api/dservice/api/v1/usermap/{email}'
@@ -172,6 +170,5 @@ router.get('/findbyemail/:email', function (req, res) {
 
 
 });
-
 
 module.exports = router;
