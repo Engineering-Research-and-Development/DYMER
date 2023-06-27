@@ -40,6 +40,7 @@ var memoryStore = new session.MemoryStore();
 /**********************************************************************************************************************/
 /*                                                   Swagger Config                                                   */
 /**********************************************************************************************************************/
+const contextPath = util.getContextPath('webserver');
 
 const swaggerUi = require('swagger-ui-express')
 const swaggerFile = require('./swagger_webserver.json')
