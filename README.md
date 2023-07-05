@@ -1,5 +1,10 @@
 <a name="readme-top"></a>
 
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+
 # DYMER
 <img src="https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/Dymer.jpg?raw=true" title="Dymer" alt="Dymer"> 
 
@@ -194,3 +199,16 @@ Project is: _in progress_
 
 
 ## License
+
+
+
+
+
+[contributors-shield]: https://img.shields.io/github/contributors/Engineering-Research-and-Development/DYMER.svg?style=for-the-badge
+[contributors-url]: https://github.com/Engineering-Research-and-Development/DYMER/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/Engineering-Research-and-Development/DYMER.svg?style=for-the-badge
+[forks-url]: https://github.com/Engineering-Research-and-Development/DYMER/network/members
+[stars-shield]: https://img.shields.io/github/stars/Engineering-Research-and-Development/DYMER.svg?style=for-the-badge
+[stars-url]: https://github.com/Engineering-Research-and-Development/DYMER/stargazers
+[issues-shield]: https://img.shields.io/github/issues/Engineering-Research-and-Development/DYMER.svg?style=for-the-badge
+[issues-url]: https://github.com/Engineering-Research-and-Development/DYMER/issues
