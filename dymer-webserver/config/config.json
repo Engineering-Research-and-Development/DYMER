@@ -42,11 +42,11 @@
             "updated":"2023-03-22"
         },
         "services": {
-            "webserver": {
+            "webserver":{
                 "app_name": "webserver",
                 "app_desc": "dymer webserver",
                 "protocol": "http",
-                "ip": "localhost",
+                "ip": "kms_webserver",
                 "port": 8080,
                 "context-path": "",
                 "adminUser": "admin",
@@ -55,26 +55,26 @@
             },
             "entity": {
                 "protocol": "http",
-                "ip": "localhost",
+                "ip": "kms_entities",
                 "context-path": "",
                 "port": 1358
             },
             "template": {
                 "protocol": "http",
-                "ip": "localhost",
+                "ip": "kms_templates",
                 "context-path": "",
                 "port": 4545
             },
             "form": {
                 "protocol": "http",
                 "context-path": "",
-                "ip": "localhost",
+                "ip": "kms_forms",
                 "port": 4747
             },
             "dservice": {
                 "protocol": "http",
                 "context-path": "",
-                "ip": "localhost",
+                "ip": "kms_services",
                 "port": 5050
             }
         }

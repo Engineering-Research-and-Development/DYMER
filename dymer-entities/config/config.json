@@ -55,43 +55,43 @@
     },
     "production": {
         "config_id": "production",
-        "services": {
+         "services": {
             "entity": {
                 "app_name": "entity",
                 "app_desc": "dymer entity",
                 "protocol": "http",
-                "ip": "localhost",
+                "ip": "kms_entities",
                 "context-path": "",
                 "port": 1358,
-                "ip_port": "localhost:1358",
+                "ip_port": "kms_entities:1358",
                 "cache": {
                     "protocol": "http",
-                    "host": "127.0.0.1",
+                    "host": "cache",
                     "ip": "cache",
                     "port": 6379,
                     "user": "redis",
-                    "password": "eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81",
-                    "isEnabled": true
+                    "password": "",
+                    "isEnabled": false
                 },
                 "repository": {
                     "entity": {
                         "type": "elastichsearch",
                         "protocol": "http",
                         "context-path": "",
-                        "ip": "localhost",
+                        "ip": "elasticsearch",
                         "port": 9200
                     },
                     "files": {
                         "type": "mongodb",
                         "protocol": "http",
-                        "ip": "127.0.0.1",
+                        "ip": "mongodb",
                         "port": 27017,
                         "index_ref": "entity"
                     },
                     "entitiesbridge": {
                         "type": "mongodb",
                         "protocol": "http",
-                        "ip": "127.0.0.1",
+                        "ip": "mongodb",
                         "port": 27017,
                         "index_ref": "entity"
                     }
@@ -100,14 +100,14 @@
             "dservice": {
                 "protocol": "http",
                 "context-path": "",
-                "ip": "127.0.0.1",
+                "ip": "kms_services",
                 "port": 5050
             },
-            "form": {
-                "protocol": "http",
-                "ip": "localhost",
-                "port": 4747
-            }
-        }
+            "form":{
+              "protocol":"http",
+              "ip":"kms_forms",
+              "port":4747
+            } 
+		}
     }
 }
