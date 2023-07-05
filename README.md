@@ -7,18 +7,6 @@
 
 The DYMER is a suite for resource catalog visualization. DYMER provides advanced mapping capabilities between a data model in JSON format and its graphic template on the one hand, and on the other hand, it provides a JavaScript framework for integrating the DYMER template into a web-based application. The software is flexible because it adopts open technologies and can be used in various environments without considerable requirements. 
 
-## Table of contents
-* [**Architecture**](#architecture)
-* [**Technologies**](#technologies)
-* [**Features**](#features)
-* [**Requirements**](#requirements)
-* [**Setup**](#setup)
-* [**How to use**](#how-to-use)
-* [**Important Notes**](#important-notes)
-* [**Troubleshoot**](#troubleshoot)
-* [**Contributors**](#contributors)
-* [**Status**](#status)
-* [**Licence**](#licence)
 
 <details>
   <summary>Table of Contents</summary>
