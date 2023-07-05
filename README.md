@@ -1,3 +1,4 @@
+<a name="readme-top"></a>
 
 # DYMER
 <img src="https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/Dymer.jpg?raw=true" title="Dymer" alt="Dymer"> 
@@ -18,6 +19,26 @@ The DYMER is a suite for resource catalog visualization. DYMER provides advanced
 * [**Contributors**](#contributors)
 * [**Status**](#status)
 * [**Licence**](#licence)
+
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#technologies">Technologies</a></li>
+    <li><a href="#features">Features</a></li>
+	<li><a href="#requirements">Requirements</a></li>
+	<li><a href="#Setup">Setup</a></li>
+	<li><a href="#how-to-use">How to use</a></li>
+	<li><a href="#important-notes">Important Notes</a></li>
+	<li><a href="#troubleshoot">Troubleshoot</a></li>
+	<li><a href="#contributors">Contributors</a></li>
+	<li><a href="#status">Status</a></li>
+	 <li><a href="#license">License</a></li>
+     
+  </ol>
+</details>
+
+ 
 
 
 ## Architecture
@@ -62,6 +83,7 @@ The same management features are available respectively for the models/forms
 ![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/ws-model-editor.png?raw=true)
 ![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/ws-manageEntity.png?raw=true)
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Technologies
 
