@@ -1,3 +1,9 @@
+<a name="readme-top"></a>
+
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
 
 # DYMER
 <img src="https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/Dymer.jpg?raw=true" title="Dymer" alt="Dymer"> 
@@ -6,18 +12,26 @@
 
 The DYMER is a suite for resource catalog visualization. DYMER provides advanced mapping capabilities between a data model in JSON format and its graphic template on the one hand, and on the other hand, it provides a JavaScript framework for integrating the DYMER template into a web-based application. The software is flexible because it adopts open technologies and can be used in various environments without considerable requirements. 
 
-## Table of contents
-* [**Architecture**](#architecture)
-* [**Technologies**](#technologies)
-* [**Features**](#features)
-* [**Requirements**](#requirements)
-* [**Setup**](#setup)
-* [**How to use**](#how-to-use)
-* [**Important Notes**](#important-notes)
-* [**Troubleshoot**](#troubleshoot)
-* [**Contributors**](#contributors)
-* [**Status**](#status)
-* [**Licence**](#licence)
+
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#technologies">Technologies</a></li>
+    <li><a href="#features">Features</a></li>
+	<li><a href="#requirements">Requirements</a></li>
+	<li><a href="#Setup">Setup</a></li>
+	<li><a href="#how-to-use">How to use</a></li>
+	<li><a href="#important-notes">Important Notes</a></li>
+	<li><a href="#troubleshoot">Troubleshoot</a></li>
+	<li><a href="#contributors">Contributors</a></li>
+	<li><a href="#status">Status</a></li>
+	 <li><a href="#license">License</a></li>
+     
+  </ol>
+</details>
+
+ 
 
 
 ## Architecture
@@ -62,6 +76,7 @@ The same management features are available respectively for the models/forms
 ![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/ws-model-editor.png?raw=true)
 ![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/ws-manageEntity.png?raw=true)
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Technologies
 
@@ -184,3 +199,16 @@ Project is: _in progress_
 
 
 ## License
+
+
+
+
+
+[contributors-shield]: https://img.shields.io/github/contributors/Engineering-Research-and-Development/DYMER.svg?style=for-the-badge
+[contributors-url]: https://github.com/Engineering-Research-and-Development/DYMER/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/Engineering-Research-and-Development/DYMER.svg?style=for-the-badge
+[forks-url]: https://github.com/Engineering-Research-and-Development/DYMER/network/members
+[stars-shield]: https://img.shields.io/github/stars/Engineering-Research-and-Development/DYMER.svg?style=for-the-badge
+[stars-url]: https://github.com/Engineering-Research-and-Development/DYMER/stargazers
+[issues-shield]: https://img.shields.io/github/issues/Engineering-Research-and-Development/DYMER.svg?style=for-the-badge
+[issues-url]: https://github.com/Engineering-Research-and-Development/DYMER/issues
