@@ -26,13 +26,13 @@
                 "app_name": "template",
                 "app_desc": "dymer template",
                 "protocol": "http",
-                "ip": "localhost",
+                "ip": "kms_templates",
                 "port": 4545,
                 "context-path": "",
-                "ip_port": "localhost:4545",
+                "ip_port": "kms_templates:4545",
                 "repository": {
                     "protocol": "http",
-                    "ip": "127.0.0.1",
+                    "ip": "mongodb",
                     "port": 27017,
                     "index_ref": "templates"
                 }

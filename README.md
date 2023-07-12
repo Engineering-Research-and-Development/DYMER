@@ -1,3 +1,10 @@
+<a name="readme-top"></a>
+
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+
 
 # DYMER
 <img src="https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/Dymer.jpg?raw=true" title="Dymer" alt="Dymer"> 
@@ -61,6 +68,8 @@ By clicking on the Templates link menu, on the left in the drop-down list, the u
 The same management features are available respectively for the models/forms 
 ![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/ws-model-editor.png?raw=true)
 ![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/ws-manageEntity.png?raw=true)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 ## Technologies
@@ -184,3 +193,13 @@ Project is: _in progress_
 
 
 ## License
+
+
+[contributors-shield]: https://img.shields.io/github/contributors/Engineering-Research-and-Development/DYMER.svg?style=for-the-badge
+[contributors-url]: https://github.com/Engineering-Research-and-Development/DYMER/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/Engineering-Research-and-Development/DYMER.svg?style=for-the-badge
+[forks-url]: https://github.com/Engineering-Research-and-Development/DYMER/network/members
+[stars-shield]: https://img.shields.io/github/stars/Engineering-Research-and-Development/DYMER.svg?style=for-the-badge
+[stars-url]: https://github.com/Engineering-Research-and-Development/DYMER/stargazers
+[issues-shield]: https://img.shields.io/github/issues/Engineering-Research-and-Development/DYMER.svg?style=for-the-badge
+[issues-url]: https://github.com/Engineering-Research-and-Development/DYMER/issues

@@ -62,12 +62,12 @@
                 "app_desc": "dymer services",
                 "context-path": "",
                 "protocol": "http",
-                "ip": "localhost",
+                "ip": "kms_services",
                 "port": 5050,
-                "ip_port": "localhost:5050",
+                "ip_port": "kms_services:5050",
                 "repository": {
                     "protocol": "http",
-                    "ip": "localhost",
+                    "ip": "mongodb",
                     "port": 27017,
                     "index_ref": "dservice"
                 }
@@ -77,7 +77,7 @@
                 "app_desc": "dymer webserver",
                 "context-path": "",
                 "protocol": "http",
-                "ip": "localhost",
+                "ip": "kms_webserver",
                 "port": 8080
             },
             "opnsearch": {
@@ -89,8 +89,22 @@
                 }
             },"entity": {
                 "protocol": "http",
-                "ip": "localhost",
+                "ip": "kms_entities",
                 "port": 1358
+            },
+            "form": {
+                "app_name": "form",
+                "app_desc": "dymer form", 
+                "protocol": "http",
+                "ip": "kms_forms",
+                "port":4747
+            },
+            "template": {
+                "app_name": "template",
+                "app_desc": "dymer template", 
+                "protocol": "http",
+                "ip": "kms_templates",
+                "port": 4545
             } 
         }
     }
