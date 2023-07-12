@@ -22,17 +22,17 @@
     "production": {
         "config_id": "production",
         "services": {
-           "template": {
+            "template": {
                 "app_name": "template",
                 "app_desc": "dymer template",
                 "protocol": "http",
-                "ip": "kms_templates",
+                "ip": "localhost",
                 "port": 4545,
                 "context-path": "",
-                "ip_port": "kms_templates:4545",
+                "ip_port": "localhost:4545",
                 "repository": {
                     "protocol": "http",
-                    "ip": "mongodb",
+                    "ip": "127.0.0.1",
                     "port": 27017,
                     "index_ref": "templates"
                 }

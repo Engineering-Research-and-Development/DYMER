@@ -32,8 +32,7 @@
                     "d_mail": "test@liferay.com",
                     "d_pwd": "1234"
                 }
-            },
-			"entity": {
+            },"entity": {
                 "protocol": "http",
                 "ip": "localhost",
                 "port": 1358
@@ -58,17 +57,17 @@
         "config_id": "production",
         "version":"1.1.5",
         "services": {
-              "dservice": {
+            "dservice": {
                 "app_name": "dservice",
                 "app_desc": "dymer services",
                 "context-path": "",
                 "protocol": "http",
-                "ip": "kms_services",
+                "ip": "localhost",
                 "port": 5050,
-                "ip_port": "kms_services:5050",
+                "ip_port": "localhost:5050",
                 "repository": {
                     "protocol": "http",
-                    "ip": "mongodb",
+                    "ip": "localhost",
                     "port": 27017,
                     "index_ref": "dservice"
                 }
@@ -78,7 +77,7 @@
                 "app_desc": "dymer webserver",
                 "context-path": "",
                 "protocol": "http",
-                "ip": "kms_webserver",
+                "ip": "localhost",
                 "port": 8080
             },
             "opnsearch": {
@@ -86,27 +85,12 @@
                     "d_uid": 5,
                     "d_gid": 55,
                     "d_mail": "test@liferay.com",
-                    "d_pwd": "*****2021"
+                    "d_pwd": "1234"
                 }
-            },
-            "entity": {
+            },"entity": {
                 "protocol": "http",
-                "ip": "kms_entities",
+                "ip": "localhost",
                 "port": 1358
-            },
-            "form": {
-                "app_name": "form",
-                "app_desc": "dymer form", 
-                "protocol": "http",
-                "ip": "kms_forms",
-                "port":4747
-            },
-            "template": {
-                "app_name": "template",
-                "app_desc": "dymer template", 
-                "protocol": "http",
-                "ip": "kms_templates",
-                "port": 4545
             } 
         }
     }
