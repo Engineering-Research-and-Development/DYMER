@@ -5345,7 +5345,7 @@ function checkServiceHook(EventSource, objSend, extraInfo, req,originalElement) 
             eventSource: EventSource,
             obj: objSend
         };
-        axios.post(url_dservice, { data: postObj, "extraInfo": extraInfo }, { headers: headers }).then(response => {
+        axios.post(url_dservice, { data: postObj, "extraInfo": extraInfo, "origindata":originalElement, "originheader":  req.headers }, { headers: headers }).then(response => {
                 //console.log(nameFile + '| checkServiceHook | axios.post: ', response);
                 logger.info(nameFile + '| checkServiceHook | axios.post: ' + response);
             })
