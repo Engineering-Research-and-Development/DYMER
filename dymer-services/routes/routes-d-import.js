@@ -50,7 +50,6 @@ mongoose
     });*/
 router.get('/cronjob', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/api/v1/import/cronjob'
 
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -130,7 +129,6 @@ function stopJob(campaignId) {
 
 router.post('/cronjob/:id?', util.checkIsAdmin, function(req, res) {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/api/v1/import/cronjob/{id?}'
 
     let id = req.params.id;
     let callData = util.getAllQuery(req);
@@ -178,7 +176,6 @@ router.post('/cronjob/:id?', util.checkIsAdmin, function(req, res) {
 
 router.put('/cronjob/:id', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/api/v1/import/cronjob/{id}'
 
     //console.log("Put cronjob Roles");
     let id = req.params.id;
@@ -212,7 +209,6 @@ router.put('/cronjob/:id', util.checkIsAdmin, (req, res) => {
 
 router.delete('/cronjob/:id', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/api/v1/import/cronjob/{id}'
 
     var ret = new jsonResponse();
     var id = req.params.id;
@@ -236,7 +232,6 @@ router.delete('/cronjob/:id', util.checkIsAdmin, (req, res) => {
 // '/api/dservice/api/v1/import/fromjson'
 router.get('/fromjson', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/api/v1/import/fromjson'
 
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -811,7 +806,6 @@ var objectToFormData = function(obj, form, namespace) {
 //router.get('/updategeo/:entype', util.checkIsAdmin, (req, res) => {
 router.get('/updategeo/:entype', (req, res) => {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/api/v1/import/updategeo/{entype}'
 
     logger.info(nameFile + '| get/updategeo');
     var entype = req.params.entype;
@@ -967,7 +961,6 @@ router.get('/updategeo/:entype', (req, res) => {
 
 router.get('/generateuser', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/api/v1/import/generateuser'
 
     let urltoken = "http://xxx/v1/auth/tokens";
     let urluser = "http://xxx/v1/users";
@@ -1091,7 +1084,6 @@ router.get('/generateuser', util.checkIsAdmin, (req, res) => {
 
 router.get('/updategid/:entype/:gid/:forceall?', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/api/v1/import/updategid/{entype}/{gid}/{forceall?}'
 
     logger.info(nameFile + '| get/updategid');
     var entype = req.params.entype;
@@ -1254,7 +1246,6 @@ router.get('/updategid/:entype/:gid/:forceall?', util.checkIsAdmin, (req, res) =
 // '/api/dservice/api/v1/import/fromdymer'
 router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
 	// #swagger.tags = ['Services']
-	// #swagger.path = '/api/dservice/api/v1/import/fromdymer/{id}'
 
     var ret = new jsonResponse();
     var id = req.params.id;
@@ -1593,7 +1584,6 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
 
 router.get('/fromdymer_original/:id', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/api/v1/import/fromdymer_original/{id}'
 
     var ret = new jsonResponse();
     var id = req.params.id;

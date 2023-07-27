@@ -26,8 +26,8 @@ const contextPath = util.getContextPath('form');
 const host = global.configService.ip + ":" + portExpress;
 const docPath = '/api/doc';
 
-swaggerFile.basePath = contextPath;
-swaggerFile.host = host;
+swaggerFile.basePath = '/dymergui/api/forms';
+swaggerFile.host = 'localhost:8080';
 
 app.use(docPath, swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
@@ -227,7 +227,6 @@ function detectPermission(req, res, next) {
 
 app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Forms']
-    // #swagger.path = '/api/forms/deletelog/{filetype}'
 
     var ret = new jsonResponse();
     var filetype = req.params.filetype;
@@ -240,7 +239,6 @@ app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
 
 app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Forms']
-    // #swagger.path = '/api/forms/openLog/{filetype}'
 
     var filetype = req.params.filetype;
     //console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
@@ -249,7 +247,6 @@ app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
 
 app.get('/logtypes', async(req, res) => {
     // #swagger.tags = ['Forms']
-    // #swagger.path = '/api/forms/logtypes'
 
     var ret = new jsonResponse();
     ret.setSuccess(true);
@@ -261,7 +258,6 @@ app.get('/logtypes', async(req, res) => {
 
 app.post('/setlogconfig', (req, res) => {
     // #swagger.tags = ['Forms']
-    // #swagger.path = '/api/forms/setlogconfig'
 
     var ret = new jsonResponse();
     logger.ts_infologger(req.body.consoleactive);
@@ -272,7 +268,6 @@ app.post('/setlogconfig', (req, res) => {
 
 app.get('/checkservice', util.checkIsAdmin, (req, res) => {
 	// #swagger.tags = ['Forms']
-	// #swagger.path = '/api/forms/checkservice'
 
 	var ret = new jsonResponse();
 	let infosize = logger.filesize("info");
@@ -296,7 +291,6 @@ app.use('/api/v1/form/uploads/', publicRoutes);
 app.use('/api/v1/form', detectPermission, routes);
 app.get('/*', (req, res) => {
 	// #swagger.tags = ['Forms']
-	// #swagger.path = '/api/forms/*'
 
 	var ret = new jsonResponse();
 	//console.error('ERROR | /* : ', "Api error 404", req.path);

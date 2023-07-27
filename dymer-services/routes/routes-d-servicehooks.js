@@ -43,7 +43,6 @@ mongoose
 
 router.post('/addhook', util.checkIsAdmin, function(req, res) {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/api/v1/servicehook/addhook'
 
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -74,7 +73,6 @@ router.post('/addhook', util.checkIsAdmin, function(req, res) {
 
 router.get('/hooks/', (req, res) => {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/api/v1/servicehook/hooks/'
 
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
@@ -101,7 +99,6 @@ function findHook(queryFind, res) {
 
 router.delete('/hook/:id', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/api/v1/servicehook/hook/{id}'
 
     var ret = new jsonResponse();
     var id = req.params.id;
@@ -123,7 +120,6 @@ router.delete('/hook/:id', util.checkIsAdmin, (req, res) => {
 
 router.post('/checkhook', function(req, res) {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/api/v1/servicehook/checkhook'
 
     let callData = util.getAllQuery(req);
     let data = callData.data;

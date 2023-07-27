@@ -3,13 +3,34 @@
   "info": {
     "version": "1.0.0",
     "title": "DYMER API",
-    "description": "Documentation of <b>Forms</b> module."
+    "description": "<a href=http://localhost:8080/dymergui/api/doc/> Webserver Documentation </a><br><a href=http://localhost:4545/api/doc/> Template Documentation </a><br><a href=http://localhost:5050/api/doc/> Service Documentation </a><br><a href=http://localhost:4747/api/doc/> Form Documentation </a><br><a href=http://localhost:1358/api/doc/> Entity Documentation </a><br>"
   },
-  "host": "localhost:0000",
+  "host": "localhost:4747",
   "basePath": "/",
+  "tags": [
+    {
+      "name": "Webserver",
+      "description": "<a href=http://localhost:8080/dymergui/api/doc/> Webserver Documentation</a>"
+    },
+    {
+      "name": "Templates",
+      "description": "<a href=http://localhost:4545/api/doc/> Template Documentation      </a>"
+    },
+    {
+      "name": "Services",
+      "description": "<a href=http://localhost:5050/api/doc/> Service Documentation         </a>"
+    },
+    {
+      "name": "Forms",
+      "description": "<a href=http://localhost:4747/api/doc/> Form Documentation              </a>"
+    },
+    {
+      "name": "Entities",
+      "description": "<a href=http://localhost:1358/api/doc/> Entity Documentation           </a>"
+    }
+  ],
   "schemes": [
-    "http",
-    "https"
+    "http"
   ],
   "consumes": [
     "application/json"
@@ -20,6 +41,9 @@
   "paths": {
     "/deletelog/{filetype}": {
       "get": {
+        "tags": [
+          "Forms"
+        ],
         "description": "",
         "parameters": [
           {
@@ -43,6 +67,9 @@
     },
     "/openLog/{filetype}": {
       "get": {
+        "tags": [
+          "Forms"
+        ],
         "description": "",
         "parameters": [
           {
@@ -66,8 +93,10 @@
     },
     "/logtypes": {
       "get": {
+        "tags": [
+          "Forms"
+        ],
         "description": "",
-        "parameters": [],
         "responses": {
           "200": {
             "description": "OK"
@@ -77,6 +106,9 @@
     },
     "/setlogconfig": {
       "post": {
+        "tags": [
+          "Forms"
+        ],
         "description": "",
         "parameters": [
           {
@@ -101,6 +133,9 @@
     },
     "/checkservice": {
       "get": {
+        "tags": [
+          "Forms"
+        ],
         "description": "",
         "parameters": [
           {
@@ -118,8 +153,10 @@
     },
     "/*": {
       "get": {
+        "tags": [
+          "Forms"
+        ],
         "description": "",
-        "parameters": [],
         "responses": {
           "200": {
             "description": "OK"
@@ -132,8 +169,10 @@
     },
     "/api/v1/form/uploads/*": {
       "get": {
+        "tags": [
+          "Forms"
+        ],
         "description": "",
-        "parameters": [],
         "responses": {
           "200": {
             "description": "OK"
@@ -143,6 +182,9 @@
     },
     "/api/v1/form/mongostate": {
       "get": {
+        "tags": [
+          "Forms"
+        ],
         "description": "",
         "parameters": [
           {
@@ -175,6 +217,9 @@
     },
     "/api/v1/form/dettagliomodel": {
       "get": {
+        "tags": [
+          "Forms"
+        ],
         "description": "",
         "parameters": [
           {
@@ -212,6 +257,9 @@
     },
     "/api/v1/form/": {
       "get": {
+        "tags": [
+          "Forms"
+        ],
         "description": "",
         "parameters": [
           {
@@ -247,6 +295,9 @@
         }
       },
       "post": {
+        "tags": [
+          "Forms"
+        ],
         "description": "",
         "parameters": [
           {
@@ -284,6 +335,9 @@
     },
     "/api/v1/form/content/{entype}/{fileid}": {
       "get": {
+        "tags": [
+          "Forms"
+        ],
         "description": "",
         "parameters": [
           {
@@ -328,6 +382,9 @@
     },
     "/api/v1/form/create": {
       "post": {
+        "tags": [
+          "Forms"
+        ],
         "description": "",
         "parameters": [
           {
@@ -365,6 +422,9 @@
     },
     "/api/v1/form/addAsset": {
       "post": {
+        "tags": [
+          "Forms"
+        ],
         "description": "",
         "parameters": [
           {
@@ -402,6 +462,9 @@
     },
     "/api/v1/form/update": {
       "post": {
+        "tags": [
+          "Forms"
+        ],
         "description": "",
         "parameters": [
           {
@@ -439,6 +502,9 @@
     },
     "/api/v1/form/updatestructure": {
       "post": {
+        "tags": [
+          "Forms"
+        ],
         "description": "",
         "parameters": [
           {
@@ -476,6 +542,9 @@
     },
     "/api/v1/form/updateAsset": {
       "post": {
+        "tags": [
+          "Forms"
+        ],
         "description": "",
         "parameters": [
           {
@@ -513,6 +582,9 @@
     },
     "/api/v1/form/{id}": {
       "delete": {
+        "tags": [
+          "Forms"
+        ],
         "description": "",
         "parameters": [
           {
@@ -551,6 +623,9 @@
     },
     "/api/v1/form/{id}/{fid}": {
       "delete": {
+        "tags": [
+          "Forms"
+        ],
         "description": "",
         "parameters": [
           {
@@ -583,263 +658,6 @@
           {
             "name": "act",
             "in": "query",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/mongostate": {
-      "get": {
-        "description": "",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/dettagliomodel": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "req",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "dymeruser",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "req",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "dymeruser",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "req",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "dymeruser",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/content/{entype}/{fileid}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "entype",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "fileid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {}
-      }
-    },
-    "/create": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "req",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "dymeruser",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/addAsset": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "req",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "dymeruser",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/update": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "req",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "dymeruser",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/updatestructure": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "req",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "dymeruser",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/updateAsset": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "req",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "dymeruser",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/{id}": {
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "dymeruser",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/{id}/{fid}": {
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "fid",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "dymeruser",
-            "in": "header",
             "type": "string"
           }
         ],

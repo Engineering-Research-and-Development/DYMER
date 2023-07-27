@@ -27,8 +27,8 @@ const contextPath = util.getContextPath('entity');
 const host = global.configService.ip + ":" + portExpress;
 const docPath = '/api/doc';
 
-swaggerFile.basePath = contextPath;
-swaggerFile.host = host;
+swaggerFile.basePath = '/dymergui/api/entities';
+swaggerFile.host = 'localhost:8080';
 
 app.use(docPath, swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
@@ -137,7 +137,6 @@ function detectPermission(req, res, next) {
 
 app.get('/uuid', util.checkIsPortalUser, (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/uuid'
 
     var ret = new jsonResponse();
     const uuid = util.getDymerUuid();
@@ -149,7 +148,6 @@ app.get('/uuid', util.checkIsPortalUser, (req, res) => {
 
 app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/deletelog/{filetype}'
 
     var ret = new jsonResponse();
     var filetype = req.params.filetype;
@@ -164,7 +162,6 @@ app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
 
 app.get('/logtypes', async(req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/logtypes'
 
     var ret = new jsonResponse();
     ret.setSuccess(true);
@@ -177,7 +174,6 @@ app.get('/logtypes', async(req, res) => {
 
 app.post('/setlogconfig', (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/setlogconfig'
 
     var ret = new jsonResponse();
     logger.ts_infologger(req.body.consoleactive);
@@ -188,16 +184,14 @@ app.post('/setlogconfig', (req, res) => {
 
 app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/openLog/{filetype}'
 
     var ret = new jsonResponse();
     var filetype = req.params.filetype;
     console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
     return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
 });
-app.get(util.getContextPath('entity') + '/checkservice', util.checkIsAdmin, (req, res) => {
+app.get('/checkservice', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/checkservice'
 
     var ret = new jsonResponse();
     let infosize = logger.filesize("info");
@@ -230,7 +224,6 @@ app.use('/api/v1/entity', routes);
 //app.use('/api/endpointtest', routestest);
 app.get('/', (req, res) => {
 	// #swagger.tags = ['Entities']
-	// #swagger.path = '/api/entities/'
 
 	// res.sendFile(path.resolve(__dirname, "usr/share/www/html/", "index.html"));
 	res.send("this is    our main andpoint Entities");
@@ -238,7 +231,6 @@ app.get('/', (req, res) => {
 
 app.get('/*', (req, res) => {
 	// #swagger.tags = ['Entities']
-	// #swagger.path = '/api/entities/*'
 
 	var ret = new jsonResponse();
 	ret.setMessages("Api error 404");

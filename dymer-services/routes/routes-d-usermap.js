@@ -50,7 +50,6 @@ var upload = multer({storage: storageEngine}).any(); // .single('file');
 
 router.post('/setusermap', function (req, res) {
 	// #swagger.tags = ['Services']
-	// #swagger.path = '/api/dservice/api/v1/usermap/setusermap'
 
 	console.log("aggiungo un mapping l'utente");
 	let callData = util.getAllQuery(req);
@@ -99,7 +98,6 @@ router.post('/setusermap', function (req, res) {
 
 router.post('/addusermap', function (req, res) {
 	// #swagger.tags = ['Services']
-	// #swagger.path = '/api/dservice/api/v1/usermap/addusermap'
 
 	console.log("aggiungo un mapping per onenness search");
 	let callData = util.getAllQuery(req);
@@ -140,8 +138,6 @@ router.post('/addusermap', function (req, res) {
 
 router.get('/findbyemail/:email', function (req, res) {
 	// #swagger.tags = ['Services']
-	// #swagger.path = '/api/dservice/api/v1/usermap/{email}'
-
 
 	const _email = req.params.email;
 	console.log("ricevo chiamata per find email");

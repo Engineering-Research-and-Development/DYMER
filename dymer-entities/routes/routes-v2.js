@@ -176,7 +176,6 @@ function stringAsKey(obj, arrkey, element) {
 
 router.get('/mongostate', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/mongostate'
 
     let ret = new jsonResponse();
     let dbState = [{
@@ -210,7 +209,6 @@ router.get('/mongostate', util.checkIsAdmin, (req, res) => {
 
 router.get('/elasticstate', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/elasticstate'
 
     let ret = new jsonResponse();
     let elstate = 0;
@@ -255,7 +253,6 @@ router.get('/elasticstate', util.checkIsAdmin, (req, res) => {
 
 router.patch("/redistoggle", async(req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/redistoggle'
 
     let ret = new jsonResponse();
     let dbState = [{
@@ -312,7 +309,6 @@ router.patch("/redistoggle", async(req, res) => {
 
 router.get('/redisstate', util.checkIsAdmin, async(req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/redisstate'
 
     let ret = new jsonResponse();
     let redisstate = 0;
@@ -387,7 +383,6 @@ async function cacheRelations(isRedisActive) {
  */
 router.post('/invalidatecache/:index', util.checkIsAdmin, async(req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/invalidatecache/{index}'
 
     let index = req.params['index'];
     await redisClient.invalidateCacheByIndex(index, true);
@@ -400,7 +395,6 @@ router.post('/invalidatecache/:index', util.checkIsAdmin, async(req, res) => {
 
 router.post('/invalidateallcache', util.checkIsAdmin, async(req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/invalidateallcache'
 
     await redisClient.emptyCache(true);
     let cachedRelations = await retrieveAllRelations();
@@ -1809,7 +1803,6 @@ var fetchSingleRelation = function(element) {
 
 router.post('/singlerelation/', util.checkIsPortalUser, (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/singlerelation/'
 
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -1847,7 +1840,6 @@ router.post('/singlerelation/', util.checkIsPortalUser, (req, res) => {
 
 router.put('/singlerelation/:id', util.checkIsPortalUser, (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/singlerelation/{id}'
 
     let id = req.params.id;
     var ret = new jsonResponse();
@@ -1888,7 +1880,6 @@ router.put('/singlerelation/:id', util.checkIsPortalUser, (req, res) => {
 
 router.delete('/singlerelation/:id', util.checkIsPortalUser, (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/singlerelation/{id}'
 
     let id = req.params.id;
     var ret = new jsonResponse();
@@ -1941,7 +1932,6 @@ router.delete('/singlerelation/:id', util.checkIsPortalUser, (req, res) => {
 //TODO Marco aggiungere controllo permessi
 router.get('/', (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/'
 
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -1985,7 +1975,6 @@ function isValidObjectId(id) {
 
 router.get('/contentfile/:entityid/:fileid', function(req, res, next) {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/contentfile/{entityid}/{fileid}'
 
     var entityid = req.params.entityid;
     var file_id = req.params.fileid; 
@@ -2065,7 +2054,6 @@ router.get('/contentfile/:entityid/:fileid', function(req, res, next) {
 
 router.get('/content_old/:fileid', function(req, res, next) {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/content_old/{fileid}'
 
     //Marco console.log(" ROUTER CONTENT ");
     var file_id = req.params.fileid;
@@ -2091,7 +2079,6 @@ router.get('/content_old/:fileid', function(req, res, next) {
 //TODO Marco gestione permessi
 router.get('/allstats/', (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/allstats/'
 
     var ret = new jsonResponse();
     var params = {};
@@ -2124,7 +2111,6 @@ router.get('/allstats/', (req, res) => {
 
 router.get('/allstatsglobal', (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/allstatsglobal'
 
     var ret = new jsonResponse();
     var params = {};
@@ -2159,7 +2145,6 @@ router.get('/allstatsglobal', (req, res) => {
 
 router.get('/relationstat/', (req, res) => {
 	// #swagger.tags = ['Entities']
-	// #swagger.path = '/api/entities/api/v1/entity/relationstat/'
 
     var ret = new jsonResponse();
 
@@ -2210,7 +2195,6 @@ router.get('/relationstat/', (req, res) => {
 //TODO Marco gestione permessi
 router.get('/allindex/', (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/allindex/'
 
     var ret = new jsonResponse();
     let params = {};
@@ -2345,6 +2329,8 @@ async function addPermConstraints(usr, query) {
     return queryFileter;
 }
 router.post('/redisroleupdate', async (req, res) => {
+    // #swagger.tags = ['Entities']
+
     let resp = new jsonResponse()
     try {
         let role = util.getAllQuery(req)
@@ -2364,7 +2350,6 @@ router.post('/redisroleupdate', async (req, res) => {
 })
 router.post('/_search', (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/_search'
 
     // console.log('_search logger', process.env.DYMER_LOGGER);
     var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
@@ -3335,7 +3320,6 @@ const jsonMappingDymerEntityToExternal = (obj, conf, calltype, files) => {
 
 router.post('/entitiesbridge', (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/entitiesbridge'
 
     var ret = new jsonResponse();
     bE.add(req.body).then(function(retdata) {
@@ -3356,7 +3340,6 @@ router.post('/entitiesbridge', (req, res) => {
 
 router.put('/entitiesbridge/:id', (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/entitiesbridge/{id}'
 
     var ret = new jsonResponse();
     const id = req.params.id;
@@ -3378,7 +3361,6 @@ router.put('/entitiesbridge/:id', (req, res) => {
 
 router.get('/entitiesbridge/:doevaljson', (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/entitiesbridge/{doevaljson}'
 
     var ret = new jsonResponse();
     var list = bE.getmappingList(req.params.doevaljson);
@@ -3388,7 +3370,6 @@ router.get('/entitiesbridge/:doevaljson', (req, res) => {
 
 router.delete('/entitiesbridge/:id', (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/entitiesbridge/{id}'
 
     let id = req.params.id;
     var ret = new jsonResponse();
@@ -3443,7 +3424,6 @@ function appendFormdata(FormData, data, name) {
 
 router.post('/:enttype', function (req, res) {
 	// #swagger.tags = ['Entities']
-	// #swagger.path = '/api/entities/api/v1/entity/{enttype}'
 
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser;
@@ -3641,7 +3621,6 @@ router.post('/:enttype', function (req, res) {
 
 router.put('/update/:id', (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/update/{id}'
 
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser
@@ -3889,7 +3868,6 @@ router.put('/update/:id', (req, res) => {
 //router.put('/:id', (req, res) => {newput
 router.put('/:id', async (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/{id}'
 
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser
@@ -4176,7 +4154,6 @@ router.put('/:id', async (req, res) => {
 //router.put('/oldput/:id', (req, res) => { //to delete
 router.put('/oldput/:id', (req, res) => { //to delete
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/oldput/{id}'
 
     // to delete
     var ret = new jsonResponse();
@@ -4442,7 +4419,6 @@ router.put('/oldput/:id', (req, res) => { //to delete
 //router.put('/hbput2022/:id', (req, res) => { //to delete
 router.put('/hbput2022/:id', (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/hbput2022/{id}'
 
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser
@@ -4895,7 +4871,6 @@ const haspermissionGrantByAction = function(urs, action, entityprop) {
 //router.patch('/:id', [testprecall, testprecall2], (req, res) => {
 router.patch('/:id', async(req, res, next) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/{id}'
 
     var callDatap = util.getAllQuery(req);
     var ret = new jsonResponse();
@@ -5062,7 +5037,6 @@ router.patch('/:id', async(req, res, next) => {
 /*giaisg*/
 router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/deleteAllEntityByIndex/'
 
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -5163,7 +5137,6 @@ router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
 
 router.get('/deleteAllEntityAndIndexByIndex/', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/deleteAllEntityAndIndexByIndex/'
 
     let callData = util.getAllQuery(req);
     let index_ = callData.index;
@@ -5194,7 +5167,6 @@ router.get('/deleteAllEntityAndIndexByIndex/', util.checkIsAdmin, (req, res) => 
 //delete by id
 router.delete('/:id',async (req, res) => {
     // #swagger.tags = ['Entities']
-    // #swagger.path = '/api/entities/api/v1/entity/{id}'
 
     let id = req.params.id;
     var ret = new jsonResponse();

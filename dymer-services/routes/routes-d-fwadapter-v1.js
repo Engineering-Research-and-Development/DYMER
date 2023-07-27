@@ -36,7 +36,6 @@ var upload = multer({storage: storageEngine}).any();
 
 router.get('/dispatch', util.checkIsAdmin, function (req, res) {
 	// #swagger.tags = ['Services']
-	// #swagger.path = '/api/dservice/api/v1/fwadapter/dispatch'
 
 	var ret = new jsonResponse();
 	console.log("req.headers", req.headers["reqfrom"]);
@@ -173,7 +172,6 @@ router.get('/dispatch', util.checkIsAdmin, function (req, res) {
 
 router.post('/setConfig', util.checkIsAdmin, function (req, res) {
 	// #swagger.tags = ['Services']
-	// #swagger.path = '/api/dservice/api/v1/fwadapter/setConfig'
 
 	let callData = util.getAllQuery(req);
 	let data = callData.data;
@@ -219,7 +217,6 @@ router.post('/setConfig', util.checkIsAdmin, function (req, res) {
 
 router.get('/configs', (req, res) => {
 	// #swagger.tags = ['Services']
-	// #swagger.path = '/api/dservice/api/v1/fwadapter/configs'
 
 	var ret = new jsonResponse();
 
@@ -247,7 +244,6 @@ router.get('/configs', (req, res) => {
 
 router.post('/listener', function (req, res) {
 	// #swagger.tags = ['Services']
-	// #swagger.path = '/api/dservice/api/v1/fwadapter/listener'
 
 	var ret = new jsonResponse();
 	let callData = util.getAllQuery(req);

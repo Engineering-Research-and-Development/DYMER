@@ -61,7 +61,6 @@ mongoose.connect(mongoURI, {
 
 router.get('/mongostate', (req, res) => {
     // #swagger.tags = ['Forms']
-    // #swagger.path = '/api/forms/api/v1/form/mongostate'
 
     let ret = new jsonResponse();
     let dbState = [{
@@ -173,7 +172,6 @@ var recFile = function(file_id) {
 
 router.get('/dettagliomodel', [util.checkIsDymerUser], (req, res) => {
     // #swagger.tags = ['Forms']
-    // #swagger.path = '/api/forms/api/v1/form/dettagliomodel'
 
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -194,7 +192,6 @@ router.get('/dettagliomodel', [util.checkIsDymerUser], (req, res) => {
 
 router.get('/', [util.checkIsDymerUser], (req, res) => {
     // #swagger.tags = ['Forms']
-    // #swagger.path = '/api/forms/api/v1/form/'
 
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -220,7 +217,6 @@ router.get('/', [util.checkIsDymerUser], (req, res) => {
 
 router.get('/content/:entype/:fileid', function(req, res, next) {
     // #swagger.tags = ['Forms']
-    // #swagger.path = '/api/forms/api/v1/form/content/{entype}/{fileid}'
 
     var file_id = req.params.fileid;
     //   console.log("file_id", file_id);
@@ -248,7 +244,6 @@ router.get('/content/:entype/:fileid', function(req, res, next) {
 
 router.post('/', util.checkIsAdmin, function(req, res) {
     // #swagger.tags = ['Forms']
-    // #swagger.path = '/api/forms/api/v1/form/'
 
     var ret = new jsonResponse();
     upload(req, res, function(err) {
@@ -310,7 +305,6 @@ router.post('/', util.checkIsAdmin, function(req, res) {
 
 router.post('/create', util.checkIsAdmin, function(req, res) {
     // #swagger.tags = ['Forms']
-    // #swagger.path = '/api/forms/api/v1/form/create'
 
     var ret = new jsonResponse();
     upload(req, res, function(err) {
@@ -346,7 +340,6 @@ router.post('/create', util.checkIsAdmin, function(req, res) {
 
 router.post('/addAsset', util.checkIsAdmin, function(req, res) {
     // #swagger.tags = ['Forms']
-    // #swagger.path = '/api/forms/api/v1/form/addAsset'
 
     var ret = new jsonResponse();
     upload(req, res, function(err) {
@@ -386,7 +379,6 @@ router.post('/addAsset', util.checkIsAdmin, function(req, res) {
 
 router.post('/update', util.checkIsAdmin, function(req, res) {
     // #swagger.tags = ['Forms']
-    // #swagger.path = '/api/forms/api/v1/form/update'
 
     var ret = new jsonResponse();
     upload(req, res, function(err) {
@@ -428,7 +420,6 @@ router.post('/update', util.checkIsAdmin, function(req, res) {
 
 router.post('/updatestructure', util.checkIsAdmin, function(req, res) {
     // #swagger.tags = ['Forms']
-    // #swagger.path = '/api/forms/api/v1/form/updatestructure'
 
     var ret = new jsonResponse();
     upload(req, res, function(err) {
@@ -471,7 +462,6 @@ router.post('/updatestructure', util.checkIsAdmin, function(req, res) {
 
 router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
     // #swagger.tags = ['Forms']
-    // #swagger.path = '/api/forms/api/v1/form/updateAsset'
 
     var ret = new jsonResponse();
     upload(req, res, function(err) {
@@ -566,7 +556,6 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
 
 router.delete('/:id', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Forms']
-    // #swagger.path = '/api/forms/api/v1/form/{id}'
 
     var ret = new jsonResponse();
     var id = req.params.id;
@@ -593,7 +582,6 @@ router.delete('/:id', util.checkIsAdmin, (req, res) => {
 
 router.delete('/:id/:fid', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Forms']
-    // #swagger.path = '/api/forms/api/v1/form/{id}/{fid}'
 
     var ret = new jsonResponse();
     var id = req.params.id;

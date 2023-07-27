@@ -45,7 +45,6 @@ mongoose
 
 router.get('/', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/api/v1/authconfig/'
 
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -69,7 +68,6 @@ router.get('/', util.checkIsAdmin, (req, res) => {
 
 router.get('/userinfo', (req, res) => {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/api/v1/authconfig/userinfo'
 
     var ret = new jsonResponse();
     let data = req.body;
@@ -307,7 +305,6 @@ router.get('/userinfo', (req, res) => {
 
 router.post('/', util.checkIsAdmin, function(req, res) {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/api/v1/authconfig/'
 
     //router.post('/', function(req, res) {
     let id = req.params.id;
@@ -335,7 +332,6 @@ router.post('/', util.checkIsAdmin, function(req, res) {
 
 router.put('/:id', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/api/v1/authconfig/{id}'
 
     let id = req.params.id;
     let callData = util.getAllQuery(req);
@@ -367,7 +363,6 @@ router.put('/:id', util.checkIsAdmin, (req, res) => {
 
 router.delete('/:id', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/api/v1/authconfig/{id}'
 
     var ret = new jsonResponse();
     var id = req.params.id;

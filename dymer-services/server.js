@@ -23,8 +23,8 @@ const contextPath = util.getContextPath('dservice');
 const host = global.configService.ip + ":" + portExpress;
 const docPath = '/api/doc';
 
-swaggerFile.basePath = contextPath;
-swaggerFile.host = host;
+swaggerFile.basePath = '/dymergui/api/dservice';
+swaggerFile.host = 'localhost:8080';
 
 app.use(docPath, swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
@@ -91,7 +91,6 @@ app.use('/api/v1/authconfig', routes_dymer_authconfig);
 app.use('/api/v1/duser', routes_dymer_duser);
 app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/deletelog/{filetype}'
 
     var ret = new jsonResponse();
     var filetype = req.params.filetype;
@@ -106,7 +105,6 @@ app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
 
 app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/openLog/{filetype}'
 
     var filetype = req.params.filetype;
     //console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
@@ -115,7 +113,6 @@ app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
 
 app.get('/logtypes', async(req, res) => {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/logtypes'
 
     var ret = new jsonResponse();
     ret.setSuccess(true);
@@ -127,7 +124,6 @@ app.get('/logtypes', async(req, res) => {
 
 app.post('/setlogconfig', (req, res) => {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/setlogconfig'
 
     var ret = new jsonResponse();
     logger.ts_infologger(req.body.consoleactive);
@@ -138,7 +134,6 @@ app.post('/setlogconfig', (req, res) => {
 
 app.get('/checkservice', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/checkservice'
 
     var ret = new jsonResponse();
     let infosize = logger.filesize("info");
@@ -164,7 +159,6 @@ app.get('/checkservice', util.checkIsAdmin, (req, res) => {
 
 app.get("/*", (req, res) => {
     // #swagger.tags = ['Services']
-    // #swagger.path = '/api/dservice/*'
 
     var ret = new jsonResponse();
     logger.error(nameFile + ' | /* Api error 404  :' + req.path);
