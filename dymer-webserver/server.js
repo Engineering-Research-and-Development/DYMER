@@ -48,10 +48,13 @@ const swaggerFile = require('./swagger_webserver.json')
 const host = global.configService.ip + ":" + portExpress;
 const docPath = '/api/doc';
 
-swaggerFile.basePath = contextPath;
-swaggerFile.host = host;
+const options = {
+    swaggerOptions: {
+        docExpansion: 'none'
+    }
+};
 
-app.use(docPath, swaggerUi.serve, swaggerUi.setup(swaggerFile))
+app.use(docPath, swaggerUi.serve, swaggerUi.setup(swaggerFile, options))
 
 const serverUrl = global.configService.protocol + "://" + host + contextPath
 /**********************************************************************************************************************/
