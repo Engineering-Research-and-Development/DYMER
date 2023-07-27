@@ -32,8 +32,7 @@
                     "d_mail": "test@liferay.com",
                     "d_pwd": "1234"
                 }
-            },
-			"entity": {
+            },"entity": {
                 "protocol": "http",
                 "ip": "localhost",
                 "port": 1358
@@ -58,7 +57,7 @@
         "config_id": "production",
         "version":"1.1.5",
         "services": {
-              "dservice": {
+            "dservice": {
                 "app_name": "dservice",
                 "app_desc": "dymer services",
                 "context-path": "",
@@ -86,10 +85,9 @@
                     "d_uid": 5,
                     "d_gid": 55,
                     "d_mail": "test@liferay.com",
-                    "d_pwd": "*****2021"
+                    "d_pwd": "1234"
                 }
-            },
-            "entity": {
+            },"entity": {
                 "protocol": "http",
                 "ip": "kms_entities",
                 "port": 1358

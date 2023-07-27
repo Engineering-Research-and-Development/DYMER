@@ -1130,11 +1130,11 @@ function deleteRelationOneEntityAndIndex(_id, _index) {
                         "bool": {
                             "must": [{
                                 "match": {
-                                    "_id1": _id
+                                    "_id1.keyword": _id
                                 }
                             }, {
                                 "match": {
-                                    "_index1": _index
+                                    "_index1.keyword": _index
                                 }
                             }]
                         }
@@ -1143,11 +1143,11 @@ function deleteRelationOneEntityAndIndex(_id, _index) {
                         "bool": {
                             "must": [{
                                 "match": {
-                                    "_id2": _id
+                                    "_id2.keyword": _id
                                 }
                             }, {
                                 "match": {
-                                    "_index2": _index
+                                    "_index2.keyword": _index
                                 }
                             }]
                         }
@@ -1156,6 +1156,9 @@ function deleteRelationOneEntityAndIndex(_id, _index) {
             }
         }
     };
+    //console.log('_id, _index',_id, _index );
+   // console.log('qrdelete',JSON.stringify(qrdelete) );
+
     client.indices.exists({ index: "entity_relation" }).then((isExists) => {
         if (isExists) {
             client.deleteByQuery({
@@ -1647,7 +1650,7 @@ var listSingleRelation = function(id) {
                             "bool": {
                                 "must": [{
                                     "match": {
-                                        "_id1": id
+                                        "_id1.keyword": id
                                     }
                                 }]
                             }
@@ -1656,7 +1659,7 @@ var listSingleRelation = function(id) {
                             "bool": {
                                 "must": [{
                                     "match": {
-                                        "_id2": id
+                                        "_id2.keyword": id
                                     }
                                 }]
                             }
@@ -1702,7 +1705,7 @@ var fetchSingleRelation = function(element) {
                             "bool": {
                                 "must": [{
                                     "match": {
-                                        "_id1": element["_id"]
+                                        "_id1.keyword": element["_id"]
                                     }
                                 }]
                             }
@@ -1711,7 +1714,7 @@ var fetchSingleRelation = function(element) {
                             "bool": {
                                 "must": [{
                                     "match": {
-                                        "_id2": element["_id"]
+                                        "_id2.keyword": element["_id"]
                                     }
                                 }]
                             }
@@ -2352,8 +2355,12 @@ router.post('/_search', (req, res) => {
     // #swagger.tags = ['Entities']
 
     // console.log('_search logger', process.env.DYMER_LOGGER);
+    let origin=req.get('origin');
     var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-    // console.log('TESTSESSION req originalUrl', fullUrl);
+        console.log('user info URLL', req.get('origin') );
+        console.log('user info fullurl',fullUrl );
+        console.log('req.headers.referer',req.headers.referer );
+        console.log('user info requestjsonpath',req.headers.requestjsonpath)
     // console.log(' req.headers.dymeruser', req.headers.dymeruser);
     // var decoded = jwt.decode(req.headers.authdata);
     //  var decoded = jwt.decode(req.headers.authdata);
@@ -3422,12 +3429,16 @@ function appendFormdata(FormData, data, name) {
     }
 }
 
-router.post('/:enttype', function (req, res) {
-	// #swagger.tags = ['Entities']
+router.post('/:enttype', function(req, res) {
+    // #swagger.tags = ['Entities']
 
     var ret = new jsonResponse();
+    let origin=(req.get('origin'))?req.headers.referer:req.get('origin');
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+    let requestjsonpath=req.headers.requestjsonpath;
+    console.log('post enttype requestjsonpath',req.headers.requestjsonpath)
+    console.log('post enttype req.headers.referer',req.headers.referer)
     let dymerextrainfo = dymeruser.extrainfo;
     //console.log("dymeruser", dymeruser);
     // var dymerextrainfo = req.headers.extrainfo;
@@ -3545,7 +3556,8 @@ router.post('/:enttype', function (req, res) {
                                 data.properties.created = new Date().toISOString();
                                 data.properties.changed = new Date().toISOString();
                                 data.properties.extrainfo = {};
-                                data.properties.extrainfo.lastupdate = { "uid": urs_uid };
+                                data.properties.extrainfo.lastupdate = { "uid": urs_uid ,"origin":origin };
+                                data.properties.ipsource=origin;
                             }
                             if (elDymerUuid == undefined) {
                                 instance.id = util.generateDymerUuid();
@@ -3870,6 +3882,7 @@ router.put('/:id', async (req, res) => {
     // #swagger.tags = ['Entities']
 
     var ret = new jsonResponse();
+    let origin=(req.get('origin'))?req.headers.referer:req.get('origin');
     const hdymeruser = req.headers.dymeruser
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     const dymerextrainfo = dymeruser.extrainfo;
@@ -4089,7 +4102,7 @@ router.put('/:id', async (req, res) => {
                         }
                         if (!new_Temp_Entity._source.properties.hasOwnProperty('extrainfo'))
                             new_Temp_Entity._source.properties.extrainfo = {};
-                        new_Temp_Entity._source.properties.extrainfo.lastupdate = { "uid": dymeruser.id };
+                        new_Temp_Entity._source.properties.extrainfo.lastupdate = { "uid": dymeruser.id, "origin":origin };
                         client.update({
                             index: elIndex,
                             type: elIndex,
@@ -5399,7 +5412,7 @@ function checkServiceHook(EventSource, objSend, extraInfo, req,originalElement) 
             eventSource: EventSource,
             obj: objSend
         };
-        axios.post(url_dservice, { data: postObj, "extraInfo": extraInfo }, { headers: headers }).then(response => {
+        axios.post(url_dservice, { data: postObj, "extraInfo": extraInfo, "origindata":originalElement, "originheader":  req.headers }, { headers: headers }).then(response => {
                 //console.log(nameFile + '| checkServiceHook | axios.post: ', response);
                 logger.info(nameFile + '| checkServiceHook | axios.post: ' + response);
             })

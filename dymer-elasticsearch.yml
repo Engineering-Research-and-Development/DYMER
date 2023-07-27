@@ -3,11 +3,11 @@ network.host: 0.0.0.0
 path.repo: "/usr/share/elasticsearch/data/backups/"
 discovery.zen.minimum_master_nodes: 1
 
-thread_pool.search.queue_size: 10000
-thread_pool.search.size: 100
-thread_pool.search.min_queue_size: 10000
-thread_pool.search.max_queue_size: 20000
-thread_pool.search.auto_queue_frame_size: 10000                        
+thread_pool.search.queue_size: 1000
+thread_pool.search.size: 30
+thread_pool.search.min_queue_size: 2000
+thread_pool.search.max_queue_size: 5000
+thread_pool.search.auto_queue_frame_size: 5000                        
 thread_pool.search.target_response_time: 1s
 
 cluster.routing.allocation.disk.threshold_enabled: false

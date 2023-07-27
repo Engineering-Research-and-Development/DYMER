@@ -53,9 +53,9 @@
             }
         }
     },
-    "production": {
+      "production": {
         "config_id": "production",
-         "services": {
+          "services": {
             "entity": {
                 "app_name": "entity",
                 "app_desc": "dymer entity",
@@ -70,7 +70,7 @@
                     "ip": "cache",
                     "port": 6379,
                     "user": "redis",
-                    "password": "",
+					"password": "",
                     "isEnabled": false
                 },
                 "repository": {
@@ -78,32 +78,33 @@
                         "type": "elastichsearch",
                         "protocol": "http",
                         "context-path": "",
-                        "ip": "elasticsearch",
+                         "ip": "elasticsearch",
                         "port": 9200
                     },
                     "files": {
                         "type": "mongodb",
                         "protocol": "http",
-                        "ip": "mongodb",
+                         "ip": "mongodb",
                         "port": 27017,
                         "index_ref": "entity"
                     },
                     "entitiesbridge": {
                         "type": "mongodb",
                         "protocol": "http",
-                        "ip": "mongodb",
+                         "ip": "mongodb",
                         "port": 27017,
                         "index_ref": "entity"
-                    }
-                }
-            },
+                    } 
+			    }
+			},
             "dservice": {
                 "protocol": "http",
                 "context-path": "",
+                 
                 "ip": "kms_services",
                 "port": 5050
             },
-            "form":{
+             "form":{
               "protocol":"http",
               "ip":"kms_forms",
               "port":4747

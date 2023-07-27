@@ -46,7 +46,7 @@
             "updated":"2023-03-22"
         },
         "services": {
-            "webserver":{
+            "webserver": {
                 "app_name": "webserver",
                 "app_desc": "dymer webserver",
                 "protocol": "http",
@@ -54,7 +54,7 @@
                 "port": 8080,
                 "context-path": "",
                 "adminUser": "admin",
-                "adminPass": "dymer",
+                "adminPass": "",
                 "idp": []
             },
             "entity": {

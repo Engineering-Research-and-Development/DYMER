@@ -22,7 +22,7 @@
     "production": {
         "config_id": "production",
         "services": {
-           "template": {
+            "template": {
                 "app_name": "template",
                 "app_desc": "dymer template",
                 "protocol": "http",

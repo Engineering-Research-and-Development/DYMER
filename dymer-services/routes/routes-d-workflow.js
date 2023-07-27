@@ -238,13 +238,18 @@ router.post('/listener',async function(req, res) {
     let extraInfo = callData.extraInfo; 
     let origindata = callData.origindata;
     let originheader = callData.originheader;
+    console.log("*******************************************************",callData);
     //res.send(ret);
     let rfrom = (req.headers["reqfrom"]).replace("http://", "").replace("https://", "").replace("/", "");
     var eventSource = (data.eventSource).split('_');;
-   /* console.log(nameFile + ' | action', eventSource);
-    console.log(nameFile + ' | objToPost', data);
-    console.log(nameFile + ' | origindata', origindata);
-    console.log(nameFile + ' | originheader', originheader);*/
+    /*console.log(nameFile + ' | action 1', eventSource);
+    console.log(nameFile + ' | objToPost 1', data);
+    console.log(nameFile + ' | origindata 1', origindata);
+    console.log(nameFile + ' | originheader 1', originheader);*/
+    logger.info(nameFile + '| action 1', eventSource[1]);
+    logger.info(nameFile + '| data',JSON.stringify(data));
+    logger.info(nameFile + '| origindata',JSON.stringify(origindata));
+    logger.info(nameFile + '| originheader',JSON.stringify(originheader));
     await new Promise(resolve => setTimeout(resolve, 5000));
     genWFAction(eventSource[1], data.obj, rfrom, undefined,origindata,originheader,extraInfo);
    /* var queryFind = {
@@ -268,10 +273,11 @@ router.post('/listener',async function(req, res) {
 });
 function genWFAction(action, objToPost, rfrom, rules,origindata,originheader,extraInfo) {
     //let indexchek="workflow";
+    logger.info(nameFile + '| genWFAction' ); 
     origindata=(origindata==undefined)?objToPost:origindata;
     var opnConfUtil = util.getServiceConfig("opnsearch");
     let base_admin=["francesco.stefanelli@eng.it","marcobernardino.romano@eng.it"];
-    let wfindexes=["workflow","sps","spd"];
+    let wfindexes=["workflow","sps","spd","smd"];
     let old_wflevel=origindata._source.wflevel;
     let new_wflevel=objToPost._source.wflevel;
     let titleEntity=objToPost._source.title ;
@@ -280,8 +286,9 @@ function genWFAction(action, objToPost, rfrom, rules,origindata,originheader,ext
     let orignalOwner=objToPost._source.properties.owner.uid;
     let updateUser=objToPost._source.properties.extrainfo.lastupdate.uid;
     let dymeruser = JSON.parse(Buffer.from(originheader.dymeruser, 'base64').toString('utf-8'));
-   // var companyId = (extraInfo != undefined) ? extraInfo.companyId : opnConfUtil.user.d_gid;
-    var companyId =opnConfUtil.user.d_gid;
+    let sendNot=false;
+     var companyId = (extraInfo != undefined) ? extraInfo.companyId : opnConfUtil.user.d_gid;
+    //var companyId =opnConfUtil.user.d_gid;
    //action=update,delete,insert
    let notifObj=  {
     "companyId": Number(companyId) ,
@@ -302,11 +309,13 @@ function genWFAction(action, objToPost, rfrom, rules,origindata,originheader,ext
         notifObj.description=titleEntity;
         notifObj.sender=orignalOwner;
         notifObj.recipients=base_admin
+        sendNot=true;
    }
    if( action=="delete"){
         notifObj.title="L'utente "+dymeruser.username+"ha eliminato la seguente risorsa di catalogo:" ;
         notifObj.description=titleEntity; 
         notifObj.recipients=base_admin
+        sendNot=true;
     }
    if( action=="update" ){
         let levels=["In compilazione","Da approvare","Da rivedere","Approvato"];
@@ -317,38 +326,48 @@ function genWFAction(action, objToPost, rfrom, rules,origindata,originheader,ext
             notifObj.description=titleEntity+". <br> La risorsa deve essere Approvata o modificata nello stato da rivisione ";
             notifObj.sender=orignalOwner;
             notifObj.recipients=base_admin
+            sendNot=true;
         }
         if(old_wflevel==levels[1] && new_wflevel==levels[2]){
             //send noti a owner
             notifObj.description=titleEntity+". <br> La risorsa deve essere modificata e riportata nello stato di Approvazione";
             notifObj.sender=updateUser;
             notifObj.recipients.push(orignalOwner);
+            sendNot=true;
         }
         if(old_wflevel==levels[2] && new_wflevel==levels[1]){
             notifObj.description=titleEntity+". <br> La risorsa deve essere Approvata o modificata nello stato da rivisione ";
             notifObj.sender=orignalOwner;
             notifObj.recipients=base_admin
             notifObj.recipients.push(updateUser);
+            sendNot=true;
         }
         if(old_wflevel==levels[1] && new_wflevel==levels[3]){
             notifObj.title="L'utente "+dymeruser.username+"  ha Approvato la seguente risorsa :" ;
             notifObj.description=titleEntity;
             notifObj.sender=updateUser;
             notifObj.recipients.push(orignalOwner);
+            sendNot=true;
         }
    }
    let notBody={
     "/dym.dymerentry/sendPersonalNotification":notifObj
    }
-   oPNnotify('insert',notBody,undefined,extraInfo,opnConfUtil )
+   if(sendNot)
+   oPNnotify(action,notBody,undefined,extraInfo,opnConfUtil )
+   else{
+    logger.info(nameFile + '| condizione non invio' ); 
+   }
 }
+if(!sendNot) logger.info(nameFile + '| condizione non invio' ); 
    
 }
 function oPNnotify(typeaction, obj, rule, extraInfo,opnConfUtil) {
     //console.log(nameFile + ' | postAssettOpenness | extraInfo', JSON.stringify(extraInfo)); 
+    logger.info(nameFile + '|oPNnotify', typeaction);
     var queryFind = { 'servicetype': typeaction };
-    OpnSearchConfig.find(queryFind).then((els) => {
-        //console.log('postAssettOpenness els', els);
+    OpnSearchConfig.find(queryFind).then((els) => { 
+         logger.info(nameFile + '|oPNnotify', JSON.stringify(els));
         if (els.length > 0) {
             try {
                 var el = els[0]; 
@@ -383,11 +402,12 @@ function postNotification(conf, postObj,opnConfUtil) {
             }
         }; 
 
-        console.log("INVIATA NOTIFICA",callurl, postObj, configqq)
-       
+        console.log("Provo ad inviare NOTIFICA",callurl, postObj, configqq)
+        
         axios.post(callurl, postObj, configqq)
             .then(function(response) {
                 logger.info(nameFile + ' | postNotification | POST | response ' + callurl + " , " + response);
+                  console.log(" NOTIFICA inviata",callurl, postObj, configqq)
             })
             .catch(function(error) {
                 console.log(nameFile + ' | postNotification | POST', error);
@@ -395,6 +415,7 @@ function postNotification(conf, postObj,opnConfUtil) {
             });
     } else {
         logger.info(nameFile + ' | postNotification | GET | callurl, postObj, configqq' + callurl + " , " + JSON.stringify(postObj));;
+       
         axios.get(callurl, { params: postObj }).catch(function(error) {
             console.log(nameFile + ' | postNotification | GET', error);
             logger.error(nameFile + ' | postNotification | GET : ' + error);
