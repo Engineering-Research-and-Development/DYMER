@@ -903,11 +903,11 @@ function deleteRelationOneEntityAndIndex(_id, _index) {
                     "bool": {
                         "must": [{
                             "match": {
-                                "_id1": _id
+                                "_id1.keyword": _id
                             }
                         }, {
                             "match": {
-                                "_index1": _index
+                                "_index1.keyword": _index
                             }
                         }]
                     }
@@ -916,11 +916,11 @@ function deleteRelationOneEntityAndIndex(_id, _index) {
                     "bool": {
                         "must": [{
                             "match": {
-                                "_id2": _id
+                                "_id2.keyword": _id
                             }
                         }, {
                             "match": {
-                                "_index2": _index
+                                "_index2.keyword": _index
                             }
                         }]
                     }
@@ -1128,7 +1128,7 @@ var listSingleRelation = function (id) {
                         "bool": {
                             "must": [{
                                 "match": {
-                                    "_id1": id
+                                    "_id1.keyword": id
                                 }
                             }]
                         }
@@ -1137,7 +1137,7 @@ var listSingleRelation = function (id) {
                         "bool": {
                             "must": [{
                                 "match": {
-                                    "_id2": id
+                                    "_id2.keyword": id
                                 }
                             }]
                         }
@@ -1181,7 +1181,7 @@ var fetchSingleRelation = function (element) {
                         "bool": {
                             "must": [{
                                 "match": {
-                                    "_id1": element["_id"]
+                                    "_id1.keyword": element["_id"]
                                 }
                             }]
                         }
@@ -1190,7 +1190,7 @@ var fetchSingleRelation = function (element) {
                         "bool": {
                             "must": [{
                                 "match": {
-                                    "_id2": element["_id"]
+                                    "_id2.keyword": element["_id"]
                                 }
                             }]
                         }
