@@ -41,8 +41,8 @@
       "description": "Select Service server"
     },
     {
-      "name": "Forms",
-      "description": "Select Form server"
+      "name": "Models",
+      "description": "Select Model server"
     },
     {
       "name": "Entities",
@@ -428,12 +428,7 @@
           "200": {
             "description": "OK"
           }
-        },
-        "security": [
-          {
-            "apiKeyAuth": []
-          }
-        ]
+        }
       }
     },
     "/api/v1/entity/elasticstate": {
@@ -836,6 +831,20 @@
         "description": "",
         "parameters": [
           {
+            "name": "referer",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "requestjsonpath",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "dymeruser",
             "in": "header",
             "schema": {
@@ -954,7 +963,21 @@
             }
           },
           {
+            "name": "referer",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "dymeruser",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "requestjsonpath",
             "in": "header",
             "schema": {
               "type": "string"
@@ -1044,6 +1067,13 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "referer",
+            "in": "header",
             "schema": {
               "type": "string"
             }
@@ -1275,7 +1305,7 @@
     "/api/v1/form/uploads/*": {
       "get": {
         "tags": [
-          "Forms"
+          "Models"
         ],
         "description": "",
         "parameters": [],
@@ -1289,7 +1319,7 @@
     "/api/v1/form/mongostate": {
       "get": {
         "tags": [
-          "Forms"
+          "Models"
         ],
         "description": "",
         "parameters": [
@@ -1332,7 +1362,7 @@
     "/api/v1/form/dettagliomodel": {
       "get": {
         "tags": [
-          "Forms"
+          "Models"
         ],
         "description": "",
         "parameters": [
@@ -1382,7 +1412,7 @@
     "/api/v1/form/": {
       "get": {
         "tags": [
-          "Forms"
+          "Models"
         ],
         "description": "",
         "parameters": [
@@ -1430,7 +1460,7 @@
       },
       "post": {
         "tags": [
-          "Forms"
+          "Models"
         ],
         "description": "",
         "parameters": [
@@ -1480,7 +1510,7 @@
     "/api/v1/form/content/{entype}/{fileid}": {
       "get": {
         "tags": [
-          "Forms"
+          "Models"
         ],
         "description": "",
         "parameters": [
@@ -1539,7 +1569,7 @@
     "/api/v1/form/create": {
       "post": {
         "tags": [
-          "Forms"
+          "Models"
         ],
         "description": "",
         "parameters": [
@@ -1589,7 +1619,7 @@
     "/api/v1/form/addAsset": {
       "post": {
         "tags": [
-          "Forms"
+          "Models"
         ],
         "description": "",
         "parameters": [
@@ -1639,7 +1669,7 @@
     "/api/v1/form/update": {
       "post": {
         "tags": [
-          "Forms"
+          "Models"
         ],
         "description": "",
         "parameters": [
@@ -1689,7 +1719,7 @@
     "/api/v1/form/updatestructure": {
       "post": {
         "tags": [
-          "Forms"
+          "Models"
         ],
         "description": "",
         "parameters": [
@@ -1739,7 +1769,7 @@
     "/api/v1/form/updateAsset": {
       "post": {
         "tags": [
-          "Forms"
+          "Models"
         ],
         "description": "",
         "parameters": [
@@ -1789,7 +1819,7 @@
     "/api/v1/form/{id}": {
       "delete": {
         "tags": [
-          "Forms"
+          "Models"
         ],
         "description": "",
         "parameters": [
@@ -1840,7 +1870,7 @@
     "/api/v1/form/{id}/{fid}": {
       "delete": {
         "tags": [
-          "Forms"
+          "Models"
         ],
         "description": "",
         "parameters": [
