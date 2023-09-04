@@ -14,25 +14,7 @@ require("./config/config.js");
 const nameFile = path.basename(__filename);
 const logger = require('./routes/dymerlogger');
 const portExpress = global.configService.port;
-
-/**********************************************************************************************************************/
-/*                                                   Swagger Config                                                   */
-/**********************************************************************************************************************/
-
-const swaggerUi = require('swagger-ui-express')
-const swaggerFile = require('./swagger_forms.json')
-
 const contextPath = util.getContextPath('form');
-const host = global.configService.ip + ":" + portExpress;
-const docPath = '/api/doc';
-
-swaggerFile.basePath = '/dymergui/api/forms';
-swaggerFile.host = 'localhost:8080';
-
-app.use(docPath, swaggerUi.serve, swaggerUi.setup(swaggerFile))
-
-const serverUrl = global.configService.protocol + "://" + host + contextPath + docPath;
-/**********************************************************************************************************************/
 
 /*app.all('/', function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -226,7 +208,7 @@ function detectPermission(req, res, next) {
 }
 
 app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
-    // #swagger.tags = ['Forms']
+    // #swagger.tags = ['Models']
 
     var ret = new jsonResponse();
     var filetype = req.params.filetype;
@@ -238,7 +220,7 @@ app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
 });
 
 app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
-    // #swagger.tags = ['Forms']
+    // #swagger.tags = ['Models']
 
     var filetype = req.params.filetype;
     //console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
@@ -246,7 +228,7 @@ app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
 });
 
 app.get('/logtypes', async(req, res) => {
-    // #swagger.tags = ['Forms']
+    // #swagger.tags = ['Models']
 
     var ret = new jsonResponse();
     ret.setSuccess(true);
@@ -257,7 +239,7 @@ app.get('/logtypes', async(req, res) => {
 });
 
 app.post('/setlogconfig', (req, res) => {
-    // #swagger.tags = ['Forms']
+    // #swagger.tags = ['Models']
 
     var ret = new jsonResponse();
     logger.ts_infologger(req.body.consoleactive);
@@ -267,7 +249,7 @@ app.post('/setlogconfig', (req, res) => {
 });
 
 app.get('/checkservice', util.checkIsAdmin, (req, res) => {
-	// #swagger.tags = ['Forms']
+	// #swagger.tags = ['Models']
 
 	var ret = new jsonResponse();
 	let infosize = logger.filesize("info");
@@ -290,7 +272,7 @@ app.get('/checkservice', util.checkIsAdmin, (req, res) => {
 app.use('/api/v1/form/uploads/', publicRoutes);
 app.use('/api/v1/form', detectPermission, routes);
 app.get('/*', (req, res) => {
-	// #swagger.tags = ['Forms']
+	// #swagger.tags = ['Models']
 
 	var ret = new jsonResponse();
 	//console.error('ERROR | /* : ', "Api error 404", req.path);
@@ -310,5 +292,4 @@ root.listen(portExpress, () => {
 	//logger.flushAllfile();
 	logger.info(nameFile + " | Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + contextPath);
 	console.log("Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path :" + contextPath);
-	console.log("See Documentation at:", serverUrl);
 });

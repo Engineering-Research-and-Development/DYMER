@@ -304,7 +304,7 @@ app.get('/info/:key?', (req, res, next) => {
     // #swagger.tags = ['Webserver']
 
     // var pjson = require('./package.json');
-    var key = req.params.key.toLowerCase();
+    var key = req.params.key;
 
     //  let infodymer = { "version": global.gConfig.dymer.version };
     let infodymer = global.gConfig.dymer;

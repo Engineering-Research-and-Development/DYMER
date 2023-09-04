@@ -12,25 +12,7 @@ const nameFile = path.basename(__filename);
 const logger = require('./routes/dymerlogger');
 var routes = require('./routes/routes-v1');
 var publicRoutes = require('./routes/publicfiles');
-
-/**********************************************************************************************************************/
-/*                                                   Swagger Config                                                   */
-/**********************************************************************************************************************/
-
-const swaggerUi = require('swagger-ui-express');
-const swaggerFile = require('./swagger_templates.json')
-
 const contextPath = util.getContextPath('template');
-const host = global.configService.ip + ":" + portExpress;
-const docPath = '/api/doc';
-
-swaggerFile.basePath = '/dymergui/api/templates';
-swaggerFile.host = 'localhost:8080';
-
-app.use(docPath, swaggerUi.serve, swaggerUi.setup(swaggerFile));
-
-const serverUrl = global.configService.protocol + "://" + host + contextPath + docPath;
-/**********************************************************************************************************************/
 
 /*app.use(function(req, res, next) {
 	res.header("Access-Control-Allow-Origin", "*");
@@ -118,5 +100,4 @@ root.listen(portExpress, () => {
 	//logger.flushAllfile();
 	logger.info(nameFile + " | Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + contextPath);
 	console.log("Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + contextPath);
-	console.log("See Documentation at:", serverUrl);
 });

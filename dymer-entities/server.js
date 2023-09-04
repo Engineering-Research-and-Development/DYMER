@@ -15,26 +15,7 @@ const portExpress = global.configService.port; //4646;
 const path = require('path');
 const nameFile = path.basename(__filename);
 const logger = require('./routes/dymerlogger');
-
-/**********************************************************************************************************************/
-/*                                                   Swagger Config                                                   */
-/**********************************************************************************************************************/
-
-const swaggerUi = require('swagger-ui-express')
-const swaggerFile = require('./swagger_entities.json')
-
 const contextPath = util.getContextPath('entity');
-const host = global.configService.ip + ":" + portExpress;
-const docPath = '/api/doc';
-
-swaggerFile.basePath = '/dymergui/api/entities';
-swaggerFile.host = 'localhost:8080';
-
-app.use(docPath, swaggerUi.serve, swaggerUi.setup(swaggerFile))
-
-const serverUrl = global.configService.protocol + "://" + host + contextPath + docPath;
-/**********************************************************************************************************************/
-
 
 /*app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));*/
@@ -247,5 +228,4 @@ root.listen(portExpress, () => {
 
 	logger.info(nameFile + " | Up and running-- this is " + global.configService.app_name + " service on port:" + portExpress + " context-path: " + contextPath);
 	console.log("Up and running-- this is " + global.configService.app_name + " service on port:" + portExpress + " context-path: " + contextPath);
-	console.log("See Documentation at:", serverUrl);
 });
