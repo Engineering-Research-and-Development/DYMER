@@ -1,0 +1,196 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">WORKFLOW<span class='pull-right'><i class="fa fa-cogs burgherAction"
+                            ng-click="showConfigAuthentication = ! showConfigAuthentication" aria-hidden="true"></i>
+                    </span>
+                </h5>
+            </div>
+            <div class="card-body " ng-show="showConfigAuthentication">
+                <h4>Dymer Workflow</h4>
+                <form name="formWorkflow" id="formWorkflow">
+                    <input type="hidden" ng-model="configWorkflow._id">
+                    <div class="row">
+                        <div class=" col-12">
+
+                            <div class="form-group">
+                                <div class="text-info pull-right">
+                                    <input type="checkbox" ng-model="configWorkflow.active"> Enabled
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="text-info"> Title *</label>
+                                <input type="text" class="form-control col-12" ng-model="configWorkflow.title" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="text-info"> Index *</label><small style="color: #8c8985;"> </small>
+                                <div ng-dropdown-multiselect="" options="indexesOptions"
+                                    selected-model="configWorkflow.indexes" checkboxes="true">
+                                </div>
+                            </div>                           
+                            <div class="form-group">
+                                <label class="text-info"> Action *</label>
+                                <input type="text" class="form-control col-12" ng-model="configWorkflow.action"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label class="text-info"> Condition *</label><small style="color: #8c8985;"> (write here
+                                    your js code. the code must <b>return true</b>
+                                    or <b>false</b>. <b>true</b> if the entity is to be submitted <b>false</b>
+                                    otherwise.
+                                    the variable <b>entity</b> is the entity object that you can use for your controls
+                                    and
+                                    can be manipulated before sending. Below the json structure of the entity in the
+                                    entity
+                                    variable : {
+                                    _index: '&lt;entity-index&gt;',
+                                    _id: '&lt;entity-id&gt;',
+                                    _source:
+                                    {"&lt;field1-key&gt;":"&lt;field1-value&gt;","&lt;fieldn-key&gt;":"&lt;fieldn-value&gt;"})</small>
+                                <textarea type="text" class="form-control col-12"
+                                    ng-model="configWorkflow.cond"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="text-info"> Workflow *</label>
+                                <select class="form-control col-12 span12" name="workflowForm" id="workflowForm"
+                                    ng-model="configWorkflow.workflow" required>
+                                    <option></option>
+                                    <option value="send-mail">send email</option>
+                                    <option value="notification">use notifications</option>
+                                    <option value="call-sync">call Sync</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                    
+                    <div class="card-header" ng-show="configWorkflow.workflow === 'send-mail'">
+                        <h6 class="card-body"> Email details </h6>
+                    
+                    <div ng-repeat="emailForm in emailForms">                    
+                        <form name="emailInfo" id="emailInfo">
+                            <div class="form-group">
+                                <label class="text-info"> From (Source)*</label><small style="color: #8c8985;"> </small>
+                                <input type="text" class="form-control col-12" ng-model="emailForm.from" ng-pattern="/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/" ng-required="false" ng-attr-placeholder="{{phFrom}}">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="text-info"> To (Target)*</label><small style="color: #8c8985;"> </small>
+                                <input type="text" class="form-control col-12" ng-model="emailForm.to" ng-pattern="/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/" ng-required="true" ng-attr-placeholder="{{phTo}}">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="text-info"> Subject *</label>
+                                <input type="text" class="form-control col-12" ng-model="emailForm.object" ng-required="false" ng-attr-placeholder="{{phSubject}}">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="text-info"> Body </label><small style="color: #8c8985;"> </small>
+                                <textarea class="form-control col-12" ng-model="emailForm.body" ng-required="false" ng-attr-placeholder="{{phBody}}"></textarea>
+                                <div class="content-action-filemanager-page">        
+                                        <i class="fa fa-cubes active" aria-hidden="true" ng-click="getTemplStructures()"></i><div id="structures-container" class="row"></div>                                                     
+                                </div>
+                            </div>
+
+                            <div class="action-br"><span class="btn  btn-outline-primary  btn-sm" ng-click="repeatForm()"> +</span><span class="btn  btn-outline-danger  btn-sm act-remove" ng-click="removeForm($formIndex)">-</span></div>
+
+                        </form>
+                    </div>
+
+                    </div>
+                
+                    <div class="row text-right ">
+                        <div class="col-12 ">
+                            <span class="btn btn-info " ng-show="!configWorkflow._id"
+                                ng-click="saveWorkflow(configWorkflow)">Save</span>
+                            <span class="btn btn-warning " ng-show="configWorkflow._id" ng-click="saveWorkflow(configWorkflow)">Update </span>
+                            <span class="btn btn-danger " ng-show="configWorkflow._id"
+                                ng-click="configWorkflow = {}">Cancel</span>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row ">
+    <div class="col-md-12 ">
+        <div class="card ">
+            <div class="card-header ">
+                <h5 class="card-title ">Workflow Rules<span class='pull-right'> <i class="fa fa-bars burgherAction "
+                            aria-hidden="true " ng-click="showMappingBridgeRule=! showMappingBridgeRule "></i></span>
+                </h5>
+            </div>
+
+            <div class="card-body" ng-hide="showMappingBridgeRule " style="overflow-x:hidden;">
+                <table class="table ">
+                    <thead class=" text-primary ">
+                        <th>
+                            Title
+                        </th>
+
+                        <th>
+                            Indexes
+                        </th>
+                        <th style="text-align: center;">
+                            Action
+                        </th>
+                        <th style="text-align: center;">
+                            Condition
+                        </th>
+                        <th style="text-align: center;">
+                            Enabled
+                        </th>
+                        <th style="text-align: center">
+                            Workflow
+                        </th>
+                        <th class=" text-center ">
+                        </th>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="el in List ">
+                            <td style="max-width: 100px;">
+                                {{ el.title }}
+                            </td>
+                            <td style="max-width: 100px;">
+                                <!-- {{ el.sourcepath }}{{ el.apisearchpath }} -->
+                                {{ el.indexes }}
+                            </td>
+                            <td style="max-width: 100px;text-align: center;">
+                                <!-- {{ el.sourceindex }} <i class="fa fa-long-arrow-right" aria-hidden="true"></i> {{ el.targetindex }} -->
+                                {{ el.action }}
+                            </td>
+                            <td style="max-width: 100px;text-align: center;">
+                                <!-- {{ el.sourceindex }} <i class="fa fa-long-arrow-right" aria-hidden="true"></i> {{ el.targetindex }} -->
+                                {{ el.cond }}
+                            </td>
+                            <td style="max-width: 100px;text-align: center;">
+                                <i class="fa fa-power-off " ng-class="el.active ? 'text-success' : 'text-danger'"
+                                    aria-hidden="true"></i>
+                            </td>
+
+                            <td style="max-width: 100px;text-align: center;">
+                                {{ el.workflow }}
+                                <!-- <i class="fa fa-power-off " ng-class="el.active ? 'text-success' : 'text-danger'" aria-hidden="true"></i>&nbsp;&nbsp;/&nbsp;&nbsp;<i class="fa  " ng-class="el.sendrelation ? ' fa-check' : ' fa-times'" aria-hidden="true"></i><br>                                {{ el.typerelations }} -->
+                            </td>
+
+                            <td class=" text-center ">
+                                <i class="fa fa-clone cloneAction " aria-hidden="true "
+                                    ng-click="setupdateWorkflow( $index,'clone');  "></i>
+                                <i class="fa fa-pencil updateAction " aria-hidden="true "
+                                    ng-click="setupdateWorkflow( $index);  " ng-confirm-click="Confirm update? "></i>
+                                <i class="fa fa-trash deleteAction " aria-hidden="true "
+                                    ng-click="removeWorkflow( $index) " ng-confirm-click="Confirm delete? "></i>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer ">
+            </div>
+        </div>
+    </div>
+</div>

@@ -2325,10 +2325,10 @@ router.post('/_search', (req, res) => {
     // console.log('_search logger', process.env.DYMER_LOGGER);
     let origin=req.get('origin');
     var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-        console.log('user info URLL', req.get('origin') );
-        console.log('user info fullurl',fullUrl );
-        console.log('req.headers.referer',req.headers.referer );
-        console.log('user info requestjsonpath',req.headers.requestjsonpath)
+        // console.log('user info URLL', req.get('origin') );
+        // console.log('user info fullurl',fullUrl );
+        // console.log('req.headers.referer',req.headers.referer );
+        // console.log('user info requestjsonpath',req.headers.requestjsonpath)
     // console.log(' req.headers.dymeruser', req.headers.dymeruser);
     // var decoded = jwt.decode(req.headers.authdata);
     //  var decoded = jwt.decode(req.headers.authdata);

@@ -14,7 +14,8 @@
     <title>
         DYnamic Information ModElling & Rendering
     </title>
-    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
+        name='viewport' />
     <!--     Fonts and icons     -->
     <!--<script src="public/assets/wsbuilder/js/popper.min.js"></script>-->
     <!-- <script src="public/assets/auth/js/keycloak.js"></script>-->
@@ -61,6 +62,8 @@
     <script src="public/app/controllers/syncCtrl.js"></script>
     <script src="public/app/controllers/mclgsCtrl.js"></script>
     <script src="public/app/controllers/relationsCtrl.js"></script>
+    <script src="public/app/controllers/workflowCtrl.js"></script>
+    <script src="public/app/directive/angularjs-dropdown-multiselect.js"></script>
 
     <link href="public/assets/css/paper-dashboard.css" rel="stylesheet" />
     <link href="public/assets/css/json-viewer.css" rel="stylesheet">
@@ -79,6 +82,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-nvd3/1.0.9/angular-nvd3.min.js"></script>
     -->
+    <script>
+        var staticPath = '/angularjs-dropdown-multiselect';
+    </script>
+
 </head>
 
 <body class="">
@@ -105,7 +112,7 @@
                             <i class="nc-icon nc-chart-bar-32"></i>
                             <p>Dashboard</p>
                         </a>
-                        <div class=" kmssublist"  ng-show="hasPermission('app-admin' )">
+                        <div class=" kmssublist" ng-show="hasPermission('app-admin' )">
                             <ul class="">
                                 <li class="  ">
                                     <a href="mclgs"><i class="nc-icon nc-paper"></i>
@@ -116,14 +123,14 @@
                         </div>
                     </li>
 
-                    <li  ng-show="hasPermission('app-admin' )">
+                    <li ng-show="hasPermission('app-admin' )">
                         <a href="#" class="haschild">
 
                             <i class="fa fa-lock"></i>
                             <p>Permissions</p>
 
                         </a>
-                        <div class=" kmssublist"  >
+                        <div class=" kmssublist">
                             <ul class="">
                                 <li class="  ">
                                     <a href="authenticationconfig"><i class="fa fa-key"></i>
@@ -144,7 +151,7 @@
                             </ul>
                         </div>
                     </li>
-                    <li  ng-show="hasPermission('app-admin' )">
+                    <li ng-show="hasPermission('app-admin' )">
                         <a href="#" class="haschild">
                             <i class="nc-icon nc-layout-11"></i>
                             <p>Templates</p>
@@ -164,7 +171,7 @@
                             </ul>
                         </div>
                     </li>
-                    <li  ng-show="hasPermission('app-admin' )">
+                    <li ng-show="hasPermission('app-admin' )">
                         <a href="#" class="haschild">
                             <i class="nc-icon nc-tile-56"></i>
                             <p>Models</p>
@@ -210,11 +217,13 @@
                                         <p>Add Entity</p>
                                     </a>
                                 </li>
-                                <li class="  "  ng-show="hasPermission('app-admin' )"> <a class="" href="taxonomy"><i class="fa fa-sitemap"></i>
+                                <li class="  " ng-show="hasPermission('app-admin' )"> <a class="" href="taxonomy"><i
+                                            class="fa fa-sitemap"></i>
                                         <p>Taxonomy</p>
                                     </a>
                                 </li>
-                                <li class="  "  ng-show="hasPermission('app-admin' )"> <a class="" href="importfromfile"><i class="nc-icon nc-air-baloon"></i>
+                                <li class="  " ng-show="hasPermission('app-admin' )"> <a class=""
+                                        href="importfromfile"><i class="nc-icon nc-air-baloon"></i>
                                         <p>Import</p>
                                     </a>
                                 </li>
@@ -224,7 +233,7 @@
                                     </a>
                                 </li>
 
-                                <li class="  "  ng-show="hasPermission('app-admin' )">
+                                <li class="  " ng-show="hasPermission('app-admin' )">
                                     <a class="" href="hooks"> <i class="fa fa-toggle-on" aria-hidden="true"></i>
                                         <p>Hook</p>
                                     </a>
@@ -233,7 +242,7 @@
                         </div>
                     </li>
                     <!---->
-                    <li class="ng-hide"  ng-show="hasPermission('app-admin' )">
+                    <li class="ng-hide" ng-show="hasPermission('app-admin' )">
                         <a href="#" class="haschild">
                             <i class="fa fa-wrench"></i>
                             <p>Config Tool</p>
@@ -254,9 +263,9 @@
                             </ul>
                         </div>
                     </li>
-                   
+
                     <!---->
-                    <li  ng-show="hasPermission('app-admin' )">
+                    <li ng-show="hasPermission('app-admin' )">
                         <a href="#" class="haschild">
                             <i class="nc-icon nc-box"></i>
                             <p>Services</p>
@@ -289,10 +298,15 @@
                                     <a class="" href="opennessearch"><i class="fa fa-map-signs  "></i>
                                         <p>Openness Search</p>
                                     </a>
-                                </li>  
+                                </li>
                                 <li class="  ">
                                     <a class="" href="sync"><i class="fa fa-retweet" aria-hidden="true"></i>
                                         <p>Sync Dymer</p>
+                                    </a>
+                                </li>
+                                <li class="  ">
+                                    <a class="" href="workflow"><i class="fa fa-play" aria-hidden="true"></i>
+                                        <p>Workflow</p>
                                     </a>
                                 </li>
                             </ul>
@@ -360,7 +374,8 @@
         </div>
         <div class="main-panel">
             <!-- Navbar -->
-            <nav class="navbar navbar-expand-lg navbar-absolute fixed-top navbar-transparent" ng-hide="!globals.loggedIn">
+            <nav class="navbar navbar-expand-lg navbar-absolute fixed-top navbar-transparent"
+                ng-hide="!globals.loggedIn">
                 <div class="container-fluid">
                     <div class="navbar-wrapper">
                         <div class="navbar-toggle">
@@ -370,14 +385,16 @@
                                 <span class="navbar-toggler-bar bar3"></span>
                             </button>
                         </div>
-                        <span onclick="$('#contfullp').toggleClass('full-page');" class="full_normal_zoom" ng-show="globals.loggedIn">
+                        <span onclick="$('#contfullp').toggleClass('full-page');" class="full_normal_zoom"
+                            ng-show="globals.loggedIn">
                             <i class="nc-icon nc-minimal-left"></i>
 
                         </span>
                         <span class="navbar-brand">DYnamic information ModElling & Rendering</span>
                     </div>
-                    
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
+
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
+                        aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-bar navbar-kebab"></span>
                         <span class="navbar-toggler-bar navbar-kebab"></span>
                         <span class="navbar-toggler-bar navbar-kebab"></span>
@@ -394,7 +411,7 @@
                             </div>
                         </form>-->
                         <div>
-                            Benvenuto {{loggedUser.username}} 
+                            Benvenuto {{loggedUser.username}}
                         </div>
                         <ul class="navbar-nav">
                             <!--  <li class="nav-item">
@@ -406,7 +423,8 @@
                                 </a>
                             </li>-->
                             <li class="nav-item btn-rotate dropdown" ng-show="globals.loggedIn">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i class="nc-icon nc-bell-55"></i>
                                     <p>
                                         <span class="d-lg-none d-md-block">Some Actions</span>
