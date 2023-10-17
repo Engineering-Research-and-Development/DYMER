@@ -8,7 +8,7 @@ const nameFile = path.basename(__filename);
 /* GET home page. */
 
 router.get("*", cors(), function(req, res, next) {
-    // #swagger.tags = ['Services']
+    //
 
     console.log("xxx", req._parsedUrl.pathname);
 

@@ -49,7 +49,7 @@ var upload = multer({storage: storageEngine}).any(); // .single('file');
 
 
 router.post('/setusermap', function (req, res) {
-	// #swagger.tags = ['Services']
+	//
 
 	console.log("aggiungo un mapping l'utente");
 	let callData = util.getAllQuery(req);
@@ -97,7 +97,7 @@ router.post('/setusermap', function (req, res) {
 });
 
 router.post('/addusermap', function (req, res) {
-	// #swagger.tags = ['Services']
+	//
 
 	console.log("aggiungo un mapping per onenness search");
 	let callData = util.getAllQuery(req);
@@ -137,7 +137,7 @@ router.post('/addusermap', function (req, res) {
 });
 
 router.get('/findbyemail/:email', function (req, res) {
-	// #swagger.tags = ['Services']
+	//
 
 	const _email = req.params.email;
 	console.log("ricevo chiamata per find email");

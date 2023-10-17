@@ -75,7 +75,7 @@ function isValidObjectId(id) {
  */
 
 router.get('/mongostate', (req, res) => {
-    // #swagger.tags = ['Templates']
+    //
 
     let ret = new jsonResponse();
     let dbState = [{
@@ -175,7 +175,7 @@ var recFile = function(file_id) {
  */
 
 router.get('/', (req, res) => {
-    // #swagger.tags = ['Templates']
+    //
 
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -200,7 +200,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/content/:fileid', function(req, res, next) {
-    // #swagger.tags = ['Templates']
+    //
 
     var file_id = req.params.fileid;
     //console.log(nameFile + ' | get/content/:fileid |  fileid :', file_id);
@@ -228,7 +228,7 @@ router.get('/content/:fileid', function(req, res, next) {
 });
 
 router.post('/', util.checkIsAdmin, function(req, res) {
-    // #swagger.tags = ['Templates']
+    //
 
     var ret = new jsonResponse();
     upload(req, res, function(err) {
@@ -284,7 +284,7 @@ router.post('/', util.checkIsAdmin, function(req, res) {
 });
 
 router.post('/create', util.checkIsAdmin, function(req, res) {
-    // #swagger.tags = ['Templates']
+    //
 
     var ret = new jsonResponse();
     upload(req, res, function(err) {
@@ -319,7 +319,7 @@ router.post('/create', util.checkIsAdmin, function(req, res) {
 });
 
 router.post('/addAsset', util.checkIsAdmin, function(req, res) {
-    // #swagger.tags = ['Templates']
+    //
 
     var ret = new jsonResponse();
     upload(req, res, function(err) {
@@ -359,7 +359,7 @@ router.post('/addAsset', util.checkIsAdmin, function(req, res) {
 });
 
 router.post('/update', util.checkIsAdmin, function(req, res) {
-    // #swagger.tags = ['Templates']
+    //
 
     var ret = new jsonResponse();
     upload(req, res, function(err) {
@@ -402,7 +402,7 @@ router.post('/update', util.checkIsAdmin, function(req, res) {
 });
 
 router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
-    // #swagger.tags = ['Templates']
+    //
 
     var ret = new jsonResponse();
     upload(req, res, function(err) {
@@ -486,7 +486,7 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
 });
 
 router.delete('/:id', util.checkIsAdmin, (req, res) => {
-    // #swagger.tags = ['Templates']
+    //
 
     var ret = new jsonResponse();
     var id = req.params.id;
@@ -513,7 +513,7 @@ router.delete('/:id', util.checkIsAdmin, (req, res) => {
 });
 
 router.delete('/:id/:fid', util.checkIsAdmin, (req, res) => {
-    // #swagger.tags = ['Templates']
+    //
 
     var ret = new jsonResponse();
     var id = req.params.id;

@@ -5727,15 +5727,5 @@
       }
     }
   },
-  "components": {
-    "securitySchemes": {
-      "apiKeyAuth": {
-        "type": "apiKey",
-        "in": "cookie",
-        "name": "lll",
-        "description": "Cookie"
-      }
-    }
-  },
   "docExpansion": "none"
 }

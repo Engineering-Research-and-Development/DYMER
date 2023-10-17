@@ -50,7 +50,7 @@ var storageEngine = multer.diskStorage({
 });
 var upload = multer({ storage: storageEngine }).any(); // .single('file');
 router.post('/setConfig', util.checkIsAdmin, function(req, res) {
-    // #swagger.tags = ['Services']
+    //
 
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -98,7 +98,7 @@ router.post('/setConfig', util.checkIsAdmin, function(req, res) {
 });
 
 router.post('/addconfig', util.checkIsAdmin, function(req, res) {
-    // #swagger.tags = ['Services']
+    //
 
     let callData = util.getAllQuery(req);
     //console.log(callData);
@@ -132,7 +132,7 @@ router.post('/addconfig', util.checkIsAdmin, function(req, res) {
 });
 
 router.get('/renderpage/:id', function(req, res) {
-    // #swagger.tags = ['Services']
+    //
 
     let formData;
     let dataView;
@@ -316,7 +316,7 @@ router.get('/renderpage/:id', function(req, res) {
 });
 
 router.get('/renderdetail/:id', function(req, res) {
-    // #swagger.tags = ['Services']
+    //
 
     let formData;
     let dataView;
@@ -372,7 +372,7 @@ router.get('/renderdetail/:id', function(req, res) {
 });
 
 router.get('/configrules/', (req, res) => {
-    // #swagger.tags = ['Services']
+    //
 
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
@@ -399,7 +399,7 @@ function findRuleConfig(queryFind, res) {
 }
 
 router.get('/getconfig/', (req, res) => {
-    // #swagger.tags = ['Services']
+    //
 
     //console.log(req);
     console.log('get-d-config', "invoco config rules");
@@ -409,7 +409,7 @@ router.get('/getconfig/', (req, res) => {
 });
 
 router.delete('/configrule/:id', util.checkIsAdmin, (req, res) => {
-    // #swagger.tags = ['Services']
+    //
 
     var ret = new jsonResponse();
     var id = req.params.id;
@@ -430,7 +430,7 @@ router.delete('/configrule/:id', util.checkIsAdmin, (req, res) => {
 });
 
 router.post('/listener', function(req, res) {
-    // #swagger.tags = ['Services']
+    //
 
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);

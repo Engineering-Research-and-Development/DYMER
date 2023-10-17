@@ -200,18 +200,22 @@ app.get('/checkservice', util.checkIsAdmin, (req, res) => {
     return res.send(ret);
 });
 
-app.use('/api/v1/entity/uploads/', publicRoutes);
-app.use('/api/v1/entity', routes);
+app.use('/api/v1/entity/uploads/', publicRoutes
+        // #swagger.tags = ['Entities']
+);
+app.use('/api/v1/entity', routes
+        // #swagger.tags = ['Entities']
+);
 //app.use('/api/endpointtest', routestest);
 app.get('/', (req, res) => {
-	// #swagger.tags = ['Entities']
+    // #swagger.tags = ['Entities']
 
 	// res.sendFile(path.resolve(__dirname, "usr/share/www/html/", "index.html"));
 	res.send("this is    our main andpoint Entities");
 });
 
 app.get('/*', (req, res) => {
-	// #swagger.tags = ['Entities']
+    // #swagger.tags = ['Entities']
 
 	var ret = new jsonResponse();
 	ret.setMessages("Api error 404");

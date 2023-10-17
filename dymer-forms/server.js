@@ -249,9 +249,9 @@ app.post('/setlogconfig', (req, res) => {
 });
 
 app.get('/checkservice', util.checkIsAdmin, (req, res) => {
-	// #swagger.tags = ['Models']
+    // #swagger.tags = ['Models']
 
-	var ret = new jsonResponse();
+    var ret = new jsonResponse();
 	let infosize = logger.filesize("info");
 	let errorsize = logger.filesize("error");
 	ret.setData({
@@ -269,12 +269,16 @@ app.get('/checkservice', util.checkIsAdmin, (req, res) => {
 	return res.send(ret);
 });
 
-app.use('/api/v1/form/uploads/', publicRoutes);
-app.use('/api/v1/form', detectPermission, routes);
+app.use('/api/v1/form/uploads/', publicRoutes
+        // #swagger.tags = ['Models']
+);
+app.use('/api/v1/form', detectPermission, routes
+        // #swagger.tags = ['Models']
+);
 app.get('/*', (req, res) => {
-	// #swagger.tags = ['Models']
+    // #swagger.tags = ['Models']
 
-	var ret = new jsonResponse();
+    var ret = new jsonResponse();
 	//console.error('ERROR | /* : ', "Api error 404", req.path);
 	logger.error(nameFile + ' | /* Api error 404  :' + req.path);
 	ret.setMessages("Api error 404");

@@ -56,7 +56,7 @@ var storageEngine = multer.diskStorage({
 var upload = multer({ storage: storageEngine }).any(); // .single('file');
 
 router.post('/setConfig', util.checkIsAdmin, function(req, res) {
-    // #swagger.tags = ['Services']
+    //
 
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -101,7 +101,7 @@ router.post('/setConfig', util.checkIsAdmin, function(req, res) {
 });
 
 router.get('/configs', (req, res) => {
-    // #swagger.tags = ['Services']
+    //
 
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -125,7 +125,7 @@ router.get('/configs', (req, res) => {
 });
 
 router.post('/addrule', util.checkIsAdmin, function(req, res) {
-    // #swagger.tags = ['Services']
+    //
 
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -154,7 +154,7 @@ router.post('/addrule', util.checkIsAdmin, function(req, res) {
 });
 
 router.get('/rules/', (req, res) => {
-    // #swagger.tags = ['Services']
+    //
 
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
@@ -182,7 +182,7 @@ function findRule(queryFind, res) {
 }
 
 router.delete('/rule/:id', util.checkIsAdmin, (req, res) => {
-    // #swagger.tags = ['Services']
+    //
 
     var ret = new jsonResponse();
     var id = req.params.id;
@@ -203,7 +203,7 @@ router.delete('/rule/:id', util.checkIsAdmin, (req, res) => {
 });
 
 router.post('/listener', function(req, res) {
-    // #swagger.tags = ['Services']
+    //
 
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);

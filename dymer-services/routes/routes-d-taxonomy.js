@@ -30,7 +30,7 @@ var upload = multer()
 router.use(upload.array())
 
 router.get('/', async (req, res) => {
-	// #swagger.tags = ['Services']
+	//
 
 	var ret = new jsonResponse();
 	let els = await mongoose.connection.db.collection("vocab").find().toArray()
@@ -40,7 +40,7 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-	// #swagger.tags = ['Services']
+	//
 
 	let newVocab = req.body;
 	newVocab.nodes = [];
@@ -52,7 +52,7 @@ router.post('/', async (req, res) => {
 });
 
 router.put("/", async (req, res) => {
-	// #swagger.tags = ['Services']
+	//
 
 	let id = req.body.id
 	let objiD = mongoose.Types.ObjectId(id)
@@ -65,7 +65,7 @@ router.put("/", async (req, res) => {
 	return res.json(updateVocab)
 })
 router.post('/_search', async (req, res) => {
-	// #swagger.tags = ['Services']
+	//
 
 	let id = req.body.id
 	let objiD = mongoose.Types.ObjectId(id)
@@ -77,7 +77,7 @@ router.post('/_search', async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
-	// #swagger.tags = ['Services']
+	//
 
 	let id = req.params.id
 	let objiD = mongoose.Types.ObjectId(id)

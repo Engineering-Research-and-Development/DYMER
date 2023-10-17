@@ -55,22 +55,48 @@ app.use(function(req, res, next) {
         return next();
     }
 });
-app.use('/api/v1/opn', routes_dymer_openness);
-app.use('/api/v1/fwadapter', routes_dymer_fwadapter);
-app.use('/api/v1/sync', routes_dymer_sync);
-app.use('/api/v1/servicehook', routes_dymer_hooks);
-app.use('/api/v1/eaggregation', routes_dymer_eaggregation);
-app.use('/api/v1/workflow', routes_dymer_workflow);
-app.use('/api/v1/taxonomy', routes_dymer_taxonomy);
-app.use('/api/v1/usermap', routes_dymer_usermap);
-app.use('/api/v1/import', routes_dymer_import);
+app.use('/api/v1/opn', routes_dymer_openness
+// #swagger.tags = ['Services']
+);
+app.use('/api/v1/fwadapter', routes_dymer_fwadapter
+// #swagger.tags = ['Services']
+);
+app.use('/api/v1/sync', routes_dymer_sync
+// #swagger.tags = ['Services']
+);
+app.use('/api/v1/servicehook', routes_dymer_hooks
+// #swagger.tags = ['Services']
+);
+app.use('/api/v1/eaggregation', routes_dymer_eaggregation)
+// #swagger.tags = ['Services']
+;
+app.use('/api/v1/workflow', routes_dymer_workflow
+// #swagger.tags = ['Services']
+);
+app.use('/api/v1/taxonomy', routes_dymer_taxonomy
+// #swagger.tags = ['Services']
+);
+app.use('/api/v1/usermap', routes_dymer_usermap
+// #swagger.tags = ['Services']
+);
+app.use('/api/v1/import', routes_dymer_import
+// #swagger.tags = ['Services']
+);
 //app.use('/api/v1/import_socs', routes_dymer_importsocs);
 //app.use('/api/v1/import_hb', routes_dymer_importhb);
-app.use('/api/v1/perm', routes_dymer_permission);
+app.use('/api/v1/perm', routes_dymer_permission
+// #swagger.tags = ['Services']
+);
 //app.use('/api/v1/importp4t', routes_dymer_importp4t);
-app.use('/api/v1/configtool', routes_dymer_configtool);
-app.use('/api/v1/authconfig', routes_dymer_authconfig);
-app.use('/api/v1/duser', routes_dymer_duser);
+app.use('/api/v1/configtool', routes_dymer_configtool
+// #swagger.tags = ['Services']
+);
+app.use('/api/v1/authconfig', routes_dymer_authconfig
+// #swagger.tags = ['Services']
+);
+app.use('/api/v1/duser', routes_dymer_duser
+// #swagger.tags = ['Services']
+);
 app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Services']
 

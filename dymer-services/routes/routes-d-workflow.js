@@ -229,7 +229,7 @@ if (typeof String.prototype.parseFunction != 'function') {
 */
 
 router.post('/listener',async function(req, res) {
-    // #swagger.tags = ['Services']
+    //
 
     console.log('listenerwf');
     var ret = new jsonResponse();

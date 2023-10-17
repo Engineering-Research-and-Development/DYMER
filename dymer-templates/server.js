@@ -33,7 +33,7 @@ app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
 });
 
 app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
-	// #swagger.tags = ['Templates']
+	//
 
 	var filetype = req.params.filetype;
 	//console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
@@ -78,8 +78,13 @@ app.get('/checkservice', util.checkIsAdmin, (req, res) => {
 	ret.setSuccess(true);
 	return res.send(ret);
 });
-app.use('/api/v1/template/uploads/', publicRoutes);
-app.use('/api/v1/template', routes);
+app.use('/api/v1/template/uploads/', publicRoutes
+        // #swagger.tags = ['Templates']
+);
+app.use('/api/v1/template', routes
+		// #swagger.tags = ['Templates']
+
+);
 app.get('/*', (req, res) => {
 	// #swagger.tags = ['Templates']
 
