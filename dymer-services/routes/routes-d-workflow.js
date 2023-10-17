@@ -229,7 +229,6 @@ if (typeof String.prototype.parseFunction != 'function') {
 */
 
 router.post('/listener',async function(req, res) {
-    //
 
     console.log('listenerwf');
     var ret = new jsonResponse();

@@ -44,7 +44,6 @@ mongoose
 */
 
 router.get('/', util.checkIsAdmin, (req, res) => {
-    //
 
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -67,7 +66,6 @@ router.get('/', util.checkIsAdmin, (req, res) => {
 });
 
 router.get('/userinfo', (req, res) => {
-    //
 
     var ret = new jsonResponse();
     let data = req.body;
@@ -304,7 +302,6 @@ router.get('/userinfo', (req, res) => {
 });
 
 router.post('/', util.checkIsAdmin, function(req, res) {
-    //
 
     //router.post('/', function(req, res) {
     let id = req.params.id;
@@ -331,7 +328,6 @@ router.post('/', util.checkIsAdmin, function(req, res) {
 });
 
 router.put('/:id', util.checkIsAdmin, (req, res) => {
-    //
 
     let id = req.params.id;
     let callData = util.getAllQuery(req);
@@ -362,7 +358,6 @@ router.put('/:id', util.checkIsAdmin, (req, res) => {
 });
 
 router.delete('/:id', util.checkIsAdmin, (req, res) => {
-    //
 
     var ret = new jsonResponse();
     var id = req.params.id;

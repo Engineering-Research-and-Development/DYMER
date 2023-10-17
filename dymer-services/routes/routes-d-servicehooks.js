@@ -42,7 +42,6 @@ mongoose
 */
 
 router.post('/addhook', util.checkIsAdmin, function(req, res) {
-    //
 
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -72,7 +71,6 @@ router.post('/addhook', util.checkIsAdmin, function(req, res) {
 });
 
 router.get('/hooks/', (req, res) => {
-    //
 
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
@@ -98,7 +96,6 @@ function findHook(queryFind, res) {
 }
 
 router.delete('/hook/:id', util.checkIsAdmin, (req, res) => {
-    //
 
     var ret = new jsonResponse();
     var id = req.params.id;
@@ -119,7 +116,6 @@ router.delete('/hook/:id', util.checkIsAdmin, (req, res) => {
 });
 
 router.post('/checkhook', function(req, res) {
-    //
 
     let callData = util.getAllQuery(req);
     let data = callData.data;

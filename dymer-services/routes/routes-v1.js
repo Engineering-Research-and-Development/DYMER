@@ -14,7 +14,6 @@ const nameFile = path.basename(__filename);
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({extended: true}));
 router.post('/checkServiceBinded', function (req, res) {
-    //
 
 	console.log("aggiungo un mapping per onenness search");
 	var ret = new jsonResponse();
@@ -25,7 +24,6 @@ router.post('/checkServiceBinded', function (req, res) {
 });
 
 router.get('/', function (req, res) {
-    //
 
 	console.log("recupero tutti i servizi opensearch");
 	var ret = new jsonResponse();

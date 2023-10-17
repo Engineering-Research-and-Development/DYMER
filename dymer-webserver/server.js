@@ -213,7 +213,7 @@ app.get('/api2/retriveinfoidpadmin', (req, res, next) => {
 });
 
 app.get('/api2/retriveinfoidp', (req, res, next) => {
-// #swagger.tags = ['Webserver']
+    // #swagger.tags = ['Webserver']
 
     //   console.log("--------INIZIO retriveinfoIDP--------------");
     //   console.log("retriveinfo", req.session);

@@ -64,7 +64,6 @@ mongoose
 */
 
 router.get('/mongostate', [util.checkIsDymerUser], (req, res) => {
-    //
 
     let ret = new jsonResponse();
     let dbState = [{
@@ -97,7 +96,6 @@ router.get('/mongostate', [util.checkIsDymerUser], (req, res) => {
 });
 
 router.get('/entityrole/:act/:index', (req, res) => {
-    //
 
     let act = req.params.act; //azione da passare
     let index = req.params.index; //indice per cercare
@@ -138,7 +136,6 @@ router.get('/entityrole/:act/:index', (req, res) => {
 });
 
 router.get('/permbyroles', (req, res) => {
-    //
 
     //role[]
     var ret = new jsonResponse();
@@ -181,7 +178,6 @@ router.get('/permbyroles', (req, res) => {
 });
 
 router.get('/', (req, res) => {
-    //
 
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -204,7 +200,6 @@ router.get('/', (req, res) => {
 });
 
 router.post('/:id?', util.checkIsAdmin, async function(req, res) {
-    //
 
     let id = req.params.id;
     let callData = util.getAllQuery(req);
@@ -267,7 +262,6 @@ router.post('/:id?', util.checkIsAdmin, async function(req, res) {
 });
 
 router.delete('/:id', util.checkIsAdmin, (req, res) => {
-    //
 
     var ret = new jsonResponse();
     var id = req.params.id;

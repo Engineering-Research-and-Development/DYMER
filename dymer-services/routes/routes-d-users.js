@@ -40,7 +40,6 @@ mongoose
     });
 *///, util.checkIsPortalUser
 router.get('/', (req, res) => {
-    //
 
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -68,7 +67,6 @@ router.get('/', (req, res) => {
 });
 
 router.post('/checklogin' , function(req, res) {
-    //
 
     let id = req.params.id;
     let callData = util.getAllQuery(req);
@@ -132,7 +130,6 @@ mod.password=mystr;
 });
  
 router.post('/', util.checkIsAdmin, function(req, res) {
-    //
 
     let id = req.params.id;
     let callData = util.getAllQuery(req);
@@ -185,7 +182,6 @@ mod.password=mystr;*/
 });
  
 router.delete('/:id', util.checkIsAdmin, (req, res) => {
-    //
 
     var ret = new jsonResponse();
     var id = req.params.id;
