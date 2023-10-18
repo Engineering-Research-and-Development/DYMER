@@ -62,7 +62,6 @@ const outputFile = './swagger_webserver.json';
 // Get all the *.js files in ./routes
 const routesFolder = './routes/';
 const fs = require( 'fs' );
-// const util = require( "./utility" );
 
 const endpointsFiles = fs.readdirSync( routesFolder )
 						 .filter( file => file.endsWith( '.js' ) )
