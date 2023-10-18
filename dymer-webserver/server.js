@@ -5,7 +5,6 @@ var url = require("url");
 require("./config/config.js");
 const util = require("./utility");
 const app = express();
-const portExpress = global.configService.port; //context-path
 const bodyParser = require("body-parser");
 const path = require('path');
 const fs = require('fs');
@@ -40,23 +39,30 @@ var memoryStore = new session.MemoryStore();
 /**********************************************************************************************************************/
 /*                                                   Swagger Config                                                   */
 /**********************************************************************************************************************/
-const contextPath = util.getContextPath('webserver');
+const configService = global.configService;
+const portExpress = configService.port; //context-path
+const protocol = configService.protocol;
+const appName = configService.app_name;
+const contextPath = util.getContextPath( 'webserver' );
 
-const swaggerUi = require('swagger-ui-express')
-const swaggerFile = require('./swagger_webserver.json')
+const swaggerUi = require( 'swagger-ui-express' )
+const swaggerFile = require( './swagger_webserver.json' )
 
-const host = global.configService.ip + ":" + portExpress;
+const host = configService.ip + ":" + portExpress;
+const serverUrl = protocol + "://" + host + contextPath
 const docPath = '/api/doc';
 
+// swaggerFile.basePath = contextPath;
+// swaggerFile.host = host;
+
 const options = {
-    swaggerOptions: {
-        docExpansion: 'none'
+    swaggerOptions : {
+        docExpansion : 'none'
     }
 };
 
-app.use(docPath, swaggerUi.serve, swaggerUi.setup(swaggerFile, options))
+app.use( docPath, swaggerUi.serve, swaggerUi.setup( swaggerFile, options ) )
 
-const serverUrl = global.configService.protocol + "://" + host + contextPath
 /**********************************************************************************************************************/
 
 app.use(cookieParser());
@@ -74,6 +80,7 @@ app.use(session({
 var recoverForms = require("./routes/formfiles");
 
 var publicdemoDonwlonad = require("./routes/demodownloads");
+const swaggerAutogen = require( "swagger-autogen" );
 app.get('/deletelog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {
     // #swagger.tags = ['Webserver']
 
@@ -102,7 +109,7 @@ app.get('/checkservice', [loadUserInfo, util.checkIsPortalUser], (req, res) => {
     let infosize = logger.filesize("info");
     let errorsize = logger.filesize("error");
     let regex = /(?<!^).(?!$)/g;
-    let infomserv = JSON.parse(JSON.stringify(global.configService));
+    let infomserv = JSON.parse( JSON.stringify( configService ) );
     infomserv.adminPass = (infomserv.adminPass).replace(regex, '*');
     infomserv.adminUser = (infomserv.adminUser).replace(regex, '*');
     ret.setData({
@@ -649,15 +656,15 @@ if (util.ishttps('webserver')) {
         cert: fs.readFileSync(path.join(__dirname, 'ssl', 'server.crt'))
     };
     https.createServer(Httpsoptions, root).listen(portExpress, () => {
-        logger.info(nameFile + " | Up and running-- this is " + global.configService.app_name + " service on port:" + portExpress + " context-path: " + contextPath);
-        console.log("Up and running-- this is " + global.configService.protocol + " " + global.configService.app_name + " service on port:" + portExpress + " context-path:" + contextPath);
+        logger.info( nameFile + " | Up and running-- this is " + appName + " service on port:" + portExpress + " context-path: " + contextPath );
+        console.log( "Up and running-- this is " + protocol + " " + appName + " service on port:" + portExpress + " context-path:" + contextPath );
         // console.log(`${global.gConfig.services.webserver.port} listening on port ${global.gConfigt}`);
     });
 } else {
     root.listen(portExpress, () => {
         // logger.error("testtt");
-        logger.info(nameFile + " | Up and running-- this is " + global.configService.protocol + " " + global.configService.app_name + " service on port:" + portExpress + " context-path:" + contextPath);
-        console.log("Up and running-- this is " + global.configService.protocol + " " + global.configService.app_name + " service on port:" + portExpress + " context-path:" + contextPath);
+        logger.info( nameFile + " | Up and running-- this is " + protocol + " " + appName + " service on port:" + portExpress + " context-path:" + contextPath );
+        console.log( "Up and running-- this is " + protocol + " " + appName + " service on port:" + portExpress + " context-path:" + contextPath );
         console.log("Server on :", serverUrl);
         console.log("See Documentation at:", serverUrl + docPath);
         // console.log(`${global.gConfig.services.webserver.port} listening on port ${global.gConfigt}`);

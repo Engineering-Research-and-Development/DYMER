@@ -1,27 +1,40 @@
 const swaggerAutogen = require( 'swagger-autogen' )( {openapi : '3.0.0'} )
+require( "./config/config.js" );
+const util = require( "./utility" );
+
+const configService = global.configService;
+const portExpress = configService.port;
+const protocol = configService.protocol;
+const contextPath = util.getContextPath( 'webserver' );
+const host = configService.ip + ":" + portExpress;
+
+const server = protocol + "://" + host + contextPath
 
 const doc = {
-	info         : {
+	info    : {
 		version     : "1.0.0",
 		title       : "DYMER API",
 		description : "Dymer API Documentation"
 	},
-	servers      : [ {
-		url         : "http://localhost:8080/dymergui",
+	servers : [ {
+		url         : server,
 		description : "Webserver"
 	}, {
-		url         : "http://localhost:8080/dymergui/api/templates",
+		url         : server + "/api/templates",
 		description : "Template server"
 	}, {
-		url         : "http://localhost:8080/dymergui/api/dservice",
+		url         : server + "/api/dservice",
 		description : "Service server"
 	}, {
-		url         : "http://localhost:8080/dymergui/api/forms",
+		url         : server + "/api/forms",
 		description : "Form server"
 	}, {
-		url         : "http://localhost:8080/dymergui/api/entities",
+		url         : server + "/api/entities",
 		description : "Entity server"
 	} ],
+	// host:                "localhost:0000",
+	// basePath:            "/",
+	// schemes:             ['http'],
 	consumes     : [ 'application/json' ],
 	produces     : [ 'application/json' ],
 	docExpansion : "none",
@@ -49,6 +62,7 @@ const outputFile = './swagger_webserver.json';
 // Get all the *.js files in ./routes
 const routesFolder = './routes/';
 const fs = require( 'fs' );
+// const util = require( "./utility" );
 
 const endpointsFiles = fs.readdirSync( routesFolder )
 						 .filter( file => file.endsWith( '.js' ) )
