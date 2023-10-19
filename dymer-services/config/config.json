@@ -30,14 +30,11 @@
                     "d_uid": 5,
                     "d_gid": 55,
                     "d_mail": "massimo.giacalone@eng.it",
-                    "d_pwd": "test"
-                },
-                "extraInfo" : {
+                    "d_pwd": "test",
                     "companyId": "37601",
                     "groupId": "37629",
                     "cms": "lfr",
                     "userId": "37635",
-                    "emailAddress": "massimo.giacalone@eng.it",
                     "virtualhost": "localhost"
                 },
                 "ip": "192.168.1.55",

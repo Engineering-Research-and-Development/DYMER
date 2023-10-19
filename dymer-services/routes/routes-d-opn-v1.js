@@ -257,7 +257,14 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
                 HookModel.find(queryFind).then((hooks) => {
                     if (hooks.length > 0){     
                         (hooks).forEach(hook => {
-                            let extraInfo = util.getServiceConfig("opnsearch").extraInfo;
+                            let extraInfo = {
+                                companyId: util.getServiceConfig("opnsearch").user.companyId,
+                                groupId: util.getServiceConfig("opnsearch").user.groupId,
+                                cms: util.getServiceConfig("opnsearch").user.cms,
+                                userId: util.getServiceConfig("opnsearch").user.userId,
+                                emailAddress: util.getServiceConfig("opnsearch").user.d_mail,
+                                virtualhost: util.getServiceConfig("opnsearch").user.virtualHost
+                            }
                             let promises = [];
                             /*Per ogni entità invoco l'operazione contenuta nell'Hook Type, per aggiornare gli assets di Openness*/ 
                             response.data.data.forEach(function(rdd, ind) {
@@ -305,9 +312,10 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
                                     setTimeout(function() {
                                         if (typeof(entity) == "undefined"){
                                             if (hook.eventType == "after_delete"){
+                                                /*MARCO ---> VERIFICARE EMAIL E COMPANY ID PER UTENTE DI LR*/
                                                 let asset = {
-                                                    "emailAddress": util.getServiceConfig("opnsearch").extraInfo.emailAddress,
-                                                    "companyId": Number(util.getServiceConfig("opnsearch").extraInfo.companyId),
+                                                    "emailAddress": util.getServiceConfig("opnsearch").user.d_mail,
+                                                    "companyId": Number(util.getServiceConfig("opnsearch").user.companyId),
                                                     "index": el[0]._index,
                                                     "type": el[0]._type,
                                                     "id": dymerentries[ind].id_,
