@@ -2,43 +2,37 @@ const swaggerAutogen = require( 'swagger-autogen' )( {openapi : '3.0.0'} )
 require( "./config/config.js" );
 const util = require( "./utility" );
 
-const configService = global.configService;
-const portExpress = configService.port;
-const protocol = configService.protocol;
+const gblConfigService = global.configService;
+const host = gblConfigService.ip + ":" + gblConfigService.port;	//TODO check if port exist or not
 const contextPath = util.getContextPath( 'webserver' );
-const host = configService.ip + ":" + portExpress;
 
-const server = protocol + "://" + host + contextPath
+const serverUrl = gblConfigService.protocol + "://" + host + contextPath
 
 const doc = {
-	info    : {
+	info     : {
 		version     : "1.0.0",
 		title       : "DYMER API",
 		description : "Dymer API Documentation"
 	},
-	servers : [ {
-		url         : server,
+	servers  : [ {
+		url         : serverUrl,
 		description : "Webserver"
 	}, {
-		url         : server + "/api/templates",
+		url         : serverUrl + "/api/templates",
 		description : "Template server"
 	}, {
-		url         : server + "/api/dservice",
+		url         : serverUrl + "/api/dservice",
 		description : "Service server"
 	}, {
-		url         : server + "/api/forms",
+		url         : serverUrl + "/api/forms",
 		description : "Form server"
 	}, {
-		url         : server + "/api/entities",
+		url         : serverUrl + "/api/entities",
 		description : "Entity server"
 	} ],
-	// host:                "localhost:0000",
-	// basePath:            "/",
-	// schemes:             ['http'],
-	consumes     : [ 'application/json' ],
-	produces     : [ 'application/json' ],
-	docExpansion : "none",
-	tags         : [ {
+	consumes : [ 'application/json' ],
+	produces : [ 'application/json' ],
+	tags     : [ {
 		name        : "Webserver",
 		description : "Select Webserver"
 	}, {
@@ -77,11 +71,8 @@ endpointsFiles.unshift( '../dymer-entities/server.js' );
 
 console.log( "Searching endpoints in: ", endpointsFiles );
 
-
-// Manual generation of swagger documentation
-swaggerAutogen( outputFile, endpointsFiles, doc );
-
-// // Automatic generation of swagger documentation and launch of the webserver module
-// swaggerAutogen( outputFile, endpointsFiles, doc ).then( () => {
+swaggerAutogen( outputFile, endpointsFiles, doc )
+// // Uncomment to first automatically create SwaggerDoc and immediately after run the webserver module
+// .then( () => {
 // 	require( './server' )
 // } )

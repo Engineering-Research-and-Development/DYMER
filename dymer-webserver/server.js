@@ -36,34 +36,26 @@ const session = require('express-session');
 var cookieParser = require('cookie-parser');
 var memoryStore = new session.MemoryStore();
 
-/**********************************************************************************************************************/
-/*                                                   Swagger Config                                                   */
-/**********************************************************************************************************************/
-const configService = global.configService;
-const portExpress = configService.port; //context-path
-const protocol = configService.protocol;
-const appName = configService.app_name;
+const gblConfigService = global.configService;
+const portExpress = gblConfigService.port;
+const protocol = gblConfigService.protocol;
+const appName = gblConfigService.app_name;
 const contextPath = util.getContextPath( 'webserver' );
 
 const swaggerUi = require( 'swagger-ui-express' )
 const swaggerFile = require( './swagger_webserver.json' )
 
-const host = configService.ip + ":" + portExpress;
+const host = gblConfigService.ip + ":" + portExpress;
 const serverUrl = protocol + "://" + host + contextPath
 const docPath = '/api/doc';
 
-// swaggerFile.basePath = contextPath;
-// swaggerFile.host = host;
-
 const options = {
-    swaggerOptions : {
-        docExpansion : 'none'
-    }
+	swaggerOptions : {
+		docExpansion : 'none'
+	}
 };
 
 app.use( docPath, swaggerUi.serve, swaggerUi.setup( swaggerFile, options ) )
-
-/**********************************************************************************************************************/
 
 app.use(cookieParser());
 app.use(session({
@@ -109,7 +101,7 @@ app.get('/checkservice', [loadUserInfo, util.checkIsPortalUser], (req, res) => {
     let infosize = logger.filesize("info");
     let errorsize = logger.filesize("error");
     let regex = /(?<!^).(?!$)/g;
-    let infomserv = JSON.parse( JSON.stringify( configService ) );
+    let infomserv = JSON.parse( JSON.stringify( gblConfigService ) );
     infomserv.adminPass = (infomserv.adminPass).replace(regex, '*');
     infomserv.adminUser = (infomserv.adminUser).replace(regex, '*');
     ret.setData({
