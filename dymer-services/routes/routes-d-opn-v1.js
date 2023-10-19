@@ -211,7 +211,7 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
             }
         };
         let formdata_admin = new FormData();     
-        let config = {
+        let entityConfig = {
             method: 'GET',
             url: util.getServiceUrl('webserver') + util.getContextPath('webserver') + '/api/entities/api/v1/entity/',
             params: par,
@@ -219,14 +219,15 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
                 ...formdata_admin.getHeaders()
             } 
         };
-        axios(config).then(response => {
+        axios(entityConfig).then(response => {
             logger.info(nameFile + ' | run/:id | get entities by index ' + el[0]._index + ' : ' + 
             response.data.data.map(obj => 
                 (JSON.stringify({id: obj._id, 
                                  title: obj._source.title, 
                                  changed: obj._source.properties.changed}))));
             /*Acquisisco tutti gli assets relativi all'indice*/
-            let dymerentries = [{
+            let dymerentries = [];
+            /*let dymerentries = [{
                 index_ : 'pipeline_from_import',
                 id_: 'vmtestle-6hdm-4678-8913-2061678189131',
                 modifiedDate: '2023-09-15T15:04:06.846Z'
@@ -235,120 +236,133 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
                 index_ : 'pipeline_from_import',
                 id_: 'vmtestlm-q8zj-4694-9007-268169479007',
                 modifiedDate: '2023-09-14T15:00:13.066Z'
-            }];
-            /*Verifo la presenza degli hooks*/
-            let queryFind = {
-                "_index":el[0]._index,
-                "service.serviceType": "openness_search"
+            }];*/
+            let credentials = util.getServiceConfig("opnsearch").user.d_mail + ":" + util.getServiceConfig("opnsearch").user.d_pwd;
+            let dymerConfig = {
+                method: 'GET',
+                url: util.getServiceUrl('opnsearch') + "/api/jsonws/dym.dymerentry/getDymerEntries/", 
+                params: {"index" : el[0]._index},
+                headers: {
+                    ...formdata_admin.getHeaders(),
+                    'Authorization': `Basic ` + Buffer.from(credentials, 'utf-8').toString('base64')
+                }
             };
-            HookModel.find(queryFind).then((hooks) => {
-                if (hooks.length > 0){     
-                    (hooks).forEach(hook => {
-                        /*MARCO ---> VERIFICARE UTENTE DI LR*/
-                        let extraInfo = {
-                            companyId: '37601',
-                            groupId: '37629',
-                            cms: 'lfr',
-                            userId: '37635',
-                            emailAddress: 'massimo.giacalone@eng.it',
-                            virtualhost: 'localhost'
-                        }
-                        let promises = [];
-                        /*Per ogni entità invoco l'operazione contenuta nell'Hook Type, per aggiornare gli assets di Openness*/ 
-                        response.data.data.forEach(function(rdd, ind) {
-                            let entityChangedDate = rdd._source.properties.changed;
-                            let dymerentry = dymerentries.find(value => value.id_ === rdd._id);
-                            promises.push(new Promise(function(resolve,reject) {
-                                /*Se l'asset manca e se è previsto l'insert, 
-                                  effettuo l'inserimento dell'asset*/
-                                setTimeout(function() {
-                                    if (typeof(dymerentry) == "undefined"){
-                                        if (hook.eventType == "after_insert"){
-                                            logger.info(nameFile + ' | run/:id | postAssettOpenness for ' + hook.eventType.split("after_")[1] + ' of ' + rdd._id);
-                                            postAssettOpenness(hook.eventType.split("after_")[1], rdd, el[0], extraInfo);
-                                            resolve("INSERT OF ASSET " + rdd._id + " WITH TITLE " + rdd._source.title);
-                                        }    
-                                    }else{
-                                        /*Se l'asset esiste, se è previsto l'update e se la data di modifica dell'entità
-                                        è più recente di quella dell'asset, aggiorno l'asset*/
-                                        if (hook.eventType == "after_update"){
-                                            if (entityChangedDate > dymerentry.modifiedDate){
+            axios(dymerConfig).then(dymerResponse => {
+                dymerentries = dymerResponse.data;
+                /*Verifo la presenza degli hooks*/
+                let queryFind = {
+                    "_index":el[0]._index,
+                    "service.serviceType": "openness_search"
+                };
+                HookModel.find(queryFind).then((hooks) => {
+                    if (hooks.length > 0){     
+                        (hooks).forEach(hook => {
+                            let extraInfo = util.getServiceConfig("opnsearch").extraInfo;
+                            let promises = [];
+                            /*Per ogni entità invoco l'operazione contenuta nell'Hook Type, per aggiornare gli assets di Openness*/ 
+                            response.data.data.forEach(function(rdd, ind) {
+                                let entityChangedDate = rdd._source.properties.changed;
+                                let dymerentry = dymerentries.find(value => value.id_ === rdd._id);
+                                promises.push(new Promise(function(resolve,reject) {
+                                    /*Se l'asset manca e se è previsto l'insert, 
+                                    effettuo l'inserimento dell'asset*/
+                                    setTimeout(function() {
+                                        if (typeof(dymerentry) == "undefined"){
+                                            if (hook.eventType == "after_insert"){
                                                 logger.info(nameFile + ' | run/:id | postAssettOpenness for ' + hook.eventType.split("after_")[1] + ' of ' + rdd._id);
                                                 postAssettOpenness(hook.eventType.split("after_")[1], rdd, el[0], extraInfo);
-                                                resolve("UPDATE OF ASSET " + rdd._id + " WITH TITLE " + rdd._source.title);
-                                            }   
-                                        }
-                                    } 
-                                }, 1000 * (ind + 1)); 
-                            }));
+                                                resolve("INSERT OF ASSET " + rdd._id + " WITH TITLE " + rdd._source.title);
+                                            }    
+                                        }else{
+                                            /*Se l'asset esiste, se è previsto l'update e se la data di modifica dell'entità
+                                            è più recente di quella dell'asset, aggiorno l'asset*/
+                                            if (hook.eventType == "after_update"){
+                                                if (entityChangedDate > dymerentry.modifiedDate){
+                                                    logger.info(nameFile + ' | run/:id | postAssettOpenness for ' + hook.eventType.split("after_")[1] + ' of ' + rdd._id);
+                                                    postAssettOpenness(hook.eventType.split("after_")[1], rdd, el[0], extraInfo);
+                                                    resolve("UPDATE OF ASSET " + rdd._id + " WITH TITLE " + rdd._source.title);
+                                                }   
+                                            }
+                                        } 
+                                    }, 1000 * (ind + 1)); 
+                                }));
+                            });
+                            promises.forEach(function(promise, index) {
+                                promise.then((result) => {
+                                    console.log(result);
+                                    logger.info(nameFile + ' | run/:id | ' + result);
+                                }).catch((error) => {
+                                    console.error(nameFile + ' | run/:id | Error for Insert/Update Operation | ' + error);
+                                    logger.error(nameFile + ' | run/:id | Error for Insert/Update Operation | ' + error);
+                                })
+                            });
+                            /*Verifico se sono presenti assets in più, rispetto alle entità, 
+                            ed eventualmente li elimino, se il relativo hook è previsto*/
+                            promises = [];  
+                            for (let ind = 0; ind < dymerentries.length; ind++) {
+                                let entity = response.data.data.find(value => value._id === dymerentries[ind].id_);
+                                promises.push(new Promise(function(resolve,reject) {
+                                    setTimeout(function() {
+                                        if (typeof(entity) == "undefined"){
+                                            if (hook.eventType == "after_delete"){
+                                                let asset = {
+                                                    "emailAddress": util.getServiceConfig("opnsearch").extraInfo.emailAddress,
+                                                    "companyId": Number(util.getServiceConfig("opnsearch").extraInfo.companyId),
+                                                    "index": el[0]._index,
+                                                    "type": el[0]._type,
+                                                    "id": dymerentries[ind].id_,
+                                                    "notify":el[0].sendNotification
+                                                };
+                                                let queryFind = { 'servicetype': hook.eventType.split("after_")[1] };
+                                                OpnSearchConfig.find(queryFind).then((els) => {
+                                                    if (els.length > 0) {
+                                                        logger.info(nameFile + ' | run/:id | callOpennessJsw for delete of ' + dymerentries[ind].id_);
+                                                        callOpennessJsw(els[0], asset);
+                                                        resolve("DELETED ASSET " + dymerentries[ind].id_ + " WITH TITLE " + dymerentries[ind].title);
+                                                    }
+                                                });
+                                            }    
+                                        } 
+                                    }, 1000 * (ind + 1)); 
+                                }));    
+                            };
+                            promises.forEach(function(promise, index) {
+                                promise.then((result) => {
+                                    console.log(result);
+                                    logger.info(nameFile + ' | run/:id | ' + result);
+                                }).catch((error) => {
+                                    console.error(nameFile + ' | run/:id | Error for Delete Operation | ' + error);
+                                    logger.error(nameFile + ' | run/:id | Error for Delete Operation | ' + error);
+                                })
+                            });
                         });
-                        promises.forEach(function(promise, index) {
-                            promise.then((result) => {
-                                console.log(result);
-                                logger.info(nameFile + ' | run/:id | ' + result);
-                            }).catch((error) => {
-                                console.error(nameFile + ' | run/:id | Error for Insert/Update Operation | ' + error);
-                                logger.error(nameFile + ' | run/:id | Error for Insert/Update Operation | ' + error);
-                            })
-                        });
-                        /*Verifico se sono presenti assets in più, rispetto alle entità, 
-                          ed eventualmente li elimino, se il relativo hook è previsto*/
-                        promises = [];  
-                        for (let ind = 0; ind < dymerentries.length; ind++) {
-                            let entity = response.data.data.find(value => value._id === dymerentries[ind].id_);
-                            promises.push(new Promise(function(resolve,reject) {
-                                setTimeout(function() {
-                                    if (typeof(entity) == "undefined"){
-                                        if (hook.eventType == "after_delete"){
-                                            /*MARCO ---> VERIFICARE EMAIL E COMPANY ID PER UTENTE DI LR*/
-                                            let asset = {
-                                                "emailAddress": 'massimo.giacalone@eng.it',
-                                                "companyId": Number(37601),
-                                                "index": el[0]._index,
-                                                "type": el[0]._type,
-                                                "id": dymerentries[ind].id_,
-                                                "notify":el[0].sendNotification
-                                            };
-                                            let queryFind = { 'servicetype': hook.eventType.split("after_")[1] };
-                                            OpnSearchConfig.find(queryFind).then((els) => {
-                                                if (els.length > 0) {
-                                                    logger.info(nameFile + ' | run/:id | callOpennessJsw for delete of ' + dymerentries[ind].id_);
-                                                    callOpennessJsw(els[0], asset);
-                                                    resolve("DELETED ASSET " + dymerentries[ind].id_ + " WITH TITLE " + dymerentries[ind].title);
-                                                }
-                                            });
-                                        }    
-                                    } 
-                                }, 1000 * (ind + 1)); 
-                            }));    
-                        };
-                        promises.forEach(function(promise, index) {
-                            promise.then((result) => {
-                                console.log(result);
-                                logger.info(nameFile + ' | run/:id | ' + result);
-                            }).catch((error) => {
-                                console.error(nameFile + ' | run/:id | Error for Delete Operation | ' + error);
-                                logger.error(nameFile + ' | run/:id | Error for Delete Operation | ' + error);
-                            })
-                        });
-                    });
-                    ret.setSuccess(true);
-                    ret.setMessages("Rule executed successfully");
-                    return res.send(ret);
-                }else{
+                        ret.setSuccess(true);
+                        ret.setMessages("Rule executed successfully");
+                        return res.send(ret);
+                    }else{
+                        ret.setSuccess(false);
+                        ret.setMessages("No hooks associated with the rule !");
+                        return res.send(ret);
+                    }
+                });
+            }).catch(error => {
+                if (error) {
+                    console.error("ERROR | " + nameFile + " | dym.dymerentry/getDymerEntries ", error);
+                    logger.error(nameFile + " | dym.dymerentry/getDymerEntries " + error);
+                    ret.setMessages("Get DymerEntries Error");
                     ret.setSuccess(false);
-                    ret.setMessages("No hooks associated with the rule !");
+                    ret.setExtraData({ "log": error.stack });
                     return res.send(ret);
                 }
             });
         });
-    }).catch((err) => {
-        if (err) {
-            console.error("ERROR | " + nameFile + " | run/:id :", id, err);
-            logger.error(nameFile + ' | run/:id : ' + id + " " + err);
+    }).catch((error) => {
+        if (error) {
+            console.error("ERROR | " + nameFile + " | run/:id :", id, error);
+            logger.error(nameFile + ' | run/:id : ' + id + " " + error);
             ret.setMessages("Run rule Error");
             ret.setSuccess(false);
-            ret.setExtraData({ "log": err.stack });
+            ret.setExtraData({ "log": error.stack });
             return res.send(ret);
         }
     })
