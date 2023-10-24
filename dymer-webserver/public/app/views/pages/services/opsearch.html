@@ -159,6 +159,57 @@
                             <span class="btn btn-info " ng-click="saveOpnSearchConfig(opnsearch.config.delete) ">Save</span>
                         </div>
                     </div>
+                    <!--MG - Run RULE - Inizio -->
+                    <div class="row">
+                        <div class="col-12 ">
+                            <h5>Get</h5>
+                        </div>
+                        <input type="hidden" ng-model="opnsearch.config.get.servicetype">
+                        <input type="hidden" ng-model="opnsearch.config.get.id">
+                    </div>
+                    <div class="row ">
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Method</label>
+                                <select ng-model="opnsearch.config.get.configuration.method " class="form-control ">
+                                    <option value="GET">GET</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-3 ">
+                            <div class="form-group ">
+                                <label>Host</label>
+                                <input type="text" ng-model="opnsearch.config.get.configuration.host " class="form-control ">
+                            </div>
+                        </div>
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Port</label>
+                                <input type="text " class="form-control " ng-model="opnsearch.config.get.configuration.port ">
+                            </div>
+                        </div>
+
+                        <div class="col-5 ">
+                            <div class="form-group ">
+                                <label>Path</label>
+                                <input type="text " class="form-control " ng-model="opnsearch.config.get.configuration.path ">
+                            </div>
+                        </div>
+                        <div class="col-5 ">
+                            <div class="form-group ">
+                                <label>Dymer Path</label>
+                                <input type="text " class="form-control " ng-model="opnsearch.config.get.configuration.dymerpath">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-right ">
+                        <div class="col-12 ">
+                            <span class="btn btn-info " ng-click="saveOpnSearchConfig(opnsearch.config.get) ">Save</span>
+                        </div>
+                    </div>
+                    <hr>
+                    <!--MG - Run RULE - Fine -->
                 </div>
             </div>
             <div class="card-footer ">

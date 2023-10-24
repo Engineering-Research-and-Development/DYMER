@@ -508,7 +508,6 @@ const removeDir = function(path) {
 
 
 function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action, fileurl) {
-
     var posturl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/" + index;
     if (action == "put")
         posturl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/" + el.instance.id;
@@ -545,6 +544,10 @@ function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action, fileurl) {
             url: posturl,
             headers: {
                 ...formdata.getHeaders(),
+                /*MG - Inizio*/
+                'dymeruser': `Bearer ${DYM}`,
+                'Referer': 'http://localhost/',
+                /*MG - Fine*/
                 'Authorization': `Bearer ${DYM}`,
                 'extrainfo': `${DYM_EXTRA}`,
             },
@@ -572,21 +575,22 @@ function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action, fileurl) {
 
 /*MG - Funzione di import MODEL e TEMPLATES - Inizio*/
 function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_objJsonB64_admin, extrainfo_objJsonB64_admin, originalrelquery, newentityType){
-    var localApiUrl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + '/api/' + formTemplate + 's/api/v1/' + formTemplate + "/";
-    var externalApiUrl = sourcepath +'/api/' + formTemplate + 's/api/v1/' + formTemplate + "/";
+    let localApiUrl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + '/api/' + formTemplate + 's/api/v1/' + formTemplate + "/";
+    let externalApiUrl = sourcepath +'/api/' + formTemplate + 's/api/v1/' + formTemplate + "/";
     /*Verifico se i moduli da importare sono già presenti nella destinazione*/
-    var modulesIds = [];
-    var titleId = {};
-    var formdata_admin = new FormData();
-    var postData = new FormData();
-    var config = {
+    let modulesIds = [];
+    let titleId = {};
+    let formdata_admin = new FormData();
+    let postData = new FormData();
+    let config = {
         method: 'GET',
         url: localApiUrl,
         params: { "query": { "instance._index": { "$eq": newentityType } } },
         headers: {
             ...formdata_admin.getHeaders(),
             'dymeruser': userinfo_objJsonB64_admin,
-            
+            'Referer': 'http://localhost/',
+            'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
             'extrainfo': `${extrainfo_objJsonB64_admin}`,
         } 
     };
@@ -1356,6 +1360,8 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
                     url: pt_internal,
                     headers: {
                         ...formdata_admin.getHeaders(),
+                        'dymeruser': userinfo_objJsonB64_admin,
+                        'Referer': 'http://localhost/',
                         'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
                         'extrainfo': `${extrainfo_objJsonB64_admin}`,
                     },
