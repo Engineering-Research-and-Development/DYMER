@@ -2170,10 +2170,12 @@ router.get('/relationstat/', (req, res) => {
     });
 });
 //Marco gestione permessi
-router.get('/allindex/', (req, res) => {
+router.get('/allindex/:indexes?', (req, res) => {
     var ret = new jsonResponse();
     let params = {};
-    params["index"] = "_all";
+    let indexes_ = req.params.indexes ? req.params.indexes.split(",") : ["_all"]; 
+    //params["index"] = "_all";
+    params["index"] = indexes_
     client.indices.get(params, function(err, resp, status) {
         if (err) {
             console.error("ERROR | " + nameFile + '| allindex :', err);

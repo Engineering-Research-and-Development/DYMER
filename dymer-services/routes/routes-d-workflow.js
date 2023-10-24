@@ -46,8 +46,8 @@ router.post('/listener', async function (req, res) {
 
     await new Promise(resolve => setTimeout(resolve, 5000));
     //  console.log(' | data.obj', data.obj);
-    genEntWFAction(eventSource[1], data.obj, origindata, originheader, extraInfo)
-
+    // genEntWFAction(eventSource[1], data.obj, origindata, originheader, extraInfo)
+    genWFAction(eventSource[1], data.obj, rfrom, undefined, origindata, originheader, extraInfo)
 });
 
 if (typeof String.prototype.parseFunction != 'function') {
@@ -64,10 +64,12 @@ if (typeof String.prototype.parseFunction != 'function') {
 }
 
 function genWFAction(action, objToPost, rfrom, rules, origindata, originheader, extraInfo) {
+
     origindata = (origindata == undefined) ? objToPost : origindata;
     var opnConfUtil = util.getServiceConfig("opnsearch");
     let base_admin = ["francesco.stefanelli@eng.it", "marcobernardino.romano@eng.it"];
-    let wfindexes = ["workflow", "sps", "spd"];
+    // let wfindexes = ["workflow", "sps", "spd"];
+    let wfindexes = ["sps", "spd"];
     let old_wflevel = origindata._source.wflevel;
     let new_wflevel = objToPost._source.wflevel;
     let titleEntity = objToPost._source.title;
@@ -91,72 +93,88 @@ function genWFAction(action, objToPost, rfrom, rules, origindata, originheader, 
         // "role": "Notificationv2"
         "recipients": []
     };
-    if (wfindexes.includes(index)) {
-        if (action == "insert") {
-            //genera 7 entità
-            notifObj.title = "L'utente " + dymeruser.username + " ha inserito la seguente risorsa di catalogo:";
-            notifObj.description = titleEntity;
-            notifObj.sender = orignalOwner;
-            notifObj.recipients = base_admin
-        }
-        if (action == "delete") {
-            notifObj.title = "L'utente " + dymeruser.username + "ha eliminato la seguente risorsa di catalogo:";
-            notifObj.description = titleEntity;
-            notifObj.recipients = base_admin
-        }
-        if (action == "update") {
-            let levels = ["In compilazione", "Da approvare", "Da rivedere", "Approvato"];
-            //  notifObj.title="L'utente "+dymeruser.username+"  ha inserito/aggiornato/cancellato la seguente risorsa di catalogo:" ;
-            notifObj.title = "L'utente " + dymeruser.username + " ha aggiornato la seguente risorsa di catalogo:";
-            if (old_wflevel == levels[0] && new_wflevel == levels[1]) {
-                //send noti a ADMIN
-                notifObj.description = titleEntity + ". <br> La risorsa deve essere Approvata o modificata nello stato da rivisione ";
-                notifObj.sender = orignalOwner;
-                notifObj.recipients = base_admin
-            }
-            if (old_wflevel == levels[1] && new_wflevel == levels[2]) {
-                //send noti a owner
-                notifObj.description = titleEntity + ". <br> La risorsa deve essere modificata e riportata nello stato di Approvazione";
-                notifObj.sender = updateUser;
-                notifObj.recipients.push(orignalOwner);
-            }
-            if (old_wflevel == levels[2] && new_wflevel == levels[1]) {
-                notifObj.description = titleEntity + ". <br> La risorsa deve essere Approvata o modificata nello stato da rivisione ";
-                notifObj.sender = orignalOwner;
-                notifObj.recipients = base_admin
-                notifObj.recipients.push(updateUser);
-            }
-            if (old_wflevel == levels[1] && new_wflevel == levels[3]) {
-                notifObj.title = "L'utente " + dymeruser.username + "  ha Approvato la seguente risorsa :";
-                notifObj.description = titleEntity;
-                notifObj.sender = updateUser;
-                notifObj.recipients.push(orignalOwner);
-            }
-        }
+    // if (wfindexes.includes(index)) {  // TO DECOMMENT
+    //     if (action == "insert") {
+    //         //genera 7 entità
+    //         notifObj.title = "L'utente " + dymeruser.username + " ha inserito la seguente risorsa di catalogo:";
+    //         notifObj.description = titleEntity;
+    //         notifObj.sender = orignalOwner;
+    //         notifObj.recipients = base_admin
+    //     }
+    //     if (action == "delete") {
+    //         notifObj.title = "L'utente " + dymeruser.username + "ha eliminato la seguente risorsa di catalogo:";
+    //         notifObj.description = titleEntity;
+    //         notifObj.recipients = base_admin
+    //     }
+    //     if (action == "update") {
+    //         let levels = ["In compilazione", "Da approvare", "Da rivedere", "Approvato"];
+    //         //  notifObj.title="L'utente "+dymeruser.username+"  ha inserito/aggiornato/cancellato la seguente risorsa di catalogo:" ;
+    //         notifObj.title = "L'utente " + dymeruser.username + " ha aggiornato la seguente risorsa di catalogo:";
+    //         if (old_wflevel == levels[0] && new_wflevel == levels[1]) {
+    //             //send noti a ADMIN
+    //             notifObj.description = titleEntity + ". <br> La risorsa deve essere Approvata o modificata nello stato da rivisione ";
+    //             notifObj.sender = orignalOwner;
+    //             notifObj.recipients = base_admin
+    //         }
+    //         if (old_wflevel == levels[1] && new_wflevel == levels[2]) {
+    //             //send noti a owner
+    //             notifObj.description = titleEntity + ". <br> La risorsa deve essere modificata e riportata nello stato di Approvazione";
+    //             notifObj.sender = updateUser;
+    //             notifObj.recipients.push(orignalOwner);
+    //         }
+    //         if (old_wflevel == levels[2] && new_wflevel == levels[1]) {
+    //             notifObj.description = titleEntity + ". <br> La risorsa deve essere Approvata o modificata nello stato da rivisione ";
+    //             notifObj.sender = orignalOwner;
+    //             notifObj.recipients = base_admin
+    //             notifObj.recipients.push(updateUser);
+    //         }
+    //         if (old_wflevel == levels[1] && new_wflevel == levels[3]) {
+    //             notifObj.title = "L'utente " + dymeruser.username + "  ha Approvato la seguente risorsa :";
+    //             notifObj.description = titleEntity;
+    //             notifObj.sender = updateUser;
+    //             notifObj.recipients.push(orignalOwner);
+    //         }
+    //     }
+    //     /**********************/
+    //     WFRule.find(queryFind).then((els) => {
+    //         ret.setMessages("List");
+    //         ret.setData(els);
+    //         logger.info(nameFile + ' | post/listener    :' + JSON.stringify(els));
+    //         let rules = els;
+    //         postWF(action, objToPost, rfrom, rules);
+    //         return res.send(ret);
+    //     }).catch((err) => {
+    //         if (err) {
+    //             console.error("ERROR | " + nameFile + " | post/listener :", err);
+    //             logger.error(nameFile + ' | post/listener :' + err);
+    //             ret.setMessages("Get error");
+    //             ret.setSuccess(false);
+    //             ret.setExtraData({ "log": err.stack });
+    //             return res.send(ret);
+    //         }
+    //     });
+    //     /**********************/
+    //     let notBody = {
+    //         "/dym.dymerentry/sendPersonalNotification": notifObj
+    //     }
+    //     oPNnotify('insert', notBody, undefined, extraInfo, opnConfUtil)
+    // } else {
+        console.log("SIAMO NEL CASO DELL'EMAIL")
         /**********************/
+        var queryFind = { 'indexes': { $in: [objToPost._index] }, 'active': true };
         WFRule.find(queryFind).then((els) => {
-            ret.setMessages("List");
-            ret.setData(els);
-            logger.info(nameFile + ' | post/listener    :' + JSON.stringify(els));
-            let rules = els;
-            postWF(action, objToPost, rfrom, rules);
-            return res.send(ret);
+            // console.log("genEntWFAction | ELS: ", els)
+           let rules = els;
+            postWF(action, objToPost, rules, origindata);
         }).catch((err) => {
             if (err) {
                 console.error("ERROR | " + nameFile + " | post/listener :", err);
                 logger.error(nameFile + ' | post/listener :' + err);
-                ret.setMessages("Get error");
-                ret.setSuccess(false);
-                ret.setExtraData({ "log": err.stack });
-                return res.send(ret);
             }
         });
         /**********************/
-        let notBody = {
-            "/dym.dymerentry/sendPersonalNotification": notifObj
-        }
-        oPNnotify('insert', notBody, undefined, extraInfo, opnConfUtil)
-    }
+
+  //  }
 
 }
 
@@ -487,7 +505,7 @@ router.delete('/:id', util.checkIsAdmin, (req, res) => {
     })
 });
 /*************************************************************************/
-function postWF(action, objToPost, /*rfrom,*/ rules, origindata) { 
+function postWF(action, objToPost, /*rfrom,*/ rules, origindata) {
 
     console.log(nameFile + ' | action', action);
     console.log(nameFile + ' | objToPost', objToPost);
@@ -509,7 +527,8 @@ function postWF(action, objToPost, /*rfrom,*/ rules, origindata) {
                         case 'send-mail':
                             console.log("case mail")
                             let emailInfo = element['emailinfo']
-                            await sendMail(emailInfo, origindata)
+                            //await sendMail(emailInfo, origindata)
+                            await sendMail(emailInfo, objToPost)
                             break;
                         case 'notification':
 
@@ -555,7 +574,7 @@ async function sendMail(emailInfo, origindata) {
             lang: "it",
             mailBody: info.body // "Se tutto va per come deve andare, arriva per il workfloW",
         }
-        logger.debug(nameFile + ` | post | sendMail : ${mailInfo}`)    
+        logger.debug(nameFile + ` | post | sendMail : ${mailInfo}`)
 
         payload.push({
             mailInfo,
@@ -563,7 +582,7 @@ async function sendMail(emailInfo, origindata) {
         })
     }
     try {
-       await axios.post("http://localhost:9292/sendemails", payload)
+        await axios.post("http://localhost:9292/sendemails", payload)
 
     } catch (err) {
         console.error("ERROR | " + nameFile + " | workflow | sendMail:", err);

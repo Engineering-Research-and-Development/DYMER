@@ -662,4 +662,368 @@ function appendFormdata(FormData, data, name) {
         FormData.append(name, data);
     }
 }*/
+
+// ----------------------------------------------------------------------------
+// New additions
+// ----------------------------------------------------------------------------
+WFRule.find(queryFind).then((els) => {
+    ret.setMessages("List");
+    ret.setData(els);
+    logger.info(nameFile + ' | post/listener    :' + JSON.stringify(els));
+    let rules = els;
+    postWF(action, objToPost, rfrom, rules);
+    return res.send(ret);
+}).catch((err) => {
+    if (err) {
+        console.error("ERROR | " + nameFile + " | post/listener :", err);
+        logger.error(nameFile + ' | post/listener :' + err);
+        ret.setMessages("Get error");
+        ret.setSuccess(false);
+        ret.setExtraData({ "log": err.stack });
+        return res.send(ret);
+    }
+});
+
+
+
+function genEntWFAction(action, element, origindata, originheader, extraInfo) {
+    let dymeruser = JSON.parse(Buffer.from(originheader.dymeruser, 'base64').toString('utf-8'));
+    origindata = (origindata == undefined) ? element : origindata;
+    let index = element._index;
+    let newentityType = "dih";
+    // let wfindexes = ["workflow", "sps", "spd"];
+    let wfindexes = ["workflow", "sps", "spd", "dih"];
+    var objToPost = {}
+    if (wfindexes.includes(index)) {
+        if (action == "insert") {
+            var propert_ = {
+                owner: {
+                    uid: 0,
+                    gid: 0
+                },
+                "grant": {
+                    "update": {
+                        "uid": [
+                            ""
+                        ],
+                        "gid": [
+                            ""
+                        ]
+                    },
+                    "delete": {
+                        "uid": [
+                            ""
+                        ],
+                        "gid": [
+                            ""
+                        ]
+                    },
+                    "managegrant": {
+                        "uid": [
+                            ""
+                        ],
+                        "gid": [
+                            ""
+                        ]
+                    }
+                },
+                ipsource: ""
+            };
+            propert_.status = "1";
+            propert_.visibility = "0";
+            propert_.ipsource = element._source.properties.ipsource;
+            var singleEntity = {
+                "instance": {
+                    "index": newentityType,
+                    "type": newentityType
+                },
+                "data": {
+                    title: element._source.title + "gen",
+                    "description": element._source.description,
+                    properties: propert_
+                }
+            };
+            // if (rel_id != undefined)
+            //singleEntity.data.relation = { dih: [{ to: rel_id }] };
+            var extrainfo = extraInfo
+            let extrainfo_objJsonStr = JSON.stringify(extrainfo);
+            let extrainfo_objJsonB64 = Buffer.from(extrainfo_objJsonStr).toString("base64");
+            let userinfo = dymeruser;
+            userinfo.roles.push({
+                "role": "app-content-curator",
+                "id": "20110"
+            })
+            let userinfo_objJsonStr = JSON.stringify(userinfo);
+            let userinfo_objJsonB64 = Buffer.from(userinfo_objJsonStr).toString("base64");
+            //var objToPost = {
+            objToPost = {
+                'data': singleEntity,
+                'DYM': userinfo_objJsonB64,
+                'DYM_EXTRA': extrainfo_objJsonB64
+            };
+            // console.log('singleEntity', singleEntity);
+            //    postEntity(singleEntity, newentityType, objToPost.DYM, objToPost.DYM_EXTRA, originheader)
+        }
+    }
+    var queryFind = { 'indexes': { $in: [element._index] }, 'active': true };
+    WFRule.find(queryFind).then((els) => {
+        // console.log("genEntWFAction | ELS: ", els)
+        let rules = els;
+        postWF(action, objToPost, rules, singleEntity, origindata);
+    }).catch((err) => {
+        if (err) {
+            console.error("ERROR | " + nameFile + " | post/listener :", err);
+            logger.error(nameFile + ' | post/listener :' + err);
+        }
+    });
+}
+
+function postEntity(el, index, DYM, DYM_EXTRA, originheader) {
+    // var posturl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/" + index;
+    var posturl = util.getServiceUrl('entity') + "/api/v1/entity/" + index;
+
+    var formdata = new FormData();
+    appendFormdata(formdata, el);
+    var config = {
+        method: 'post',
+        url: posturl,
+        headers: {
+            ...formdata.getHeaders(),
+            //'dymeruser': `Bearer ${DYM}`,
+            'dymeruser': `${DYM}`,
+            //  'extrainfo': `${DYM_EXTRA}`,
+            "reqfrom": originheader.reqfrom
+        },
+        data: formdata
+    };
+    axios(config)
+        .then(function (updatedEl) { }).catch(function (error) {
+            console.log("Error__________", error);
+            logger.error(nameFile + ' | postMyData : ' + error);
+        });
+}
+
+function appendFormdata(FormData, data, name) {
+    var name = name || '';
+    if (typeof data === 'object') {
+        var index = 0
+        for (var key in data) {
+            if (data.hasOwnProperty(key)) {
+                if (name === '') {
+                    appendFormdata(FormData, data[key], key);
+                } else {
+                    appendFormdata(FormData, data[key], name + '[' + key + ']');
+                }
+            }
+            index++;
+        }
+    } else {
+        FormData.append(name, data);
+    }
+}
+
+router.get('/listrules', util.checkIsAdmin, (req, res) => {
+    var ret = new jsonResponse();
+    let callData = util.getAllQuery(req);
+    var queryFind = {};
+    WFRule.find(queryFind).then((els) => {
+        console.log(els)
+        ret.setMessages("List");
+        ret.setData(els);
+        return res.send(ret);
+    }).catch((err) => {
+        if (err) {
+            ret.setMessages("Get error");
+            ret.setSuccess(false);
+            ret.setExtraData({ "log": err.stack });
+            return res.send(ret);
+        }
+    })
+});
+
+router.post('/:id?', util.checkIsAdmin, function (req, res) {
+    let id = req.params.id;
+    let callData = util.getAllQuery(req);
+    // let data = callData.data;
+    let data_ = req.body;
+    let data = {
+        ...data_,
+        indexes: data_.indexes.map(item => item.id)
+    }
+
+    var copiaData = Object.assign({}, data);
+    var ret = new jsonResponse();
+    if (id != undefined) {
+        var myfilter = { "_id": mongoose.Types.ObjectId(id) };
+        WFRule.updateOne(myfilter, data,
+            function (err, raw) {
+                if (err) {
+                    ret.setSuccess(false);
+                    logger.error(nameFile + ' | post/workflow/:id? | updateOne :' + err);
+                    console.error("ERROR | " + nameFile + " | post/workflow/:id? | updateOne :", err);
+                    ret.setMessages("Model Error");
+                    return res.send(ret);
+                } else {
+                    ret.addData(copiaData);
+                    ret.setMessages("Config Updated");
+                    return res.send(ret);
+                }
+            }
+        );
+    } else {
+        var mod = new WFRule(data);
+        mod.save().then((el) => {
+            ret.setMessages("Config created successfully");
+            ret.addData(el);
+            return res.send(ret);
+        }).catch((err) => {
+            if (err) {
+                logger.error(nameFile + ' | post/workflow/:id? | create: ' + err);
+                console.error("ERROR | " + nameFile + " | post/workflow/:id? | create: ", err);
+                ret.setMessages("Post error");
+                ret.setSuccess(false);
+                ret.setExtraData({ "log": err.stack });
+                return res.send(ret);
+            }
+        })
+    }
+});
+
+router.put('/:id', util.checkIsAdmin, (req, res) => {
+    let id = req.params.id;
+    logger.info(nameFile + ' | put/workflow/:id   :' + id);
+    let callData = util.getAllQuery(req);
+    // let data = req.body;
+    let data_ = req.body;
+    let data = {
+        ...data_,
+        indexes: data_.indexes.map(item => item.id)
+    }
+    //console.log("UPDATE | req.body: \n", req.body)
+    console.log("UPDATE | req.body: \n", data)
+    var copiaData = Object.assign({}, data);
+    var ret = new jsonResponse();
+    var myfilter = { "_id": mongoose.Types.ObjectId(id) };
+    var myquery = {
+        "$set": req.body
+    };
+    // WFRule.updateOne(myfilter, req.body,
+    WFRule.updateOne(myfilter, data,
+        function (err, raw) {
+            if (err) {
+                ret.setSuccess(false);
+                console.error("ERROR | " + nameFile + " | put/sync/:id? | updateOne :", err);
+                logger.error(nameFile + ' | put/sync/:id? | updateOne : ' + err);
+                ret.setMessages("Element Error");
+                return res.send(ret);
+            } else {
+                ret.addData(copiaData);
+                ret.setMessages("Element Updated");
+                return res.send(ret);
+            }
+        }
+    );
+});
+
+router.delete('/:id', util.checkIsAdmin, (req, res) => {
+    var ret = new jsonResponse();
+    var id = req.params.id;
+    var myfilter = { "_id": id };
+    WFRule.findOneAndDelete(myfilter).then((el) => {
+        ret.setMessages("Element deleted");
+        return res.send(ret);
+    }).catch((err) => {
+        if (err) {
+            console.error("ERROR | " + nameFile + " | delete/workflow/:id? | findOneAndDelete :", err);
+            logger.error(nameFile + ' | delete/workflow/:id? | findOneAndDelete : ' + err);
+            ret.setMessages("Delete Error");
+            ret.setSuccess(false);
+            ret.setExtraData({ "log": err.stack });
+            return res.send(ret);
+        }
+    })
+});
+
+function postWF(action, objToPost, /*rfrom,*/ rules, origindata) { 
+
+    console.log(nameFile + ' | action', action);
+    console.log(nameFile + ' | objToPost', objToPost);
+    console.log(nameFile + ' | rules', rules);
+
+    rules.forEach(async element => {
+        let entity = { ...objToPost.data };
+        let extraInfo = { ...objToPost.DYM_EXTRA };
+
+        if (element.cond != undefined) {
+            let mfunc = element['cond'];
+            try {
+                var fnCond = ("function (obj, extraInfo, fnaction) {  " + mfunc + " }").parseFunction();
+                let condition = fnCond(entity, extraInfo, action);
+                console.log("----------------------------condition ", condition)
+
+                if (condition) {
+                    switch (element['workflow']) {
+                        case 'send-mail':
+                            console.log("case mail")
+                            let emailInfo = element['emailinfo']
+                            await sendMail(emailInfo, origindata)
+                            break;
+                        case 'notification':
+
+                            let notifObj = {
+                                "companyId": "Number(companyId)",
+                                "title": "",
+                                "description": "",
+                                "resourceId": "id",
+                                "index": "index",
+                                "type": "index",
+                                "resourceLink": "",
+                                "sender": "",
+                                // "role": "Notificationv2"
+                                "recipients": []
+                            };
+                            var opnConfUtil = util.getServiceConfig("opnsearch");
+                            let notBody = {
+                                "/dym.dymerentry/sendPersonalNotification": notifObj
+                            }
+                            oPNnotify('insert', notBody, undefined, extraInfo, opnConfUtil)
+                            break;
+                    }
+                }
+            } catch (error) {
+                console.log("error: ", error);
+            }
+        }
+    });
+}
+
+// Parte del sendMail
+async function sendMail(emailInfo, origindata) {
+
+    let payload = [];
+
+    for (let info of emailInfo) {
+        let mailInfo = {
+            from: "TEST <test@demetrixtech.it>", // info.from,
+            to: info.to, //"antonino.cacicia@demetrix.it",
+            subject: info.object, //.slice(0, -3), // To remove "gen" ending
+            lang: "it",
+            mailBody: info.body // "Se tutto va per come deve andare, arriva per il workfloW",
+        }
+        logger.debug(nameFile + ` | post | sendMail : ${mailInfo}`)    
+
+        payload.push({
+            mailInfo,
+            interpolationData: origindata
+        })
+    }
+    try {
+       await axios.post("http://localhost:9292/sendemails", payload) // to change IP address
+
+    } catch (err) {
+        console.error("ERROR | " + nameFile + " | workflow | sendMail:", err);
+        logger.error(nameFile + ' | workflow | sendMail:' + err);
+    }
+}
+
 module.exports = router;

@@ -134,8 +134,9 @@ router.post('/checkhook', function(req, res) {
         els.forEach(el => {
             // console.log("chekkkk el", JSON.stringify(el));
             logger.info(nameFile + ' | post/checkhook | HookModel: chek el' + JSON.stringify(el));
-            var pt = wbsUrl + el.service.servicePath;
+            //var pt = wbsUrl + el.service.servicePath;
             // pt = el.service.servicePath; 
+            let pt = util.getServiceUrl("dservice") + '/api/v1/workflow/listener';
             axios.post(pt, { 'data': data, "extraInfo": extraInfo,"origindata":origindata, "originheader":  originheader }, {
                     headers: headers
                 }).then(response => {

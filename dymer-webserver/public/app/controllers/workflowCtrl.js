@@ -143,12 +143,12 @@ angular.module('workflowCtrl', [])
         };
 
         $scope.getTemplStructures = function () {
-
+            console.log("tanto per cominciare mi stai chiamando")
             $("#structures-container").html("")            
             let selectedIndexes = {}
             let listTemplates = []
             let listIndexes = ($scope.configWorkflow.indexes.map(e => e.id)).join(",")
-   
+            console.log("viri ca lista è ", listIndexes)
             $http.get(baseContextPath + '/api/entities/api/v1/entity/allindex/'+listIndexes).then(function (rt) { // passa un array
                 let allindex = rt.data.data; 
 
