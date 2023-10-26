@@ -210,22 +210,25 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
     /*Acquisisco la regola relativa all'indice*/
     OpnSearchRule.find(myfilter).then((el) => {
         /*Acquisisco tutte le entità relative all'indice*/
-        let par = {
-            "body": {
+        let query = {
+            "query": {
                 "query": {
                     "bool": {
-                        "must": [
-                            { "term": { "_index": el[0]._index } }
-                        ]
+                        "must": [{
+                            "term": {
+                                "_index": el[0]._index
+                            }
+                        }]
                     }
                 }
             }
         };
-        let formdata_admin = new FormData();     
+        let formdata_admin = new FormData();  
+        appendFormdata(formdata_admin, query);   
         let entityConfig = {
             method: 'GET',
             url: util.getServiceUrl('webserver') + util.getContextPath('webserver') + '/api/entities/api/v1/entity/',
-            params: par,
+            params: query,
             headers: {
                 ...formdata_admin.getHeaders()
             } 
@@ -280,6 +283,7 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
                                         virtualhost: dymeruser.extrainfo.virtualHost
                                     }
                                     let promises = [];
+                                    let info = {};
                                     /*Per ogni entità invoco l'operazione contenuta nell'Hook Type, per aggiornare gli assets di Openness*/ 
                                     response.data.data.forEach(function(rdd, ind) {
                                         let entityChangedDate = rdd._source.properties.changed;
@@ -292,7 +296,11 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
                                                     if (hook.eventType == "after_insert"){
                                                         logger.info(nameFile + ' | run/:id | postAssettOpenness for ' + hook.eventType.split("after_")[1] + ' of ' + rdd._id);
                                                         postAssettOpenness(hook.eventType.split("after_")[1], rdd, el[0], extraInfo);
-                                                        resolve("INSERT OF ASSET " + rdd._id + " WITH TITLE " + rdd._source.title);
+                                                        info = {};
+                                                        info.operation = "Insert";
+                                                        info.id = rdd._id;
+                                                        info.title = rdd._source.title;
+                                                        resolve(info);
                                                     }    
                                                 }else{
                                                     /*Se l'asset esiste, se è previsto l'update e se la data di modifica dell'entità
@@ -301,22 +309,40 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
                                                         if (entityChangedDate > dymerentry.modifiedDate){
                                                             logger.info(nameFile + ' | run/:id | postAssettOpenness for ' + hook.eventType.split("after_")[1] + ' of ' + rdd._id);
                                                             postAssettOpenness(hook.eventType.split("after_")[1], rdd, el[0], extraInfo);
-                                                            resolve("UPDATE OF ASSET " + rdd._id + " WITH TITLE " + rdd._source.title);
+                                                            info = {};
+                                                            info.operation = "Update";
+                                                            info.id = rdd._id;
+                                                            info.title = rdd._source.title;
+                                                            infosssss.push(info);
+                                                            resolve(info);
                                                         }   
                                                     }
                                                 } 
                                             }, 1000 * (ind + 1)); 
                                         }));
                                     });
+                                    let bulk = OpnSearchRule.collection.initializeOrderedBulkOp();
                                     promises.forEach(function(promise, index) {
                                         promise.then((result) => {
                                             console.log(result);
                                             logger.info(nameFile + ' | run/:id | ' + result);
+                                            /*Aggiorno OpnSearchRule, inserendo i dati di riepilogo dell'esecuzione*/
+                                            bulk.find({ "_index": el[0]._index }).updateOne({                             
+                                                "$set":  { info: result, changed: new Date().toISOString()}
+                                            });
+                                            bulk.execute(function(error, result) {
+                                                if (error) {
+                                                    console.error(nameFile + ' | run/:id | Error for Update OpnSearchRule | ' + error);
+                                                    logger.error(nameFile + ' | run/:id |  Error for Update OpnSearchRule | ' + error);
+                                                } else {
+                                                    logger.info(nameFile + ' | run/:id | Update OpnSearchRule | ' + result);
+                                                }
+                                            });
                                         }).catch((error) => {
                                             console.error(nameFile + ' | run/:id | Error for Insert/Update Operation | ' + error);
                                             logger.error(nameFile + ' | run/:id | Error for Insert/Update Operation | ' + error);
                                         })
-                                    });
+                                    });   
                                     /*Verifico se sono presenti assets in più, rispetto alle entità, 
                                     ed eventualmente li elimino, se il relativo hook è previsto*/
                                     promises = [];  
@@ -339,7 +365,11 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
                                                             if (els.length > 0) {
                                                                 logger.info(nameFile + ' | run/:id | callOpennessJsw for delete of ' + dymerentries[ind].id_);
                                                                 callOpennessJsw(els[0], asset);
-                                                                resolve("DELETED ASSET " + dymerentries[ind].id_ + " WITH TITLE " + dymerentries[ind].title);
+                                                                info = {};
+                                                                info.operation = "Delete";
+                                                                info.id = dymerentries[ind].id_;
+                                                                info.title = dymerentries[ind].title;
+                                                                resolve(info);
                                                             }
                                                         });
                                                     }    
@@ -351,6 +381,18 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
                                         promise.then((result) => {
                                             console.log(result);
                                             logger.info(nameFile + ' | run/:id | ' + result);
+                                            /*Aggiorno OpnSearchRule, inserendo i dati di riepilogo dell'esecuzione*/
+                                            bulk.find({ "_index": el[0]._index }).updateOne({                             
+                                                "$set":  { info: result, changed: new Date().toISOString()}
+                                            });
+                                            bulk.execute(function(error, result) {
+                                                if (error) {
+                                                    console.error(nameFile + ' | run/:id | Error for Update OpnSearchRule | ' + error);
+                                                    logger.error(nameFile + ' | run/:id |  Error for Update OpnSearchRule | ' + error);
+                                                } else {
+                                                    logger.info(nameFile + ' | run/:id | Update OpnSearchRule | ' + result);
+                                                }
+                                            });
                                         }).catch((error) => {
                                             console.error(nameFile + ' | run/:id | Error for Delete Operation | ' + error);
                                             logger.error(nameFile + ' | run/:id | Error for Delete Operation | ' + error);
@@ -390,6 +432,24 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
         }
     })
 });
+function appendFormdata(FormData, data, name) {
+    var name = name || '';
+    if (typeof data === 'object') {
+        var index = 0
+        for (var key in data) {
+            if (data.hasOwnProperty(key)) {
+                if (name === '') {
+                    appendFormdata(FormData, data[key], key);
+                } else {
+                    appendFormdata(FormData, data[key], name + '[' + key + ']');
+                }
+            }
+            index++;
+        }
+    } else {
+        FormData.append(name, data);
+    }
+}
 /*MG - Run RULE - Fine*/ 
 
 router.post('/listener', function(req, res) {

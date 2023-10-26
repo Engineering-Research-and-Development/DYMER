@@ -314,7 +314,6 @@
                             <th>
                                 index
                             </th>
-                             
                             <th>
                                 Mapping
                             </th>
@@ -327,6 +326,10 @@
                             <th class=" text-center ">
                                 Run Rule
                             </th>
+                            <th class=" text-center ">
+                                Last Update
+                            </th>
+                            <th class=" text-center "></th>
                         </thead>
                         <tbody>
                             <tr ng-repeat="el in ListRules ">
@@ -346,21 +349,23 @@
                                 <td class=" text-center ">
                                     <i class="fa fa-play deleteAction " aria-hidden="true " ng-click="runOpnSearchRule($index)" ng-confirm-click="Do you confirm Run Rule? "></i>
                                 </td>
+                                <td class=" text-center ">
+                                    <span ng-bind="el.changed | date:'MM/dd/yyyy HH:mm'"></span>
+                                </td>
+                                <td class="card-footer ">
+                                    <div class="text-center" ng-show="el.changed">
+                                        <i class="fa fa-info burgherAction" ng-click="showFilterItem = ! showFilterItem; showentitydet();" aria-hidden="true"></i>
+                                    </div>
+                                    <div ng-show="showFilterItem">
+                                        <pre>{{ el.info |  json }}</pre>
+                                    </div>
+                                </td>
                                 <!--MG - Run RULE - Fine -->
                             </tr>
                         </tbody>
                     </table>
                 </div>
-
-
-
             </div>
-            <!--<div class="card-footer ">
-                  <hr>
-                  <div class="stats ">
-                    <i class="fa fa-history "></i> Updated 3 minutes ago
-                  </div>
-                </div>-->
         </div>
     </div>
 </div>
