@@ -36,6 +36,7 @@ const mongoURI = util.mongoUrlFiles();
 console.log(nameFile + '| mongoURI :', JSON.stringify(mongoURI));
 logger.info(nameFile + " | mongoURI: " + JSON.stringify(mongoURI));
 //const connection = mongoose.createConnection(mongoURI, { useNewUrlParser: true });
+let fs = require('fs')
 
 mongoose
     .connect(mongoURI, {
@@ -391,6 +392,50 @@ router.post('/invalidateallcache', util.checkIsAdmin, async(req, res) => {
     await redisClient.writeAllRelations(JSON.stringify(cachedRelations[0]), cachedRelations[1], true)
     return res.send(ret);
 });
+
+router.post('/export-entities', util.checkIsAdmin, async (req, res) => {
+    let index = req.body.index
+    let params = {}
+    params["index"] = index
+    params["type"] = index
+    params["body"] = {
+        query: {
+            match_all: {}
+        }
+    }
+    let entitiesFromElastic = await client.search(params)
+    let response = entitiesFromElastic.hits.hits;
+
+    let fileName = `${index}_collection_${Date.now()}.json`
+    let filePath = path.join(__dirname + fileName)
+    try {
+        fs.writeFileSync(filePath, JSON.stringify(response), "utf-8", (err) => {
+            if (err) {
+                console.error(err);
+                res.status(500).send({
+                    error: err,
+                    msg: "Problem writing the file"
+                });
+                return
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({
+            error: error,
+            msg: "Error querying Elasticsearch"
+        });
+        return
+    }
+    res.sendFile(filePath);
+    // Remove file from filesystem
+    fs.unlink(filePath, (err) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+    });
+})
 
 var getfilesArrays = function(files_arr) {
     return new Promise(function(resolve, reject) {

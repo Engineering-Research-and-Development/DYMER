@@ -292,8 +292,10 @@
                                 <td class=" text-center actmodindexdash">
                                     <i class="fa fa-scissors  flushAction" title="Delete Index and all entities" index-entity="{{ el.index }}" ng-click="deleteAllEntityAndIndexByIndex(el,$index)"></i>
                                     <i class="fa fa-trash deleteAction " title="Flush all entities" index-entity="{{ el.index }}" ng-click="deleteAllEntityByIndex(el,$index)"></i>
-                                    <!--<i class="fa fa-download" title="without relations" ng-click="exportentnorel(el,$index)" aria-hidden="true"></i>
-                                    <i class="fa fa-download" title="with relations" ng-click="exportent(el,$index)" aria-hidden="true"></i>-->
+                                    <!--  -->
+                                    <!-- <i class="fa fa-download" title="without relations" ng-click="exportentnorel(el,$index)" aria-hidden="true"></i> -->
+                                    <i class="fa fa-download exportAction" title="with relations" ng-click="exportent(el,$index)" aria-hidden="true"></i>
+                                    <!--  -->
                                     <i ng-show="redison" class="fa fa-eraser deleteAction " title="Invalidate cache" index-entity="{{ el.index }}" ng-click="invalidateCache(el,$index)"></i>
                                 </td>
                             </tr>
