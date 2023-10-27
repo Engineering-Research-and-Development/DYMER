@@ -202,7 +202,6 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
         list[name] = decodeURIComponent(value);
     });
     let dymeruser = JSON.parse(Buffer.from(list["DYM"], 'base64').toString('utf-8'));
-
     let ret = new jsonResponse();
     /*Id dell'indice selezionato*/
     let id = req.params.id;
@@ -298,6 +297,7 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
                                                         postAssettOpenness(hook.eventType.split("after_")[1], rdd, el[0], extraInfo);
                                                         info = {};
                                                         info.operation = "Insert";
+                                                        info.username = dymeruser.username;
                                                         info.id = rdd._id;
                                                         info.title = rdd._source.title;
                                                         resolve(info);
@@ -311,6 +311,7 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
                                                             postAssettOpenness(hook.eventType.split("after_")[1], rdd, el[0], extraInfo);
                                                             info = {};
                                                             info.operation = "Update";
+                                                            info.username = dymeruser.username;
                                                             info.id = rdd._id;
                                                             info.title = rdd._source.title;
                                                             resolve(info);
@@ -366,6 +367,7 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
                                                                 callOpennessJsw(els[0], asset);
                                                                 info = {};
                                                                 info.operation = "Delete";
+                                                                info.username = dymeruser.username;
                                                                 info.id = dymerentries[ind].id_;
                                                                 info.title = dymerentries[ind].title;
                                                                 resolve(info);
