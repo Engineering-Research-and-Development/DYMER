@@ -620,12 +620,6 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
     };
     axios(config).then(response => {
         response.data.data.forEach(data => {
-            /*Da eliminare dopo aver aggiornato le routes-v1 di Dymer Demo*/
-            /*Inizio*/
-            var properties = {};
-            properties.changed = '2023-07-04T14:33:18.287Z'; 
-            data['properties'] = properties;
-            /*Fine*/
             if (data.instance[0]._index == originalrelquery){
                 data.files.forEach(element => {
                     if (element.contentType == "text/html"){

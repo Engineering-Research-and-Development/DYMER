@@ -313,7 +313,6 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
                                                             info.operation = "Update";
                                                             info.id = rdd._id;
                                                             info.title = rdd._source.title;
-                                                            infosssss.push(info);
                                                             resolve(info);
                                                         }   
                                                     }
