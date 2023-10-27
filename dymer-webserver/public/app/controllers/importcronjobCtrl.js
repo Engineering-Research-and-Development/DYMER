@@ -26,14 +26,18 @@ angular.module('importcronjobCtrl', [])
                 dataPost.active = false;
             if (dataPost.importrelation == undefined)
                 dataPost.importrelation = false;
-            /*Gestione import MODEL/TEMPLATES - Inizio*/    
+            /*MG - Gestione import MODEL/TEMPLATES - Inizio*/    
             if (dataPost.importentities == undefined)
                 dataPost.importentities = false;
             if (dataPost.importmodel == undefined)
                 dataPost.importmodel = false;
             if (dataPost.importtemplates == undefined)
                 dataPost.importtemplates = false;
-            /*Gestione import MODEL/TEMPLATES - fine*/
+            if (dataPost.forceimportmodel == undefined)
+                dataPost.forceimportmodel = false;
+            if (dataPost.forceimporttemplates == undefined)
+                dataPost.forceimporttemplates = false;
+            /*MG - Gestione import MODEL/TEMPLATES - fine*/
             let uri = baseContextPath + '/api/dservice/api/v1/import/cronjob';
             let operation = "POST";
             if (dataPost["_id"] != "" && dataPost["_id"] != undefined && dataPost["_id"] != "undefined") {

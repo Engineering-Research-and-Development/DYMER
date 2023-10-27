@@ -3,7 +3,7 @@ var jsonResponse = require('../jsonResponse');
 const multer = require('multer');
 var fs = require('fs');
 var mv = require('mv');
-//var FormData = require('form-data');
+const FormData = require('form-data');
 var http = require('http');
 require("../models/opnSearch/OpnSearchRule");
 require("../models/opnSearch/OpnSearchConfig");
@@ -13,6 +13,8 @@ const bodyParser = require("body-parser");
 const path = require('path');
 const nameFile = path.basename(__filename);
 const mongoose = require("mongoose");
+require("../models/ServiceEntityHooks");
+const HookModel = mongoose.model("ServiceEntityHooks");
 require('./mongodb.js');
 var router = express.Router();
 const logger = require('./dymerlogger');
@@ -188,13 +190,276 @@ router.delete('/rule/:id', util.checkIsAdmin, (req, res) => {
     })
 });
 
+/*MG - Run RULE - Inizio*/ 
+router.get('/run/:id', util.checkIsAdmin, (req, res) => {
+    /*Recupero i dati dell'utente Openness dai cookies*/
+    let list = {};
+    let cookieHeader = req.headers?.cookie;
+    cookieHeader.split(`;`).forEach(function(cookie) {
+        let [ name, ...rest] = cookie.split(`=`);
+        name = name?.trim();
+        let value = rest.join(`=`).trim();
+        list[name] = decodeURIComponent(value);
+    });
+    let dymeruser = JSON.parse(Buffer.from(list["DYM"], 'base64').toString('utf-8'));
+    let ret = new jsonResponse();
+    /*Id dell'indice selezionato*/
+    let id = req.params.id;
+    let myfilter = {"_id": id};
+    /*Acquisisco la regola relativa all'indice*/
+    OpnSearchRule.find(myfilter).then((el) => {
+        /*Acquisisco tutte le entità relative all'indice*/
+        let query = {
+            "query": {
+                "query": {
+                    "bool": {
+                        "must": [{
+                            "term": {
+                                "_index": el[0]._index
+                            }
+                        }]
+                    }
+                }
+            }
+        };
+        let formdata_admin = new FormData();  
+        appendFormdata(formdata_admin, query);   
+        let entityConfig = {
+            method: 'GET',
+            url: util.getServiceUrl('webserver') + util.getContextPath('webserver') + '/api/entities/api/v1/entity/',
+            params: query,
+            headers: {
+                ...formdata_admin.getHeaders()
+            } 
+        };
+        axios(entityConfig).then(response => {
+            logger.info(nameFile + ' | run/:id | get entities by index ' + el[0]._index + ' : ' + 
+            response.data.data.map(obj => 
+                (JSON.stringify({id: obj._id, 
+                                 title: obj._source.title, 
+                                 changed: obj._source.properties.changed}))));
+            /*Acquisisco tutti gli assets relativi all'indice*/
+            let dymerentries = [];
+            /*let dymerentries = [{
+                index_ : 'pipeline_from_import',
+                id_: 'vmtestle-6hdm-4678-8913-2061678189131',
+                modifiedDate: '2023-09-15T15:04:06.846Z'
+            },
+            {
+                index_ : 'pipeline_from_import',
+                id_: 'vmtestlm-q8zj-4694-9007-268169479007',
+                modifiedDate: '2023-09-14T15:00:13.066Z'
+            }];*/
+            /*Recupero host, porta e path del servizio di Get Dymer Entries di Openness*/
+            OpnSearchConfig.find({ 'servicetype': 'get'}).then((els) => {
+                if (els.length > 0) {
+                    let credentials = util.getServiceConfig("opnsearch").user.d_mail + ":" + util.getServiceConfig("opnsearch").user.d_pwd;
+                    let dymerConfig = {
+                        method: 'GET',
+                        url: els[0].configuration.host + ":" + els[0].configuration.port + "/api/jsonws/" + els[0].configuration.path, 
+                        params: {"index" : el[0]._index},
+                        headers: {
+                            ...formdata_admin.getHeaders(),
+                            'Authorization': `Basic ` + Buffer.from(credentials, 'utf-8').toString('base64')
+                        }
+                    };
+                    axios(dymerConfig).then(dymerResponse => {
+                        dymerentries = dymerResponse.data;
+                        /*Verifo la presenza degli hooks*/
+                        let queryFind = {
+                            "_index":el[0]._index,
+                            "service.serviceType": "openness_search"
+                        };
+                        HookModel.find(queryFind).then((hooks) => {
+                            if (hooks.length > 0){     
+                                (hooks).forEach(hook => {
+                                    let extraInfo = {
+                                        companyId: dymeruser.extrainfo.companyId,
+                                        groupId: dymeruser.extrainfo.groupId,
+                                        cms: dymeruser.extrainfo.cms,
+                                        userId: dymeruser.extrainfo.userId,
+                                        emailAddress: dymeruser.email,
+                                        virtualhost: dymeruser.extrainfo.virtualHost
+                                    }
+                                    let promises = [];
+                                    let info = {};
+                                    /*Per ogni entità invoco l'operazione contenuta nell'Hook Type, per aggiornare gli assets di Openness*/ 
+                                    response.data.data.forEach(function(rdd, ind) {
+                                        let entityChangedDate = rdd._source.properties.changed;
+                                        let dymerentry = dymerentries.find(value => value.id_ === rdd._id);
+                                        promises.push(new Promise(function(resolve,reject) {
+                                            /*Se l'asset manca e se è previsto l'insert, 
+                                            effettuo l'inserimento dell'asset*/
+                                            setTimeout(function() {
+                                                if (typeof(dymerentry) == "undefined"){
+                                                    if (hook.eventType == "after_insert"){
+                                                        logger.info(nameFile + ' | run/:id | postAssettOpenness for ' + hook.eventType.split("after_")[1] + ' of ' + rdd._id);
+                                                        postAssettOpenness(hook.eventType.split("after_")[1], rdd, el[0], extraInfo);
+                                                        info = {};
+                                                        info.operation = "Insert";
+                                                        info.username = dymeruser.username;
+                                                        info.id = rdd._id;
+                                                        info.title = rdd._source.title;
+                                                        resolve(info);
+                                                    }    
+                                                }else{
+                                                    /*Se l'asset esiste, se è previsto l'update e se la data di modifica dell'entità
+                                                    è più recente di quella dell'asset, aggiorno l'asset*/
+                                                    if (hook.eventType == "after_update"){
+                                                        if (entityChangedDate > dymerentry.modifiedDate){
+                                                            logger.info(nameFile + ' | run/:id | postAssettOpenness for ' + hook.eventType.split("after_")[1] + ' of ' + rdd._id);
+                                                            postAssettOpenness(hook.eventType.split("after_")[1], rdd, el[0], extraInfo);
+                                                            info = {};
+                                                            info.operation = "Update";
+                                                            info.username = dymeruser.username;
+                                                            info.id = rdd._id;
+                                                            info.title = rdd._source.title;
+                                                            resolve(info);
+                                                        }   
+                                                    }
+                                                } 
+                                            }, 1000 * (ind + 1)); 
+                                        }));
+                                    });
+                                    let bulk = OpnSearchRule.collection.initializeOrderedBulkOp();
+                                    promises.forEach(function(promise, index) {
+                                        promise.then((result) => {
+                                            console.log(result);
+                                            logger.info(nameFile + ' | run/:id | ' + result);
+                                            /*Aggiorno OpnSearchRule, inserendo i dati di riepilogo dell'esecuzione*/
+                                            bulk.find({ "_index": el[0]._index }).updateOne({                             
+                                                "$set":  { info: result, changed: new Date().toISOString()}
+                                            });
+                                            bulk.execute(function(error, result) {
+                                                if (error) {
+                                                    console.error(nameFile + ' | run/:id | Error for Update OpnSearchRule | ' + error);
+                                                    logger.error(nameFile + ' | run/:id |  Error for Update OpnSearchRule | ' + error);
+                                                } else {
+                                                    logger.info(nameFile + ' | run/:id | Update OpnSearchRule | ' + result);
+                                                }
+                                            });
+                                        }).catch((error) => {
+                                            console.error(nameFile + ' | run/:id | Error for Insert/Update Operation | ' + error);
+                                            logger.error(nameFile + ' | run/:id | Error for Insert/Update Operation | ' + error);
+                                        })
+                                    });   
+                                    /*Verifico se sono presenti assets in più, rispetto alle entità, 
+                                    ed eventualmente li elimino, se il relativo hook è previsto*/
+                                    promises = [];  
+                                    for (let ind = 0; ind < dymerentries.length; ind++) {
+                                        let entity = response.data.data.find(value => value._id === dymerentries[ind].id_);
+                                        promises.push(new Promise(function(resolve,reject) {
+                                            setTimeout(function() {
+                                                if (typeof(entity) == "undefined"){
+                                                    if (hook.eventType == "after_delete"){
+                                                        let asset = {
+                                                            "emailAddress": dymeruser.email,
+                                                            "companyId": dymeruser.extrainfo.companyId,
+                                                            "index": el[0]._index,
+                                                            "type": el[0]._type,
+                                                            "id": dymerentries[ind].id_,
+                                                            "notify":el[0].sendNotification
+                                                        };
+                                                        let queryFind = { 'servicetype': hook.eventType.split("after_")[1] };
+                                                        OpnSearchConfig.find(queryFind).then((els) => {
+                                                            if (els.length > 0) {
+                                                                logger.info(nameFile + ' | run/:id | callOpennessJsw for delete of ' + dymerentries[ind].id_);
+                                                                callOpennessJsw(els[0], asset);
+                                                                info = {};
+                                                                info.operation = "Delete";
+                                                                info.username = dymeruser.username;
+                                                                info.id = dymerentries[ind].id_;
+                                                                info.title = dymerentries[ind].title;
+                                                                resolve(info);
+                                                            }
+                                                        });
+                                                    }    
+                                                } 
+                                            }, 1000 * (ind + 1)); 
+                                        }));    
+                                    };
+                                    promises.forEach(function(promise, index) {
+                                        promise.then((result) => {
+                                            console.log(result);
+                                            logger.info(nameFile + ' | run/:id | ' + result);
+                                            /*Aggiorno OpnSearchRule, inserendo i dati di riepilogo dell'esecuzione*/
+                                            bulk.find({ "_index": el[0]._index }).updateOne({                             
+                                                "$set":  { info: result, changed: new Date().toISOString()}
+                                            });
+                                            bulk.execute(function(error, result) {
+                                                if (error) {
+                                                    console.error(nameFile + ' | run/:id | Error for Update OpnSearchRule | ' + error);
+                                                    logger.error(nameFile + ' | run/:id |  Error for Update OpnSearchRule | ' + error);
+                                                } else {
+                                                    logger.info(nameFile + ' | run/:id | Update OpnSearchRule | ' + result);
+                                                }
+                                            });
+                                        }).catch((error) => {
+                                            console.error(nameFile + ' | run/:id | Error for Delete Operation | ' + error);
+                                            logger.error(nameFile + ' | run/:id | Error for Delete Operation | ' + error);
+                                        })
+                                    });
+                                });
+                                ret.setSuccess(true);
+                                ret.setMessages("Rule executed successfully");
+                                return res.send(ret);
+                            }else{
+                                ret.setSuccess(false);
+                                ret.setMessages("No hooks associated with the rule !");
+                                return res.send(ret);
+                            }
+                        });
+                    }).catch(error => {
+                        if (error) {
+                            console.error("ERROR | " + nameFile + " | dym.dymerentry/getDymerEntries ", error);
+                            logger.error(nameFile + " | dym.dymerentry/getDymerEntries " + error);
+                            ret.setMessages("Get DymerEntries Error");
+                            ret.setSuccess(false);
+                            ret.setExtraData({ "log": error.stack });
+                            return res.send(ret);
+                        }
+                    });         
+                }
+            });
+        });
+    }).catch((error) => {
+        if (error) {
+            console.error("ERROR | " + nameFile + " | run/:id :", id, error);
+            logger.error(nameFile + ' | run/:id : ' + id + " " + error);
+            ret.setMessages("Run rule Error");
+            ret.setSuccess(false);
+            ret.setExtraData({ "log": error.stack });
+            return res.send(ret);
+        }
+    })
+});
+function appendFormdata(FormData, data, name) {
+    var name = name || '';
+    if (typeof data === 'object') {
+        var index = 0
+        for (var key in data) {
+            if (data.hasOwnProperty(key)) {
+                if (name === '') {
+                    appendFormdata(FormData, data[key], key);
+                } else {
+                    appendFormdata(FormData, data[key], name + '[' + key + ']');
+                }
+            }
+            index++;
+        }
+    } else {
+        FormData.append(name, data);
+    }
+}
+/*MG - Run RULE - Fine*/ 
+
 router.post('/listener', function(req, res) {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let data = callData.data;
     let extraInfo = callData.extraInfo;
     //res.send(ret);
-    var eventSource = (data.eventSource).split('_');;
+    var eventSource = (data.eventSource).split('_');
     var queryFind = {
         "_index": data.obj._index,
         "_type": data.obj._type
