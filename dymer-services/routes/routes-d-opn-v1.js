@@ -283,11 +283,11 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
                                     }
                                     let promises = [];
                                     let info = {};
-                                    /*Per ogni entità invoco l'operazione contenuta nell'Hook Type, per aggiornare gli assets di Openness*/ 
-                                    response.data.data.forEach(function(rdd, ind) {
-                                        let entityChangedDate = rdd._source.properties.changed;
-                                        let dymerentry = dymerentries.find(value => value.id_ === rdd._id);
-                                        promises.push(new Promise(function(resolve,reject) {
+                                    promises.push(new Promise(function(resolve,reject) {
+                                        /*Per ogni entità invoco l'operazione contenuta nell'Hook Type, per aggiornare gli assets di Openness*/ 
+                                        response.data.data.forEach(function(rdd, ind) {
+                                            let entityChangedDate = rdd._source.properties.changed;
+                                            let dymerentry = dymerentries.find(value => value.id_ === rdd._id);
                                             /*Se l'asset manca e se è previsto l'insert, 
                                             effettuo l'inserimento dell'asset*/
                                             setTimeout(function() {
@@ -319,42 +319,17 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
                                                     }
                                                 } 
                                             }, 1000 * (ind + 1)); 
-                                        }));
-                                    });
-                                    let bulk = OpnSearchRule.collection.initializeOrderedBulkOp();
-                                    promises.forEach(function(promise, index) {
-                                        promise.then((result) => {
-                                            console.log(result);
-                                            logger.info(nameFile + ' | run/:id | ' + result);
-                                            /*Aggiorno OpnSearchRule, inserendo i dati di riepilogo dell'esecuzione*/
-                                            bulk.find({ "_index": el[0]._index }).updateOne({                             
-                                                "$set":  { info: result, changed: new Date().toISOString()}
-                                            });
-                                            bulk.execute(function(error, result) {
-                                                if (error) {
-                                                    console.error(nameFile + ' | run/:id | Error for Update OpnSearchRule | ' + error);
-                                                    logger.error(nameFile + ' | run/:id |  Error for Update OpnSearchRule | ' + error);
-                                                } else {
-                                                    logger.info(nameFile + ' | run/:id | Update OpnSearchRule | ' + result);
-                                                }
-                                            });
-                                        }).catch((error) => {
-                                            console.error(nameFile + ' | run/:id | Error for Insert/Update Operation | ' + error);
-                                            logger.error(nameFile + ' | run/:id | Error for Insert/Update Operation | ' + error);
-                                        })
-                                    });   
-                                    /*Verifico se sono presenti assets in più, rispetto alle entità, 
-                                    ed eventualmente li elimino, se il relativo hook è previsto*/
-                                    promises = [];  
-                                    for (let ind = 0; ind < dymerentries.length; ind++) {
-                                        let entity = response.data.data.find(value => value._id === dymerentries[ind].id_);
-                                        promises.push(new Promise(function(resolve,reject) {
+                                        });
+                                        /*Verifico se sono presenti assets in più, rispetto alle entità, 
+                                        ed eventualmente li elimino, se il relativo hook è previsto*/
+                                        for (let ind = 0; ind < dymerentries.length; ind++) {
+                                            let entity = response.data.data.find(value => value._id === dymerentries[ind].id_);
                                             setTimeout(function() {
                                                 if (typeof(entity) == "undefined"){
                                                     if (hook.eventType == "after_delete"){
                                                         let asset = {
                                                             "emailAddress": dymeruser.email,
-                                                            "companyId": dymeruser.extrainfo.companyId,
+                                                            "companyId": Number(dymeruser.extrainfo.companyId),
                                                             "index": el[0]._index,
                                                             "type": el[0]._type,
                                                             "id": dymerentries[ind].id_,
@@ -375,29 +350,24 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
                                                         });
                                                     }    
                                                 } 
-                                            }, 1000 * (ind + 1)); 
-                                        }));    
-                                    };
-                                    promises.forEach(function(promise, index) {
-                                        promise.then((result) => {
-                                            console.log(result);
-                                            logger.info(nameFile + ' | run/:id | ' + result);
-                                            /*Aggiorno OpnSearchRule, inserendo i dati di riepilogo dell'esecuzione*/
-                                            bulk.find({ "_index": el[0]._index }).updateOne({                             
-                                                "$set":  { info: result, changed: new Date().toISOString()}
-                                            });
-                                            bulk.execute(function(error, result) {
-                                                if (error) {
-                                                    console.error(nameFile + ' | run/:id | Error for Update OpnSearchRule | ' + error);
-                                                    logger.error(nameFile + ' | run/:id |  Error for Update OpnSearchRule | ' + error);
-                                                } else {
-                                                    logger.info(nameFile + ' | run/:id | Update OpnSearchRule | ' + result);
-                                                }
-                                            });
-                                        }).catch((error) => {
-                                            console.error(nameFile + ' | run/:id | Error for Delete Operation | ' + error);
-                                            logger.error(nameFile + ' | run/:id | Error for Delete Operation | ' + error);
-                                        })
+                                            }, 1000 * (ind + 1));     
+                                        };
+                                    }));
+                                    let bulk = OpnSearchRule.collection.initializeOrderedBulkOp();
+                                    Promise.all(promises).then(function(results) {
+                                        console.log("Results ===> ", results);
+                                        /*Aggiorno OpnSearchRule, inserendo i dati di riepilogo dell'esecuzione*/
+                                        bulk.find({ "_index": el[0]._index }).updateOne({                             
+                                            "$set":  { info: results, changed: new Date().toISOString()}
+                                        });
+                                        bulk.execute(function(error, result) {
+                                            if (error) {
+                                                console.error(nameFile + ' | run/:id | Error for Update OpnSearchRule | ' + error);
+                                                logger.error(nameFile + ' | run/:id |  Error for Update OpnSearchRule | ' + error);
+                                            } else {
+                                                logger.info(nameFile + ' | run/:id | Update OpnSearchRule | ' + result);
+                                            }
+                                        });
                                     });
                                 });
                                 ret.setSuccess(true);
