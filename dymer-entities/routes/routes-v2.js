@@ -403,6 +403,8 @@ router.post('/export-entities', util.checkIsAdmin, async (req, res) => {
             match_all: {}
         }
     }
+    params["body"].size = 10000
+
     let entitiesFromElastic = await client.search(params)
     let response = entitiesFromElastic.hits.hits;
 
