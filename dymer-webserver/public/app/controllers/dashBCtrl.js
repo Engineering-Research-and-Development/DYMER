@@ -1,72 +1,72 @@
 angular.module('dashCtrl', ['nvd3'])
-    .controller('dashController', function($scope, $http, $location, $browser, $rootScope) {
+    .controller('dashController', function ($scope, $http, $location, $browser, $rootScope) {
         var baseContextPath = $rootScope.globals.contextpath; //$rootScope.site_prefix; //'/d4ptest/'; //$browser.baseHref();
         $scope.redison = false;
         $scope.tab = 1;
         $scope.dtlalestEntCreated = [];
         $scope.dtlalestEntUpdated = [];
-        $http.get(baseContextPath + '/info/json', {}).then(function(retE) {
+        $http.get(baseContextPath + '/info/json', {}).then(function (retE) {
             $scope.version = retE.data.version;
         });
-        $http.get(baseContextPath + '/api/system/logtypes', {}).then(function(retE) {
+        $http.get(baseContextPath + '/api/system/logtypes', {}).then(function (retE) {
             // console.log('logtypes', retE);
             $scope.logstype = retE.data.data.msg;
         });
 
-       /* $http.get(baseContextPath + '/api2/retriveinfoidpadmin', {
-            //$http.get(baseContextPath + '/api2/retriveinfoidp', {
-        }).then(function(retE) {
-            localStorage.setItem('DYM', retE.data["DYM"]);
-            localStorage.setItem('DYMisi', retE.data["DYMisi"]);
-            document.cookie = "lll=" + retE.data["DYM"];
-            document.cookie = "DYMisi=" + retE.data["DYMisi"];
-            localStorage.setItem('d_uid', retE.data.d_uid);
-            localStorage.setItem('d_appuid', retE.data.d_appuid);
-            localStorage.setItem('d_gid', retE.data.d_gid);
-        })*/
+        /* $http.get(baseContextPath + '/api2/retriveinfoidpadmin', {
+             //$http.get(baseContextPath + '/api2/retriveinfoidp', {
+         }).then(function(retE) {
+             localStorage.setItem('DYM', retE.data["DYM"]);
+             localStorage.setItem('DYMisi', retE.data["DYMisi"]);
+             document.cookie = "lll=" + retE.data["DYM"];
+             document.cookie = "DYMisi=" + retE.data["DYMisi"];
+             localStorage.setItem('d_uid', retE.data.d_uid);
+             localStorage.setItem('d_appuid', retE.data.d_appuid);
+             localStorage.setItem('d_gid', retE.data.d_gid);
+         })*/
         var listEntities = [];
         //console.log('baseContextPath', baseContextPath + '/api/entities/api/v1/entity/allstats');
 
         $http.get(baseContextPath + '/api/entities/api/v1/entity/allstatsglobal', {
-         }).then(function(retE) {
-          //  console.log('retE',retE);
+        }).then(function (retE) {
+            //  console.log('retE',retE);
             var res = retE.data.data;
             let countrela = 0;
             listEntities = res.indices;
-            var lisrl = listEntities.filter(function(el) {
+            var lisrl = listEntities.filter(function (el) {
                 return el.index == "entity_relation";
             })[0];
             if (lisrl != undefined) {
                 countrela = lisrl["count"];
             }
-            listEntities = listEntities.filter(function(el) {
+            listEntities = listEntities.filter(function (el) {
                 return el.index !== "entity_relation";
             });
             $scope.totIndices = listEntities.length;
-          //  console.log('listEntities.length',listEntities.length);
+            //  console.log('listEntities.length',listEntities.length);
             $scope.totEntities = res.total - countrela;
 
             $scope.totRelations = countrela;
             $http.get(baseContextPath + '/api/entities/uuid', {
 
-                }).then(function(retU) {
+            }).then(function (retU) {
 
-                    $scope.uuid = retU.data.data.uuid;
+                $scope.uuid = retU.data.data.uuid;
 
-                    //return $scope.listEntity = templ_data.arr;
-                })
                 //return $scope.listEntity = templ_data.arr;
-        }).then(function() {
+            })
+            //return $scope.listEntity = templ_data.arr;
+        }).then(function () {
 
             var listTemplates = [];
             par = { "query": { "instance._index": { "$ne": "general" } } };
             $http.get(baseContextPath + '/api/templates/api/v1/template/', {
                 params: par
-            }).then(function(retT) {
+            }).then(function (retT) {
                 var res = retT.data.data;
                 listTemplates = res;
                 $scope.totTemplates = res.length;
-                listEntities.forEach(function(elEnt) {
+                listEntities.forEach(function (elEnt) {
                     elEnt.templates = {
                         "fullcontent": {
                             'title': "",
@@ -85,10 +85,10 @@ angular.module('dashCtrl', ['nvd3'])
                             'exsist': false
                         }
                     }
-                    listTemplates.forEach(function(elTEm) {
-                        (elTEm.instance).forEach(function(elTEmIN) {
+                    listTemplates.forEach(function (elTEm) {
+                        (elTEm.instance).forEach(function (elTEmIN) {
                             if (elEnt.index == elTEmIN._index) {
-                                (elTEm.viewtype).forEach(function(elVTEmIN) {
+                                (elTEm.viewtype).forEach(function (elVTEmIN) {
                                     elEnt.templates[elVTEmIN.rendertype].exsist = true;
                                     elEnt.templates[elVTEmIN.rendertype].title = elTEm.title;
                                 });
@@ -96,22 +96,22 @@ angular.module('dashCtrl', ['nvd3'])
                         });
                     });
                 });
-            }).then(function() {
+            }).then(function () {
                 var listModels = [];
                 var par = { "query": { "instance._index": { "$ne": "general" } } };
                 $http.get(baseContextPath + '/api/forms/api/v1/form/', {
                     params: par
-                }).then(function(retM) {
+                }).then(function (retM) {
                     //console.log('retM', retM);
                     listModels = retM.data.data;
                     $scope.totModels = listModels.length;
-                    listEntities.forEach(function(elEnt) {
+                    listEntities.forEach(function (elEnt) {
                         elEnt.model = {
                             'title': "x",
                             'exsist': false
                         };
-                        listModels.forEach(function(elTEm) {
-                            (elTEm.instance).forEach(function(elTEmIN) {
+                        listModels.forEach(function (elTEm) {
+                            (elTEm.instance).forEach(function (elTEmIN) {
                                 if (elEnt.index == elTEmIN._index) {
                                     elEnt.model.title = elTEm.title;
                                     elEnt.model.exsist = true;
@@ -120,106 +120,118 @@ angular.module('dashCtrl', ['nvd3'])
                         });
                     });
                     $scope.ListEntities = listEntities;
-                    jQuery(document).ready(function() {
+                    jQuery(document).ready(function () {
                         jQuery('#dtModelsIndex').DataTable();
                         jQuery('#dtTemplateIndex').DataTable();
                     });
                     //  return $scope.listaModels = ret.data.data;
-                }).catch(function(response) {
+                }).catch(function (response) {
                     console.log(response.status);
                 });
-            }).catch(function(response) {
+            }).catch(function (response) {
                 console.log(response);
             });
 
-        }).catch(function(response) {
+        }).catch(function (response) {
             console.log(response.status);
-        }).then(function() {
-            $http.get(baseContextPath + "/api/entities/api/v1/entity/redisstate").then(function(rts) {
+        }).then(function () {
+            $http.get(baseContextPath + "/api/entities/api/v1/entity/redisstate").then(function (rts) {
 
                 if (rts.data.data.value == 1)
                     $scope.redison = true;
             })
-        }).catch(function(response) {
+        }).catch(function (response) {
             console.log(response);
         });
 
         /* giaisg */
-        $scope.deleteAllEntityByIndex = function(obj, ind) {
+        $scope.deleteAllEntityByIndex = function (obj, ind) {
             if (confirm("Are you sure to flush all entities with index '" + obj.index + "'?")) {
                 //console.log("deleted ", obj.index);
                 var par = { "index": obj.index };
                 $http.get(baseContextPath + '/api/entities/api/v1/entity/deleteAllEntityByIndex', {
                     params: par
-                }).then(function(rt) {
+                }).then(function (rt) {
                     console.log("deleted done", rt);
                     $scope.ListEntities[ind].count = 0;
-                }).catch(function(response) {
+                }).catch(function (response) {
                     console.log(response.status);
                 });
             }
         };
 
-        $scope.deleteAllEntityAndIndexByIndex = function(obj, ind) {
+        $scope.deleteAllEntityAndIndexByIndex = function (obj, ind) {
             if (confirm("Are you sure to delete the index '" + obj.index + "' and  entities?")) {
                 //console.log("deleted ", obj.index);
                 var par = { "index": obj.index };
                 //console.log(par);
                 $http.get(baseContextPath + '/api/entities/api/v1/entity/deleteAllEntityAndIndexByIndex', {
                     params: par
-                }).then(function(rt) {
+                }).then(function (rt) {
 
                     //console.log("deleted done", rt);
                     $scope.ListRules.splice(ind, 1);
-                }).catch(function(response) {
+                }).catch(function (response) {
                     console.log(response.status);
                 });
             }
         };
-        $scope.exportent = function(obj, ind) {
+        $scope.exportent = function (obj, ind) {
+            $http.post(`${baseContextPath}/api/entities/api/v1/entity/export-entities`, obj)
+                .then(function (response) {
+                    let d = new Date();
+                    let date = d.toISOString().split('T')[0].replace(/-/g, '_');
+                    let time = d.toTimeString().split(' ')[0].replace(/:/g, '_');
+                    let dataFile = JSON.stringify(response.data)
 
-            /*    console.log("deleted ", obj.index);
-                var par = { "index": obj.index };
-                console.log(par);
-                $http.get(baseContextPath + '/api/entities/api/v1/entity/deleteAllEntityAndIndexByIndex', {
-                    params: par
-                }).then(function (rt) {
+                    let blob = new Blob([dataFile], { type: 'application/json' });
 
-                    console.log("deleted done", rt);
-                    $scope.ListRules.splice(ind, 1);
+                    let linkElement = document.createElement('a');
+                    let url = window.URL.createObjectURL(blob);
+
+                    let filename = `${obj.index}_catalogue_${date}_${time}.json`
+                    linkElement.setAttribute('href', url);
+                    linkElement.setAttribute("download", filename);
+
+                    let clickEvent = new MouseEvent("click", {
+                        "view": window,
+                        "bubbles": true,
+                        "cancelable": false
+                    });
+                    linkElement.dispatchEvent(clickEvent);
                 }).catch(function (response) {
-                    console.log(response.status);
-                });*/
-
+                    console.log(response);
+                });
         };
-        $scope.invalidateCache = function(obj) {
+
+        $scope.invalidateCache = function (obj) {
             if (confirm("Are you sure to invalidate the cache for index " + obj.index + "?")) {
                 //console.log("deleted ", obj.index);
                 var par = { "index": obj.index };
                 //console.log(par);
                 $http.post(`${baseContextPath}/api/entities/api/v1/entity/invalidatecache/${obj.index}`, {
 
-                }).then(function(rt) {
+                }).then(function (rt) {
                     useGritterTool("<b><i class='fa fa-database  '></i> Redis</b>", "invalidated cache for " + obj.index);
                     //  console.log("invalidated cache 111");
 
-                }).catch(function(response) {
+                }).catch(function (response) {
                     useGritterTool("<b><i class='fa fa-database   '></i> Redis</b>", "Error on invalidate chache", "warning");
                     //  console.log(response.status);
                 });
             }
         };
 
-        $scope.invalidateAllCache = function(obj, ind) {
+        $scope.invalidateAllCache = function (obj, ind) {
             if (confirm("Are you sure to invalidate all cache?")) {
 
                 $http.post(`${baseContextPath}/api/entities/api/v1/entity/invalidateallcache`, {
 
-                }).then(function(rt) {
+                }).then(function (rt) {
                     useGritterTool("<b><i class='fa fa-database   '></i> Redis</b>", "invalidated cache");
                     //  console.log("invalidated cache");
 
-                }).catch(function(response) {
+                }).catch(function (response) {
                     useGritterTool("<b><i class='fa fa-database   '></i> Redis</b>", "Error on invalidate chache", "warning");
                     //  console.log(response.status);
                 });
@@ -228,7 +240,7 @@ angular.module('dashCtrl', ['nvd3'])
         var color = d3.scale.category20()
         $http.get(baseContextPath + '/api/entities/api/v1/entity/relationstat/', {
 
-        }).then(function(ret) {
+        }).then(function (ret) {
             $scope.data = {
                 "nodes": [],
                 "links": []
@@ -266,7 +278,7 @@ angular.module('dashCtrl', ['nvd3'])
             });
 
 
-        }).catch(function(response) {
+        }).catch(function (response) {
             console.log(response);
         });
 
@@ -277,15 +289,15 @@ angular.module('dashCtrl', ['nvd3'])
                 height: 250,
                 width: 500,
                 margin: { top: 5, right: 5, bottom: 5, left: 5 },
-                color: function(d) {
+                color: function (d) {
                     return color(d.group)
                 },
-                nodeExtras: function(node) {
+                nodeExtras: function (node) {
                     node && node
                         .append("text")
                         .attr("dx", 8)
                         .attr("dy", ".35em")
-                        .text(function(d) { return d.name; })
+                        .text(function (d) { return d.name; })
                         .style('font-size', '10px');
                 },
                 //linkDist: 120,
@@ -297,9 +309,9 @@ angular.module('dashCtrl', ['nvd3'])
                         .attr("stroke", "#ff0000")
                         .text(function(d) { console.log("d", d); return d.doc_count; })
                 }*/
-                linkExtras: function(link) {
+                linkExtras: function (link) {
                     d3.selectAll("line").append("title")
-                        .text(function(d) { //console.log("d.target.doc_count", d.target.doc_count); 
+                        .text(function (d) { //console.log("d.target.doc_count", d.target.doc_count); 
                             return d.target.doc_count;
                         });
                 }
@@ -308,7 +320,7 @@ angular.module('dashCtrl', ['nvd3'])
 
         };
 
-        let lalestEnt = function(size, sort, idDt, lista) {
+        let lalestEnt = function (size, sort, idDt, lista) {
 
             // $scope.indexEntities = []; // $scope.indexEntities = ["project", "geopoint"];
             // $scope.listEntity = [];
@@ -334,13 +346,13 @@ angular.module('dashCtrl', ['nvd3'])
                     sort: sort
                 }
             };
-            $http.post(baseContextPath + '/api/entities/api/v1/entity/_search', par).then(function(ret) {
-                $scope[lista] = ret.data.data; 
-                jQuery(document).ready(function() {
+            $http.post(baseContextPath + '/api/entities/api/v1/entity/_search', par).then(function (ret) {
+                $scope[lista] = ret.data.data;
+                jQuery(document).ready(function () {
                     jQuery(idDt).DataTable();
 
                 });
-            }).catch(function(response) {
+            }).catch(function (response) {
                 console.log(response.status);
             });
         }

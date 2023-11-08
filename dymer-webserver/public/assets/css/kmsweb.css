@@ -293,7 +293,8 @@ pre.code-jquery code {
 .burgherAction,
 .updateAction,
 .cloneAction,
-.flushAction {
+.flushAction,
+.exportAction {
     color: #9a9a9a;
 }
 
@@ -303,6 +304,7 @@ pre.code-jquery code {
 
 #vvveb-builder #left-panel .content-action-filemanager-page [data-vvveb-action="deletePage"]:hover,
 .deleteAction:hover,
+.exportAction:hover,
 .burgherAction:hover {
     color: #ef8157;
     cursor: pointer;
@@ -887,7 +889,7 @@ pre.code-jquery code {
     resize: vertical !important;
     max-height: none;
 }
-#vvveb-builder #editAssets-page-modal textarea.form-control, {
+#vvveb-builder #editAssets-page-modal textarea.form-control {
     max-height: none;
 }
 .containerConfig {

@@ -25,5 +25,7 @@ angular.module("userApp", [
     "dusernmanageCtrl",
     "importcronjobCtrl",
     "syncCtrl",
-    "mclgsCtrl"
+    "mclgsCtrl",
+    "workflowCtrl",
+    "angularjs-dropdown-multiselect"   
 ]);
