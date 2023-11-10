@@ -283,9 +283,14 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
                                     }
                                     manageFunctions(el[0], response,  dymerentries, hook, extraInfo, dymeruser);
                                 });
+                                if (hooks.length < 3){
+                                    ret.setMessages("Rule executed successfully but, be careful, one or more hooks are missing !");        
+                                }else{
+                                    ret.setMessages("Rule executed successfully");        
+                                }
                                 ret.setSuccess(true);
-                                ret.setMessages("Rule executed successfully");
                                 return res.send(ret);
+
                             }else{
                                 ret.setSuccess(false);
                                 ret.setMessages("No hooks associated with the rule !");
@@ -456,6 +461,7 @@ function upd(rdd, ind, el, dymerentries, hook, extraInfo, dymeruser){
 }
 function del(ind, el, dymerentry, hook, dymeruser){
     let info = {};
+    let openSearchConfig = {};
     let asset = {
         "emailAddress": dymeruser.email,
         "companyId": Number(dymeruser.extrainfo.companyId),
@@ -468,17 +474,18 @@ function del(ind, el, dymerentry, hook, dymeruser){
     /*Verifico se sono presenti assets in più, rispetto alle entità, 
     ed eventualmente li elimino, se il relativo hook è previsto*/
     return new Promise(function(resolve,reject) {
+        OpnSearchConfig.find(queryFind).then((osc) => {
+            if (osc.length > 0) {
+                openSearchConfig = osc[0];
+            }
+        }); 
         setTimeout(function() {
-            OpnSearchConfig.find(queryFind).then((els) => {
-                if (els.length > 0) {
-                    logger.info(nameFile + ' | run/:id | callOpennessJsw for delete of ' + dymerentry.id_);
-                    callOpennessJsw(els[0], asset);
-                    info.operation = "Delete";
-                    info.username = dymeruser.username;
-                    info.id = dymerentry.id_;
-                    info.title = dymerentry.title;
-                }
-            }); 
+            logger.info(nameFile + ' | run/:id | callOpennessJsw for delete of ' + dymerentry.id_);
+            callOpennessJsw(openSearchConfig, asset);
+            info.operation = "Delete";
+            info.username = dymeruser.username;
+            info.id = dymerentry.id_;
+            info.title = dymerentry.title;
             resolve(info); 
         }, 1000 * (ind + 1)); 
     });   
