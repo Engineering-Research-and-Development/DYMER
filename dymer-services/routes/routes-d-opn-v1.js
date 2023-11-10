@@ -388,12 +388,12 @@ function deleteFunction(response, el, dymerentries, hook, dymeruser){
     let promisesMap = [];
     let bulk = OpnSearchRule.collection.initializeOrderedBulkOp();
     return new Promise((res, rej) =>{ 
-        for (let ind = 0; ind < dymerentries.length; ind++) {
-            let entity = response.data.data.find(value => value._id === dymerentries[ind].id_);
+        dymerentries.forEach(function(dimerentry, ind) {    
+            let entity = response.data.data.find(value => value._id === dimerentry.id_);
             if (typeof(entity) == "undefined"){
-                promises.push(() => del(ind, el, dymerentries, hook, dymeruser));
+                promises.push(() => del(ind, el, dimerentry, hook, dymeruser));
             }
-        }; 
+        }); 
         promisesMap = promises.map(promise => promise());
         Promise.all(promisesMap).then(function(results) {
             results = results.filter(value => Object.keys(value).length !== 0);
@@ -454,29 +454,29 @@ function upd(rdd, ind, el, dymerentries, hook, extraInfo, dymeruser){
         }, 1000 * (ind + 1)); 
     });
 }
-function del(ind, el, dymerentries, hook, dymeruser){
+function del(ind, el, dymerentry, hook, dymeruser){
     let info = {};
+    let asset = {
+        "emailAddress": dymeruser.email,
+        "companyId": Number(dymeruser.extrainfo.companyId),
+        "index": el._index,
+        "type": el._type,
+        "id": dymerentry.id_,
+        "notify":el.sendNotification
+    };
+    let queryFind = { 'servicetype': hook.eventType.split("after_")[1] };
     /*Verifico se sono presenti assets in più, rispetto alle entità, 
     ed eventualmente li elimino, se il relativo hook è previsto*/
     return new Promise(function(resolve,reject) {
         setTimeout(function() {
-            let asset = {
-                "emailAddress": dymeruser.email,
-                "companyId": Number(dymeruser.extrainfo.companyId),
-                "index": el._index,
-                "type": el._type,
-                "id": dymerentries[ind].id_,
-                "notify":el.sendNotification
-            };
-            let queryFind = { 'servicetype': hook.eventType.split("after_")[1] };
             OpnSearchConfig.find(queryFind).then((els) => {
                 if (els.length > 0) {
-                    logger.info(nameFile + ' | run/:id | callOpennessJsw for delete of ' + dymerentries[ind].id_);
+                    logger.info(nameFile + ' | run/:id | callOpennessJsw for delete of ' + dymerentry.id_);
                     callOpennessJsw(els[0], asset);
                     info.operation = "Delete";
                     info.username = dymeruser.username;
-                    info.id = dymerentries[ind].id_;
-                    info.title = dymerentries[ind].title;
+                    info.id = dymerentry.id_;
+                    info.title = dymerentry.title;
                 }
             }); 
             resolve(info); 
