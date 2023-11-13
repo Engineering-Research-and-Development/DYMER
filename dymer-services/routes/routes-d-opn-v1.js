@@ -284,9 +284,9 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
                                     manageFunctions(el[0], response,  dymerentries, hook, extraInfo, dymeruser);
                                 });
                                 if (hooks.length < 3){
-                                    ret.setMessages("Rule executed successfully but, be careful, one or more hooks are missing !");        
+                                    ret.setMessages("Start of execution of the Run Rule successful but be careful : one or more hooks are missing !!!");        
                                 }else{
-                                    ret.setMessages("Rule executed successfully");        
+                                    ret.setMessages("Start of execution of the Run Rule successful");        
                                 }
                                 ret.setSuccess(true);
                                 return res.send(ret);
