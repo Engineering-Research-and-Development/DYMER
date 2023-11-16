@@ -55,7 +55,6 @@ const options = {
 	}
 };
 
-app.use( docPath, swaggerUi.serve, swaggerUi.setup( swaggerFile, options ) )
 
 app.use(cookieParser());
 app.use(session({
@@ -73,6 +72,8 @@ var recoverForms = require("./routes/formfiles");
 
 var publicdemoDonwlonad = require("./routes/demodownloads");
 const swaggerAutogen = require( "swagger-autogen" );
+
+app.use( docPath, [loadUserInfo, util.checkIsAdmin], swaggerUi.serve, swaggerUi.setup( swaggerFile, options ) );
 app.get('/deletelog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {
     // #swagger.tags = ['Webserver']
 

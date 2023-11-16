@@ -25,5 +25,6 @@ angular.module("userApp", [
     "dusernmanageCtrl",
     "importcronjobCtrl",
     "syncCtrl",
-    "mclgsCtrl"
+    "mclgsCtrl",
+    "swaggerCtrl"
 ]);
