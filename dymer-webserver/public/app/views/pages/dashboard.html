@@ -292,8 +292,10 @@
                                 <td class=" text-center actmodindexdash">
                                     <i class="fa fa-scissors  flushAction" title="Delete Index and all entities" index-entity="{{ el.index }}" ng-click="deleteAllEntityAndIndexByIndex(el,$index)"></i>
                                     <i class="fa fa-trash deleteAction " title="Flush all entities" index-entity="{{ el.index }}" ng-click="deleteAllEntityByIndex(el,$index)"></i>
-                                    <!--<i class="fa fa-download" title="without relations" ng-click="exportentnorel(el,$index)" aria-hidden="true"></i>
-                                    <i class="fa fa-download" title="with relations" ng-click="exportent(el,$index)" aria-hidden="true"></i>-->
+                                    <!--  -->
+                                    <!-- <i class="fa fa-download" title="without relations" ng-click="exportentnorel(el,$index)" aria-hidden="true"></i> -->
+                                    <i class="fa fa-download exportAction" title="with relations" ng-click="exportent(el,$index)" aria-hidden="true"></i>
+                                    <!--  -->
                                     <i ng-show="redison" class="fa fa-eraser deleteAction " title="Invalidate cache" index-entity="{{ el.index }}" ng-click="invalidateCache(el,$index)"></i>
                                 </td>
                             </tr>
@@ -399,6 +401,9 @@
                                     Date
                                 </th>
                                 <th></th>
+                                <!--MG - Inizio -->
+                                <th></th>
+                                <!--MG - Fine -->
                             </tr>
                         </thead>
                         <tbody>
@@ -420,6 +425,26 @@
                                     <a href="listentities?id={{ el._id }}" target="_blank"><i
                                             class="fa fa-eye updateAction" aria-hidden="true"></i></a>
                                 </td>
+                                <!--MG - Inizio -->
+                                <td>
+                                    <span ng-switch on="{{el._source.properties.visibility}}">
+                                        <span ng-switch-when="0" title="public" class=" badge badge-info"> <i
+                                                class="fa fa-unlock icon-action" aria-hidden="true"></i>
+                                        </span>
+                                        <span ng-switch-when="1" title="private" class=" badge badge-danger"><i
+                                                class="fa fa-lock icon-action"></i>
+                                        </span>
+                                        <span ng-switch-when="2" title="restricted" class=" badge badge-warning"> <i
+                                                class="fa fa-unlock-alt icon-action"></i>
+                                        </span>
+                                    </span>
+                                    <span ng-switch on="{{el._source.properties.status}}">
+                                        <span ng-switch-when="1" title="PUBLISHED" class=" badge badge-info"> P</span>
+                                        <span ng-switch-when="2" title="UNPUBLISHED" class=" badge badge-dark"> U</span>
+                                        <span ng-switch-when="3" title="DRAFT" class=" badge badge-light"> D </span>
+                                    </span>
+                                </td>
+                                <!--MG - Fine -->
                             </tr>
                         </tbody>
                     </table>
@@ -446,6 +471,9 @@
                                     Date
                                 </th>
                                 <th></th>
+                                <!--MG - Inizio -->
+                                <th></th>
+                                <!--MG - Fine -->
                             </tr>
                         </thead>
                         <tbody>
@@ -471,6 +499,26 @@
                                     <a href="listentities?id={{ el._id }}" target="_blank"><i
                                             class="fa fa-eye updateAction" aria-hidden="true"></i></a>
                                 </td>
+                                <!--MG - Inizio -->
+                                <td>
+                                    <span ng-switch on="{{el._source.properties.visibility}}">
+                                        <span ng-switch-when="0" title="public" class=" badge badge-info"> <i
+                                                class="fa fa-unlock icon-action" aria-hidden="true"></i>
+                                        </span>
+                                        <span ng-switch-when="1" title="private" class=" badge badge-danger"><i
+                                                class="fa fa-lock icon-action"></i>
+                                        </span>
+                                        <span ng-switch-when="2" title="restricted" class=" badge badge-warning"> <i
+                                                class="fa fa-unlock-alt icon-action"></i>
+                                        </span>
+                                    </span>
+                                    <span ng-switch on="{{el._source.properties.status}}">
+                                        <span ng-switch-when="1" title="PUBLISHED" class=" badge badge-info"> P</span>
+                                        <span ng-switch-when="2" title="UNPUBLISHED" class=" badge badge-dark"> U</span>
+                                        <span ng-switch-when="3" title="DRAFT" class=" badge badge-light"> D </span>
+                                    </span>
+                                </td>
+                                <!--MG - Fine -->
                             </tr>
                         </tbody>
                     </table>

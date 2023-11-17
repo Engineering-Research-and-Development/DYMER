@@ -62,4 +62,12 @@ mongoose.model("DymerCronJobRule", {
         type: Boolean,
         require: true
     },
+    forceimportmodel: {
+        type: Boolean,
+        require: true
+    },
+    forceimporttemplates: {
+        type: Boolean,
+        require: true
+    }
 });

@@ -2103,7 +2103,7 @@ function checkPermission(actualItem, act) {
     let d_gid = localStorage.getItem("d_gid");
     let d_rl = localStorage.getItem("d_rl");
     let d_lp =  JSON.parse(atob( localStorage.getItem("d_lp")));
-    console.log("d_lp",d_lp);
+   // console.log("d_lp",d_lp);
     var entPerm = {
         isowner: false,
         view: false,

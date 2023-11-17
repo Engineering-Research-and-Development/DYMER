@@ -36,9 +36,9 @@ const mongoURI = util.mongoUrlFiles();
 console.log(nameFile + '| mongoURI :', JSON.stringify(mongoURI));
 logger.info(nameFile + " | mongoURI: " + JSON.stringify(mongoURI));
 //const connection = mongoose.createConnection(mongoURI, { useNewUrlParser: true });
+let fs = require('fs')
 
-mongoose
-    .connect(mongoURI, {
+mongoose.connect(mongoURI, {
         // useCreateIndex: true,
         useNewUrlParser: true,
         useUnifiedTopology: true
@@ -374,7 +374,6 @@ async function cacheRelations(isRedisActive) {
  *************************************************************************************************************
  */
 router.post('/invalidatecache/:index', util.checkIsAdmin, async(req, res) => {
-
     let index = req.params['index'];
     await redisClient.invalidateCacheByIndex(index, true);
     var ret = new jsonResponse();
@@ -385,7 +384,6 @@ router.post('/invalidatecache/:index', util.checkIsAdmin, async(req, res) => {
 });
 
 router.post('/invalidateallcache', util.checkIsAdmin, async(req, res) => {
-
     await redisClient.emptyCache(true);
     let cachedRelations = await retrieveAllRelations();
     var ret = new jsonResponse();
@@ -395,6 +393,52 @@ router.post('/invalidateallcache', util.checkIsAdmin, async(req, res) => {
     await redisClient.writeAllRelations(JSON.stringify(cachedRelations[0]), cachedRelations[1], true)
     return res.send(ret);
 });
+
+router.post('/export-entities', util.checkIsAdmin, async (req, res) => {
+    let index = req.body.index
+    let params = {}
+    params["index"] = index
+    params["type"] = index
+    params["body"] = {
+        query: {
+            match_all: {}
+        }
+    }
+    params["body"].size = 10000
+
+    let entitiesFromElastic = await client.search(params)
+    let response = entitiesFromElastic.hits.hits;
+
+    let fileName = `${index}_collection_${Date.now()}.json`
+    let filePath = path.join(__dirname + fileName)
+    try {
+        fs.writeFileSync(filePath, JSON.stringify(response), "utf-8", (err) => {
+            if (err) {
+                console.error(err);
+                res.status(500).send({
+                    error: err,
+                    msg: "Problem writing the file"
+                });
+                return
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({
+            error: error,
+            msg: "Error querying Elasticsearch"
+        });
+        return
+    }
+    res.sendFile(filePath);
+    // Remove file from filesystem
+    fs.unlink(filePath, (err) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+    });
+})
 
 var getfilesArrays = function(files_arr) {
     return new Promise(function(resolve, reject) {
@@ -1793,7 +1837,6 @@ var fetchSingleRelation = function(element) {
 };
 
 router.post('/singlerelation/', util.checkIsPortalUser, (req, res) => {
-
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     const dymeruser = util.getDymerUser(req, res);
@@ -1829,7 +1872,6 @@ router.post('/singlerelation/', util.checkIsPortalUser, (req, res) => {
 });
 
 router.put('/singlerelation/:id', util.checkIsPortalUser, (req, res) => {
-
     let id = req.params.id;
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -1868,7 +1910,6 @@ router.put('/singlerelation/:id', util.checkIsPortalUser, (req, res) => {
 });
 
 router.delete('/singlerelation/:id', util.checkIsPortalUser, (req, res) => {
-
     let id = req.params.id;
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -1919,7 +1960,6 @@ router.delete('/singlerelation/:id', util.checkIsPortalUser, (req, res) => {
 
 //TODO Marco aggiungere controllo permessi
 router.get('/', (req, res) => {
-
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let instance = callData.instance;
@@ -1961,7 +2001,6 @@ function isValidObjectId(id) {
 }
 
 router.get('/contentfile/:entityid/:fileid', function(req, res, next) {
-
     var entityid = req.params.entityid;
     var file_id = req.params.fileid;
     if (!isValidObjectId(file_id)) {
@@ -2039,7 +2078,6 @@ router.get('/contentfile/:entityid/:fileid', function(req, res, next) {
 });
 
 router.get('/content_old/:fileid', function(req, res, next) {
-
     //Marco console.log(" ROUTER CONTENT ");
     var file_id = req.params.fileid;
     //  console.log("file_id", file_id);
@@ -2063,7 +2101,6 @@ router.get('/content_old/:fileid', function(req, res, next) {
 
 //TODO Marco gestione permessi
 router.get('/allstats/', (req, res) => {
-
     var ret = new jsonResponse();
     var params = {};
     client.indices.stats(params, function(err, resp, status) {
@@ -2093,41 +2130,41 @@ router.get('/allstats/', (req, res) => {
     });
 });
 
-router.get('/allstatsglobal', (req, res) => {
+router.get( '/allstatsglobal', ( req, res ) => {
+	var ret = new jsonResponse();
+	var params = {};
 
-    var ret = new jsonResponse();
-    var params = {};
+	client.indices.stats( params, function ( err, resp, status ) {
+		if ( err ) {
+			console.error( "ERROR | " + nameFile + '| allstats  :', err );
+			logger.error( nameFile + '| allstats : ' + err );
+			ret.setSuccess( false );
+			ret.setExtraData( {log : err.message} );
+			ret.setMessages( "Entity " + err.displayName );
+			return res.send( ret );
+		}
+		var listEl = resp.indices;
+		var totEnt = 0;
+		var respData = {
+			total   : 0,
+			indices : []
+		};
+		for ( const [ key, value ] of Object.entries( listEl ) ) {
+			// if (key != "entity_relation") {
+			totEnt += value['primaries']['docs']['count'];
+			respData.indices.push( {index    : key,
+									   count : value['primaries']['docs']['count']
+								   } );
+			//  }
+		}
 
- client.indices.stats(params, function(err, resp, status) {
-        if (err) {
-            console.error("ERROR | " + nameFile + '| allstats  :', err);
-            logger.error(nameFile + '| allstats : ' + err);
-            ret.setSuccess(false);
-            ret.setExtraData({ log: err.message });
-            ret.setMessages("Entity " + err.displayName);
-            return res.send(ret);
-        }
-        var listEl = resp.indices;
-        var totEnt = 0;
-        var respData = {
-            total: 0,
-            indices: []
-        };
-        for (const [key, value] of Object.entries(listEl)) {
-            // if (key != "entity_relation") {
-            totEnt += value['primaries']['docs']['count'];
-            respData.indices.push({ index: key, count: value['primaries']['docs']['count'] });
-            //  }
-        }
-
-        respData.total = totEnt;
-        ret.setData(respData);
-        return res.send(ret);
-    });
-});
+		respData.total = totEnt;
+		ret.setData( respData );
+		return res.send( ret );
+	} );
+} );
 
 router.get('/relationstat/', (req, res) => {
-	//
 
     var ret = new jsonResponse();
 
@@ -2174,13 +2211,13 @@ router.get('/relationstat/', (req, res) => {
         }
     });
 });
-
-//TODO Marco gestione permessi
-router.get('/allindex/', (req, res) => {
-
+//Marco gestione permessi
+router.get('/allindex/:indexes?', (req, res) => {
     var ret = new jsonResponse();
     let params = {};
-    params["index"] = "_all";
+    let indexes_ = req.params.indexes ? req.params.indexes.split(",") : ["_all"];
+    //params["index"] = "_all";
+    params["index"] = indexes_
     client.indices.get(params, function(err, resp, status) {
         if (err) {
             console.error("ERROR | " + nameFile + '| allindex :', err);
@@ -2311,7 +2348,6 @@ async function addPermConstraints(usr, query) {
     return queryFileter;
 }
 router.post('/redisroleupdate', async (req, res) => {
-
     let resp = new jsonResponse()
     try {
         let role = util.getAllQuery(req)
@@ -2330,14 +2366,13 @@ router.post('/redisroleupdate', async (req, res) => {
     return res.send(resp)
 })
 router.post('/_search', (req, res) => {
-
     // console.log('_search logger', process.env.DYMER_LOGGER);
     let origin=req.get('origin');
     var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-        console.log('user info URLL', req.get('origin') );
-        console.log('user info fullurl',fullUrl );
-        console.log('req.headers.referer',req.headers.referer );
-        console.log('user info requestjsonpath',req.headers.requestjsonpath)
+        // console.log('user info URLL', req.get('origin') );
+        // console.log('user info fullurl',fullUrl );
+        // console.log('req.headers.referer',req.headers.referer );
+        // console.log('user info requestjsonpath',req.headers.requestjsonpath)
     // console.log(' req.headers.dymeruser', req.headers.dymeruser);
     // var decoded = jwt.decode(req.headers.authdata);
     //  var decoded = jwt.decode(req.headers.authdata);
@@ -3303,7 +3338,6 @@ const jsonMappingDymerEntityToExternal = (obj, conf, calltype, files) => {
 }
 
 router.post('/entitiesbridge', (req, res) => {
-
     var ret = new jsonResponse();
     bE.add(req.body).then(function(retdata) {
         // console.log(nameFile + '| entitiesbridge | add :', JSON.stringify(retdata));
@@ -3322,7 +3356,6 @@ router.post('/entitiesbridge', (req, res) => {
 });
 
 router.put('/entitiesbridge/:id', (req, res) => {
-
     var ret = new jsonResponse();
     const id = req.params.id;
     bE.update(req.body, id).then(function(retdata) {
@@ -3342,7 +3375,6 @@ router.put('/entitiesbridge/:id', (req, res) => {
 });
 
 router.get('/entitiesbridge/:doevaljson', (req, res) => {
-
     var ret = new jsonResponse();
     var list = bE.getmappingList(req.params.doevaljson);
     ret.setData(list);
@@ -3350,7 +3382,6 @@ router.get('/entitiesbridge/:doevaljson', (req, res) => {
 });
 
 router.delete('/entitiesbridge/:id', (req, res) => {
-
     let id = req.params.id;
     var ret = new jsonResponse();
 
@@ -3403,7 +3434,6 @@ function appendFormdata(FormData, data, name) {
 }
 
 router.post('/:enttype', function(req, res) {
-
     var ret = new jsonResponse();
     let origin=(req.get('origin'))?req.headers.referer:req.get('origin');
     const hdymeruser = req.headers.dymeruser;
@@ -3604,7 +3634,6 @@ router.post('/:enttype', function(req, res) {
 });
 
 router.put('/update/:id', (req, res) => {
-
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
@@ -3850,7 +3879,6 @@ router.put('/update/:id', (req, res) => {
 
 //router.put('/:id', (req, res) => {newput
 router.put('/:id', async (req, res) => {
-
     var ret = new jsonResponse();
     let origin=(req.get('origin'))?req.headers.referer:req.get('origin');
     const hdymeruser = req.headers.dymeruser
@@ -4136,9 +4164,6 @@ router.put('/:id', async (req, res) => {
 
 //router.put('/oldput/:id', (req, res) => { //to delete
 router.put('/oldput/:id', (req, res) => { //to delete
-    //
-
-    // to delete
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
@@ -4401,7 +4426,6 @@ router.put('/oldput/:id', (req, res) => { //to delete
 
 //router.put('/hbput2022/:id', (req, res) => { //to delete
 router.put('/hbput2022/:id', (req, res) => {
-
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
@@ -4852,7 +4876,6 @@ const haspermissionGrantByAction = function(urs, action, entityprop) {
 
 //router.patch('/:id', [testprecall, testprecall2], (req, res) => {
 router.patch('/:id', async(req, res, next) => {
-
     var callDatap = util.getAllQuery(req);
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser
@@ -5017,7 +5040,6 @@ router.patch('/:id', async(req, res, next) => {
 });*/
 /*giaisg*/
 router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
-
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let index = callData.index;
@@ -5116,7 +5138,6 @@ router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
 });
 
 router.get('/deleteAllEntityAndIndexByIndex/', util.checkIsAdmin, (req, res) => {
-
     let callData = util.getAllQuery(req);
     let index_ = callData.index;
     const dymeruser = util.getDymerUser(req, res);
@@ -5145,7 +5166,6 @@ router.get('/deleteAllEntityAndIndexByIndex/', util.checkIsAdmin, (req, res) => 
 /**/
 //delete by id
 router.delete('/:id',async (req, res) => {
-
     let id = req.params.id;
     var ret = new jsonResponse();
     const dymeruser = util.getDymerUser(req, res);

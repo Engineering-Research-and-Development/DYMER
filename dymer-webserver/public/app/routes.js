@@ -185,6 +185,11 @@ function config($routeProvider, $locationProvider) {
             controller: "syncController",
             permission: ["app-admin" ]
         })
+        .when(site_prefix + "/workflow", {
+            templateUrl: site_prefix + "/public/app/views/pages/services/workflow.html",
+            controller: "workflowController",
+            permission: ["app-admin"]
+        })
         .when(site_prefix + "/dusernmanage", {
             templateUrl: site_prefix + "/public/app/views/pages/administration/dusernmanage.html",
             controller: "dusernmanageController",

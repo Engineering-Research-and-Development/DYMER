@@ -159,6 +159,57 @@
                             <span class="btn btn-info " ng-click="saveOpnSearchConfig(opnsearch.config.delete) ">Save</span>
                         </div>
                     </div>
+                    <!--MG - Run RULE - Inizio -->
+                    <div class="row">
+                        <div class="col-12 ">
+                            <h5>Get</h5>
+                        </div>
+                        <input type="hidden" ng-model="opnsearch.config.get.servicetype">
+                        <input type="hidden" ng-model="opnsearch.config.get.id">
+                    </div>
+                    <div class="row ">
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Method</label>
+                                <select ng-model="opnsearch.config.get.configuration.method " class="form-control ">
+                                    <option value="GET">GET</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-3 ">
+                            <div class="form-group ">
+                                <label>Host</label>
+                                <input type="text" ng-model="opnsearch.config.get.configuration.host " class="form-control ">
+                            </div>
+                        </div>
+                        <div class="col-2 ">
+                            <div class="form-group ">
+                                <label>Port</label>
+                                <input type="text " class="form-control " ng-model="opnsearch.config.get.configuration.port ">
+                            </div>
+                        </div>
+
+                        <div class="col-5 ">
+                            <div class="form-group ">
+                                <label>Path</label>
+                                <input type="text " class="form-control " ng-model="opnsearch.config.get.configuration.path ">
+                            </div>
+                        </div>
+                        <div class="col-5 ">
+                            <div class="form-group ">
+                                <label>Dymer Path</label>
+                                <input type="text " class="form-control " ng-model="opnsearch.config.get.configuration.dymerpath">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-right ">
+                        <div class="col-12 ">
+                            <span class="btn btn-info " ng-click="saveOpnSearchConfig(opnsearch.config.get) ">Save</span>
+                        </div>
+                    </div>
+                    <hr>
+                    <!--MG - Run RULE - Fine -->
                 </div>
             </div>
             <div class="card-footer ">
@@ -228,7 +279,13 @@
                             </div>
                         </div>
                     </div>
-                   
+                    <div class="form-group"> <label class="text-info"></label>
+                        <p>Before <b>Running the Rule</b>, check that you have activated the relative <b>hooks</b> to enable the <b>insert</b>, <b>delete</b> and <b>update</b> operations
+                        for the <b>Openness Search</b> service.    
+                        The <b>insert</b> of an <b>Asset</b>, with the data of the corresponding <b>Entry</b>, is carried out if it is missing.
+                        An Asset is <b>updated</b> if its modification date is less recent than that of the corresponding <b>Entry</b>.
+                        The <b>delete</b> operation of an <b>Asset</b> is carried out if it does not match any <b>Entry</b>.</p>
+                    </div>
                     <div class="row text-right ">
                         <div class="col-12 ">
                             <span class="btn btn-info " ng-click="createOpnSearchRule(rule)"><i class="fa fa-map-signs "
@@ -257,7 +314,6 @@
                             <th>
                                 index
                             </th>
-                             
                             <th>
                                 Mapping
                             </th>
@@ -265,15 +321,21 @@
                                 Send Notification
                             </th>
                             <th class=" text-center ">
-
+                                Delete
                             </th>
+                            <th class=" text-center ">
+                                Run Rule
+                            </th>
+                            <th class=" text-center ">
+                                Last Update
+                            </th>
+                            <th class=" text-center "></th>
                         </thead>
                         <tbody>
                             <tr ng-repeat="el in ListRules ">
                                 <td>
                                     {{ el._index }}
                                 </td>
-                                
                                 <td><i class="fa fa-bars burgherAction " aria-hidden="true " ng-click="showDetails=! showDetails "></i>
                                     <pre ng-show="showDetails ">{{ el.mapping |  json }}</pre>
                                 </td>
@@ -283,20 +345,29 @@
                                 <td class=" text-center ">
                                     <i class="fa fa-trash deleteAction " aria-hidden="true " ng-click="removeOpnSearchRule( $index) " ng-confirm-click="Confirm unfavorite? "></i>
                                 </td>
+                                <!--MG - Run RULE - Inizio -->
+                                <td class=" text-center ">
+                                    <i class="fa fa-play deleteAction " aria-hidden="true " ng-click="runOpnSearchRule($index)" ng-confirm-click="Do you confirm Run Rule? "></i>
+                                </td>
+                                <td class=" text-center ">
+                                    <span ng-bind="el.changed | date:'MM/dd/yyyy HH:mm'"></span>
+                                </td>
+                                <td class="card-footer ">
+                                    <div class="text-center" ng-show="el.changed">
+                                        <i class="fa fa-info burgherAction" ng-click="showFilterItem = ! showFilterItem; showentitydet();" aria-hidden="true"></i>
+                                    </div>
+                                    <div ng-show="showFilterItem">
+                                        <pre><b>Insert</b> {{ el.info_insert |  json }}</pre>
+                                        <pre><b>Update</b> {{ el.info_update |  json }}</pre>
+                                        <pre><b>Delete</b> {{ el.info_delete |  json }}</pre>
+                                    </div>
+                                </td>
+                                <!--MG - Run RULE - Fine -->
                             </tr>
                         </tbody>
                     </table>
                 </div>
-
-
-
             </div>
-            <!--<div class="card-footer ">
-                  <hr>
-                  <div class="stats ">
-                    <i class="fa fa-history "></i> Updated 3 minutes ago
-                  </div>
-                </div>-->
         </div>
     </div>
 </div>

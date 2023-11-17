@@ -126,7 +126,6 @@ app.get('/checkservice', [loadUserInfo, util.checkIsPortalUser], (req, res) => {
 });
 
 app.use(express.static(__dirname + '/public'));
-
 //app.use(express.static(__dirname + global.gConfig.services.webserver["context-path"] + 'public'));
 //app.use(express.static(global.gConfig.services.webserver["context-path"] + 'public'));
 //app.use('/public', express.static('public'));
@@ -344,8 +343,8 @@ app.get('/info/:key?', (req, res, next) => {
         '<br><small style="color: #8c8985;">DYnamic Information ModElling & Rendering</small>' +
         '</div>' +
         '<div class="  	col-12 p-2" style="color: #8c8985;">' +
-        '<br> version ' + infodymer.version +
-        '<br> <small style="color: #8c8985;"> updated date ' + infodymer.updated + '</small></div>' +
+        // '<br> version ' + infodymer.version +
+        '<br> <small style="color: #8c8985;"> updated date ' + infodymer.updated  + '</small></div>' +
         '<div class="text-center col-12 p-2">' +
         '<span style=" font-size: 12px;">&#169; 2022, Powered by <a href="https://www.eng.it/" target="_blank">' + '<img src="https://www.eng.it/resources/images/logo%20eng.png" style="width: 20px;bottom: 3px;position: relative; "> Engineering</a>' + '</span>' +
         '</div>' +

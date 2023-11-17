@@ -26,5 +26,7 @@ angular.module("userApp", [
     "importcronjobCtrl",
     "syncCtrl",
     "mclgsCtrl",
+    "workflowCtrl",
+    "angularjs-dropdown-multiselect",
     "swaggerCtrl"
 ]);

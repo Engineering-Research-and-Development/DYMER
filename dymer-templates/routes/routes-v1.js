@@ -121,7 +121,9 @@ var getfilesArrays = function(er) {
                 "created": er.created,
                 "files": dt,
                 "_id": er._id,
-                "viewtype": er.viewtype
+                "viewtype": er.viewtype,
+                /*MG - Aggiunte properties*/
+                "properties": er.properties
             }
             resolve(ret_json);
         });
@@ -178,7 +180,7 @@ router.get('/', (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
-    //console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
+    console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
     logger.info(nameFile + '  | get  | queryFind:' + JSON.stringify(queryFind));
     Template.find(queryFind, {}).collation({ locale: "en" }).sort({ title: +1 }).then((templates) => {
         //Template.find(queryFind).then((templates) => {
@@ -186,6 +188,7 @@ router.get('/', (req, res) => {
         var actions = templates.map(getfilesArrays);
         var results = Promise.all(actions); // pass array of promises
         results.then(function(dat) {
+            console.log("Query result ===>", dat);
             ret.setMessages("List");
             ret.setData(dat);
             //  console.log('dat', JSON.stringify(dat));
@@ -411,7 +414,10 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
         var element = req.files[0];
         var myfilter = { "_id": mongoose.Types.ObjectId(data.pageId) };
         var bulk = Template.collection.initializeOrderedBulkOp();
-        bulk.find(myfilter).updateOne({ "$pull": { "files": mongoose.Types.ObjectId(data.assetId) } });
+        bulk.find(myfilter).updateOne({ "$pull": { "files": mongoose.Types.ObjectId(data.assetId)},
+                                        /*MG - Inserito aggiornamento data di modifica*/                                
+                                         "$set":  { "properties.changed": new Date().toISOString()}
+                                      });
         bulk.find(myfilter).updateOne({ "$push": { "files": mongoose.Types.ObjectId(element.id) } });
         bulk.execute(function(err, result) {
             if (err) {
@@ -448,7 +454,10 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
                                 d.files.forEach(file => {
                                     if (file.filename == element.filename && !found){
                                         found = true;
-                                        var myquery = { "$pull": { "files": mongoose.Types.ObjectId(file._id) } };
+                                        var myquery = { "$pull": { "files": mongoose.Types.ObjectId(file._id) },
+                                                         /*MG - Inserito aggiornamento data di modifica*/                                
+                                                         "$set":  { "properties.changed": new Date().toISOString()}
+                                                      };
                                         Template.updateOne(myfilter, myquery,
                                             function(err, raw) {
                                                 if (err) {

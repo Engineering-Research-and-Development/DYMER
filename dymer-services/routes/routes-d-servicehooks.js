@@ -42,7 +42,6 @@ mongoose
 */
 
 router.post('/addhook', util.checkIsAdmin, function(req, res) {
-
     let callData = util.getAllQuery(req);
     let data = callData.data;
     var ret = new jsonResponse();
@@ -71,7 +70,6 @@ router.post('/addhook', util.checkIsAdmin, function(req, res) {
 });
 
 router.get('/hooks/', (req, res) => {
-
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
     return findHook(queryFind, res);
@@ -96,7 +94,6 @@ function findHook(queryFind, res) {
 }
 
 router.delete('/hook/:id', util.checkIsAdmin, (req, res) => {
-
     var ret = new jsonResponse();
     var id = req.params.id;
     var myfilter = { "_id": id };
@@ -116,7 +113,6 @@ router.delete('/hook/:id', util.checkIsAdmin, (req, res) => {
 });
 
 router.post('/checkhook', function(req, res) {
-
     let callData = util.getAllQuery(req);
     let data = callData.data;
     let extraInfo = callData.extraInfo;
@@ -143,8 +139,9 @@ router.post('/checkhook', function(req, res) {
         els.forEach(el => {
             // console.log("chekkkk el", JSON.stringify(el));
             logger.info(nameFile + ' | post/checkhook | HookModel: chek el' + JSON.stringify(el));
-            var pt = wbsUrl + el.service.servicePath;
+            //var pt = wbsUrl + el.service.servicePath;
             // pt = el.service.servicePath;
+            let pt = util.getServiceUrl("dservice") + '/api/v1/workflow/listener';
             axios.post(pt, { 'data': data, "extraInfo": extraInfo,"origindata":origindata, "originheader":  originheader }, {
                     headers: headers
                 }).then(response => {

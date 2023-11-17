@@ -60,7 +60,6 @@ mongoose.connect(mongoURI, {
     });
 
 router.get('/mongostate', (req, res) => {
-
     let ret = new jsonResponse();
     let dbState = [{
             value: 0,
@@ -115,7 +114,9 @@ var getfilesArrays = function(er) {
                 "posturl": er.posturl,
                 "instance": er.instance,
                 "files": dt,
-                "created": er.created
+                "created": er.created,
+                /*MG - Aggiunte properties*/
+                "properties": er.properties
             }
 
             if (er.structure != undefined)
@@ -170,7 +171,6 @@ var recFile = function(file_id) {
  */
 
 router.get('/dettagliomodel', [util.checkIsDymerUser], (req, res) => {
-
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
@@ -189,19 +189,19 @@ router.get('/dettagliomodel', [util.checkIsDymerUser], (req, res) => {
 });
 
 router.get('/', [util.checkIsDymerUser], (req, res) => {
-
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
-    //console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
+    console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
     logger.info(nameFile + ' | get | queryFind: ' + JSON.stringify(queryFind));
     //let queryFind = (Object.keys(callData.query).length === 0) ? {} : JSON.parse(callData.query);
     //let queryFind = (Object.keys(callData.query).length === 0) ? {} : callData.query;
     Model.find(queryFind, {}).collation({ locale: "en" }).sort({ title: +1 }).then((Models) => {
-       // console.log('Models', Models);
+        //console.log('Models', Models);
         var actions = Models.map(getfilesArrays);
         var results = Promise.all(actions); // pass array of promises
         results.then(function(dat) {
+            console.log("Query result ===>", dat);
             ret.setMessages("List");
             ret.setData(dat);
             return res.send(ret);
@@ -213,7 +213,6 @@ router.get('/', [util.checkIsDymerUser], (req, res) => {
 });
 
 router.get('/content/:entype/:fileid', function(req, res, next) {
-
     var file_id = req.params.fileid;
     //   console.log("file_id", file_id);
     //console.log(nameFile + ' | get/content/:entype/:fileid |  fileid :', file_id);
@@ -239,7 +238,6 @@ router.get('/content/:entype/:fileid', function(req, res, next) {
 });
 
 router.post('/', util.checkIsAdmin, function(req, res) {
-
     var ret = new jsonResponse();
     upload(req, res, function(err) {
         if (err) {
@@ -262,7 +260,7 @@ router.post('/', util.checkIsAdmin, function(req, res) {
             description: data.description,
             posturl: data.posturl,
             instance: data.instance,
-            /*MG - Cron - Funzione di import MODEL/TEMPLATES - Aggiungo la struttura - Inizio*/
+            /*MG - Cron - Funzione di import MODEL/TEMPLATES - Aggiungo la struttura*/
             structure: data.structure,
             files: files_arr
         }
@@ -299,7 +297,6 @@ router.post('/', util.checkIsAdmin, function(req, res) {
 });
 
 router.post('/create', util.checkIsAdmin, function(req, res) {
-
     var ret = new jsonResponse();
     upload(req, res, function(err) {
         if (err) {
@@ -333,7 +330,6 @@ router.post('/create', util.checkIsAdmin, function(req, res) {
 });
 
 router.post('/addAsset', util.checkIsAdmin, function(req, res) {
-
     var ret = new jsonResponse();
     upload(req, res, function(err) {
         if (err) {
@@ -371,7 +367,6 @@ router.post('/addAsset', util.checkIsAdmin, function(req, res) {
 });
 
 router.post('/update', util.checkIsAdmin, function(req, res) {
-
     var ret = new jsonResponse();
     upload(req, res, function(err) {
         if (err) {
@@ -411,7 +406,6 @@ router.post('/update', util.checkIsAdmin, function(req, res) {
 });
 
 router.post('/updatestructure', util.checkIsAdmin, function(req, res) {
-
     var ret = new jsonResponse();
     upload(req, res, function(err) {
         if (err) {
@@ -452,7 +446,6 @@ router.post('/updatestructure', util.checkIsAdmin, function(req, res) {
 });
 
 router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
-
     var ret = new jsonResponse();
     upload(req, res, function(err) {
         if (err) {
@@ -473,7 +466,10 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
         // console.log('element1', req.files[1]);
         var myfilter = { "_id": mongoose.Types.ObjectId(data.pageId) };
         var bulk = Model.collection.initializeOrderedBulkOp();
-        bulk.find(myfilter).updateOne({ "$pull": { "files": mongoose.Types.ObjectId(data.assetId) } });
+        bulk.find(myfilter).updateOne({ "$pull": { "files": mongoose.Types.ObjectId(data.assetId)},
+                                        /*MG - Inserito aggiornamento data di modifica*/
+                                         "$set":  { "properties.changed": new Date().toISOString()}
+                                      });
         bulk.find(myfilter).updateOne({ "$push": { "files": mongoose.Types.ObjectId(element.id) } });
         /* bulk.find(myfilter).updateOne([{ "$pull": { "files": mongoose.Types.ObjectId(data.assetId) } },
              { "$push": { "files": mongoose.Types.ObjectId(element.id) } }, 
@@ -511,7 +507,10 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
                                 d.files.forEach(file => {
                                     if (file.filename == element.filename && !found){
                                         found = true;
-                                        var myquery = { "$pull": { "files": mongoose.Types.ObjectId(file._id) } };
+                                        var myquery = { "$pull": { "files": mongoose.Types.ObjectId(file._id) },
+                                                         /*MG - Inserito aggiornamento data di modifica*/
+                                                         "$set":  { "properties.changed": new Date().toISOString()}
+                                                      };
                                         Model.updateOne(myfilter, myquery,
                                             function(err, raw) {
                                                 if (err) {
@@ -545,7 +544,6 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
 });
 
 router.delete('/:id', util.checkIsAdmin, (req, res) => {
-
     var ret = new jsonResponse();
     var id = req.params.id;
     var myfilter = { "_id": id };
@@ -570,7 +568,6 @@ router.delete('/:id', util.checkIsAdmin, (req, res) => {
 });
 
 router.delete('/:id/:fid', util.checkIsAdmin, (req, res) => {
-
     var ret = new jsonResponse();
     var id = req.params.id;
     var fid = req.params.fid;
