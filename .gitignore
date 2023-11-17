@@ -7,3 +7,4 @@ warn.log
 routestest.js
 keycloak-config.js
 authenticate_opid.js
+dymer-*/package-lock.json
