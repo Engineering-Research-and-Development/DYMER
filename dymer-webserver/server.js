@@ -55,7 +55,6 @@ const options = {
 	}
 };
 
-
 app.use(cookieParser());
 app.use(session({
                     secret:            'thisShouldBeLongAndSecret',
@@ -74,6 +73,7 @@ var publicdemoDonwlonad = require("./routes/demodownloads");
 const swaggerAutogen = require( "swagger-autogen" );
 
 app.use( docPath, [loadUserInfo, util.checkIsAdmin], swaggerUi.serve, swaggerUi.setup( swaggerFile, options ) );
+
 app.get('/deletelog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {
     // #swagger.tags = ['Webserver']
 
