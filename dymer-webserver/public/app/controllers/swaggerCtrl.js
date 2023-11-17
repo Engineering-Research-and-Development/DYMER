@@ -1,14 +1,16 @@
 angular.module( 'swaggerCtrl', [] )
-	   .controller( 'swaggerController', function ( $scope, $http ) {
-		   console.log( "SwaggerCtrl" );
-		   console.log( "Generating Swagger page ..." )
+	   .controller( 'swaggerController', function ( $scope, $http, $rootScope ) {
+		   var baseContextPath = $rootScope.globals.contextpath;
+		   let swaggerDocUrl;
 
-		   function load_anotherpage() {
-			   document.getElementById( "display" ).innerHTML = '<embed type="text/html" src="http://localhost:8080/dymergui/api/doc/" width="100%" height="800" >';
+		   $http.get( baseContextPath + "/swaggerdoc" ).then( response => {
+			   swaggerDocUrl = response.data.swaggerDocUrl;
+			   load_swaggerDocPage();
+		   } ).catch( ( error ) => {
+			   console.error( 'Errore:', error );
+		   } );
+
+		   function load_swaggerDocPage() {
+			   document.getElementById( "display" ).innerHTML = `<embed type="text/html" src="${ swaggerDocUrl }" width="100%" height="800">`;
 		   }
-
-		   load_anotherpage();
-
-		   console.log( "Finished!" )
-
 	   } );

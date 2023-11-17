@@ -102,10 +102,8 @@ function config($routeProvider, $locationProvider) {
             controller: "manageModel",
             permission: ["app-admin" ]
         })
-
-    .when(site_prefix + "/modeldoc", {
+        .when(site_prefix + "/modeldoc", {
             templateUrl: site_prefix + "/public/app/views/pages/forms/documentation.html",
-
         })
         .when(site_prefix + "/demolist", {
             templateUrl: site_prefix + "/public/app/views/pages/demos/list.html"
@@ -191,11 +189,12 @@ function config($routeProvider, $locationProvider) {
             templateUrl: site_prefix + "/public/app/views/pages/administration/dusernmanage.html",
             controller: "dusernmanageController",
             permission: ["app-admin" ]
-        }).when(site_prefix + "/swaggerapi", {
-            templateUrl: site_prefix + "/public/app/views/pages/demos/swaggerapi.html",
-            controller: "swaggerController",
-            permission: ["app-admin" ]
         })
+        .when( site_prefix + "/swaggerapi", {
+            templateUrl : site_prefix + "/public/app/views/pages/demos/swaggerapi.html",
+            controller  : "swaggerController",
+            permission: ["app-admin" ]
+        } )
         /*   .when(site_prefix + "/authenticate", {
                templateUrl: site_prefix + "/authenticate"
            })*/

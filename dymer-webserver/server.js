@@ -74,6 +74,11 @@ const swaggerAutogen = require( "swagger-autogen" );
 
 app.use( docPath, [loadUserInfo, util.checkIsAdmin], swaggerUi.serve, swaggerUi.setup( swaggerFile, options ) );
 
+app.get( '/swaggerdoc', [ loadUserInfo, util.checkIsAdmin ], ( req, res ) => {
+    const data = {swaggerDocUrl : serverUrl + docPath};
+    res.json( data );
+} );
+
 app.get('/deletelog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {
     // #swagger.tags = ['Webserver']
 
@@ -134,7 +139,7 @@ app.use(function (req, res, next) {
     var pathname = req.url;
     //  console.log(pathname);
     /*if (pathname == ("/login")) {
-       
+
         res.setHeader(
             'Content-Security-Policy',
             "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:; script-src 'self'  ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
@@ -510,7 +515,6 @@ app.use("/api/dservice/", loadUserInfo, dserviceRoutes);
 app.use("/api/system/", loadUserInfo, system);
 app.post("/api/test/", loadUserInfo, (req, res, next) => {
     // #swagger.tags = ['Webserver']
-
     console.log("test");
     next();
     //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
