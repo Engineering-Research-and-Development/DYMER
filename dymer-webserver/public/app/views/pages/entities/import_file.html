@@ -1,4 +1,5 @@
-<div class="row">
+<script type="text/javascript" src="angularjs-dropdown-multiselect.js"></script>
+<div class="row-md-2">
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
@@ -54,6 +55,14 @@
                     <div class="update ml-auto mr-auto  ">
                         <button type="submit" class="btn btn-primary btn-round" ng-click="importEntFl( )">Import</button>
                     </div>
+                    <!---->
+                    <div class="update ml-auto mr-auto  ">
+                        <button type="submit" class="btn btn-primary btn-round" ng-click="importEntFl( )">Import from JSON</button>
+                    </div>
+                    <div class="update ml-auto mr-auto  ">
+                        <button type="submit" class="btn btn-primary btn-round" ng-click="importEntFl( )">Import from CSV</button>
+                    </div>
+                    <!---->
                 </div>
                 <div class="row">
                     <div class="col-12  ">
@@ -64,3 +73,82 @@
         </div>
 
     </div>
+    
+    <!---->
+    <!---->
+    <!---->
+    <!---->
+
+    <div class="row-md-2">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Export Entities</h5>
+                <!-- <p class="card-category">Handcrafted by our friends from
+                      
+                        </p>-->
+            </div>
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col-2 ">
+                        <div class="form-group">
+                            <label>Index</label>
+                            <select  class="form-control" ng-model="selectedEntity" ng-options="entity for entity in listEntities" ng-change="selectOptions()">
+                                        </select>
+                                        <p>You selected: {{selectedEntity}}</p>
+
+                        </div>
+                    </div>
+
+                    <div class="col-5" ng-show="selectedEntity">
+                        <div class="form-group">
+                            <label> Fields </label><small style="color: #8c8985;"> </small>
+                            <div ng-dropdown-multiselect="" options="myDropdownOptions" selected-model="myDropdownModel" extra-settings="myDropdownSettings" checkboxes="true"></div>
+                            <!-- <div ng-dropdown-multiselect="" options="myDropdownOptions" selected-model="myDropdownModel" extra-settings="FieldsSettings" checkboxes="true"></div> -->
+                        </div> 
+                    </div>
+                    <!-- <div class="col-3  "> 
+                        <div class="form-group">
+                            <label>Host</label>
+                            <input type="text" ng-model="host" class="form-control" placeholder="http://localhost">
+                        </div>
+                    </div>
+                    <div class="col-2  ">
+                        <div class="form-group">
+                            <label>Port</label>
+                            <input type="text" class="form-control" placeholder="8008" ng-model="port">
+                        </div>
+                    </div>
+                    <div class="col-5  ">
+                        <div class="form-group">
+                            <label>Path</label>
+                            <input type="text" class="form-control" placeholder="path" ng-model="path">
+                        </div>
+                    </div> -->
+                </div>
+                <!-- <div class="row">
+                    <div class="col-12  ">
+                        <div class="form-group">
+                            <label>Mapping</label>
+
+                            <textarea rows="10" class="form-control" ng-model="mapping" style="min-height: 190px"></textarea>
+                            </textarea>
+                        </div>
+                    </div>
+
+                </div> -->
+                <div class="row">
+                    <div class="update ml-auto mr-auto  ">
+                        <button type="submit" class="btn btn-primary btn-round" ng-click="ExportJSON()">Export JSON</button>
+                    </div>
+                    <div class="update ml-auto mr-auto  ">
+                        <button type="submit" class="btn btn-primary btn-round" ng-click="ExportCSV()">Export CSV</button>
+                    </div>
+                </div>
+                <div class="row">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

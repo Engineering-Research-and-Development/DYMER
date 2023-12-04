@@ -1,5 +1,5 @@
 angular.module('dashCtrl', ['nvd3'])
-    .controller('dashController', function ($scope, $http, $location, $browser, $rootScope) {
+    .controller('dashController', function ($scope, $http, $location, $browser, $rootScope, exportEntities) {
         var baseContextPath = $rootScope.globals.contextpath; //$rootScope.site_prefix; //'/d4ptest/'; //$browser.baseHref();
         $scope.redison = false;
         $scope.tab = 1;
@@ -177,31 +177,7 @@ angular.module('dashCtrl', ['nvd3'])
             }
         };
         $scope.exportent = function (obj, ind) {
-            $http.post(`${baseContextPath}/api/entities/api/v1/entity/export-entities`, obj)
-                .then(function (response) {
-                    let d = new Date();
-                    let date = d.toISOString().split('T')[0].replace(/-/g, '_');
-                    let time = d.toTimeString().split(' ')[0].replace(/:/g, '_');
-                    let dataFile = JSON.stringify(response.data)
-
-                    let blob = new Blob([dataFile], { type: 'application/json' });
-
-                    let linkElement = document.createElement('a');
-                    let url = window.URL.createObjectURL(blob);
-
-                    let filename = `${obj.index}_catalogue_${date}_${time}.json`
-                    linkElement.setAttribute('href', url);
-                    linkElement.setAttribute("download", filename);
-
-                    let clickEvent = new MouseEvent("click", {
-                        "view": window,
-                        "bubbles": true,
-                        "cancelable": false
-                    });
-                    linkElement.dispatchEvent(clickEvent);
-                }).catch(function (response) {
-                    console.log(response);
-                });
+           exportEntities.exportJSONFormat(baseContextPath, obj)
         };
 
         $scope.invalidateCache = function (obj) {

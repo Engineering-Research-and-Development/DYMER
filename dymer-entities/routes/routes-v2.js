@@ -37,6 +37,8 @@ console.log(nameFile + '| mongoURI :', JSON.stringify(mongoURI));
 logger.info(nameFile + " | mongoURI: " + JSON.stringify(mongoURI));
 //const connection = mongoose.createConnection(mongoURI, { useNewUrlParser: true });
 let fs = require('fs')
+const jsonexport = require('jsonexport');
+
 
 mongoose
     .connect(mongoURI, {
@@ -393,7 +395,9 @@ router.post('/invalidateallcache', util.checkIsAdmin, async(req, res) => {
     return res.send(ret);
 });
 
-router.post('/export-entities', util.checkIsAdmin, async (req, res) => {
+/*----------------------------------------*/
+
+router.post('/export-json-entities', util.checkIsAdmin, async (req, res) => {
     let index = req.body.index
     let params = {}
     params["index"] = index
@@ -408,36 +412,83 @@ router.post('/export-entities', util.checkIsAdmin, async (req, res) => {
     let entitiesFromElastic = await client.search(params)
     let response = entitiesFromElastic.hits.hits;
 
-    let fileName = `${index}_collection_${Date.now()}.json`
-    let filePath = path.join(__dirname + fileName)
-    try {
-        fs.writeFileSync(filePath, JSON.stringify(response), "utf-8", (err) => {
-            if (err) {
-                console.error(err);
-                res.status(500).send({
-                    error: err,
-                    msg: "Problem writing the file"
-                });
-                return
+    for (element of response) {
+        if (element._id) {
+            element._source.logo = util.getImgLink(element._id, element._source.logo?.id)
+        } else {
+            delete element._source.logo
+        }
+    }
+
+    res.json(response);
+
+})
+
+router.post('/export-csv-entities', util.checkIsAdmin, async (req, res) => {
+    let index = req.body.index
+    let keysToExlude = req.body.exclude
+
+    let params = {}
+    params["index"] = index
+    params["type"] = index
+    params["body"] = {
+        query: {
+            match_all: {}
+        }
+    }
+    params["body"].size = 10000
+
+    let entitiesFromElastic = await client.search(params)
+    let response = util.flatJSON(entitiesFromElastic.hits.hits);
+
+    let partialJSON = response.map(resp => {
+        let newResponse = { ...resp };
+    
+        keysToExlude.forEach(field => {
+            if (newResponse.hasOwnProperty(field)) {
+                delete newResponse[field];
             }
         });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send({
-            error: error,
-            msg: "Error querying Elasticsearch"
-        });
-        return
-    }
-    res.sendFile(filePath);
-    // Remove file from filesystem
-    fs.unlink(filePath, (err) => {
+    
+        return newResponse;
+    });    
+    
+    jsonexport(partialJSON, { textDelimiter: "\'" }, function (err, csv) {
         if (err) {
-            console.error(err);
+            console.error('Error converting JSON to CSV:', err);
+            res.status(500).send({
+                error: err,
+                msg: 'Error converting JSON to CSV'
+            });
             return;
         }
+
+        res.send(csv)
     });
+});
+
+/*----------------------------------------*/
+router.get('/getstructure/:id', async (req, res) => {
+    let index = req.params.id
+    let params = {}
+    params["index"] = index
+    params["type"] = index
+    params["body"] = {
+        query: {
+            match_all: {}
+        }
+    }
+    params["body"].size = 10000
+
+    let entitiesFromElastic = await client.search(params)
+    let flat = util.flatJSON(entitiesFromElastic.hits.hits);
+
+    let allKeys = [...new Set(flat.flatMap(obj => Object.keys(obj)))];
+    res.send(allKeys)
+
 })
+/*----------------------------------------*/
+
 
 var getfilesArrays = function(files_arr) {
     return new Promise(function(resolve, reject) {

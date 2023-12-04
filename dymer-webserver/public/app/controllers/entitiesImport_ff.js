@@ -1,7 +1,8 @@
 angular.module('entitiesImportControllers', [])
-    .controller('entitiesImport_ff', function($scope, $http, $rootScope) {
+    .controller('entitiesImport_ff', function($scope, $http, $rootScope, exportEntities) {
         var baseContextPath = $rootScope.globals.contextpath;
         //   console.log('testing controller entitiesImport_ff');
+        
         $scope.method = "GET";
         $scope.host = "http://localhost";
         $scope.port = "8008";
@@ -13,6 +14,17 @@ angular.module('entitiesImportControllers', [])
             "_source": "_source"
         };
         $scope.mapping = JSON.stringify(mapping, '",', '\t');
+
+        /**/
+        $http.get(baseContextPath + '/api/entities/api/v1/entity/allstatsglobal', {
+        }).then(function (retE) {
+             let res = retE.data.data.indices;
+             $scope.listEntities = res.map((e) => e.index)
+             $scope.listEntities.shift()
+        }).catch(function(e){
+            console.error("error: ", e)
+        })
+        /**/
 
         $scope.importEntFl = function() {
             /* console.log($scope.method);
@@ -79,4 +91,51 @@ angular.module('entitiesImportControllers', [])
             }, 800);
         };
 */
+
+        $scope.ExportJSON = function () {
+            console.log("Vuoi esportare un JON, quindi")
+            exportEntities.exportJSONFormat(baseContextPath, {index: $scope.selectedEntity})
+        }
+
+        $scope.ExportCSV = function () {
+            console.log("Esporti un CSV: ")
+            let options = $scope.myDropdownOptions.map(el => (el.id))
+            let selectedOptions = $scope.myDropdownModel.map(el => el.id)
+            
+            let excluededFields = options.filter(element => !selectedOptions.includes(element))
+            
+            // console.log("excluededFields: ", excluededFields)
+            exportEntities.exportCSVFormat(baseContextPath, {index: $scope.selectedEntity, exclude: excluededFields})
+
+        }
+
+        /********************************/
+        $scope.myDropdownSettings = {
+            smartButtonTextProvider: [],
+            smartButtonMaxItems: 3,
+            smartButtonTextProvider(selectionArray) {
+                if (selectionArray.length === 1) {
+                    return selectionArray[0].label;
+                } else {
+                    return selectionArray.length + ' Selected';
+                }
+            }
+        };
+
+        $scope.selectOptions = function () {
+            let index = $scope.selectedEntity
+            let fields = []
+
+            $http.get(baseContextPath + '/api/entities/api/v1/entity/getstructure/' + index).then(function (rt) {
+                for (let el of rt.data) {
+                    fields.push({ id: el, label: el })
+                }
+                $scope.myDropdownOptions = fields
+                $scope.myDropdownModel = [$scope.myDropdownOptions[0]]
+            }).catch(function (e) {
+                console.log("Error: ", e)
+            })
+
+        }
+        /********************************/
     });
