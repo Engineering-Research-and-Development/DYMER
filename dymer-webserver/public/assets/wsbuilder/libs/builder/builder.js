@@ -483,6 +483,10 @@ Vvveb.Builder = {
         self._initDragdrop();
         self._initBox();
         self.dragElement = null;
+        /*MG - Inizio*/
+        createCodeEditor("css");
+        createCodeEditor("javascript");
+        /*MG - Fine*/
     },
 
     /* controls */
@@ -1904,14 +1908,19 @@ Vvveb.FileManager = {
         dataedit.assets.forEach(element => {
             var listEl = '<li id="assetli_' + element.id + '">' + element.name;
             listEl += '<span class="content-action-edit-page">';
-            listEl += '<i class="fa fa-pencil  " onclick="$(this).toggleClass(\'active\').closest(\'li\').find(\'.row\').toggleClass(\'d-none\');"></i>  ';
+            /*MG - Inizio*/
+            //listEl += '<i class="fa fa-pencil  " onclick="$(this).toggleClass(\'active\').closest(\'li\').find(\'.row\').toggleClass(\'d-none\');"></i>  ';
+            listEl += '<i class="fa fa-pencil  " onclick="editCodeEditor($(this), \'' + element.id + '\',\'' + element.type + '\');"></i>';
+            /*MG - Fine*/
             listEl += '<i class="fa fa-trash  "  onclick="Vvveb.FileManager.deleteAsset(\'' + dataedit.name + '\',\'' + element.id + '\');" ></i>   </span>';
-
             listEl += '<div class="row d-none">' +
                 '<div class="col-md-12">' +
                 '<div class=" ">' +
                 '<label>Content</label>' +
-                '<textarea class="form-control textarea fsize11 contasset"  name="contentAttach-' + element.id + '"> ' + element.content + '</textarea>' +
+                /*MG - Inizio*/
+                //'<textarea class="form-control textarea fsize11 contasset" name="contentAttach-' + element.id + '"> ' + element.content + '</textarea>' +
+                '<textarea class="form-control textarea fsize11 contasset" id="contentAttachId-' + element.id + '" name="contentAttach-' + element.id + '"> ' + element.content + '</textarea>' +
+                /*MG - Fine*/
                 '</div>' +
                 '<button class="btn btn-primary btn-sm float-right" onclick="Vvveb.FileManager.editAsset(\'' + dataedit.name + '\',\'' + element.id + '\',\'' + element.name + '\',\'' + element.type + '\');"><i class="la la-check"></i> Save</button>' +
                 '</div>' +
@@ -1983,6 +1992,20 @@ Vvveb.FileManager = {
         });
     }
 }
+/*MG - Inizio*/
+function editCodeEditor(pencil, id, type){
+    $(pencil).toggleClass('active').closest('li').find('.row').toggleClass('d-none');
+    CodeMirror.fromTextArea(document.getElementById('contentAttachId-' + id), {mode: type, lineNumbers:true, autofocus:true, lineWrapping:true, theme: 'material'}).on('change', editor => {
+        document.getElementById('contentAttachId-' + id).value = editor.getValue(); 
+    });
+}
+function createCodeEditor(type){
+    CodeMirror.fromTextArea(document.getElementById('content'+type+'AttachId-new'), {mode: type, lineNumbers:true, autofocus:true, lineWrapping:true, theme: 'material'}).on('change', editor => {
+        document.getElementById('content'+type+'AttachId-new').value = editor.getValue(); 
+    });
+}
+
+/*MG - Fine*/
 
 // Toggle fullscreen
 function launchFullScreen(document) {

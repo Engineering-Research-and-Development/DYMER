@@ -283,7 +283,10 @@ pre.code-jquery code {
 }
 
 #vvveb-builder #editAssets-page-modal .textarea.contasset {
-    min-height: 160px;
+    /*MG - Inizio*/
+    /*min-height: 160px;*/
+    min-height: 500px;
+    /*MG- Fine*/
     height: 100%;
     line-height: inherit;
 	resize:both;
@@ -887,7 +890,7 @@ pre.code-jquery code {
     resize: vertical !important;
     max-height: none;
 }
-#vvveb-builder #editAssets-page-modal textarea.form-control, {
+#vvveb-builder #editAssets-page-modal textarea.form-control {
     max-height: none;
 }
 .containerConfig {
