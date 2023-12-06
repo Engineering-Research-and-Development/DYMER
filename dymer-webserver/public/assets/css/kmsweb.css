@@ -259,12 +259,19 @@ pre.code-jquery code {
 #vvveb-builder #editAssets-page-modal .content-action-edit-page {
     position: relative;
     float: right;
+    /*MG - Inizio*/
+    margin-right: 20px
+    /*MG- Fine*/
 }
 
 #vvveb-builder #editAssets-page-modal .content-action-edit-page .fa-pencil,
 #vvveb-builder #editAssets-page-modal .content-action-edit-page .fa-trash {
     color: #9a9a9a;
     cursor: pointer;
+     /*MG - Inizio*/
+    font-size: 16px;
+    padding: 2px;
+    /*MG- Fine*/
 }
 
 #vvveb-builder #editAssets-page-modal .content-action-edit-page .fa-pencil:hover,
