@@ -1911,6 +1911,9 @@ Vvveb.FileManager = {
             /*MG - Inizio*/
             //listEl += '<i class="fa fa-pencil  " onclick="$(this).toggleClass(\'active\').closest(\'li\').find(\'.row\').toggleClass(\'d-none\');"></i>  ';
             listEl += '<i class="fa fa-pencil  " onclick="editCodeEditor($(this), \'' + element.id + '\',\'' + element.type + '\');"></i>';
+            
+            //listEl += '<button class="btn mr-2 mb-2 btn-sm btn-primary" type="button" onclick="editCodeEditor($(this), \'' + element.id + '\',\'' + element.type + '\');">Edit</button>';
+            //listEl += '<button class="btn mr-2 mb-2 btn-sm btn-primary" type="button" onclick="Vvveb.FileManager.deleteAsset(\'' + dataedit.name + '\',\'' + element.id + '\');">Delete</button>';
             /*MG - Fine*/
             listEl += '<i class="fa fa-trash  "  onclick="Vvveb.FileManager.deleteAsset(\'' + dataedit.name + '\',\'' + element.id + '\');" ></i>   </span>';
             listEl += '<div class="row d-none">' +
@@ -1994,6 +1997,8 @@ Vvveb.FileManager = {
 }
 /*MG - Inizio*/
 function editCodeEditor(pencil, id, type){
+    const remove = (sel) => document.querySelectorAll(sel).forEach(el => el.remove());
+    remove(".CodeMirror");
     $(pencil).toggleClass('active').closest('li').find('.row').toggleClass('d-none');
     CodeMirror.fromTextArea(document.getElementById('contentAttachId-' + id), {mode: type, lineNumbers:true, autofocus:true, lineWrapping:true, theme: 'material'}).on('change', editor => {
         document.getElementById('contentAttachId-' + id).value = editor.getValue(); 
@@ -2004,7 +2009,6 @@ function createCodeEditor(type){
         document.getElementById('content'+type+'AttachId-new').value = editor.getValue(); 
     });
 }
-
 /*MG - Fine*/
 
 // Toggle fullscreen
