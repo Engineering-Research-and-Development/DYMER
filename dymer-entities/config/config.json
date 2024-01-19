@@ -15,7 +15,7 @@
                     "ip": "cache",
                     "port": 6379,
                     "user": "redis",
-                    "isEnabled": true
+                    "isEnabled": false
                 },
                 "repository": {
                     "entity": {
@@ -37,7 +37,7 @@
                         "ip": "127.0.0.1",
                         "port": 27017,
                         "index_ref": "entity"
-                    }
+                    }                    
                 }
             },
             "dservice": {
