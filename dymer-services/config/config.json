@@ -88,7 +88,7 @@
                     "d_uid": 5,
                     "d_gid": 55,
                     "d_mail": "test@liferay.com",
-                    "d_pwd": "ballerinaVERNICIATA2021"
+                    "d_pwd": "test"
                 }
             },"entity": {
                 "protocol": "http",

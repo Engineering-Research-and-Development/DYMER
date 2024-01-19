@@ -555,7 +555,7 @@ router.post('/listener', function(req, res) {
 
 
 function callEaggregationJsw(conf, postObj) {
-    // console.log('callEaggregationJsw conf ', conf);
+    console.log('callEaggregationJsw conf ', conf);
     // console.log('callEaggregationJsw postObj', postObj);
     //  var opnConfUtil = util.getServiceConfig("opnsearch");
     var callurl = conf.configuration.host;
