@@ -1,0 +1,39 @@
+version: "3.3"
+
+ 
+
+volumes:
+    mongo_data:
+    mongo_conf:
+    elasticsearch_data:
+
+ 
+
+services:
+    mongodb:                        # ports: 27017
+        hostname: 192.168.1.58
+        image: mongo:7.0.4
+        ports:
+          - published: 27017
+            target: 27017
+        volumes:
+          - mongo_data:/data/db
+          - mongo_conf:/data/configdb
+          - ./backups_mongo:/opt/backups
+
+ 
+
+    elasticsearch:                  # ports: 9200 9300
+        hostname: 192.168.1.58
+        image: elasticsearch:8.11.0
+        ports:
+          - 9200:9200
+          - 9300:9300
+        environment:
+          - discovery.type=single-node
+          - xpack.security.enabled=false
+
+
+    
+   
+ 
