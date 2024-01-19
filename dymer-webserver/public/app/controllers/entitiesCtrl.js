@@ -8,7 +8,7 @@ angular.module('entitiesControllers', [])
         $http.get(baseContextPath + '/api/forms/api/v1/form/', {
             params: par
         }).then(function(ret) {
-            // console.log('Data controller ', ret);
+            console.log('Data controller ', ret);
             return $scope.listaModels = ret.data.data;
         }).catch(function(response) {
             console.log(response.status);

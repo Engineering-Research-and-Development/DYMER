@@ -2103,7 +2103,7 @@ function checkPermission(actualItem, act) {
     let d_gid = localStorage.getItem("d_gid");
     let d_rl = localStorage.getItem("d_rl");
     let d_lp =  JSON.parse(atob( localStorage.getItem("d_lp")));
-   // console.log("d_lp",d_lp);
+    console.log("d_lp",d_lp);
     var entPerm = {
         isowner: false,
         view: false,
@@ -3357,6 +3357,8 @@ actionPostMultipartForm:POST di multipart/form-data
 function actionPostMultipartForm(type, el, datapost, senderForm, callback, callerForm, useGritter, callbackEstraData) {
     var typeEnt = type.split("/");
     var posturl = getendpointnested(typeEnt[0], 'post');
+    console.log('-------------------');
+    console.log(posturl);
     if (typeEnt.length > 1)
         posturl += "/" + typeEnt[1];
     var temp_config_call = {
@@ -4002,9 +4004,15 @@ function extractStrElast(allindex) {
         /*if (key == 'geopoint')
             tempSchema = allindex[key].mappings['webcontent'].properties;
         else*/
+        console.log('allindex');
+        console.log(allindex[key]);
+        console.log(key);
         if (allindex[key].mappings[key] == undefined)
-            tempSchema = allindex[key].mappings["_doc"].properties;
+            //tempSchema = allindex[key].mappings["_doc"].properties;
+            //TODO check: sembra caricare la entity corretta in opennsearch config
+            tempSchema = allindex[key];
         else
+            //TODO controlla se va eliminato key da mappings
             tempSchema = allindex[key].mappings[key].properties;
         reCextractStrElast(tempSchema, lista, key);
     }

@@ -53,7 +53,7 @@ angular.module('templateBuilderControllers', [])
                 var allindex = rt.data.data;
                 //  console.log('indexWithModel ', indexWithModel);
                 for (const [key, value] of Object.entries(allindex)) {
-                    // console.log(key, value);
+                    console.log(key, value);
 
                     if (!listIndex.includes(key)) {
 
@@ -68,7 +68,7 @@ angular.module('templateBuilderControllers', [])
                 Vvveb.listResources.setModels(indexWithModel);
                 $scope.listaModels = indexWithModel;
                 var listStr = extractStrElast(allindex);
-                //  console.log('listStr', listStr);
+                console.log('listStr', listStr);
                 Vvveb.listResources.setStructures(listStr);
                 // Vvveb.listResources.setModels(ret.data.data);
                 //   $scope.listaModels = ret.data.data;
@@ -168,9 +168,13 @@ angular.module('templateBuilderControllers', [])
                     //  }, 3000);
 
                 }).catch(function(response) {
+                    console.log('MODAL ERROR');
+                    console.log(response);
                     console.log(response.status);
                 });
             }).catch(function(response) {
+                console.log('MODAL ERROR 2');
+                console.log(response);
                 console.log(response.status);
             })
         }).catch(function(response) {
