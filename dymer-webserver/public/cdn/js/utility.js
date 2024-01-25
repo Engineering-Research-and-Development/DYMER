@@ -2280,7 +2280,7 @@ function checkVisibility(actualItem, rendConf) {
 }
 
 function kmsrenderEl(ar, rendertype) {
-    $('body').showLoader();
+   /* $('body').showLoader(); */
     var target = kmsconf.target;
     actualTemplateType = rendertype;
     dymphases.setSubPhase('view', true, '', rendertype);
