@@ -53,6 +53,14 @@ var recoverForms = require("./routes/formfiles");
 const contextPath = util.getContextPath('webserver');
 
 var publicdemoDonwlonad = require("./routes/demodownloads");
+
+app.get( '/library', [ loadUserInfo, util.checkIsAdmin ], ( req, res ) => {
+    var ret = new jsonResponse();
+    ret.setSuccess(true);
+    ret.setMessages("Test");
+    return res.send(ret);
+} );
+
 app.get('/deletelog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {
     var ret = new jsonResponse();
     var filetype = req.params.filetype;

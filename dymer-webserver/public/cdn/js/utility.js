@@ -740,71 +740,73 @@ async function onloadFiles(arr) {
         return true;
 }
 //-----------END Dynamic loader---------------
+
 //-----------------START FORM-----------------
 function loadRequireForm() {
-    var ckaddimport = [];
-    if (typeof dymerconf !== 'undefined')
-        ckaddimport = dymerconf.notImport;
-    var arr = [];
-    var domtype = "link";
-    var filename = "";
-    var callback = null;
-    var useonload = false;
-    var group = "mandatory";
-    group = "bootstrap";
-    filename = kmsconfig.cdn + "css/lib/bootstrap/4.1.3/bootstrap.min.css";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "font-awesome";
-    filename = kmsconfig.cdn + "css/lib/font-awesome/4.7/font-awesome.min.css";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "mandatory";
-    filename = kmsconfig.cdn + "css/dymer.base.css";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    domtype = "script";
-    callback = null;
-    useonload = true;
-    group = "jquery";
-    filename = kmsconfig.cdn + "js/lib/jquery/jquery-3.3.1.min.js";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "mandatory";
-    filename = kmsconfig.cdn + "js/lib/jquery/jquery.serializejson.js";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "bootstrap";
-    filename = kmsconfig.cdn + "js/lib/bootstrap/4.1.3/bootstrap.min.js";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile("link", filename, callback, useonload, group));
+    // Check if dymerconf is defined, otherwise assign an empty array
+    let ckaddimport = typeof dymerconf !== 'undefined' ? dymerconf.notImport : [];
+    let arr = [];
 
-    group = "summernote";
-    if (!(ckaddimport.indexOf(group) > -1)) {
-        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.css";
-        arr.push(new Elfile("link", filename, callback, useonload, group));
-        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.js";
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    }
-    filename = kmsconfig.cdn + "js/ajaxcall.js";
-    var mycallback = function() { // Method which will display type of Animal
-        try {
-            /*	config_postForm = {
-                    url: serviceFormUrl,
-                    processData: false,
-                    enctype: "multipart/form-data; boundary=----------------------------4ebf00fbcf09",
-                    contentType: false,
-                    cache: false
-                };
-                ajaxcall_postForm = new Ajaxcall(config_postForm);*/
-            mainDymerModel();
-        } catch (e) {
-            console.error(e);
+    // Function to add a file to the array if it's not in ckaddimport
+    function addFileToArr( fileInfo ) {
+        const { domtype, group, filename, callback, useonload } = fileInfo;
+
+        if ( ckaddimport.indexOf( group ) <= -1 ) {
+            let kmsfilename = kmsconfig.cdn + filename;
+                       arr.push( new Elfile( domtype, kmsfilename, callback, useonload, group ) );
         }
-    };
-    group = "mandatory";
-    arr.push(new Elfile(domtype, filename, mycallback, useonload, group));
-    onloadFiles(arr);
+    }
+
+    // Load fileInfo from external JSON file
+    // let fileInfo = require( './dymer-webserver/public/cdn/js/fileInfo.json' );
+    fetch( './public/cdn/js/fileInfo.json' ).then( response => response.json() )
+                                                            .then( data => callback( data ) )
+                                                            .catch( error => console.error(
+                                                                'Errore nel caricamento del file JSON:',
+                                                                error
+                                                            ) );
+
+
+    callback = ( fileInfo ) => {
+        // Add CSS files
+        addFileToArr( fileInfo.cssBootstrap );
+        addFileToArr( fileInfo.cssFontAwesome );
+        addFileToArr( fileInfo.cssMandatory );
+
+        // Add JavaScript files
+        addFileToArr( fileInfo.jsJquery );
+        addFileToArr( fileInfo.jsJquerySerializeJson );
+        addFileToArr( fileInfo.jsBootstrap );
+
+        // Add Summernote files
+        let summernoteGroup = "summernote";
+        if ( ckaddimport.indexOf( summernoteGroup ) <= -1 ) {
+            addFileToArr( fileInfo.summernoteCss );
+            addFileToArr( fileInfo.summernoteJs );
+        }
+
+        // Add final JavaScript file
+        let mycallback = function () {
+            try {
+                /*	config_postForm = {
+				url: serviceFormUrl,
+					processData: false,
+					enctype: "multipart/form-data; boundary=----------------------------4ebf00fbcf09",
+					contentType: false,
+					cache: false
+			};
+			ajaxcall_postForm = new Ajaxcall(config_postForm);*/
+                mainDymerModel();
+            } catch ( e ) {
+                console.error( e );
+            }
+        };
+
+        addFileToArr( fileInfo.ajaxCallJs );
+
+        // Call the onloadFiles function with the array of files
+        onloadFiles( arr );
+    }
 }
 
 function getbaseEntityConfig(basedat) {

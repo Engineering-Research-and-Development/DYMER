@@ -196,7 +196,11 @@ function config($routeProvider, $locationProvider) {
             templateUrl: site_prefix + "/public/app/views/pages/administration/dusernmanage.html",
             controller: "dusernmanageController",
             permission: ["app-admin" ]
-        })
+        }).when( site_prefix + "/library", {
+            templateUrl : site_prefix + "/public/app/views/pages/demos/library.html",
+            controller  : "libraryController",
+            permission  : [ "app-admin" ]
+        } )
         /*   .when(site_prefix + "/authenticate", {
                templateUrl: site_prefix + "/authenticate"
            })*/
