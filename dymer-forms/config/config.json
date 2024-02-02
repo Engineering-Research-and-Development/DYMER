@@ -6,19 +6,20 @@
                 "app_name": "form",
                 "app_desc": "dymer models",
                 "protocol": "http",
-                "ip": "localhost",
+                "ip": "kms_forms",
                 "port": 4747,
-                "ip_port": "localhost:4747",
+                "ip_port": "kms_forms:4747",
                 "repository": {
                     "protocol": "http",
-                    "ip": "127.0.0.1",
+                    "ip": "mongodb",
                     "port": 27017,
                     "index_ref": "form"
-                }
+                },
+                "context-path": ""
             },
             "dservice": {
                 "protocol": "http",
-                "ip": "127.0.0.1",
+                "ip": "kms_services",
                 "port": 5050
             }
         }
@@ -30,13 +31,13 @@
                 "app_name": "form",
                 "app_desc": "dymer models",
                 "protocol": "http",
-                "ip": "kms_forms",
-			    "context-path": "",
+                "ip": "localhost",
+                "context-path": "",
                 "port": 4747,
-                "ip_port": "kms_forms:4747",
+                "ip_port": "localhost:4747",
                 "repository": {
                     "protocol": "http",
-                    "ip": "mongodb",
+                    "ip": "localhost",
                     "port": 27017,
                     "index_ref": "form"
                 }
@@ -44,7 +45,7 @@
             "dservice": {
                 "protocol": "http",
                 "context-path": "",
-                "ip": "kms_services",
+                "ip": "localhost",
                 "port": 5050
             }
         }

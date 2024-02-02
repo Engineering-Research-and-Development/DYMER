@@ -11,7 +11,7 @@ volumes:
 
 services:
     mongodb:                        # ports: 27017
-        hostname: 192.168.1.58
+        hostname: mongodb
         image: mongo:7.0.4
         ports:
           - published: 27017
@@ -24,7 +24,7 @@ services:
  
 
     elasticsearch:                  # ports: 9200 9300
-        hostname: 192.168.1.58
+        hostname: elasticsearch
         image: elasticsearch:8.11.0
         ports:
           - 9200:9200
@@ -32,6 +32,73 @@ services:
         environment:
           - discovery.type=single-node
           - xpack.security.enabled=false
+          
+          
+    kms_webserver:                  # ports: 8080
+        hostname: kms_webserver
+        image: node:20.10.0-alpine3.18
+        ports:
+          - published: 80
+            target: 8080
+        volumes:
+            - ./dymer-webserver:/usr/src/app
+        environment:
+          - NODE_ENV=development
+          - DYMER_UUID=${DYM_UUID}
+        working_dir: /usr/src/app
+        command: "npm start"
+        
+    kms_services:                   # ports: 5050
+        hostname: kms_services
+        image: node:20.10.0-alpine3.18
+        extra_hosts:
+          - "${DIH_PORTAL_NAME}:${DIH_PORTAL_ADDR}"
+        volumes:
+          - ./dymer-services:/usr/src/app
+        environment:
+          - NODE_ENV=development
+          - DYMER_UUID=${DYM_UUID}
+        working_dir: /usr/src/app
+        command: "npm start"
+
+    kms_templates:                 # ports 4545
+        hostname: kms_templates
+        image: node:20.10.0-alpine3.18
+        depends_on:
+          - mongodb
+        volumes:
+            - ./dymer-templates:/usr/src/app
+        environment:
+          - NODE_ENV=development
+          - DYMER_UUID=${DYM_UUID}
+        working_dir: /usr/src/app
+        command: "npm start"
+
+    kms_forms:                     # ports: 4747
+        hostname: kms_forms
+        image: node:20.10.0-alpine3.18
+        depends_on:
+          - mongodb
+        volumes:
+            - ./dymer-forms:/usr/src/app
+        environment:
+          - NODE_ENV=development
+          - DYMER_UUID=${DYM_UUID}
+        working_dir: /usr/src/app
+        command: "npm start"
+
+    kms_entities:                  # ports: 1358
+        hostname: kms_entities
+        image: node:20.10.0-alpine3.18
+        depends_on:
+          - elasticsearch
+        volumes:
+            - ./dymer-entities:/usr/src/app
+        environment:
+          - NODE_ENV=development
+          - DYMER_UUID=${DYM_UUID}
+        working_dir: /usr/src/app
+        command: "npm start"
 
 
     

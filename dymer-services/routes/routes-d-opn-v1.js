@@ -199,15 +199,15 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
         let [ name, ...rest] = cookie.split(`=`);
         name = name?.trim();
         //console.log('cookie name', name);       
-        let value = rest.join(`=`).trim();
-        list[name] = decodeURIComponent(value);
+        //let value = rest.join(`=`).trim();
+        //list[name] = decodeURIComponent(value);
 
         //Workaround lfr 7.4
-        /*
+        
         let nameWA = 'DYM';
         let valueWA = 'eyJyb2xlcyI6WyJhcHAtZ3Vlc3QiLCJVc2VyIiwiQ29sbGFib3JhdGlvbiIsImFwcC1kaWgiLCJhcHAtd3AiLCJjYXRhbG9ndWUtdmlld2VyIl0sImlkIjoidml2aWFuYS5sYXRpbm9AZW5nLml0IiwiYXBwX2lkIjoiIiwiZ2lkIjoiMjAxMTgiLCJlbWFpbCI6InZpdmlhbmEubGF0aW5vQGVuZy5pdCIsImV4dHJhaW5mbyI6eyJjb21wYW55SWQiOiIyMDA5NSIsImdyb3VwSWQiOiIyMDExOCIsImNtcyI6ImxmciIsInVzZXJJZCI6IjMyODEyIiwiZW1haWxBZGRyZXNzIjoidml2aWFuYS5sYXRpbm9AZW5nLml0IiwidmlydHVhbGhvc3QiOiJsb2NhbGhvc3QifSwidXNlcm5hbWUiOiJWaXZpYW5hIExhdGlubyJ9';
         list[nameWA] = decodeURIComponent(valueWA);
-        */
+    
         
     });
 

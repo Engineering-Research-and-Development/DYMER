@@ -1895,7 +1895,7 @@ router.put('/singlerelation/:id', util.checkIsPortalUser, (req, res) => {
     client.update({
         id: id,
         index: 'entity_relation',
-        type: 'entity_relation',
+        //type: 'entity_relation',
         body: {
             doc: data
         },
@@ -1977,11 +1977,11 @@ router.get('/', (req, res) => {
     params["body"] = query;
     params["sort"] = ["title.keyword:asc"];
     params["body"].size = 10000; //set max entity to return
-    //console.log(nameFile + '| GET | params:', JSON.stringify(params));
+    console.log(nameFile + '| GET | params:', JSON.stringify(params));
     logger.info(nameFile + '| GET | params:' + JSON.stringify(params));
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
-    //console.log(nameFile + '| GET | dymeruser:', JSON.stringify(dymeruser));
+    console.log(nameFile + '| GET | dymeruser:', JSON.stringify(dymeruser));
     logger.info(nameFile + '| GET | dymeruser:' + JSON.stringify(dymeruser));
     client.search(params, function(err, resp, status) {
         if (err) {
@@ -2370,22 +2370,29 @@ router.post('/redisroleupdate', async (req, res) => {
     }
     return res.send(resp)
 })
+
 router.post('/_search', (req, res) => {
-    // console.log('_search logger', process.env.DYMER_LOGGER);
+    console.log('==>route-v2.js | _search');
+    console.log('_search logger', process.env.DYMER_LOGGER);
     let origin=req.get('origin');
     var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-        // console.log('user info URLL', req.get('origin') );
-        // console.log('user info fullurl',fullUrl );
-        // console.log('req.headers.referer',req.headers.referer );
-        // console.log('user info requestjsonpath',req.headers.requestjsonpath)
-    // console.log(' req.headers.dymeruser', req.headers.dymeruser);
+        console.log('user info URLL', req.get('origin') );
+        console.log('user info fullurl',fullUrl );
+        console.log('req.headers.referer',req.headers.referer );
+        console.log('user info requestjsonpath',req.headers.requestjsonpath)
+    console.log(' req.headers.dymeruser', req.headers.dymeruser);
     // var decoded = jwt.decode(req.headers.authdata);
     //  var decoded = jwt.decode(req.headers.authdata);
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser;
-    const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
-       logger.info(nameFile + '|_search| dymeruser :' + JSON.stringify(dymeruser));
+    console.log("==>req.headers.VIVIANA ",req.headers.VIVIANA);
+    console.log("==>req.hostname ", req.hostname);
+    console.log("==>req.headers ", JSON.stringify(req.headers));
+    
 
+    const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+    logger.info(nameFile + '|_search| dymeruser :' + JSON.stringify(dymeruser));
+    console.log('==>' + nameFile + '|_search| dymeruser : ', JSON.stringify(dymeruser));
     /* 
         const authHeader = req.headers.authorization;
         const token = authHeader && authHeader.split(' ')[1]
@@ -2436,6 +2443,10 @@ router.post('/_search', (req, res) => {
         let source = callData.query.getfields;
         let _source = callData.source;
 
+        console.log('==>' + nameFile + '|_search| instance : ', instance);
+        console.log('==>' + nameFile + '|_search| query : ', query);
+        console.log('==>' + nameFile + '|_search| _source : ', _source);
+
         let qoptions = callData.qoptions;
  
         let recoverRelation = true;
@@ -2455,11 +2466,11 @@ router.post('/_search', (req, res) => {
         var req_gid = 0;
         req_uid = dymeruser.id;
         req_gid = dymeruser.gid;
-        //console.log(nameFile + '|_search| callData:', JSON.stringify(callData));
+        console.log(nameFile + '|_search| callData:', JSON.stringify(callData));
         logger.info(nameFile + '|_search| dymeruser:' + dymeruser.id + "/" + dymeruser.roles + "/" + JSON.stringify(dymeruser.extrainfo));
         logger.info(nameFile + '|_search| callData :' + JSON.stringify(callData));
         var rr = [];
-        //    console.log("indextosearch", indextosearch);
+        //console.log("indextosearch", indextosearch);
         //var bridgeConf = bE.findByIndex("e7");
         var rr = { indextosearch: [], query: [] };
         rr = retriveIndex_Query_ToSearch(rr, query.query);
@@ -2603,6 +2614,7 @@ router.post('/_search', (req, res) => {
                     }
                 }; 
                 if (my_oldquery != null) {
+					console.log("==>my_oldquery ", my_oldquery);											
                     query.query.bool.must.push(my_oldquery);             
                   //  let permFilter = await addPermConstraints(dymeruser, my_oldquery)
                    // query.query.bool.must.push(permFilter);
@@ -2666,9 +2678,18 @@ router.post('/_search', (req, res) => {
                      //return res.send(cachedResponse)
                  }
              }
-            // console.log('paramsNNN', JSON.stringify(params));
+            console.log('paramsNNN', JSON.stringify(params));
+            
 
+            
+            //console.log("<-------------------------------------->");
+            console.log("==>params ", params);
             client.search(params).then(function(resp) {
+                
+                console.log('==>' + nameFile + '|_search| client.search response TEST ');
+                console.log('==> resp ', resp);
+                console.log('==> from ', resp.from);
+                console.log('==> data ', resp.data);
                 if (err) {
                     console.error("ERROR | " + nameFile + '|_search| search:', err);
                     logger.error(nameFile + '|_search| search : ' + err);
@@ -2790,7 +2811,7 @@ router.post('/_search', (req, res) => {
                             //   const uniqueRel = (meatch).map(item => item.relations);
 
                             //console.log(' minmodelist ', minmodelist);
-                            //console.log(nameFile + '|_search| resp no detect relations:count ', resp.hits.hits.length);
+                            console.log(nameFile + '|_search| resp no detect relations:count ', resp.hits.hits.length);
                             logger.info(nameFile + '|_search| resp no detected relations :count ' + resp.hits.hits.length);
                             filertEntitiesFields(meatch, minmodelist, hdymeruser).then(async function(nlist) {
                                 //  console.log("prepre", nlist);
@@ -2831,11 +2852,11 @@ var filertEntitiesFields = function(originalList, minmodelist, hdymeruser) {
         let dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
         //  console.log('originalList', originalList);
         if (dymeruser.roles.length > 1) {
-            // console.log('filertEntitiesFields resolve >1');
+            //console.log('filertEntitiesFields resolve >1');
             return resolve(originalList);
 
         }
-        //  console.log('filertEntitiesFields resolve >1---continua');
+        //console.log('filertEntitiesFields resolve >1---continua');
         var urlmodel = util.getServiceUrl("form") + "/api/v1/form/dettagliomodel";
         var myQueryModel = { "query": { "instance._index": minmodelist } };
         var config = {
@@ -3440,6 +3461,7 @@ function appendFormdata(FormData, data, name) {
 
 
 router.post('/:enttype', function(req, res) {
+	console.log("==> add entity ");//ex. by dymer-viewer										  
     var ret = new jsonResponse();
     let origin=(req.get('origin'))?req.headers.referer:req.get('origin');
     const hdymeruser = req.headers.dymeruser;
@@ -3477,10 +3499,10 @@ router.post('/:enttype', function(req, res) {
     url += act + "/";
     url += index + "/";
     url += queryString;
-    // console.log(nameFile + '| /:enttype | create | dymeruser:', JSON.stringify(dymeruser));
+    console.log(nameFile + '| /:enttype | create | dymeruser:', JSON.stringify(dymeruser));
     axios.get(url)
         .then((response) => {
-            // console.log(nameFile + '| /:enttype | create | permission create:', JSON.stringify(response.data.data.result));
+            console.log(nameFile + '| /:enttype | create | permission create:', JSON.stringify(response.data.data.result));
             logger.info(nameFile + '| /:enttype | create | permission create:' + JSON.stringify(response.data.data.result));
             if (response.data.data.result || hasperm) {
                 upload(req, res, function(err) {
@@ -3572,13 +3594,13 @@ router.post('/:enttype', function(req, res) {
                             }
                             let params = (instance) ? instance : {};
                             params["body"] = data;
-                          //  console.log("data",data);
+                            console.log("data",data);
                             // params["body"].size = 10000;
                             params["refresh"] = true;
                             let ref = Object.assign({}, data.relation);
                             if (data != undefined)
                                 delete data.relation;
-                            // console.log(nameFile + '| /:enttype | create | params:', dymeruser.id, JSON.stringify(params));
+                            console.log(nameFile + '| /:enttype | create | params:', dymeruser.id, JSON.stringify(params));
                             logger.info(nameFile + '| /:enttype | create | params :' + dymeruser.id + " , " + JSON.stringify(params));
                             client.index(params, async function(err, resp, status) {
                                 if (err) {
@@ -3799,7 +3821,7 @@ router.put('/update/:id', (req, res) => {
                                 client.delete(params_del).then(function(resp) {
                                     client.index({
                                         index: new_Temp_Entity._index,
-                                        type: new_Temp_Entity._type,
+                                        //type: new_Temp_Entity._type,
                                         id: new_Temp_Entity["_id"],
                                         body: new_Temp_Entity._source,
                                         refresh: 'true'
@@ -4104,7 +4126,7 @@ router.put('/:id', async (req, res) => {
                         new_Temp_Entity._source.properties.extrainfo.lastupdate = { "uid": dymeruser.id, "origin":origin };
                         client.update({
                             index: elIndex,
-                            type: elIndex,
+                            //type: elIndex,
                             id: id,
                             body: {
                                 // put the partial document under the `doc` key
@@ -4361,7 +4383,7 @@ router.put('/oldput/:id', (req, res) => { //to delete
                                     client.delete(params_del).then(function(resp) {
                                         client.index({
                                             index: new_Temp_Entity._index,
-                                            type: new_Temp_Entity._type,
+                                            //type: new_Temp_Entity._type,
                                             id: new_Temp_Entity["_id"],
                                             body: new_Temp_Entity._source,
                                             refresh: 'true'
@@ -4616,7 +4638,7 @@ router.put('/hbput2022/:id', (req, res) => {
                         new_Temp_Entity._source.properties.extrainfo.lastupdate = { "uid": dymeruser.id };
                         client.update({
                             index: elIndex,
-                            type: elIndex,
+                            //type: elIndex,
                             id: id,
                             body: {
                                 // put the partial document under the `doc` key
@@ -4965,7 +4987,7 @@ router.patch('/:id', async(req, res, next) => {
                         client.update({
                             id: id,
                             index: element["_index"],
-                            type: element["_type"],
+                            //type: element["_type"],
                             body: { doc: data },
                             refresh: 'true'
                         }).then( async function(resp) {
@@ -5324,6 +5346,7 @@ router.delete('/:id',async (req, res) => {
 //inoltro al microservizio dservice
 function checkServiceHook(EventSource, objSend, extraInfo, req,originalElement) {
     //insert non ho i dati quindi devo fare un get
+	console.log("==> checkServiceHook");									
     var url_dservice = util.getServiceUrl("dservice") + '/api/v1/servicehook/checkhook';
     // logger.info(nameFile + '| checkServiceHook | url_dservice,EventSource,objSend: ' + url_dservice + ' , ' + EventSource + ' , ' + JSON.stringify(objSend));
     //logger.info(nameFile + '| checkServiceHook | reqfrom: ' + JSON.stringify(req.headers));
@@ -5376,7 +5399,7 @@ function checkServiceHook(EventSource, objSend, extraInfo, req,originalElement) 
                 axios.post(url_dservice, { data: postObj, "extraInfo": extraInfo, "origindata":originalElement, "originheader":  req.headers }, {
                         headers: headers
                     }).then(response => {
-                        //console.log(nameFile + '| checkServiceHook | insert axios.post: ', response);
+                        console.log(nameFile + '| checkServiceHook | insert axios.post: ', response);
                         logger.info(nameFile + '| checkServiceHook | insert axios.post: ' + response);
                     })
                     .catch(error => {
@@ -5395,7 +5418,7 @@ function checkServiceHook(EventSource, objSend, extraInfo, req,originalElement) 
             obj: objSend
         };
         axios.post(url_dservice, { data: postObj, "extraInfo": extraInfo, "origindata":originalElement, "originheader":  req.headers }, { headers: headers }).then(response => {
-                //console.log(nameFile + '| checkServiceHook | axios.post: ', response);
+                console.log(nameFile + '| checkServiceHook | axios.post: ', response);
                 logger.info(nameFile + '| checkServiceHook | axios.post: ' + response);
             })
             .catch(error => {

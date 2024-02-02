@@ -6,66 +6,8 @@
                 "app_name": "dservice",
                 "app_desc": "dymer services",
                 "protocol": "http",
-                "ip": "localhost",
+                "ip": "kms_services",
                 "context-path": "",
-                "port": 5050,
-                "ip_port": "localhost:5050",
-                "repository": {
-                    "protocol": "http",
-                    "ip": "localhost",
-                    "port": 27017,
-                    "index_ref": "dservice"
-                }
-            },
-            "webserver": {
-                "app_name": "webserver",
-                "app_desc": "dymer webserver",
-                "context-path": "",
-                "protocol": "http",
-                "ip": "192.168.1.58",
-                "port": 8080
-            },
-            "opnsearch": {
-                "user": {
-                    "d_uid": 5,
-                    "d_gid": 55,
-                    "d_mail": "test@liferay.com",
-                    "d_pwd": "test"
-                }
-            },
-            "entity": {
-                "protocol": "http",
-                "ip": "localhost",
-                "port": 1358
-            },
-            "form": {
-                "app_name": "form",
-                "app_desc": "dymer form",
-                "context-path": "",
-                "protocol": "http",
-                "ip": "localhost",
-                "port": 4747
-            },
-            "template": {
-                "app_name": "template",
-                "app_desc": "dymer template",
-                "context-path": "",
-                "protocol": "http",
-                "ip": "localhost",
-                "port": 4545
-            }
-        }
-    },
-"production": {
-        "config_id": "production",
-        "version":"1.1.5",
-        "services": {
-            "dservice": {
-                "app_name": "dservice",
-                "app_desc": "dymer services",
-                "context-path": "",
-                "protocol": "http",
-                "ip": "localhost",
                 "port": 5050,
                 "ip_port": "kms_services:5050",
                 "repository": {
@@ -90,25 +32,64 @@
                     "d_mail": "test@liferay.com",
                     "d_pwd": "test"
                 }
-            },"entity": {
+            },
+            "entity": {
                 "protocol": "http",
                 "ip": "kms_entities",
                 "port": 1358
             },
             "form": {
                 "app_name": "form",
-                "app_desc": "dymer form", 
+                "app_desc": "dymer form",
+                "context-path": "",
                 "protocol": "http",
-                "ip": "kms_forms",
-                "port":4747
+                "ip": "192.168.1.58",
+                "port": 4747
             },
             "template": {
                 "app_name": "template",
-                "app_desc": "dymer template", 
+                "app_desc": "dymer template",
+                "context-path": "",
                 "protocol": "http",
-                "ip": "kms_templates",
+                "ip": "192.168.1.58",
                 "port": 4545
-            } 
+            }
+        }
+    },
+    "production": {
+        "config_id": "production",
+        "services": {
+            "dservice": {
+                "app_name": "dservice",
+                "app_desc": "dymer services",
+                "context-path": "",
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 5050,
+                "ip_port": "localhost:5050",
+                "repository": {
+                    "protocol": "http",
+                    "ip": "localhost",
+                    "port": 27017,
+                    "index_ref": "dservice"
+                }
+            },
+            "webserver": {
+                "app_name": "webserver",
+                "app_desc": "dymer webserver",
+                "context-path": "",
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 8080
+            },
+            "opnsearch": {
+                "user": {
+                    "d_uid": 5,
+                    "d_gid": 55,
+                    "d_mail": "massimo.giacalone@eng.it",
+                    "d_pwd": "test"
+                }
+            }
         }
     }
 }

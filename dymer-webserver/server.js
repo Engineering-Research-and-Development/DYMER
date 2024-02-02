@@ -145,7 +145,9 @@ app.use("/api/portalwebpage/", dohtmlpage);
 
 app.get('/api2/retriveinfoidpadmin', (req, res, next) => {
     if (true) {
-        //      console.log("retriveinfo.AAAAAAAAAAAAAAA", pp);
+        
+        console.log("retriveinfo.AAAAAAAAAAAAAAA", pp);
+        
         var objuser = {
             isGravatarEnabled: false,
             authorization_decision: '',
@@ -233,10 +235,13 @@ app.get('/api2/retriveinfoidp', (req, res, next) => {
 app.post('/api2/retriveinfo', loadUserInfo,async (req, res, next) => {
     //   res.send({ "ttttttt": "rrrrrrrrr" });
 
-    // console.log("retriveinfo", req.headers);
+    console.log("retriveinfo", req.headers);
+    
     // console.log("session1.userid", req.session);
-    // console.log("req.originalUrl", req.originalUrl);
-    // console.log("req.hostname", req.hostname);
+    
+    console.log("req.originalUrl", req.originalUrl);
+    console.log("req.hostname", req.hostname);
+    
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     //console.log('hdymeruser2',hdymeruser);
@@ -258,7 +263,9 @@ let listprm_value= new Buffer(JSON.stringify(response_perm.data.data)).toString(
         "DYM":hdymeruser,
         "d_lp":listprm_value
     };
-    // console.log("api retriveinfo", JSON.stringify(objuser));
+    
+    console.log("api retriveinfo", JSON.stringify(objuser));
+    
     logger.info(nameFile + ' | /api2/retriveinfo :' + JSON.stringify(objuser));
     res.send(objuser);
 });
@@ -299,7 +306,7 @@ app.get('/info/:key?', (req, res, next) => {
         '<br><small style="color: #8c8985;">DYnamic Information ModElling & Rendering</small>' +
         '</div>' +
         '<div class="  	col-12 p-2" style="color: #8c8985;">' +
-        // '<br> version ' + infodymer.version +
+        '<br> version ' + infodymer.version +
         '<br> <small style="color: #8c8985;"> updated date ' + infodymer.updated  + '</small></div>' +
         '<div class="text-center col-12 p-2">' +
         '<span style=" font-size: 12px;">&#169; 2022, Powered by <a href="https://www.eng.it/" target="_blank">' + '<img src="https://www.eng.it/resources/images/logo%20eng.png" style="width: 20px;bottom: 3px;position: relative; "> Engineering</a>' + '</span>' +
@@ -349,17 +356,19 @@ function loadUserInfo(req, res, next) {
     //   console.log('TESTSESSION req ', req);
     //  var isLocal = (req.connection.localAddress === req.connection.remoteAddress);
     //  console.log('TESTSESSION isLocal ', isLocal);
-    // console.log('TESTSESSION req referer', req);
-    // console.log('TESTSESSION req referer', req.headers);
+    
+    //console.log('TESTSESSION req referer', req);
+    //console.log('TESTSESSION req referer', req.headers);
 
-    // console.log('TESTSESSION req referer', req.headers.referer);
+    //console.log('TESTSESSION req referer', req.headers.referer);
     // console.log('TESTSESSION req req.headers.authorization', req.headers.authorization);
     // console.log('TESTSESSION req req.headers.Authorization', req.headers.Authorization);
     //  console.log('TESTSESSION req dservice', util.getServiceUrl("dservice"));
     //  console.log('TESTSESSION  req.protocol', req.protocol);
     //console.log('TESTSESSION req host', req.get('host'));
     //logger.info(nameFile + ' | loadUserInfo : req host, originalUrl: ' + req.get('host') + " , " + req.originalUrl);
-    // logger.info(nameFile + ' | loadUserInfo : req headers' + JSON.stringify(req.headers) + " , " + req.url);
+    
+    logger.info(nameFile + ' | loadUserInfo : req headers' + JSON.stringify(req.headers) + " , " + req.url);
 
     var authuserUrl = util.getServiceUrl("dservice") + "/api/v1/authconfig/userinfo";
     var dymtoken = (req.headers.authorization != undefined) ? req.headers.authorization.split(' ')[1] : undefined;
@@ -409,10 +418,11 @@ function loadUserInfo(req, res, next) {
     //logger.info(nameFile + ' | --------------------------');
 
     //logger.info(nameFile + ' | loadUserInfo : requestjsonpath' + requestjsonpath);
-    /*console.log('loadUserInfo post-referer', req.headers.referer);
+    console.log('loadUserInfo post-referer', req.headers.referer);
     console.log('loadUserInfo post-reqfrom', req.headers["reqfrom"]);
     console.log('loadUserInfo originalRef', originalRef, typeof originalRef);
-    console.log('--------------------------');*/
+    console.log('--------------------------');
+    
     logger.info(nameFile + ' |loadUserInfo|req url :' + originalRef + "|" + req.method + req.url);
     var config = {
         method: 'get',
@@ -430,9 +440,13 @@ function loadUserInfo(req, res, next) {
         }
     };
 
+    //console.log('Config ===> ', config);
+
     axios(config)
         .then(function(response) {
-            // console.log('dymeruserAA', response.data.data);
+            
+            //console.log('dymeruserAA', response.data.data);
+            
             req.headers["dymeruser"] = new Buffer(JSON.stringify(response.data.data)).toString("base64");
             //if (req.headers["reqfrom"] == undefined || req.headers["reqfrom"] == 'undefined')
             if (req.headers["reqfrom"] == undefined)

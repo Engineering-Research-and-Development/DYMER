@@ -427,6 +427,7 @@ function checkFilesFormdata(arr, data, name) {
 }
 
 function postMyData(el, index, DYM, DYM_EXTRA) {
+    console.log("==>postMyData");
     // var posturl = "http://localhost:8080/api/entities/api/v1/entity/" + index;
     var posturl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/" + index;
     var formdata = new FormData();
@@ -508,6 +509,7 @@ const removeDir = function(path) {
 
 
 function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action, fileurl) {
+    console.log("==>postMyDataAndFiles");
     var posturl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/" + index;
     if (action == "put")
         posturl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/" + el.instance.id;
@@ -601,7 +603,8 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
                 console.log("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - " + formTemplate + " Id", data._id);
                 titleId.id = data._id;
                 titleId.title = data.title;
-                titleId.changed = data.properties.changed;
+				/*DA RIPRISTINARE DOPO AVER AGGIORNATO LA MACCHINA VIRTUALE*/
+                //titleId.changed = data.properties.changed;
                 modulesIds.push(titleId);
                 titleId = {};
             //}
@@ -626,7 +629,9 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
                         /*Se i moduli HTML sono già presenti nella destinazione, li elimino*/
                         if (modulesIds.length > 0){
                             modulesIds.forEach(titleId => {    
-                                if (data.title == titleId.title && (data.properties.changed > titleId.changed || forceimport)){ 
+								/*DA RIPRISTINARE DOPO AVER AGGIORNATO LA MACCHINA VIRTUALE*/
+                                //if (data.title == titleId.title && (data.properties.changed > titleId.changed || forceimport)){ 
+								if (data.title == titleId.title){  									 
                                     var config = {
                                         method: 'delete',
                                         url: localApiUrl + titleId.id,
@@ -1243,7 +1248,7 @@ router.get('/updategid/:entype/:gid/:forceall?', util.checkIsAdmin, (req, res) =
         });
 });
 // '/api/dservice/api/v1/import/fromdymer'
-
+//RECUPERATO DA DEV
 router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
 
     var ret = new jsonResponse();
@@ -1253,6 +1258,10 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
         let crnrule = els[0];
         var pt_external = crnrule.sourcepath + crnrule.apisearchpath; //"http://localhost:8080/api/entities/api/v1/entity/_search";
         var pt_internal = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/_search";
+        
+        console.log("==> pt_external ", pt_external);
+        console.log("==> pt_internal ", pt_internal);
+
         const fileurl = crnrule.sourcepath; //"http://195.201.83.104"
         const originalrelquery = crnrule.sourceindex; //."";
         const crnruletitle = crnrule.title; //."";
@@ -1328,6 +1337,7 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
             "username": "marcoromano12@gmail.com"
         };
 
+
         let userinfo_objJsonStr_admin = JSON.stringify(userinfo_admin);
         let userinfo_objJsonB64_admin = Buffer.from(userinfo_objJsonStr_admin).toString("base64");
         var formdata_admin = new FormData();
@@ -1340,12 +1350,15 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
                 'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
                 'extrainfo': `${extrainfo_objJsonB64_admin}`,
             },
-            data: formdata_admin
+           data: formdata_admin
         };
-        //console.log(nameFile + ' | prechiamata :' + pt_external);
+        console.log(nameFile + ' | pt_external :' + pt_external);
+        console.log('config pt_external :' + JSON.stringify(config));
         axios(config).then(response => {
                 const listaRel = response.data.data;
                 listaRel.forEach(element => { queryInternal.query.query.bool.must[1].ids.values.push(targetprefix + element._id); });
+                console.log("==>listaRel ",listaRel);
+                logger.info("==>listaRel ",listaRel);
                 formdata_admin = new FormData();
                 logger.info(nameFile + ' | Cron Job Import | external entities :' + crnruletitle + "," + listaRel.length);
                 appendFormdata(formdata_admin, queryInternal);
@@ -1361,10 +1374,12 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
                     },
                     data: formdata_admin
                 };
-
+                console.log('config pt_internal :' + JSON.stringify(config));
+                
                 axios(config).then(respInt => {
                         const listaInt = respInt.data.data;
-
+                        console.log('listaInt:' + listaInt);
+                        logger.info('listaInt:' + listaInt);
                         listaRel.forEach(element => {
                             element._source.properties.ipsource = pt_external;
                             let elfinded = listaInt.find((el) => el._id == targetprefix + element._id);
@@ -1426,8 +1441,8 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
                             /*fine dih end rel initiatives */
                             var singleEntity = {
                                 "instance": {
-                                    "index": newentityType,
-                                    "type": newentityType
+                                    "index": newentityType
+                                    //"type": newentityType
                                 },
                                 "data": element._source
                             };
@@ -1503,6 +1518,7 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
 
                         /*MG - Import delle ENTITIES - Inizio*/
                         if (importentities){
+                            console.log("==>importentities started");
                             /*MG - Verifica della CONDITION - Inizio*/
                             if (crnrule.condition != undefined) {
                                 var mfunc = crnrule['condition'];
@@ -1591,6 +1607,7 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
         }
     })
 });
+
 router.get('/fromdymer_original/:id', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     var id = req.params.id;
