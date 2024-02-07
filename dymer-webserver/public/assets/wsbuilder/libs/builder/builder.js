@@ -22,9 +22,6 @@ https://github.com/givanz/VvvebJs
 (function() {
     var cache = {};
     this.tmpl = function tmpl(str, data) {
-
-        console.log("STR =========> ", str);
-
         var fn = /^[-a-zA-Z0-9]+$/.test(str) ?
             cache[str] = cache[str] ||
             tmpl(document.getElementById(str).innerHTML) :
