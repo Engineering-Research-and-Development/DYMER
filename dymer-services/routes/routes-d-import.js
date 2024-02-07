@@ -601,7 +601,8 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
                 console.log("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - " + formTemplate + " Id", data._id);
                 titleId.id = data._id;
                 titleId.title = data.title;
-                titleId.changed = data.properties.changed;
+                /*DA RIPRISTINARE DOPO AVER AGGIORNATO LA MACCHINA VIRTUALE*/
+                //titleId.changed = data.properties.changed;
                 modulesIds.push(titleId);
                 titleId = {};
             //}
@@ -626,7 +627,9 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
                         /*Se i moduli HTML sono già presenti nella destinazione, li elimino*/
                         if (modulesIds.length > 0){
                             modulesIds.forEach(titleId => {    
-                                if (data.title == titleId.title && (data.properties.changed > titleId.changed || forceimport)){ 
+                                /*DA RIPRISTINARE DOPO AVER AGGIORNATO LA MACCHINA VIRTUALE*/
+                                //if (data.title == titleId.title && (data.properties.changed > titleId.changed || forceimport)){ 
+                                if (data.title == titleId.title){    
                                     var config = {
                                         method: 'delete',
                                         url: localApiUrl + titleId.id,
@@ -1426,8 +1429,8 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
                             /*fine dih end rel initiatives */
                             var singleEntity = {
                                 "instance": {
-                                    "index": newentityType,
-                                    "type": newentityType
+                                    "index": newentityType
+                                    //"type": newentityType
                                 },
                                 "data": element._source
                             };
@@ -1734,8 +1737,8 @@ router.get('/fromdymer_original/:id', util.checkIsAdmin, (req, res) => {
                             /*fine dih end rel initiatives */
                             var singleEntity = {
                                 "instance": {
-                                    "index": newentityType,
-                                    "type": newentityType
+                                    "index": newentityType
+                                    //"type": newentityType
                                 },
                                 "data": element._source
                             };

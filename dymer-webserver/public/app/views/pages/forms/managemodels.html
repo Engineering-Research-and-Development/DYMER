@@ -266,6 +266,70 @@
                         </div>
                     </div>
                     <!-- templates -->
+                    
+                    <!-- MG - Inizio -->
+                    <script id="vvveb-input-html-list-select" type="text/html">
+                        <div class="input-html-list-select">
+                            <div class="current-element"></div>    
+                                <div class="popup">
+                                        <select class="form-select">
+                                            {% var optgroup = false; for ( var i = 0; i < options.length; i++ ) { %}
+                                                {% if (options[i].optgroup) {  %}
+                                                    {% if (optgroup) {  %}
+                                                        </optgroup>
+                                                    {% } %}
+                                                    <optgroup label="{%=options[i].optgroup%}">
+                                                {% optgroup = true; } else { %}
+                                                <option value="{%=options[i].value%}">{%=options[i].text%}</option>
+                                            {% } } %}
+                                        </select>
+                                        <div class="search">
+                                            <input class="form-control search" placeholder="Search elements" type="text">
+                                            <button class="clear-backspace">
+                                                <i class="la la-times"></i>
+                                            </button>
+                                        </div>
+                                        <div class="elements">{%=elements%}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </script>
+                    <script id="vvveb-input-noticeinput" type="text/html">
+                        <div>
+                            <div class="alert alert-dismissible fade show alert-{%=type%}" role="alert">		  
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>		  
+                                <h6><b>{%=title%}</b></h6> 
+                                    {%=text%}
+                            </div>
+                        </div>
+                    </script>
+                    <script id="vvveb-input-textareainput" type="text/html">
+                        <div>
+                            <textarea name="{%=key%}" {% if (typeof rows !== 'undefined') { %} rows="{%=rows%}" {% } else { %} rows="3" {% } %} class="form-control"/>
+                        </div>
+                    </script>
+                    <script id="vvveb-input-imageinput" type="text/html">
+                        <div>
+                            <input name="{%=key%}" type="text" class="form-control"/>
+                            <input name="file" type="file" class="form-control"/>
+                        </div>
+                    </script>
+                    <script id="vvveb-input-imageinput-gallery" type="text/html">
+                        <div>
+                            <img id="thumb-{%=key%}" class="img-thumbnail p-0" data-target-input="#input-{%=key%}" data-target-thumb="#thumb-{%=key%}" style="cursor:pointer" src="" width="225" height="225">
+                            <input name="{%=key%}" type="text" class="form-control mt-1" id="input-{%=key%}"/>
+                            <button name="button" class="btn btn-primary btn-sm btn-icon mt-2" data-target-input="#input-{%=key%}" data-target-thumb="#thumb-{%=key%}"><i class="la la-image la-lg"></i>&ensp;<span>Set image</span></button>
+                        </div>
+                    </script>
+                    <script id="vvveb-input-videoinput-gallery" type="text/html">
+                        <div>
+                            <video id="thumb-v{%=key%}" class="img-thumbnail p-0" data-target-input="#input-v{%=key%}" data-target-thumb="#thumb-v{%=key%}" style="cursor:pointer" src="" width="225" height="225" playsinline loop muted controls></video>
+                            <input name="v{%=key%}" type="text" class="form-control mt-1" id="input-v{%=key%}"/>
+                            <button name="button" class="btn btn-primary btn-sm btn-icon mt-2" data-target-input="#vinput-v{%=key%}" data-target-thumb="#thumb-v{%=key%}"><i class="la la-video la-lg"></i>&ensp;<span>Set video</span></button>
+                        </div>
+                    </script>
+                    <!-- MG - Fine -->
+
                     <script id="vvveb-input-textinput" type="text/html">
                         <div>
                             <input name="{%=key%}" type="text" class="form-control" />

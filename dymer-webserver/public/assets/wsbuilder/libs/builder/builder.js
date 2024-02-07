@@ -22,6 +22,9 @@ https://github.com/givanz/VvvebJs
 (function() {
     var cache = {};
     this.tmpl = function tmpl(str, data) {
+
+        console.log("STR =========> ", str);
+
         var fn = /^[-a-zA-Z0-9]+$/.test(str) ?
             cache[str] = cache[str] ||
             tmpl(document.getElementById(str).innerHTML) :
@@ -2064,3 +2067,49 @@ function createCORSRequest(method, url) {
     }
     return xhr;
 }
+
+/*MG - Inizio*/ 
+let fontList = [{
+	value: "",
+	text: "Default"
+}, {
+	value: "Arial, Helvetica, sans-serif",
+	text: "Arial"
+}, {
+	value: "'Lucida Sans Unicode', 'Lucida Grande', sans-serif",
+	text: 'Lucida Grande'
+}, {
+	value: "'Palatino Linotype', 'Book Antiqua', Palatino, serif",
+	text: 'Palatino Linotype'
+}, {
+	value: "'Times New Roman', Times, serif",
+	text: 'Times New Roman'
+}, {
+	value: "Georgia, serif",
+	text: "Georgia, serif"
+}, {
+	value: "Tahoma, Geneva, sans-serif",
+	text: "Tahoma"
+}, {
+	value: "'Comic Sans MS', cursive, sans-serif",
+	text: 'Comic Sans'
+}, {
+	value: "Verdana, Geneva, sans-serif",
+	text: 'Verdana'
+}, {
+	value: "Impact, Charcoal, sans-serif",
+	text: 'Impact'
+}, {
+	value: "'Arial Black', Gadget, sans-serif",
+	text: 'Arial Black'
+}, {
+	value: "'Trebuchet MS', Helvetica, sans-serif",
+	text: 'Trebuchet'
+}, {
+	value: "'Courier New', Courier, monospace",
+	text: 'Courier New'
+}, {
+	value: "'Brush Script MT', sans-serif",
+	text: 'Brush Script'
+}];
+/*MG - Fine*/ 
