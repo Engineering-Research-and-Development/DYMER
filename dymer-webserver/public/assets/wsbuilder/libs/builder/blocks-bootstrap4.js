@@ -19,12 +19,15 @@ https://github.com/givanz/Vvvebjs
 //Snippets from https://bootsnipp.com/license
 
 Vvveb.BlocksGroup['Bootstrap'] =
-["bootstrap4/signin-split", "bootstrap4/slider-header", "bootstrap4/image-gallery", "bootstrap4/video-header", "bootstrap4/portfolio-one-column", "bootstrap4/portfolio-two-column", "bootstrap4/portfolio-three-column", "bootstrap4/portfolio-four-column","bootstrap4/product-card", "bootstrap4/user-online", "bootstrap4/our-team", "bootstrap4/login-form", "bootstrap4/about-team", "bootstrap4/pricing-1", "bootstrap4/loading-circle", "bootstrap4/block-quote", "bootstrap4/subscribe-newsletter"];
+["bootstrap4/login-form", "bootstrap4/signin-split", "bootstrap4/slider-header", "bootstrap4/image-gallery", "bootstrap4/video-header", "bootstrap4/portfolio-one-column", "bootstrap4/portfolio-two-column", "bootstrap4/portfolio-three-column", "bootstrap4/portfolio-four-column","bootstrap4/product-card", "bootstrap4/user-online", "bootstrap4/our-team", "bootstrap4/about-team", "bootstrap4/pricing-1", "bootstrap4/loading-circle", "bootstrap4/block-quote", "bootstrap4/subscribe-newsletter"];
 
 Vvveb.Blocks.add("bootstrap4/portfolio-four-column", {
     name: "Four Column Portfolio Layout",
-	dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/image.svg">',        
-    image: "https://startbootstrap.com/assets/img/screenshots/snippets/portfolio-four-column.jpg",
+	dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/image.svg">',   
+    /*MG - Inizio*/     
+    //image: "https://startbootstrap.com/assets/img/screenshots/snippets/portfolio-four-column.jpg",
+    image: Vvveb.baseUrl + 'icons/portfolio-four-column.jpg',
+    /*MG - Fine*/     
     html:`
 <div class="container">
 
@@ -36,7 +39,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-four-column", {
   <div class="row">
     <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
       <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+        <a href="#"><img class="card-img-top" src="https://via.placeholder.com/700x400" alt=""></a>
         <div class="card-body">
           <h4 class="card-title">
             <a href="#">Project One</a>
@@ -47,7 +50,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-four-column", {
     </div>
     <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
       <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+        <a href="#"><img class="card-img-top" src="https://via.placeholder.com/700x400" alt=""></a>
         <div class="card-body">
           <h4 class="card-title">
             <a href="#">Project Two</a>
@@ -58,7 +61,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-four-column", {
     </div>
     <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
       <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+        <a href="#"><img class="card-img-top" src="https://via.placeholder.com/700x400" alt=""></a>
         <div class="card-body">
           <h4 class="card-title">
             <a href="#">Project Three</a>
@@ -69,7 +72,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-four-column", {
     </div>
     <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
       <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+        <a href="#"><img class="card-img-top" src="https://via.placeholder.com/700x400" alt=""></a>
         <div class="card-body">
           <h4 class="card-title">
             <a href="#">Project Four</a>
@@ -80,7 +83,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-four-column", {
     </div>
     <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
       <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+        <a href="#"><img class="card-img-top" src="https://via.placeholder.com/700x400" alt=""></a>
         <div class="card-body">
           <h4 class="card-title">
             <a href="#">Project Five</a>
@@ -91,7 +94,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-four-column", {
     </div>
     <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
       <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+        <a href="#"><img class="card-img-top" src="https://via.placeholder.com/700x400" alt=""></a>
         <div class="card-body">
           <h4 class="card-title">
             <a href="#">Project Six</a>
@@ -102,7 +105,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-four-column", {
     </div>
     <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
       <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+        <a href="#"><img class="card-img-top" src="https://via.placeholder.com/700x400" alt=""></a>
         <div class="card-body">
           <h4 class="card-title">
             <a href="#">Project Seven</a>
@@ -113,7 +116,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-four-column", {
     </div>
     <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
       <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+        <a href="#"><img class="card-img-top" src="https://via.placeholder.com/700x400" alt=""></a>
         <div class="card-body">
           <h4 class="card-title">
             <a href="#">Project Eight</a>
@@ -156,8 +159,11 @@ Vvveb.Blocks.add("bootstrap4/portfolio-four-column", {
 
 Vvveb.Blocks.add("bootstrap4/portfolio-three-column", {
     name: "Three Column Portfolio Layout",
-	dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/image.svg">',        
-    image: "https://startbootstrap.com/assets/img/screenshots/snippets/portfolio-three-column.jpg",
+	dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/image.svg">',     
+    /*MG - Inizio*/    
+    //image: "https://startbootstrap.com/assets/img/screenshots/snippets/portfolio-three-column.jpg",
+    image: Vvveb.baseUrl + 'icons/portfolio-three-column.jpg',
+    /*MG - Fine*/    
     html:`
 <div class="container">
 
@@ -169,7 +175,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-three-column", {
   <div class="row">
     <div class="col-lg-4 col-sm-6 mb-4">
       <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+        <a href="#"><img class="card-img-top" src="https://via.placeholder.com/700x400" alt=""></a>
         <div class="card-body">
           <h4 class="card-title">
             <a href="#">Project One</a>
@@ -180,7 +186,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-three-column", {
     </div>
     <div class="col-lg-4 col-sm-6 mb-4">
       <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+        <a href="#"><img class="card-img-top" src="https://via.placeholder.com/700x400" alt=""></a>
         <div class="card-body">
           <h4 class="card-title">
             <a href="#">Project Two</a>
@@ -191,7 +197,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-three-column", {
     </div>
     <div class="col-lg-4 col-sm-6 mb-4">
       <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+        <a href="#"><img class="card-img-top" src="https://via.placeholder.com/700x400" alt=""></a>
         <div class="card-body">
           <h4 class="card-title">
             <a href="#">Project Three</a>
@@ -202,7 +208,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-three-column", {
     </div>
     <div class="col-lg-4 col-sm-6 mb-4">
       <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+        <a href="#"><img class="card-img-top" src="https://via.placeholder.com/700x400" alt=""></a>
         <div class="card-body">
           <h4 class="card-title">
             <a href="#">Project Four</a>
@@ -213,7 +219,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-three-column", {
     </div>
     <div class="col-lg-4 col-sm-6 mb-4">
       <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+        <a href="#"><img class="card-img-top" src="https://via.placeholder.com/700x400" alt=""></a>
         <div class="card-body">
           <h4 class="card-title">
             <a href="#">Project Five</a>
@@ -224,7 +230,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-three-column", {
     </div>
     <div class="col-lg-4 col-sm-6 mb-4">
       <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+        <a href="#"><img class="card-img-top" src="https://via.placeholder.com/700x400" alt=""></a>
         <div class="card-body">
           <h4 class="card-title">
             <a href="#">Project Six</a>
@@ -268,7 +274,10 @@ Vvveb.Blocks.add("bootstrap4/portfolio-three-column", {
 Vvveb.Blocks.add("bootstrap4/portfolio-two-column", {
     name: "Two Column Portfolio Layout",
 	dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/image.svg">',        
-    image: "https://startbootstrap.com/assets/img/screenshots/snippets/portfolio-one-column.jpg",
+    /*MG - Inizio*/    
+    //image: "https://startbootstrap.com/assets/img/screenshots/snippets/portfolio-two-column.jpg",
+    image: Vvveb.baseUrl + 'icons/portfolio-two-column.jpg',
+    /*MG - Fine*/ 
     html:`
 <div class="container">
 
@@ -280,7 +289,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-two-column", {
   <div class="row">
     <div class="col-lg-6 mb-4">
       <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+        <a href="#"><img class="card-img-top" src="https://via.placeholder.com/700x400" alt=""></a>
         <div class="card-body">
           <h4 class="card-title">
             <a href="#">Project One</a>
@@ -291,7 +300,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-two-column", {
     </div>
     <div class="col-lg-6 mb-4">
       <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+        <a href="#"><img class="card-img-top" src="https://via.placeholder.com/700x400" alt=""></a>
         <div class="card-body">
           <h4 class="card-title">
             <a href="#">Project Two</a>
@@ -302,7 +311,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-two-column", {
     </div>
     <div class="col-lg-6 mb-4">
       <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+        <a href="#"><img class="card-img-top" src="https://via.placeholder.com/700x400" alt=""></a>
         <div class="card-body">
           <h4 class="card-title">
             <a href="#">Project Three</a>
@@ -313,7 +322,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-two-column", {
     </div>
     <div class="col-lg-6 mb-4">
       <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+        <a href="#"><img class="card-img-top" src="https://via.placeholder.com/700x400" alt=""></a>
         <div class="card-body">
           <h4 class="card-title">
             <a href="#">Project Four</a>
@@ -324,7 +333,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-two-column", {
     </div>
     <div class="col-lg-6 mb-4">
       <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+        <a href="#"><img class="card-img-top" src="https://via.placeholder.com/700x400" alt=""></a>
         <div class="card-body">
           <h4 class="card-title">
             <a href="#">Project Five</a>
@@ -335,7 +344,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-two-column", {
     </div>
     <div class="col-lg-6 mb-4">
       <div class="card h-100">
-        <a href="#"><img class="card-img-top" src="http://placehold.it/700x400" alt=""></a>
+        <a href="#"><img class="card-img-top" src="https://via.placeholder.com/700x400" alt=""></a>
         <div class="card-body">
           <h4 class="card-title">
             <a href="#">Project Six</a>
@@ -378,8 +387,11 @@ Vvveb.Blocks.add("bootstrap4/portfolio-two-column", {
 
 Vvveb.Blocks.add("bootstrap4/portfolio-one-column", {
     name: "One Column Portfolio Layout",
-	dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/image.svg">',        
-    image: "https://startbootstrap.com/assets/img/screenshots/snippets/portfolio-one-column.jpg",
+	dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/image.svg">',     
+    /*MG - Inizio*/    
+    //image: "https://startbootstrap.com/assets/img/screenshots/snippets/portfolio-one-column.jpg",
+    image: Vvveb.baseUrl + 'icons/portfolio-one-column.jpg',
+    /*MG - Fine*/    
     html:`
     <div class="container">
 
@@ -392,7 +404,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-one-column", {
       <div class="row">
         <div class="col-md-7">
           <a href="#">
-            <img class="img-fluid rounded mb-3 mb-md-0" src="http://placehold.it/700x300" alt="">
+            <img class="img-fluid rounded mb-3 mb-md-0" src="https://via.placeholder.com/700x300" alt="">
           </a>
         </div>
         <div class="col-md-5">
@@ -409,7 +421,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-one-column", {
       <div class="row">
         <div class="col-md-7">
           <a href="#">
-            <img class="img-fluid rounded mb-3 mb-md-0" src="http://placehold.it/700x300" alt="">
+            <img class="img-fluid rounded mb-3 mb-md-0" src="https://via.placeholder.com/700x300" alt="">
           </a>
         </div>
         <div class="col-md-5">
@@ -426,7 +438,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-one-column", {
       <div class="row">
         <div class="col-md-7">
           <a href="#">
-            <img class="img-fluid rounded mb-3 mb-md-0" src="http://placehold.it/700x300" alt="">
+            <img class="img-fluid rounded mb-3 mb-md-0" src="https://via.placeholder.com/700x300" alt="">
           </a>
         </div>
         <div class="col-md-5">
@@ -444,7 +456,7 @@ Vvveb.Blocks.add("bootstrap4/portfolio-one-column", {
 
         <div class="col-md-7">
           <a href="#">
-            <img class="img-fluid rounded mb-3 mb-md-0" src="http://placehold.it/700x300" alt="">
+            <img class="img-fluid rounded mb-3 mb-md-0" src="https://via.placeholder.com/700x300" alt="">
           </a>
         </div>
         <div class="col-md-5">
@@ -488,8 +500,11 @@ Vvveb.Blocks.add("bootstrap4/portfolio-one-column", {
 
 Vvveb.Blocks.add("bootstrap4/video-header", {
     name: "Video Header",
-	dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/image.svg">',        
-    image: "https://startbootstrap.com/assets/img/screenshots/snippets/video-header.jpg",
+	dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/image.svg">', 
+    /*MG - Inizio*/       
+    //image: "https://startbootstrap.com/assets/img/screenshots/snippets/video-header.jpg",
+    image: Vvveb.baseUrl + 'icons/video-header.jpg',   
+    /*MG - Fine*/ 
     html:`
 <header class="video">
   <div class="overlay"></div>
@@ -570,8 +585,11 @@ header.video .overlay {
 
 Vvveb.Blocks.add("bootstrap4/image-gallery", {
     name: "Image gallery",
-    image: "https://startbootstrap.com/assets/img/screenshots/snippets/thumbnail-gallery.jpg",
-	dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/product.png">',    
+    /*MG - Inizio*/
+    //image: "https://startbootstrap.com/assets/img/screenshots/snippets/thumbnail-gallery.jpg",
+    image: Vvveb.baseUrl + 'icons/thumbnail-gallery.jpg',    
+	  /*Fine*/
+    dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/product.png">',    
     html: `
 <div class="container">
 
@@ -649,8 +667,11 @@ Vvveb.Blocks.add("bootstrap4/image-gallery", {
 
 Vvveb.Blocks.add("bootstrap4/signin-split", {
     name: "Modern Sign In Page with Split Screen Format",
-	dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/product.png">',    
-    image: "https://startbootstrap.com/assets/img/screenshots/snippets/sign-in-split.jpg",
+	  dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/product.png">',   
+    /*MG - Inizio*/ 
+    //image: "https://startbootstrap.com/assets/img/screenshots/snippets/sign-in-split.jpg",
+    image: Vvveb.baseUrl + 'icons/sign-in-split.jpg',
+    /*MG - Fine*/  
     html: `
 <div class="container-fluid">
   <div class="row no-gutter">
@@ -775,8 +796,11 @@ Vvveb.Blocks.add("bootstrap4/signin-split", {
 
 Vvveb.Blocks.add("bootstrap4/slider-header", {
     name: "Image Slider Header",
-	dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/product.png">',        
-    image: "https://startbootstrap.com/assets/img/screenshots/snippets/full-slider.jpg",
+	dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/product.png">', 
+    /*MG - Inizio*/       
+    //image: "https://startbootstrap.com/assets/img/screenshots/snippets/full-slider.jpg",
+    image: Vvveb.baseUrl + 'icons/full-slider.jpg', 
+    /*MG - Fine*/       
     html:`
 <header class="slider">
   <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
