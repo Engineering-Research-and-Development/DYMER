@@ -125,7 +125,7 @@ router.post('/addrule', util.checkIsAdmin, function(req, res) {
     var ret = new jsonResponse();
     var newObj = {
         _index: data.op_index,
-        _type: data.op_type,
+        _type: data.op_index,
         mapping: data.op_mapping,
         sendnotification: data.sendnotification
     }
@@ -690,7 +690,7 @@ function postAssettOpenness(typeaction, obj, rule, extraInfo) {
 }
 
 function callOpennessJsw(conf, postObj) {
-    console.log("==> callOpennessJsw");
+    console.log("==> callOpennessJsw postObj ", postObj);
     var opnConfUtil = util.getServiceConfig("opnsearch");
     var callurl = conf.configuration.host;
     if (conf.configuration.port != undefined)
@@ -719,7 +719,7 @@ function callOpennessJsw(conf, postObj) {
                 "Authorization": "Basic " + authorizationBasic
             }
         };
-        //console.log('Authorization header-> ', configqq);
+        console.log('Authorization header-> ', configqq);
         axios.post(callurl, postObj, configqq)
             .then(function(response) {
                 logger.info(nameFile + ' | callOpennessJsw | POST | callurl, postObj, configqq' + callurl + " , " + JSON.stringify(postObj) + " , " + JSON.stringify(configqq));

@@ -9,7 +9,7 @@ angular.module('dymerHooksCtrl', [])
         };
 
         $scope.copyPastIndType = function(el) {
-            $scope.hook._type = el._type;
+            $scope.hook._type = el._index;
             $scope.hook._index = el._index;
         }
         $scope.clearString = function() {
@@ -59,7 +59,7 @@ angular.module('dymerHooksCtrl', [])
                         element.instance.forEach(el => {
                             var newObj = {
                                 _index: el._index,
-                                _type: el._type
+                                _type: el._index
                             };
                             if (el._index != 'general' && el._index != 'entity_relation') {
                                 if (!$scope.listEntitiesAvailable.filter(obj => obj._index == el._index).length)

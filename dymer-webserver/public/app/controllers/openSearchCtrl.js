@@ -41,7 +41,7 @@ angular.module('openSearchCtrl', [])
                     element.instance.forEach(el => {
                         var newObj = {
                             _index: el._index,
-                            _type: el._type
+                            _type: el._index
                         };
                         if (el._index != 'general' && el._index != 'entity_relation') {
                             if (!$scope.listEntitiesAvailable.filter(obj => obj._index == el._index).length)

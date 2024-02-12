@@ -766,7 +766,7 @@ let createBulk = async function(dataset, indextype) {
     var ret = new jsonResponse();
     if (dataset.length > 0) {
         logger.info(nameFile + '| createBulk | indextype, dataset:' + indextype + " , " + JSON.stringify(dataset));
-        const body = dataset.flatMap(doc => [{ index: { "_index": indextype, "_type": indextype } }, doc])
+        const body = dataset.flatMap(doc => [{ index: { "_index": indextype} }, doc])
             //const { body: bulkResponse } = await client.bulk({ refresh: true, body })
         const bulkResponse = await client.bulk({ refresh: true, body })
         if (bulkResponse.errors) {
@@ -821,7 +821,7 @@ let deleteBulkByIds = async function(idsToDelete, index) {
             return {
                 'delete': {
                     '_index': index,
-                    '_type': index,
+                    //'_type': index,
                     '_id': id
                 }
             };
@@ -910,7 +910,7 @@ function deleteRelation(_id1, _id2) {
                         //  console.error("deleteRelation ELIMINA RELAZIONE ", element);
                         var delarams = {};
                         delarams["index"] = element["_index"];
-                        delarams["type"] = element["_type"];
+                        //delarams["type"] = element["_type"];
                         delarams["id"] = element["_id"];
                         delarams["refresh"] = true;
                         logger.info(nameFile + '| deleted Relation :' + JSON.stringify(delarams));
@@ -1019,7 +1019,7 @@ function deleteRelationByIndex_original(index) {
                 resp["hits"].hits.forEach((element) => {
                     var delarams = {};
                     delarams["index"] = element["_index"];
-                    delarams["type"] = element["_type"];
+                    //delarams["type"] = element["_type"];
                     delarams["id"] = element["_id"];
                     delarams["refresh"] = true;
                     //   console.log(nameFile + '| deleteRelationByIndex :', JSON.stringify(delarams));
@@ -1134,7 +1134,7 @@ function deleteRelationOneEntity_original(_id1) {
                     logger.info(nameFile + '|deleteRelationOneEntity | success :' + JSON.stringify(element));
                     var delarams = {};
                     delarams["index"] = element["_index"];
-                    delarams["type"] = element["_type"];
+                    //delarams["type"] = element["_type"];
                     delarams["id"] = element["_id"];
                     delarams["refresh"] = true;
                     client.delete(delarams).then(
@@ -1281,7 +1281,7 @@ function deleteRelationOneEntityAndIndex_original(_id, _index) {
                     logger.info(nameFile + '| deleteRelationOneEntityAndIndex | success :' + JSON.stringify(element));
                     var delarams = {};
                     delarams["index"] = element["_index"];
-                    delarams["type"] = element["_type"];
+                    //delarams["type"] = element["_type"];
                     delarams["id"] = element["_id"];
                     delarams["refresh"] = true;
                     client.delete(delarams).then(
@@ -1387,9 +1387,9 @@ async function createRelationV2(dataset) {
     //   let params = { index: "entity_relation", type: "entity_relation" };
     //   params["body"] = newRel;
     //  params["refresh"] = true;
-    //console.log('createRelationV2', dataset)
+    console.log('==>createRelationV2', dataset)
     if (dataset.length > 0) {
-        const body = dataset.flatMap(doc => [{ index: { "_index": 'entity_relation', "_type": 'entity_relation' } }, doc])
+        const body = dataset.flatMap(doc => [{ index: { "_index": 'entity_relation' } }, doc])
             //const { body: bulkResponse } = await client.bulk({ refresh: true, body })
         const bulkResponse = await client.bulk({ refresh: true, body })
         if (bulkResponse.errors) {
@@ -1426,7 +1426,8 @@ async function createRelationV2(dataset) {
 }
 
 function createRelation(newRel) {
-    let params = { index: "entity_relation", type: "entity_relation" };
+    console.log('==>createRelation', createRelation)
+    let params = { index: "entity_relation"};
     params["body"] = newRel;
     params["refresh"] = true;
     logger.info(nameFile + '| createRelation | success:' + JSON.stringify(params));
@@ -2172,7 +2173,7 @@ router.get('/relationstat/', (req, res) => {
 
     var params = {};
     params["index"] = "entity_relation";
-    params["type"] = "entity_relation";
+    //params["type"] = "entity_relation";
     params["body"] = {
         "aggregations": {
             "aggr": {
@@ -3594,10 +3595,11 @@ router.post('/:enttype', function(req, res) {
                             }
                             let params = (instance) ? instance : {};
                             params["body"] = data;
-                            console.log("data",data);
+                            console.log("==>data ",data);
                             // params["body"].size = 10000;
                             params["refresh"] = true;
                             let ref = Object.assign({}, data.relation);
+                            console.log("==>data.relation ",data.relation);
                             if (data != undefined)
                                 delete data.relation;
                             console.log(nameFile + '| /:enttype | create | params:', dymeruser.id, JSON.stringify(params));
@@ -3620,6 +3622,7 @@ router.post('/:enttype', function(req, res) {
                                 logger.info(nameFile + '| /:enttype | create | ref, elIndex, elId:' + JSON.stringify(ref) + ' , ' + elIndex + ' , ' + elId);
                                 try {
                                     //marco-antonino cache
+                                    console.log("==>checkRelation");
                                     checkRelation(ref, elIndex, elId);
                                 } catch (error) {
                                     logger.error(nameFile + '| /:enttype | create | checkRelation:' + error);
@@ -3816,7 +3819,7 @@ router.put('/update/:id', (req, res) => {
                                 var params_del = {};
                                 params_del["id"] = new_Temp_Entity["_id"];
                                 params_del["index"] = new_Temp_Entity._index;
-                                params_del["type"] = new_Temp_Entity._type;
+                                //params_del["type"] = new_Temp_Entity._type;
                                 params_del["refresh"] = 'true';
                                 client.delete(params_del).then(function(resp) {
                                     client.index({
@@ -4378,7 +4381,7 @@ router.put('/oldput/:id', (req, res) => { //to delete
                                     var params_del = {};
                                     params_del["id"] = new_Temp_Entity["_id"];
                                     params_del["index"] = new_Temp_Entity._index;
-                                    params_del["type"] = new_Temp_Entity._type;
+                                    //params_del["type"] = new_Temp_Entity._type;
                                     // params_del["refresh"] = 'true';
                                     client.delete(params_del).then(function(resp) {
                                         client.index({
@@ -5097,7 +5100,7 @@ router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
             var elToDelete = element;
             var delarams = {};
             delarams["index"] = element["_index"];
-            delarams["type"] = element["_type"];
+            //delarams["type"] = element["_type"];
             delarams["id"] = element["_id"];
             var gridfs_delete_queue = [];
             for (var key in element._source) {
@@ -5275,7 +5278,7 @@ router.delete('/:id',async (req, res) => {
                 resp["hits"].hits.forEach((element) => {
                     var elToDelete = element;
                     params["index"] = element._index;
-                    params["type"] = element._type;
+                    //params["type"] = element._type;
                     params["refresh"] = true;
                     for (var key in element._source) {
                         if (element._source[key] instanceof Array) {

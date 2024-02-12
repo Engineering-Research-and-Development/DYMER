@@ -44,7 +44,7 @@ router.post('/addhook', util.checkIsAdmin, function(req, res) {
     var ret = new jsonResponse();
     var newObj = {
         _index: data.op_index,
-        _type: data.op_type,
+        _type: data.op_index,
         microserviceType: data.op_microserviceType,
         eventType: data.op_eventType,
         service: data.op_service

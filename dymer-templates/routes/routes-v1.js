@@ -317,7 +317,7 @@ router.post('/addAsset', util.checkIsAdmin, function(req, res) {
             logger.error(nameFile + ' | post/addAsset | upload  : ' + err);
             ret.setMessages("Upload Error");
             ret.setSuccess(false);
-            ret.setExtraData({ "log": error.stack });
+            ret.setExtraData({ "log": err.stack });
             return res.send(ret);
         }
         let callData = util.getAllQuery(req);

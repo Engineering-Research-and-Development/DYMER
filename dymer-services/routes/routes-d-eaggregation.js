@@ -524,7 +524,7 @@ router.post('/listener', function(req, res) {
 
     var queryFind = {
         "_index": data.obj._index,
-        "_type": data.obj._type,
+        "_type": data.obj._index,
         "servicetype": eventSource[1]
     };
     //  console.log('queryFind', queryFind);

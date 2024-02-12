@@ -20,3 +20,6 @@ dymer-webserver/logs/info7.log
 dymer-webserver/logs/info7.log
 dymer-templates/config/config-LOCALE.json
 full.yml
+.env
+dymer-services/tempfolder/basedyml-1ac6-4165-2556-320516522556/supsi.jpg
+dymer-entities/routes/routes-v2_MIA_COPIA_DI_VEN.js
