@@ -82,6 +82,12 @@ Vvveb.defaultComponent = "_base";
 Vvveb.preservePropertySections = true;
 Vvveb.dragIcon = 'icon'; //icon = use component icon when dragging | html = use component html to create draggable element
 Vvveb.baseUrl = document.currentScript ? document.currentScript.src.replace(/[^\/]*?\.js$/, '') : '';
+/*MG - Inizio*/
+Vvveb.dragElementStyle = "background:limegreen;;width:100%;height:3px;border:1px solid limegreen;box-shadow:0px 0px 2px 1px rgba(0,0,0,0.14);overflow:hidden;";
+Vvveb.dragHtml = '<div style="' + Vvveb.dragElementStyle + '"></div>';
+Vvveb.imgBaseUrl =  Vvveb.baseUrl;
+Vvveb.SectionsGroup = {}; 
+/*MG - Fine*/
 Vvveb.ComponentsGroup = {};
 Vvveb.BlocksGroup = {};
 Vvveb.listResources = {
@@ -177,10 +183,35 @@ Vvveb.Components = {
 
     componentPropertiesElement: "#right-panel .component-properties",
 
+    /*MG - Inizio*/
+    componentPropertiesDefaultSection: "content",
+    /*MG - Fine*/
+
     get: function(type) {
         return this._components[type];
     },
 
+    /*MG - Inizio*/
+    updateProperty: function(type, key, value) {
+		let properties = this._components[type]["properties"];
+		for (property in properties) {
+			if (key == properties[property]["key"])  {
+				return this._components[type]["properties"][property] = 
+				Object.assign(properties[property], value);
+			}
+		}
+	},
+
+	getProperty: function(type, key) {
+		let properties = this._components[type] ? this._components[type]["properties"] : [];
+		for (property in properties) {
+			if (key == properties[property]["key"])  {
+				return properties[property];
+			}
+		}
+	},
+    /*MG - Fine*/
+    
     add: function(type, data) {
         data.type = type;
 
@@ -402,6 +433,22 @@ Vvveb.Blocks = {
     },
 };
 
+/*MG - Inizio*/
+Vvveb.Sections = {
+	
+	_sections: {},
+
+	get: function(type) {
+		return this._sections[type];
+	},
+
+	add: function(type, data) {
+		data.type = type;
+		this._sections[type] = data;
+	},
+};	  
+/*MG - Fine*/
+
 Vvveb.WysiwygEditor = {
     isActive: false,
     oldValue: '',
@@ -470,6 +517,9 @@ Vvveb.Builder = {
     isPreview: false,
     runJsOnSetHtml: false,
     designerMode: false,
+    /*MG - Inizio*/
+    ignoreClasses: ["clearfix"],
+    /*MG - Fine*/
     init: function(url, callback, actualPage) {
         var self = this;
         self.loadControlGroups();
@@ -1011,6 +1061,32 @@ Vvveb.Builder = {
             return false;
         });
 
+        /*MG - Inizio*/
+        $("#edit-code-btn").on("click", function(event) {
+			let selectedEl = Vvveb.Builder.selectedEl.get(0);
+			let value = selectedEl.innerHTML;
+			// uncomment to use outerHTML, not recommended
+			//let value = selectedEl.outerHTML;
+			Vvveb.ModalCodeEditor.show();
+			Vvveb.ModalCodeEditor.setValue(value);
+
+			let oldValue = value;
+
+			$(window).one("vvveb.ModalCodeEditor.save",  function(event, value) {
+				selectedEl.innerHTML = value;
+				//selectedEl.outerHTML = value;
+				
+				node = selectedEl;
+				Vvveb.Undo.addMutation({type:'characterData', 
+										target: node, 
+										oldValue: oldValue, 
+										newValue: node.innerHTML});				
+			});
+			
+			return false;
+		});
+        /*MG - Fine*/
+
         $("#add-section-btn").on("click", function(event) {
 
             var offset = jQuery(this).offset();
@@ -1295,6 +1371,56 @@ Vvveb.Builder = {
     }
 
 };
+
+/*MG - Inizio*/
+Vvveb.ModalCodeEditor = {
+	modal: false,
+	editor: false,
+	
+	init: function(modal = false, editor = false) {
+		if (modal) {
+			this.modal = modal;
+		} else {
+			this.modal = $('#codeEditorModal');
+		}
+		if (editor) {
+			this.editor = editor;
+		} else {
+			this.editor = $('textarea', this.modal);
+		}
+		
+		let self = this;
+
+		$('.save-btn', this.modal).on("click",  function(event) {
+			$(window).triggerHandler("vvveb.ModalCodeEditor.save", self.getValue());
+			self.hide();
+		});
+	},
+	
+	show: function(value) {
+		if (!this.modal) {
+			this.init();
+		}
+		this.modal.modal('show');
+	},
+
+	hide: function(value) {
+		this.modal.modal('hide');
+	},
+	
+	getValue: function() {
+		return this.editor.val();;
+	},
+	
+	setValue: function(value) {
+		if (!this.modal) {
+			this.init();
+		}
+		this.editor.val(value);
+	},
+}
+/*MG - Fine*/
+
 Vvveb.CodeEditor = {
     isActive: false,
     oldValue: '',
@@ -1616,6 +1742,221 @@ Vvveb.Gui = {
         Vvveb.Builder.setDesignerMode(designerMode);
     },
 }
+
+/*MG - Inizio*/
+Vvveb.StyleManager = {
+
+	styles: {},
+	cssContainer: false,
+	mobileWidth: '320px',
+	tabletWidth: '768px',
+
+	init: function (doc) {
+		if (doc) {
+
+			var style = false;
+			var _style = false;
+
+			//check if editor style is present
+			for (let i = 0; i < doc.styleSheets.length; i++) {
+				_style = doc.styleSheets[i];
+				if (_style.ownerNode.id && _style.ownerNode.id == "vvvebjs-styles") {
+					style = _style;
+					break;
+				}
+			}
+
+			//if style element does not exist create it			
+			if (!style) {
+				this.cssContainer = $('<style id="vvvebjs-styles"></style>');
+				$(doc.head).append(this.cssContainer);
+				return this.cssContainer;
+			}
+
+			//if style exist then load all css styles for editor
+			for (let j = 0; j < style.cssRules.length; j++) {
+				media = (typeof style.cssRules[j].media === "undefined") ? 
+					"desktop" : (style.cssRules[j].media[0] === "screen and (max-width: 1220px)") 
+					? "tablet" : (style.cssRules[j].media[0] === "screen and (max-width: 320px)") 
+					? "mobile" : "desktop";
+
+				selector = (media === "desktop") ? style.cssRules[j].selectorText : style.cssRules[j].cssRules[0].selectorText;
+				styles = (media === "desktop") ? style.cssRules[j].style : style.cssRules[j].cssRules[0].style;
+
+				if (media) {
+					this.styles[media] = {};
+					if (selector) {
+						this.styles[media][selector] = {};
+
+						for (let k = 0; k < styles.length; k++) {
+
+							property = styles[k];
+							value = styles[property];
+
+							this.styles[media][selector][property] = value;
+						}
+					}
+				}
+			}
+
+			return this.cssContainer = $("#vvvebjs-styles", doc);
+		}
+	},
+
+	getSelectorForElement: function(element) {
+		if (!element) return '';
+		
+		var currentElement = element;
+		var selector = [];
+
+		while (currentElement.parentElement) {
+			let elementSelector = "";
+			let classSelector = Array.from(currentElement.classList).map(function (className) {
+					if (Vvveb.Builder.ignoreClasses.indexOf(className) == -1) {
+						return "." + className;
+					}
+				}).join("");
+
+			//stop at a unique element (with id)
+			if (currentElement.id) {
+				elementSelector = "#" + currentElement.id;
+				selector.push(elementSelector);
+				break;
+			} else if (classSelector) {
+				//class selector
+				elementSelector = classSelector;
+
+			} else {
+				//element (tag) selector
+				var tag = currentElement.tagName.toLowerCase();
+				//exclude top most element body unless the parent element is body
+				if (tag != "body" || (tag == "body" && selector.length <= 1)) {
+					elementSelector = tag
+				}
+			}
+
+			if (elementSelector) {
+				selector.push(elementSelector);
+			}
+
+			currentElement = currentElement.parentElement;
+		}
+
+		return selector.reverse().join(" > ");
+	},
+
+	setStyle: function (element, styleProp, value) {
+		if (typeof(element) == "string") {
+			selector = element;
+		} else {
+			selector = this.getSelectorForElement(element.get(0));
+		}
+		
+		media = $("#canvas").hasClass("tablet") ? "tablet" : $("#canvas").hasClass("mobile") ? "mobile" : "desktop";
+
+		//styles[media][selector][styleProp] = value
+		if (!this.styles[media]) {
+			this.styles[media] = {};
+		}
+		if (!this.styles[media][selector]) {
+			this.styles[media][selector] = {};
+		}
+		if (!this.styles[media][selector][styleProp]) {
+			this.styles[media][selector][styleProp] = {};
+		}
+		this.styles[media][selector][styleProp] = value;
+
+		this.generateCss(media);
+
+		return element;
+		//uncomment bellow code to set css in element's style attribute 
+		//return element.css(styleProp, value);
+	},
+
+	generateCss: function (media) {
+		//var css = "";
+		//for (selector in this.styles[media]) {
+
+		//	css += `${selector} {`;
+		//	for (property in this.styles[media][selector]) {
+		//		value = this.styles[media][selector][property];
+		//		css += `${property}: ${value};`;
+		//	}
+		//	css += '}';
+		//}
+
+		//this.cssContainer.html(css);
+
+		//return element;
+		var css = "";
+		for (media in this.styles) {
+			if (media === "tablet" || media === "mobile") {
+				css += `@media screen and (max-width: ${(media === 'tablet') ? this.tabletWidth : this.mobileWidth}){`
+			}
+			for (selector in this.styles[media]) {
+				css += `${selector} {`;
+				for (property in this.styles[media][selector]) {
+					value = this.styles[media][selector][property];
+					css += `${property}: ${value};`;
+				}
+				css += '}';
+			}
+			if (media === "tablet" || media === "mobile") {
+				css += `}`
+			}
+		}
+
+		this.cssContainer.html(css);
+	},
+
+
+	_getCssStyle: function(element, styleProp){
+		var value = "";
+		var el;
+
+		if (element.jquery) {
+			if ( !element.length) return '';
+			value = "";
+			el = element.get(0);
+			selector = this.getSelectorForElement(el);
+		} else if (element.nodeType) {
+			el = element;
+			selector = this.getSelectorForElement(el);
+		} else if (typeof(element) == "string") {
+			selector = element;
+			element = $(selector)[0] ?? false;
+			
+			if (!element) return '';
+		} else {
+			return '';
+		}
+
+		media = $("#canvas").hasClass("tablet") ? "tablet" : $("#canvas").hasClass("mobile") ? "mobile" : "desktop";
+
+		if (el.style && el.style.length > 0 && el.style[styleProp]) {//check inline
+			var value = el.style[styleProp];
+		}
+		else if (this.styles[media] !== undefined &&  this.styles[media][selector] !== undefined && this.styles[media][selector][styleProp] !== undefined) {//check defined css
+			var value = this.styles[media][selector][styleProp];
+
+			if (styleProp == 'font-family') {
+				console.log(value);
+			}
+		} else if (window.getComputedStyle) {
+			var value = document.defaultView.getDefaultComputedStyle ? 
+						document.defaultView.getDefaultComputedStyle(el,null).getPropertyValue(styleProp) : 
+						window.getComputedStyle(el,null).getPropertyValue(styleProp);
+
+		}
+
+		return value;
+	},
+
+	getStyle: function (element, styleProp) {
+		return this._getCssStyle(element, styleProp);
+	}
+}
+/*MG - Fine*/
 
 Vvveb.FileManager = {
     tree: false,
