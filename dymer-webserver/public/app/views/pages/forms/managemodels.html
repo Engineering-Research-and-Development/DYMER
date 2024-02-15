@@ -328,6 +328,16 @@
                             <button name="button" class="btn btn-primary btn-sm btn-icon mt-2" data-target-input="#vinput-v{%=key%}" data-target-thumb="#thumb-v{%=key%}"><i class="la la-video la-lg"></i>&ensp;<span>Set video</span></button>
                         </div>
                     </script>
+                    <script id="vvveb-input-bootstrap-color-picker-input" type="text/html">
+                        <div>
+                            <div id="cp2" class="input-group" title="Using input value">
+                              <input name="{%=key%}" type="text" {% if (typeof value !== 'undefined' && value != false) { %} value="{%=value%}" {% } %}	 class="form-control"/>
+                              <span class="input-group-append">
+                                <span class="input-group-text colorpicker-input-addon"><i></i></span>
+                              </span>
+                            </div>
+                        </div>
+                    </script>
                     <!-- MG - Fine -->
 
                     <script id="vvveb-input-textinput" type="text/html">
