@@ -783,6 +783,56 @@ Vvveb.Components.extend("_base", "_base", {
     }]
 });
 
+/*MG - Inizio*/
+//Border radius
+Vvveb.Components.extend("_base", "_base", {
+    properties: [{
+       key: "border_radius_header",
+       inputtype: SectionInput,
+       name:false,
+       sort: base_sort++,
+       section: style_section,
+       data: {header:"Border radius", expanded:false},
+   }, {
+       name: "Top Left",
+       key: "border-top-left-radius",
+       htmlAttr: "style",
+       sort: base_sort++,
+       section: style_section,
+       col:6,
+       inline:true,
+       inputtype: CssUnitInput
+   }, {
+       name: "Top Right",
+       key: "border-top-right-radius",
+       htmlAttr: "style",
+       sort: base_sort++,
+       section: style_section,
+       col:6,
+       inline:true,
+       inputtype: CssUnitInput
+   }, {
+       name: "Bottom Left",
+       key: "border-bottom-left-radius",
+       htmlAttr: "style",
+       sort: base_sort++,
+       section: style_section,
+       col:6,
+       inline:true,
+       inputtype: CssUnitInput
+   }, {
+       name: "Bottom Right",
+       key: "border-bottom-right-radius",
+       htmlAttr: "style",
+       sort: base_sort++,
+       section: style_section,
+       col:6,
+       inline:true,
+       inputtype: CssUnitInput
+   }]
+});
+/*MG - Fine*/
+
 //Background image
 Vvveb.Components.extend("_base", "_base", {
     properties: [{
