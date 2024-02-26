@@ -24,6 +24,7 @@ require("../models/permission/DymerCronJobRule");
 const DymRule = mongoose.model("DymerCronJobRule");
 router.use(bodyParser.json({ limit: '50mb', extended: true }))
 router.use(bodyParser.urlencoded({ limit: '100mb', extended: true }))
+let fn = require("flatnest")
     /*router.use(bodyParser.json());
     router.use(bodyParser.urlencoded({
         extended: false,
@@ -218,6 +219,185 @@ router.delete('/cronjob/:id', util.checkIsAdmin, (req, res) => {
         }
     })
 });
+
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+
+router.post('/test-csv', upload.single('file'), async (req, res) => {
+    if(req.file) {
+
+        let fileBuffer = req.file.buffer.toString("utf8")
+        let records = fileBuffer.split("\n")
+
+        res.status(200).send(records);
+    } else {
+        res.status(400).send("Missing File")
+    }
+})
+
+router.post('/fromcsv/:enttype', util.checkIsAdmin, (req, res) => {
+    let ret = new jsonResponse();
+    let listTopost = [];
+    let newentityType = req.params.enttype
+    
+    let lista = req.body.dataToImport   
+
+    console.log("lista: ", lista)
+
+    logger.info(nameFile + '| post/fromcsv | import :' + newentityType);
+    
+    var pt = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/_search";
+    const originalrelquery = req.body.indtorel //"dih";
+    
+    var query = {
+        "query": {
+            "query": {
+                "bool": {
+                    "must": [{
+                        "term": {
+                            "_index": originalrelquery
+                        }
+                    }]
+                }
+            }
+        }
+    };
+    
+
+    axios.post(pt, query).then(response => {
+        const listaRel = response.data.data;
+    
+        lista.forEach(element => {
+            var propert_ = {
+                owner: {
+                    uid: 0,
+                    gid: 0
+                },
+                "grant": {
+                    "update": {
+                        "uid": [
+                            ""
+                        ],
+                        "gid": [
+                            ""
+                        ]
+                    },
+                    "delete": {
+                        "uid": [
+                            ""
+                        ],
+                        "gid": [
+                            ""
+                        ]
+                    },
+                    "managegrant": {
+                        "uid": [
+                            ""
+                        ],
+                        "gid": [
+                            ""
+                        ]
+                    }
+                },
+              
+            };
+            propert_.status = "1";
+            propert_.visibility = "0";
+            
+           let elrel = listaRel.find((el) => el["_source"].title == element["DIH"]); //DIHNAME era DIH
+           let rel_id = undefined;
+            if (elrel != undefined) rel_id = elrel["_id"];
+            
+            var singleEntity = {
+                "instance": {
+                    "index": newentityType,
+                    "type": newentityType
+                },
+                
+                "data": buildNestedObj(element)
+            };
+            
+            if (rel_id != undefined)
+                singleEntity.data.relation = { dih: [{ to: rel_id }] };
+            
+            var extrainfo = {
+                "extrainfo": {
+                    "companyId": "20097",
+                    "groupId": "20121",
+                    "cms": "lfr",
+                    "userId": element["email"],
+                    "virtualhost": "localhost"
+                }
+            };
+            let extrainfo_objJsonStr = JSON.stringify(extrainfo);
+            let extrainfo_objJsonB64 = Buffer.from(extrainfo_objJsonStr).toString("base64");
+            var userinfo = {
+                "isGravatarEnabled": false,
+                "authorization_decision": "",
+                "roles": [{
+                    "role": "User",
+                    "id": "20109"
+                },
+                {
+                    "role": "app-admin",
+                    "id": "20110"
+                }
+                ],
+                "app_azf_domain": "",
+                "id": element["email"],
+                "app_id": "",
+                "email": element["email"],
+                "username": element["email"]
+            };
+            let userinfo_objJsonStr = JSON.stringify(userinfo);
+            let userinfo_objJsonB64 = Buffer.from(userinfo_objJsonStr).toString("base64");
+            var objToPost = { 'data': singleEntity, 'DYM': userinfo_objJsonB64, 'DYM_EXTRA': extrainfo_objJsonB64 };
+            listTopost.push(objToPost);
+        });
+        listTopost.forEach(function (obj, index) {
+            setTimeout(function () {
+                logger.info(nameFile + ' get/fromjson | import timeout axios :' + index + " " + JSON.stringify(obj.data));
+                postMyData(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA);
+                
+            }, 1000 * (index + 1));
+        });
+        return res.send(ret);
+        
+    })
+    .catch(error => {
+        console.error("ERROR | " + nameFile + " | get/fromjson ", error);
+        logger.error(nameFile + ' | get/fromjson : ' + error);
+    });
+    
+});
+
+function buildNestedObj(dottedObj) {
+    const result = {};
+
+    for (const key in dottedObj) {
+      if (dottedObj.hasOwnProperty(key)) {
+        const keys = key.split('.');
+        let currentLevel = result;
+  
+        for (let i = 0; i < keys.length; i++) {
+          const nestedKey = keys[i];
+          if (i === keys.length - 1) {
+            currentLevel[nestedKey] = dottedObj[key];
+          } else {
+            currentLevel[nestedKey] = currentLevel[nestedKey] || {};
+            currentLevel = currentLevel[nestedKey];
+          }
+        }
+      }
+    }
+
+    if(!result.properties) result.properties = {}
+    if(result.properties?.owner) result.properties.owner = {owner: result.properties.owner}
+    return result;
+}
+/******************************************/
 
 // '/api/dservice/api/v1/import/fromjson'
 router.get('/fromjson', util.checkIsAdmin, (req, res) => {
@@ -1233,7 +1413,6 @@ router.get('/updategid/:entype/:gid/:forceall?', util.checkIsAdmin, (req, res) =
 // '/api/dservice/api/v1/import/fromdymer'
 
 router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
-
     var ret = new jsonResponse();
     var id = req.params.id;
     var myfilter = { "_id": id };

@@ -3,7 +3,7 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
-                <h5 class="card-title">Import Entities</h5>
+                <h5 class="card-title">Import Entities from REST</h5>
                 <!-- <p class="card-category">Handcrafted by our friends from
                       
                         </p>-->
@@ -15,9 +15,9 @@
                         <div class="form-group">
                             <label>Method</label>
                             <select ng-model="method" class="form-control">
-                                            <option value="GET"  >GET</option>
-                                            <option value="POST" disabled>POST</option> 
-                                        </select>
+                                <option value="GET">GET</option>
+                                <option value="POST" disabled>POST</option>
+                            </select>
                         </div>
                     </div>
 
@@ -45,7 +45,8 @@
                         <div class="form-group">
                             <label>Mapping</label>
 
-                            <textarea rows="10" class="form-control" ng-model="mapping" style="min-height: 190px"></textarea>
+                            <textarea rows="10" class="form-control" ng-model="mapping"
+                                style="min-height: 190px"></textarea>
                             </textarea>
                         </div>
                     </div>
@@ -53,16 +54,9 @@
                 </div>
                 <div class="row">
                     <div class="update ml-auto mr-auto  ">
-                        <button type="submit" class="btn btn-primary btn-round" ng-click="importEntFl( )">Import</button>
+                        <button type="submit" class="btn btn-primary btn-round"
+                            ng-click="importEntFl( )">Import</button>
                     </div>
-                    <!---->
-                    <div class="update ml-auto mr-auto  ">
-                        <button type="submit" class="btn btn-primary btn-round" ng-click="importEntFl( )">Import from JSON</button>
-                    </div>
-                    <div class="update ml-auto mr-auto  ">
-                        <button type="submit" class="btn btn-primary btn-round" ng-click="importEntFl( )">Import from CSV</button>
-                    </div>
-                    <!---->
                 </div>
                 <div class="row">
                     <div class="col-12  ">
@@ -73,82 +67,160 @@
         </div>
 
     </div>
-    
-    <!---->
-    <!---->
-    <!---->
-    <!---->
+
 
     <div class="row-md-2">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">Export Entities</h5>
-                <!-- <p class="card-category">Handcrafted by our friends from
-                      
-                        </p>-->
-            </div>
-            <div class="card-body">
-
-                <div class="row">
-                    <div class="col-2 ">
-                        <div class="form-group">
-                            <label>Index</label>
-                            <select  class="form-control" ng-model="selectedEntity" ng-options="entity for entity in listEntities" ng-change="selectOptions()">
-                                        </select>
-                                        <p>You selected: {{selectedEntity}}</p>
-
-                        </div>
-                    </div>
-
-                    <div class="col-5" ng-show="selectedEntity">
-                        <div class="form-group">
-                            <label> Fields </label><small style="color: #8c8985;"> </small>
-                            <div ng-dropdown-multiselect="" options="myDropdownOptions" selected-model="myDropdownModel" extra-settings="myDropdownSettings" checkboxes="true"></div>
-                            <!-- <div ng-dropdown-multiselect="" options="myDropdownOptions" selected-model="myDropdownModel" extra-settings="FieldsSettings" checkboxes="true"></div> -->
-                        </div> 
-                    </div>
-                    <!-- <div class="col-3  "> 
-                        <div class="form-group">
-                            <label>Host</label>
-                            <input type="text" ng-model="host" class="form-control" placeholder="http://localhost">
-                        </div>
-                    </div>
-                    <div class="col-2  ">
-                        <div class="form-group">
-                            <label>Port</label>
-                            <input type="text" class="form-control" placeholder="8008" ng-model="port">
-                        </div>
-                    </div>
-                    <div class="col-5  ">
-                        <div class="form-group">
-                            <label>Path</label>
-                            <input type="text" class="form-control" placeholder="path" ng-model="path">
-                        </div>
-                    </div> -->
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Import Entities</h5>
                 </div>
-                <!-- <div class="row">
-                    <div class="col-12  ">
-                        <div class="form-group">
-                            <label>Mapping</label>
+                <div class="card-body">
 
-                            <textarea rows="10" class="form-control" ng-model="mapping" style="min-height: 190px"></textarea>
-                            </textarea>
+                    <div class="row">
+                        <div class="col-5 ">
+                            <div class="form-group">
+                                
+
+                                <table>
+                                    <tbody>
+
+                                        <tr>
+                                            
+                                            <td>
+                                                <select class="form-control" ng-model="selectedIndex"
+                                                    ng-options="entity for entity in listEntities"
+                                                    ng-change="getIndexStructure()">
+                                                    <option value="" disabled hidden selected>Index</option>
+                                                </select>
+
+                                            </td>
+                                            <td><input class="form-control" size="1" type="text" ng-model="separator"
+                                                    placeholder="seperator" /></td>
+
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input type="file" file-model="myFile" />
+                                            </td>
+                                            <td>
+                                                <button type="submit" class="btn btn-primary btn-round"
+                                                    ng-click="getFieldByCSV()"> Get
+                                                    Fields </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+
+
+                        <div class="col-12">
+                            <div class="form-group" ng-show="loadedCSV">
+                                <div>
+                                    <table class="table-fields">
+                                        <thead>
+                                            <tr>
+                                                <th> </th>
+                                                <th>Original Name</th>
+                                                <th>Mapped Name</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="element in originalFields">
+                                                <td><input type="checkbox" ng-model="element.checked"></td>
+                                                <td>{{ element.newName }}</td>
+
+                                                <td>
+                                                    <select class="form-control" ng-model="element.originalName"
+                                                        ng-options="item for item in csvFields"></select>
+
+                                                </td>
+      
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    
+                    <div class="form-group table-fields" ng-show="loadedCSV">
+                        <table>
+                            <tr>
+                                <td><input type="checkbox" ng-model="entityToRelation.checked"> Enable relation to: </td>
+                                <td><input class="form-control" type="text" ng-model="entityToRelation.index" ng-attr-placeholder="Type index to relate to"></td>
+                            </tr>
+                        </table>                                              
+                    </div>
+                    
+                    <div class="row">
+ 
+                            <div class="update ml-auto mr-auto  ">
+                                <button type="submit" class="btn btn-primary btn-round" ng-click="importCSVFile()">Import
+                                    CSV</button>
+                            </div>
+                            </div>
 
-                </div> -->
-                <div class="row">
-                    <div class="update ml-auto mr-auto  ">
-                        <button type="submit" class="btn btn-primary btn-round" ng-click="ExportJSON()">Export JSON</button>
+
+
+                    <div class="row">
                     </div>
-                    <div class="update ml-auto mr-auto  ">
-                        <button type="submit" class="btn btn-primary btn-round" ng-click="ExportCSV()">Export CSV</button>
-                    </div>
-                </div>
-                <div class="row">
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+
+    <div class="row-md-2">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Export Entities</h5>
+                    <!-- <p class="card-category">Handcrafted by our friends from
+                      
+                        </p>-->
+                </div>
+                <div class="card-body">
+
+                    <div class="row">
+                        <div class="col-5 ">
+                            <div class="form-group">
+                                <label>Index</label>
+                                <select class="form-control" ng-model="selectedEntity"
+                                    ng-options="entity for entity in listEntities" ng-change="selectOptions()">
+                                </select>
+                                <p>You selected: {{selectedEntity}}</p>
+
+                            </div>
+                        </div>
+
+                        <div class="col-5" ng-show="selectedEntity">
+                            <div class="form-group">
+                                <label> Fields </label><small style="color: #8c8985;"> </small>
+                                <div ng-dropdown-multiselect="" options="myDropdownOptions"
+                                    selected-model="myDropdownModel" extra-settings="myDropdownSettings"
+                                    checkboxes="true"></div>
+                                
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="update ml-auto mr-auto  ">
+                            <button type="submit" class="btn btn-primary btn-round" ng-click="ExportJSON()">Export
+                                JSON</button>
+                        </div>
+                        <div class="update ml-auto mr-auto  ">
+                            <button type="submit" class="btn btn-primary btn-round" ng-click="ExportCSV()">Export
+                                CSV</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

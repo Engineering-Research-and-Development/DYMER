@@ -58,8 +58,25 @@ angular.module("userApp").factory('exportEntities', ['$http', function ($http) {
                     console.log(response);
                 });
         },
-        test: function() {
-            console.log("chiamata la funzione di test")
+        importJSONFormat: function(baseContextPath, obj, file) {
+            console.log("chiamata la funzione importo di JSON")
+
+            let data = {
+                obj: obj,
+                file: file
+            };
+
+            Upload.upload({
+                url: `${baseContextPath}//api/dservice/api/v1/import/fromjson?filename=${file}&type=organization`,
+                data: data
+            }).then(function (response) {
+                // Gestisci la risposta dal server dopo l'upload
+                console.log('Upload completato con successo:', response.data);
+            }).catch(function (error) {
+                // Gestisci gli errori durante l'upload
+                console.error('Errore durante l\'upload:', error);
+            });
+        
         }
     }
 }])

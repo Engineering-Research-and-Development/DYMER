@@ -27,5 +27,6 @@ angular.module("userApp", [
     "syncCtrl",
     "mclgsCtrl",
     "workflowCtrl",
-    "angularjs-dropdown-multiselect"   
+    "angularjs-dropdown-multiselect",
+    "fileModel"
 ]);
