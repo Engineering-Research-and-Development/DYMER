@@ -22,8 +22,7 @@ var db;
 const mongoURI = util.mongoUrl();
 console.log(nameFile + ' | mongoURI :', JSON.stringify(mongoURI));
 logger.info(nameFile + " | mongoURI: " + JSON.stringify(mongoURI));
-mongoose
-    .connect(mongoURI, {
+mongoose.connect(mongoURI, {
         //  useCreateIndex: true,
         useNewUrlParser: true,
         useUnifiedTopology: true
@@ -54,6 +53,7 @@ mongoose
         console.error("ERROR | " + nameFile + ` | Error connecting to mongo! Database  : "${mongoURI}"`, err);
         logger.error(nameFile + ` | Error connecting to mongo! Database name: "${mongoURI}" ` + err);
     });
+
 // Validator function
 function isValidObjectId(id) {
     if (ObjectId.isValid(id)) {
@@ -63,6 +63,7 @@ function isValidObjectId(id) {
     }
     return false;
 }
+
 /*
  *************************************************************************************************************
  *************************************************************************************************************
@@ -74,6 +75,7 @@ function isValidObjectId(id) {
  */
 
 router.get('/mongostate', (req, res) => {
+
     let ret = new jsonResponse();
     let dbState = [{
             value: 0,
@@ -103,6 +105,7 @@ router.get('/mongostate', (req, res) => {
     ret.setSuccess(true);
     return res.send(ret);
 });
+
 var getfilesArrays = function(er) {
     return new Promise(function(resolve, reject) {
         var attachments = [];
@@ -125,8 +128,8 @@ var getfilesArrays = function(er) {
             resolve(ret_json);
         });
     });
-
 }
+
 var recFile = function(file_id) {
     return new Promise(function(resolve, reject) {
         //console.log('file_id', file_id);
@@ -173,6 +176,7 @@ var recFile = function(file_id) {
  */
 
 router.get('/', (req, res) => {
+
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
@@ -197,6 +201,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/content/:fileid', function(req, res, next) {
+
     var file_id = req.params.fileid;
     //console.log(nameFile + ' | get/content/:fileid |  fileid :', file_id);
     logger.info(nameFile + '  | get/content/:fileid |  fileid :' + file_id);
@@ -223,6 +228,7 @@ router.get('/content/:fileid', function(req, res, next) {
 });
 
 router.post('/', util.checkIsAdmin, function(req, res) {
+
     var ret = new jsonResponse();
     upload(req, res, function(err) {
         if (err) {
@@ -277,6 +283,7 @@ router.post('/', util.checkIsAdmin, function(req, res) {
 });
 
 router.post('/create', util.checkIsAdmin, function(req, res) {
+
     var ret = new jsonResponse();
     upload(req, res, function(err) {
         if (err) {
@@ -310,6 +317,7 @@ router.post('/create', util.checkIsAdmin, function(req, res) {
 });
 
 router.post('/addAsset', util.checkIsAdmin, function(req, res) {
+
     var ret = new jsonResponse();
     upload(req, res, function(err) {
         if (err) {
@@ -348,6 +356,7 @@ router.post('/addAsset', util.checkIsAdmin, function(req, res) {
 });
 
 router.post('/update', util.checkIsAdmin, function(req, res) {
+
     var ret = new jsonResponse();
     upload(req, res, function(err) {
         if (err) {
@@ -389,6 +398,7 @@ router.post('/update', util.checkIsAdmin, function(req, res) {
 });
 
 router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
+
     var ret = new jsonResponse();
     upload(req, res, function(err) {
         if (err) {
@@ -428,7 +438,7 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
                     console.error("ERROR | " + nameFile + ' | post/updateAsset | delete  : ', err);
                     logger.error(nameFile + ' | post/updateAsset | delete  : ' + err);
                     ret.setMessages("Template Error");*/
-                     /*MG - Se l'asset non viene trovato, accedo per recuperare il suo id aggiornato, 
+                     /*MG - Se l'asset non viene trovato, accedo per recuperare il suo id aggiornato,
                            in modo da poterlo eliminare
                     INIZIO MODIFICHE*/
                     //ret.setSuccess(false);
@@ -477,6 +487,7 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
 });
 
 router.delete('/:id', util.checkIsAdmin, (req, res) => {
+
     var ret = new jsonResponse();
     var id = req.params.id;
     var myfilter = { "_id": id };
@@ -502,6 +513,7 @@ router.delete('/:id', util.checkIsAdmin, (req, res) => {
 });
 
 router.delete('/:id/:fid', util.checkIsAdmin, (req, res) => {
+
     var ret = new jsonResponse();
     var id = req.params.id;
     var fid = req.params.fid;

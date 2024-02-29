@@ -15,12 +15,8 @@ const axios = require('axios');
 const fs = require('fs');
 var router = express.Router();
 const multer = require('multer');
-const {
-    json
-} = require('body-parser');
-const {
-    Console
-} = require('console');
+const { json } = require('body-parser');
+const { Console } = require('console');
 
 require("../models/workflow/DymerWorkFlow");
 const WFRule = mongoose.model("DymerWorkflow");

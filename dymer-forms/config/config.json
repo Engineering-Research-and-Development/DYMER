@@ -31,7 +31,7 @@
                 "app_desc": "dymer models",
                 "protocol": "http",
                 "ip": "kms_forms",
-			    "context-path": "",
+                "context-path": "",
                 "port": 4747,
                 "ip_port": "kms_forms:4747",
                 "repository": {

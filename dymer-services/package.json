@@ -2,12 +2,14 @@
     "name": "dymer-services",
     "version": "1.0.0",
     "main": "server.js",
+    "author": "marco romano",
+    "license": "ISC",
+    "description": "",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "node server.js"
+        "start": "node server.js",
+        "dev": "nodemon server.js"
     },
-    "author": "Marco Romano",
-    "license": "ISC",
     "dependencies": {
         "axios": "0.24.0",
         "body-parser": "1.19.0",
@@ -27,8 +29,8 @@
         "mv": "2.1.1",
         "node-cron": "3.0.0",
         "node-schedule": "2.0.0",
+        "nodemon": "2.0.14",
         "path": "0.12.7",
         "winston": "3.3.3"
-    },
-    "description": ""
+    }
 }

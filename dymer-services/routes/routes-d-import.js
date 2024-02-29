@@ -166,9 +166,9 @@ router.post('/cronjob/:id?', util.checkIsAdmin, function(req, res) {
                 return res.send(ret);
             }
         })
-
     }
 });
+
 router.put('/cronjob/:id', util.checkIsAdmin, (req, res) => {
     //console.log("Put cronjob Roles");
     let id = req.params.id;
@@ -199,6 +199,7 @@ router.put('/cronjob/:id', util.checkIsAdmin, (req, res) => {
         }
     );
 });
+
 router.delete('/cronjob/:id', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     var id = req.params.id;
@@ -387,7 +388,6 @@ function appendFormdataFiles(FormData, data, name, folder) {
         var index = 0
         if (data.hasOwnProperty("filename") && data.hasOwnProperty("bucketName")) {
             let fnametotal = folder + data.filename;
-
             FormData.append(name, fs.createReadStream(fnametotal));
         } else {
             for (var key in data) {
@@ -446,8 +446,8 @@ function postMyData(el, index, DYM, DYM_EXTRA) {
             console.log("Error__________", error);
             logger.error(nameFile + ' | postMyData : ' + error);
         });
-
 }
+
 var downloadFile = function(url, dest, filename) {
     return new Promise(function(resolve, reject) {
         if (url.startsWith("https")) {
@@ -479,12 +479,12 @@ var downloadFile = function(url, dest, filename) {
                 console.log('Error: | downloadFile ', err.message);
             });
         }
-
     }).catch(function(err) {
         console.error("ERROR | " + nameFile + " | downloadFile ", err);
         logger.error(nameFile + ' | downloadFile : ' + err);
     });
 }
+
 const removeDir = function(path) {
     if (fs.existsSync(path)) {
         const files = fs.readdirSync(path)
@@ -505,7 +505,6 @@ const removeDir = function(path) {
         logger.error(nameFile + ' | removeDir | Directory path not found  : ' + path);
     }
 }
-
 
 function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action, fileurl) {
     var posturl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/" + index;
@@ -592,7 +591,7 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
             'Referer': 'http://localhost/',
             'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
             'extrainfo': `${extrainfo_objJsonB64_admin}`,
-        } 
+        }
     };
     axios(config).then(response => {
         /*Se sono presenti ne acquisisco id e titolo*/
@@ -605,8 +604,8 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
                 modulesIds.push(titleId);
                 titleId = {};
             //}
-        }); 
-    });
+        });
+    })
     /*Recupero i moduli dalla sorgente*/
     config = {
         method: 'GET',
@@ -625,8 +624,8 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
                     if (element.contentType == "text/html"){
                         /*Se i moduli HTML sono già presenti nella destinazione, li elimino*/
                         if (modulesIds.length > 0){
-                            modulesIds.forEach(titleId => {    
-                                if (data.title == titleId.title && (data.properties.changed > titleId.changed || forceimport)){ 
+                            modulesIds.forEach(titleId => {
+                                if (data.title == titleId.title && (data.properties.changed > titleId.changed || forceimport)){
                                     var config = {
                                         method: 'delete',
                                         url: localApiUrl + titleId.id,
@@ -639,7 +638,7 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
                                         }
                                     };
                                     axios(config).then(response1 => {
-                                        console.log("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - HTML DELETE - response ===>", response1);   
+                                        console.log("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - HTML DELETE - response ===>", response1);
                                         data.files.forEach(element => {
                                             /*Elimino js e css*/
                                             if (element.contentType != "text/html"){
@@ -656,35 +655,35 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
                                                 };
                                                 axios(config).then(response3 => {
                                                     console.log("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - " +element.contentType+" DELETE response ===>", response3);
-                                                })   
+                                                })
                                                 .catch(error => {
                                                     console.error("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - " +element.contentType+" DELETE error ===>", error);
-                                                }) 
-                                            }  
+                                                })
+                                            }
                                         });
                                     })
                                     .catch(error => {
                                         console.error("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - HTML DELETE - error ===>", error);
-                                    })       
+                                    })
                                     /*Creazione HTML, JS e CSS*/
-                                    createModules(formTemplate, userinfo_objJsonB64_admin, extrainfo_objJsonB64_admin, 
+                                    createModules(formTemplate, userinfo_objJsonB64_admin, extrainfo_objJsonB64_admin,
                                                   originalrelquery, newentityType, data, element, localApiUrl);
-                                }   
+                                }
                             });
                         }else{
                             /*Creazione HTML, JS e CSS*/
-                            createModules(formTemplate, userinfo_objJsonB64_admin, extrainfo_objJsonB64_admin, 
+                            createModules(formTemplate, userinfo_objJsonB64_admin, extrainfo_objJsonB64_admin,
                                           originalrelquery, newentityType, data, element, localApiUrl);
                         }
                     }
                 });
             }
-        });      
-    });   
-} 
+        });
+    });
+}
 
 /*Creazione HTML, JS e CSS*/
-function createModules(formTemplate, userinfo_objJsonB64_admin, extrainfo_objJsonB64_admin, 
+function createModules(formTemplate, userinfo_objJsonB64_admin, extrainfo_objJsonB64_admin,
                        originalrelquery, newentityType, data, element, localApiUrl){
     /*Creazione HTML*/
     var infoData = "";
@@ -711,7 +710,7 @@ function createModules(formTemplate, userinfo_objJsonB64_admin, extrainfo_objJso
         data: postData
     };
     axios(config).then(response1 => {
-        console.log("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - HTML - response ===>", response1);   
+        console.log("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - HTML - response ===>", response1);
         /*Recupero gli id dei moduli appena creati*/
         config = {
             method: 'GET',
@@ -748,21 +747,21 @@ function createModules(formTemplate, userinfo_objJsonB64_admin, extrainfo_objJso
                         };
                         axios(config).then(response3 => {
                             console.log("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - " +element.contentType+" response ===>", response3);
-                        })   
+                        })
                         .catch(error => {
                             console.error("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - " +element.contentType+" error ===>", error);
                         })
                     }
                 });
             });
-        })      
+        })
         .catch(error => {
             console.error("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - Read Id - error ===>", error);
         })
-    })      
+    })
     .catch(error => {
             console.error("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - HTML - error ===>", error);
-    })  
+    })
 }
 /*MG - Funzione di import MODEL e TEMPLATES - Fine*/
 
@@ -780,7 +779,6 @@ async function latLongFromCountry(list, el) {
             resolve(undefined);
     });
 }
-
 
 // takes a {} object and returns a FormData object
 var objectToFormData = function(obj, form, namespace) {
@@ -806,6 +804,7 @@ var objectToFormData = function(obj, form, namespace) {
     }
     return fd;
 };
+
 //router.get('/updategeo/:entype', util.checkIsAdmin, (req, res) => {
 router.get('/updategeo/:entype', (req, res) => {
     logger.info(nameFile + '| get/updategeo');
@@ -1080,7 +1079,9 @@ router.get('/generateuser', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     return res.send(ret);
 });
+
 router.get('/updategid/:entype/:gid/:forceall?', util.checkIsAdmin, (req, res) => {
+
     logger.info(nameFile + '| get/updategid');
     var entype = req.params.entype;
     let forceall = (!req.params.key) ? false : true;
@@ -1160,7 +1161,6 @@ router.get('/updategid/:entype/:gid/:forceall?', util.checkIsAdmin, (req, res) =
                         updategid = (element.properties.owner.gid == "1" || element.properties.owner.gid == 1 || element.properties.owner.gid == 0 || element.properties.owner.gid == "0" || element.properties.owner.gid == "") ? true : false;
                     }
                 if (updategid) {
-
                     var singleEntity = {
                         "data": {
                             "properties": {
@@ -1202,11 +1202,10 @@ router.get('/updategid/:entype/:gid/:forceall?', util.checkIsAdmin, (req, res) =
                     let userinfo_objJsonStr = JSON.stringify(userinfo);
                     let userinfo_objJsonB64 = Buffer.from(userinfo_objJsonStr).toString("base64");
                     var objToPost = { 'id': element._id, 'data': singleEntity, 'DYM': userinfo_objJsonB64, 'DYM_EXTRA': extrainfo_objJsonB64 };
-                    list.push(objToPost);
+                    list.pushv(objToPost);
                 }
-
-
             });
+
             const basepatchurl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/";
             logger.info(nameFile + ' | /updategid/:entype | list :' + JSON.stringify(list));
             list.forEach(function(obj, index) {
@@ -1231,19 +1230,17 @@ router.get('/updategid/:entype/:gid/:forceall?', util.checkIsAdmin, (req, res) =
                             console.log("Error__________", error);
                             logger.error(nameFile + '| /updategid/:entype | postMyData : ' + error);
                         });
-
-
                 }, 1500 * (index + 1));
             });
             return res.send(ret);
-        })
-        .catch(error => {
+
+        }).catch(error => {
             console.error("ERROR | " + nameFile + " | get/updategid ", error);
             logger.error(nameFile + ' | get/updategid : ' + error);
         });
 });
-// '/api/dservice/api/v1/import/fromdymer'
 
+// '/api/dservice/api/v1/import/fromdymer'
 router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
 
     var ret = new jsonResponse();
@@ -1386,8 +1383,6 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
                                                 }];
                                             }
                                         }
-
-
                                     });
                                 }
                             }
@@ -1414,7 +1409,7 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
                                         }];
                                     }
                                     element._source.relation = element.relation;
-                                    //continuo il flusso da qua 
+                                    //continuo il flusso da qua
                                 }).catch(error => {
                                     console.error("ERROR | " + nameFile + " | get/fromdymer/:id ", id, error);
                                     logger.error(nameFile + " | get/fromdymer/:id " + id + " " + error);
@@ -1465,7 +1460,6 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
                                 "email": element._source.properties.owner["uid"],
                                 "username": element._source.properties.owner["uid"]
                             };
-
 
                             let userinfo_objJsonStr = JSON.stringify(userinfo);
                             let userinfo_objJsonB64 = Buffer.from(userinfo_objJsonStr).toString("base64");
@@ -1529,7 +1523,7 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
                                     });
                                 } catch (error) {
                                     console.log("error: ", error);
-                                }    
+                                }
                             }else{
                                 listTopost.forEach(function(obj, index) {
                                     setTimeout(function() {
@@ -1591,6 +1585,7 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
         }
     })
 });
+
 router.get('/fromdymer_original/:id', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     var id = req.params.id;
@@ -1722,7 +1717,7 @@ router.get('/fromdymer_original/:id', util.checkIsAdmin, (req, res) => {
                                         }];
                                     }
                                     element._source.relation = element.relation;
-                                    //continuo il flusso da qua 
+                                    //continuo il flusso da qua
                                 }).catch(error => {
                                     console.error("ERROR | " + nameFile + " | get/fromdymer/:id ", id, error);
                                     logger.error(nameFile + " | get/fromdymer/:id " + id + " " + error);
@@ -1838,4 +1833,5 @@ router.get('/fromdymer_original/:id', util.checkIsAdmin, (req, res) => {
         }
     })
 });
+
 module.exports = router;

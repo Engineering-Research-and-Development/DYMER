@@ -26,8 +26,8 @@ const mongoURI = util.mongoUrl();
 
 console.log(nameFile + ' | mongoURI :', JSON.stringify(mongoURI));
 logger.info(nameFile + " | mongoURI: " + JSON.stringify(mongoURI));
-mongoose
-    .connect(mongoURI, {
+
+mongoose.connect(mongoURI, {
         // useCreateIndex: true,
         useNewUrlParser: true,
         useUnifiedTopology: true
@@ -58,7 +58,6 @@ mongoose
         console.error("ERROR | " + nameFile + ` | Error connecting to mongo! Database name: "${mongoURI}"`, err);
         logger.error(nameFile + ` | Error connecting to mongo! Database name: "${mongoURI}" ` + err);
     });
-
 
 router.get('/mongostate', (req, res) => {
     let ret = new jsonResponse();
@@ -188,6 +187,7 @@ router.get('/dettagliomodel', [util.checkIsDymerUser], (req, res) => {
         logger.error(nameFile + ' | get/dettagliomodel | queryFind : ' + err);
     });
 });
+
 router.get('/', [util.checkIsDymerUser], (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -259,7 +259,7 @@ router.post('/', util.checkIsAdmin, function(req, res) {
             author: data.author,
             description: data.description,
             posturl: data.posturl,
-            instance: data.instance, 
+            instance: data.instance,
             /*MG - Cron - Funzione di import MODEL/TEMPLATES - Aggiungo la struttura*/
             structure: data.structure,
             files: files_arr
@@ -404,6 +404,7 @@ router.post('/update', util.checkIsAdmin, function(req, res) {
         );
     });
 });
+
 router.post('/updatestructure', util.checkIsAdmin, function(req, res) {
     var ret = new jsonResponse();
     upload(req, res, function(err) {
@@ -466,7 +467,7 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
         var myfilter = { "_id": mongoose.Types.ObjectId(data.pageId) };
         var bulk = Model.collection.initializeOrderedBulkOp();
         bulk.find(myfilter).updateOne({ "$pull": { "files": mongoose.Types.ObjectId(data.assetId)},
-                                        /*MG - Inserito aggiornamento data di modifica*/                                
+                                        /*MG - Inserito aggiornamento data di modifica*/
                                          "$set":  { "properties.changed": new Date().toISOString()}
                                       });
         bulk.find(myfilter).updateOne({ "$push": { "files": mongoose.Types.ObjectId(element.id) } });
@@ -490,7 +491,7 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
                     ret.setExtraData({ newAssetId: element.id });
                     return res.send(ret);
                 }).catch(function(err) {
-                     /*MG - Se l'asset non viene trovato, accedo per recuperare il suo id aggiornato, 
+                     /*MG - Se l'asset non viene trovato, accedo per recuperare il suo id aggiornato,
                            in modo da poterlo eliminare
                     INIZIO MODIFICHE*/
                     //ret.setSuccess(false);
@@ -507,7 +508,7 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
                                     if (file.filename == element.filename && !found){
                                         found = true;
                                         var myquery = { "$pull": { "files": mongoose.Types.ObjectId(file._id) },
-                                                         /*MG - Inserito aggiornamento data di modifica*/                                
+                                                         /*MG - Inserito aggiornamento data di modifica*/
                                                          "$set":  { "properties.changed": new Date().toISOString()}
                                                       };
                                         Model.updateOne(myfilter, myquery,

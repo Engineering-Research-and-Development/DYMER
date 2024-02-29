@@ -14,8 +14,7 @@
     <title>
         DYnamic Information ModElling & Rendering
     </title>
-    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
-        name='viewport' />
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
     <!--     Fonts and icons     -->
     <!--<script src="public/assets/wsbuilder/js/popper.min.js"></script>-->
     <!-- <script src="public/assets/auth/js/keycloak.js"></script>-->
@@ -64,6 +63,7 @@
     <script src="public/app/controllers/relationsCtrl.js"></script>
     <script src="public/app/controllers/workflowCtrl.js"></script>
     <script src="public/app/directive/angularjs-dropdown-multiselect.js"></script>
+	<script src="public/app/controllers/swaggerCtrl.js"></script>
 
     <link href="public/assets/css/paper-dashboard.css" rel="stylesheet" />
     <link href="public/assets/css/json-viewer.css" rel="stylesheet">
@@ -366,6 +366,10 @@
                                         <p>Redis-Cache</p>
                                     </a>
                                 </li>
+								<li class=""> <a class="" href="swaggerapi"><i class="nc-icon nc-bullet-list-67 lg "></i>
+									<p>Swagger API</p>
+								</a>
+								</li>
                             </ul>
                         </div>
                     </li>
@@ -374,8 +378,7 @@
         </div>
         <div class="main-panel">
             <!-- Navbar -->
-            <nav class="navbar navbar-expand-lg navbar-absolute fixed-top navbar-transparent"
-                ng-hide="!globals.loggedIn">
+            <nav class="navbar navbar-expand-lg navbar-absolute fixed-top navbar-transparent" ng-hide="!globals.loggedIn">
                 <div class="container-fluid">
                     <div class="navbar-wrapper">
                         <div class="navbar-toggle">
@@ -385,16 +388,14 @@
                                 <span class="navbar-toggler-bar bar3"></span>
                             </button>
                         </div>
-                        <span onclick="$('#contfullp').toggleClass('full-page');" class="full_normal_zoom"
-                            ng-show="globals.loggedIn">
+                        <span onclick="$('#contfullp').toggleClass('full-page');" class="full_normal_zoom" ng-show="globals.loggedIn">
                             <i class="nc-icon nc-minimal-left"></i>
 
                         </span>
                         <span class="navbar-brand">DYnamic information ModElling & Rendering</span>
                     </div>
-
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
-                        aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
+                    
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-bar navbar-kebab"></span>
                         <span class="navbar-toggler-bar navbar-kebab"></span>
                         <span class="navbar-toggler-bar navbar-kebab"></span>
@@ -423,8 +424,7 @@
                                 </a>
                             </li>-->
                             <li class="nav-item btn-rotate dropdown" ng-show="globals.loggedIn">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i class="nc-icon nc-bell-55"></i>
                                     <p>
                                         <span class="d-lg-none d-md-block">Some Actions</span>

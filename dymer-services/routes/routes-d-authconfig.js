@@ -23,6 +23,7 @@ router.use(bodyParser.urlencoded({
     extended: false,
     limit: '100MB'
 }));
+
 /*
 const mongoURI = util.mongoUrlForm();
 console.log(nameFile + ' | mongoURI :', JSON.stringify(mongoURI));
@@ -41,7 +42,9 @@ mongoose
         console.error("ERROR | " + nameFile + ` | Error connecting to mongo! Database name: "${x.connections[0].name}"`, err);
     });
 */
+
 router.get('/', util.checkIsAdmin, (req, res) => {
+
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -62,10 +65,10 @@ router.get('/', util.checkIsAdmin, (req, res) => {
     })
 });
 
-
 router.get('/userinfo', (req, res) => {
+
     var ret = new jsonResponse();
-    let data = req.body;;
+    let data = req.body;
     var mygid = 0;
     let extradata = {};
     if (data.dymtoExtraInfo != undefined && data.dymtoExtraInfo != 'undefined' && data.dymtoExtraInfo != null && data.dymtoExtraInfo != 'null') {
@@ -194,21 +197,21 @@ router.get('/userinfo', (req, res) => {
                     //urs_gid = decoded.extrainfo.groupId;
                     // if (decoded.extrainfo != undefined)
                     //  objuser.extrainfo = decoded.extrainfo;
-                    
+
                     let listrRoles= decoded.roles ;
                     //console.log('listrRoles', listrRoles);
                     listrRoles.forEach(element => {
                         let trole=""
                          if(element.hasOwnProperty("role"))
-                         trole=element.role; 
+                         trole=element.role;
                        else
                        trole=element  ;
                        if(! objuser.roles.includes(trole))
                        objuser.roles.push(trole);
                     });
-                      
-                    
-                    
+
+
+
                   //  console.log('objuser.roles',objuser.roles);
                     objuser.username = decoded.username;
                 }
@@ -299,6 +302,7 @@ router.get('/userinfo', (req, res) => {
 });
 
 router.post('/', util.checkIsAdmin, function(req, res) {
+
     //router.post('/', function(req, res) {
     let id = req.params.id;
     let callData = util.getAllQuery(req);
@@ -322,7 +326,9 @@ router.post('/', util.checkIsAdmin, function(req, res) {
         }
     })
 });
+
 router.put('/:id', util.checkIsAdmin, (req, res) => {
+
     let id = req.params.id;
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -350,7 +356,9 @@ router.put('/:id', util.checkIsAdmin, (req, res) => {
         }
     );
 });
+
 router.delete('/:id', util.checkIsAdmin, (req, res) => {
+
     var ret = new jsonResponse();
     var id = req.params.id;
     var myfilter = { "_id": id };
@@ -370,4 +378,5 @@ router.delete('/:id', util.checkIsAdmin, (req, res) => {
         }
     })
 });
+
 module.exports = router;

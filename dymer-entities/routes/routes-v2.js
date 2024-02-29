@@ -38,8 +38,7 @@ logger.info(nameFile + " | mongoURI: " + JSON.stringify(mongoURI));
 //const connection = mongoose.createConnection(mongoURI, { useNewUrlParser: true });
 let fs = require('fs')
 
-mongoose
-    .connect(mongoURI, {
+mongoose.connect(mongoURI, {
         // useCreateIndex: true,
         useNewUrlParser: true,
         useUnifiedTopology: true
@@ -73,7 +72,7 @@ mongoose
     });
 //let redisUrl = 'redis://cache:6379'
 //redisClient.init()
-  redisEnabled = global.configService.cache ? global.configService.cache.isEnabled : false;
+redisEnabled = global.configService.cache ? global.configService.cache.isEnabled : false;
 console.log("redisEnabled", redisEnabled)
 redisClient.init(redisEnabled)
 //let cachedRelations;
@@ -102,6 +101,7 @@ var upload = multer({ storage: storageEngine }).any();
 function replaceAll(str, cerca, sostituisci) {
     return str.split(cerca).join(sostituisci);
 }
+
 var auth = 'elastic:changeme';
 var port = global.configService.repository.entity.port;
 var protocol = global.configService.repository.entity.protocol;
@@ -299,9 +299,10 @@ router.patch("/redistoggle", async(req, res) => {
     res.status(200);
     ret.setSuccess(true);
     return res.send(ret);
-})
+});
+
 router.get('/redisstate', util.checkIsAdmin, async(req, res) => {
-    let ret = new jsonResponse(); 
+    let ret = new jsonResponse();
     let redisstate = 0;
     let dbState = [{
             value: 0,
@@ -328,7 +329,7 @@ router.get('/redisstate', util.checkIsAdmin, async(req, res) => {
             label: "Disabled",
             css: "text-warning"
         }
-    ]; 
+    ];
     if (!redisEnabled) {
         ret.setMessages("redis state");
         redisstate = 4;
@@ -350,17 +351,19 @@ router.get('/redisstate', util.checkIsAdmin, async(req, res) => {
     ret.setSuccess(true);
     return res.send(ret);
 });
+
 async function cacheRelations(isRedisActive) {
     await redisClient.emptyCache(true)
     let cachedRelations = await retrieveAllRelations();
     await redisClient.setRelationKey(cachedRelations[1])
     await redisClient.cancelKey(await redisClient.getRelationKey(), isRedisActive)
-    
+
     let response = JSON.stringify(cachedRelations[0])
     let query = cachedRelations[1]
     await redisClient.writeAllRelations(response, query, isRedisActive) /**/
     //await redisClient.writeAllRelations(JSON.stringify(cachedRelations, isRedisActive)
 }
+
 /*
  *************************************************************************************************************
  *************************************************************************************************************
@@ -378,9 +381,7 @@ router.post('/invalidatecache/:index', util.checkIsAdmin, async(req, res) => {
     ret.setSuccess(true);
     //  ret.setExtraData({ "log": err.stack });
     return res.send(ret);
-
 });
-
 
 router.post('/invalidateallcache', util.checkIsAdmin, async(req, res) => {
     await redisClient.emptyCache(true);
@@ -501,7 +502,7 @@ var recFile = function(file_id) {
 function checkRelation(params, elIndex, elId) {
     var _id1 = elId;
     //console.log('checkRelation', params, elIndex);
-    // console.log(nameFile + '| checkRelation | params:', JSON.stringify(params), elIndex);
+    //console.log(nameFile + '| checkRelation | params:', JSON.stringify(params), elIndex);
     logger.info(nameFile + '| checkRelation | params :' + JSON.stringify(params) + " , " + elIndex);
     let datasetRel = [];
 
@@ -526,7 +527,7 @@ function checkRelation(params, elIndex, elId) {
                     "_id2": singleId2,
                     _index2: myKey
                 });
-            //console.log("avvio controllo", qparams, JSON.stringify(qparams)); 
+            //console.log("avvio controllo", qparams, JSON.stringify(qparams));
         });
     }
     let qparams = {};
@@ -594,7 +595,7 @@ function checkRelation_original(params, elIndex, elId) {
             qparams["index"] = "entity_relation";
             qparams["type"] = "entity_relation";
             _id2_list.forEach(singleId2 => {
-                // qparams = {}; 
+                // qparams = {};
                 /* qparams["body"] = {
                      query: {
                          "bool": {
@@ -605,7 +606,7 @@ function checkRelation_original(params, elIndex, elId) {
                              }]
                          }
                      }
-     
+
                  };*/
                 qparams["body"] = {
                     "bool": {
@@ -675,7 +676,7 @@ function controlAndCreateRel_V2(qparams, datasetRel) {
     //  client.indices.exists({ index: "entity_relation" }).then((isExists) => {
     client.indices.exists({ index: "entity_relation" }, function(err_, resp_, status_) {
         if (status_ == 200) {
-            //  if (isExists) { // 
+            //  if (isExists) { //
             client.search(parm, function(err, resp, status) {
                 //console.log("controlAndCreateRel list", resp, JSON.stringify(qparams));
                 if (resp.hits == undefined) {
@@ -711,9 +712,7 @@ function controlAndCreateRel_V2(qparams, datasetRel) {
              datasetRel.forEach(element => {
                  createRelation(element);
              });*/
-
         }
-
     });
 }
 
@@ -724,7 +723,7 @@ function controlAndCreateRel_original(qparams, newRel) {
     //  client.indices.exists({ index: "entity_relation" }).then((isExists) => {
     client.indices.exists({ index: "entity_relation" }, function(err_, resp_, status_) {
         if (status_ == 200) {
-            //  if (isExists) { // 
+            //  if (isExists) { //
             client.search(parm, function(err, resp, status) {
                 //console.log("controlAndCreateRel list", resp, JSON.stringify(qparams));
                 if (resp.hits == undefined) {
@@ -753,7 +752,6 @@ function controlAndCreateRel_original(qparams, newRel) {
             //console.log('NON ESISTE');
             createRelation(newRel);
         }
-
     });
     /*.catch((err) => {
             console.log("error controlAndCreateRel", err);
@@ -863,7 +861,7 @@ function deleteRelation(_id1, _id2) {
                 }
 
             };
-            /* var params = { index: "entity_relation" };  
+            /* var params = { index: "entity_relation" };
              params["body"] = {
                  "query": {
                      "bool": {
@@ -961,7 +959,6 @@ function deleteRelationByIndex(index) {
             }
         }
     };
-
     client.indices.exists({ index: "entity_relation" },  function(err_, resp_, status_) {
         if (status_ == 200) {
             client.deleteByQuery({
@@ -978,7 +975,6 @@ function deleteRelationByIndex(index) {
                         await redisClient.removeRelationsFromCacheByIndex(index, redisEnabled)}
                 }
             });
-
         } else
             return true;
     });
@@ -1036,12 +1032,10 @@ function deleteRelationByIndex_original(index) {
             });
         } else
             return true;
-
     });
-
-
 }
-//toDelete
+
+//TODO toDelete
 function deleteRelationOneEntity(_id1) {
     let params = { index: "entity_relation" };
     let qrdelete = {
@@ -1087,7 +1081,6 @@ function deleteRelationOneEntity(_id1) {
             });
             return true;
         } else {
-
             return false;
         }
     }).catch((err) => {
@@ -1127,7 +1120,6 @@ function deleteRelationOneEntity_original(_id1) {
     params["body"].size = 10000;
     client.indices.exists({ index: "entity_relation" }).then((isExists) => {
         if (isExists) {
-
             client.search(params).then(function(resp) {
                 resp["hits"].hits.forEach((element) => {
                     //console.log(nameFile + '| deleteRelationOneEntity | success:', JSON.stringify(element));
@@ -1147,7 +1139,6 @@ function deleteRelationOneEntity_original(_id1) {
                             logger.error(nameFile + '| deleteRelationOneEntity | delete  : ' + err);
                         }
                     );
-
                 });
             }).catch(function(error) {
                 console.error("ERROR | " + nameFile + '| deleteRelationOneEntity :', delarams, error);
@@ -1156,15 +1147,12 @@ function deleteRelationOneEntity_original(_id1) {
             });
             return true;
         } else {
-
             return false;
         }
     }).catch((err) => {
         console.log(err);
         logger.error(nameFile + '| deleteRelationOneEntity   : ' + err);
     });
-
-
 }
 
 function deleteRelationOneEntityAndIndex(_id, _index) {
@@ -1223,10 +1211,8 @@ function deleteRelationOneEntityAndIndex(_id, _index) {
                     logger.info(nameFile + '| deleteRelationOneEntityAndIndex :' + _index + " , " + _id);
                 }
             });
-
             return true;
         } else {
-
             return false;
         }
     }).catch((err) => {
@@ -1234,7 +1220,6 @@ function deleteRelationOneEntityAndIndex(_id, _index) {
         logger.error(nameFile + '| deleteRelationOneEntityAndIndex exists: ' + err);
     });
 }
- 
 
 function deleteRelationOneEntityAndIndex_original(_id, _index) {
     let params = { index: "entity_relation" };
@@ -1308,6 +1293,7 @@ function deleteRelationOneEntityAndIndex_original(_id, _index) {
         logger.error(nameFile + '| deleteRelationOneEntityAndIndex exists: ' + err);
     });
 }
+
 async function CacheRelation(datasetRel) {
     //console.log("risponde CACHE RELATION")
     // console.log("datasetRel: ", datasetRel)
@@ -1345,6 +1331,7 @@ async function CacheRelation(datasetRel) {
         }
     })
 }
+
 async function checkIndexExists(index) {
     try {
       const exists = await client.indices.exists({ index: index });
@@ -1355,6 +1342,7 @@ async function checkIndexExists(index) {
       logger.error(nameFile + '| checkIndexExists:' + error);
     }
   }
+
 async function retrieveAllRelations() {
     let jsonResp = new jsonResponse()
     if(!(await checkIndexExists("entity_relation"))) {
@@ -1378,11 +1366,12 @@ async function retrieveAllRelations() {
     return client.search(qparams).then(async function (resp) {
         //return resp.hits.hits
         jsonResp.setData(resp.hits.hits)
-        jsonResp.setMessages("List entities") 
+        jsonResp.setMessages("List entities")
         let staticQueryRel = {"sort":["_index1.keyword:asc"],"body":{"query":{"bool":{"must":{"term":{"_index":"entity_relation"}}}},"size":10000}}
         return [jsonResp, staticQueryRel]
     })
 }
+
 async function createRelationV2(dataset) {
     //   let params = { index: "entity_relation", type: "entity_relation" };
     //   params["body"] = newRel;
@@ -1440,6 +1429,7 @@ function createRelation(newRel) {
         return false;
     });
 }
+
 var checkUnionRelation = function(originalList) {
     return new Promise(function(resolve, reject) {
         var returnList = originalList;
@@ -1464,7 +1454,7 @@ var checkUnionRelation = function(originalList) {
           }//);*/
         //  console.log("returnList", returnList);
         //     console.log('G');
-        //resolve(returnList); 
+        //resolve(returnList);
     }).catch(function(err) {
         console.error("ERROR | " + nameFile + '| checkUnionRelation | promise  : ', err);
         logger.error(nameFile + '| checkUnionRelation | promise : ' + err);
@@ -1490,9 +1480,10 @@ function getAllIdsRelations(listIds) {
                     }]
                 }
             }
-
         };
+
         qparams["body"].size = 10000;
+
         client.indices.exists({ index: "entity_relation" }, function(err_, resp_, status_) {
             //   console.log("RESPENT", err_, resp_, status_);
             if (status_ == 200) {
@@ -1505,9 +1496,7 @@ function getAllIdsRelations(listIds) {
                     logger.error(nameFile + '| getAllIdsRelations | search qparams : ' + err.response);
                     resolve([]);
                 });
-
             } else {
-
                 resolve([]);
             }
         });
@@ -1536,7 +1525,7 @@ function getAllEntitiesFromIDS(listIds) {
                           "ids": {
                               "values": listIds
                           }
-                      }  
+                      }
                   }
               }
           };*/
@@ -1549,8 +1538,6 @@ function getAllEntitiesFromIDS(listIds) {
         client.search(qparams).then(function(relresp) {
             //   console.log("Relation get query sort", relresp.hits.hits);
             resolve(relresp.hits.hits);
-
-
         }, function(err) {
             console.error("ERROR | " + nameFile + '| getAllIdsRelations | search qparams : ', err);
             logger.error(nameFile + '| getAllIdsRelations | search qparams : ' + err);
@@ -1583,11 +1570,8 @@ function mapRelationToEntity(listEntities, listmap, listEnRel) {
             if (element['relations'] == undefined)
                 element['relations'] = []
 
-
             //  console.log('templisr ', templisr[0]);
             //    console.log('element[relations] ', i++, element['relations'].length);
-
-
 
             //console.log('element[relations]AA1 ', i++, listEntities[1]['relations'][0]);
         });
@@ -1596,10 +1580,11 @@ function mapRelationToEntity(listEntities, listmap, listEnRel) {
         //console.log('RISOLVO listEntities', listEntities.length);
         resolve(listEntities);
     });
-};
+}
+
 var checkUnionRelationV2 = function(originalList, filterRelationDymer) {
     return new Promise(async function(resolve, reject) {
-        /* 
+        /*
         if (redisEnabled) {
             let cachedRel = await redisClient.readCacheByKey({"RELATIONS": "all_relations"}, redisEnabled)
             if (cachedRel && Object.keys(cachedRel).length != 0) {
@@ -1632,9 +1617,9 @@ var checkUnionRelationV2 = function(originalList, filterRelationDymer) {
         //  console.log('listIds', originalList.length, listIds)*/
         let listIds = originalList.map(a => a._id); //ids delle entità
         //console.log('listIds', listIds.length, listIdsquery_ids.length)
-        //  let listDocsRelations = await getAllIdsRelations(union); //lista delle entityrelation getAllIdsRelations 
+        //  let listDocsRelations = await getAllIdsRelations(union); //lista delle entityrelation getAllIdsRelations
         let listDocsRelations
-        
+
         if (redisEnabled) {
            // console.log("Sta servendo la cache")
             listDocsRelations = await redisClient.readAllrelations(await redisClient.getRelationKey(), listIds, redisEnabled)
@@ -1680,11 +1665,13 @@ var checkUnionRelationV2 = function(originalList, filterRelationDymer) {
         //console.log('NEW listEntities', listEntities.length)
         resolve(listEntities);
         return;
+
     }).catch(function(err) {
         console.error("ERROR | " + nameFile + '| checkUnionRelationV2 | promise  : ', err);
         logger.error(nameFile + '| checkUnionRelationV2 | promise : ' + err);
     });
 }
+
 var listSingleRelation = function(id) {
     return new Promise(function(resolve, reject) {
         let qparams = { index: "entity_relation" };
@@ -1722,26 +1709,27 @@ var listSingleRelation = function(id) {
             if (status_ == 200) {
                 client.search(qparams).then(function(relresp) {
                     resolve(relresp.hits.hits);
-
                 }, function(err) {
                     console.error("ERROR | " + nameFile + '| listSingleRelation | search qparams : ', err);
                     logger.error(nameFile + '| listSingleRelation | search qparams : ' + err);
                     resolve();
                 });
-
             } else {
                 resolve([]);
             }
         });
+
     }).catch(function(err) {
         console.error("ERROR | " + nameFile + '| listSingleRelation | promise  : ', err);
         logger.error(nameFile + '| listSingleRelation | promise : ' + err);
     });
 };
+
 var fetchSingleRelation = function(element) {
     // console.log('fetchSingleRelation', element);
     return new Promise(function(resolve, reject) {
         let qparams = { index: "entity_relation" };
+
         qparams["body"] = {
             "query": {
                 "bool": {
@@ -1767,10 +1755,12 @@ var fetchSingleRelation = function(element) {
                 }
             }
         };
+
         qparams["body"].size = 10000;
         //entity_relation
         //qparams = { index: 'entity_relation',
         // body:{}}  ;
+
         client.indices.exists({ index: "entity_relation" }, function(err_, resp_, status_) {
             //   console.log("RESPENT", err_, resp_, status_);
             if (status_ == 200) {
@@ -1829,23 +1819,23 @@ var fetchSingleRelation = function(element) {
                         logger.error(nameFile + '| fetchSingleRelation | search relparams : ' + err);
                         reject();
                     });
-
                 }, function(err) {
                     console.error("ERROR | " + nameFile + '| fetchSingleRelation | search qparams : ', err);
                     logger.error(nameFile + '| fetchSingleRelation | search qparams : ' + err);
                     resolve();
                 });
-
             } else {
                 element['relations'] = [];
                 resolve();
             }
         });
+
     }).catch(function(err) {
         console.error("ERROR | " + nameFile + '| fetchSingleRelation | promise  : ', err);
         logger.error(nameFile + '| fetchSingleRelation | promise : ' + err);
     });
 };
+
 router.post('/singlerelation/', util.checkIsPortalUser, (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -1868,7 +1858,7 @@ router.post('/singlerelation/', util.checkIsPortalUser, (req, res) => {
             await redisClient.invalidateCacheById([callData.id1, callData.id2, resp._id], redisEnabled)
             await redisClient.addRelationCache([callData.id1, callData.id2], [callData.index1, callData.index2], resp._id, redisEnabled)
         }
-       
+
         ret.setMessages("Relation created!");
         ret.setExtraData(resp);
         return res.send(ret);
@@ -1879,7 +1869,8 @@ router.post('/singlerelation/', util.checkIsPortalUser, (req, res) => {
         ret.setMessages("Error creation!");
         return res.send(ret);
     });
-})
+});
+
 router.put('/singlerelation/:id', util.checkIsPortalUser, (req, res) => {
     let id = req.params.id;
     var ret = new jsonResponse();
@@ -1905,7 +1896,7 @@ router.put('/singlerelation/:id', util.checkIsPortalUser, (req, res) => {
         ret.setMessages("Relation Updated!");
         if(redisEnabled){
           await redisClient.invalidateCacheById([callData.id1, callData.id2, id], redisEnabled)
-        
+
         await redisClient.updateRelationsCacheById([callData.id1, callData.id2, id], [callData.index1, callData.index2], redisEnabled)
         }
                 return res.send(ret);
@@ -1916,7 +1907,8 @@ router.put('/singlerelation/:id', util.checkIsPortalUser, (req, res) => {
         ret.setMessages("Error Updated!");
         return res.send(ret);
     });
-})
+});
+
 router.delete('/singlerelation/:id', util.checkIsPortalUser, (req, res) => {
     let id = req.params.id;
     var ret = new jsonResponse();
@@ -1948,7 +1940,7 @@ router.delete('/singlerelation/:id', util.checkIsPortalUser, (req, res) => {
                     if(redisEnabled){
                         await redisClient.invalidateCacheById([ele._source._id1, ele._source._id2, id], redisEnabled)
                         await redisClient.removeRelationsFromCacheById([ele._source._id1, ele._source._id2, id], redisEnabled);
-                    }  
+                    }
                     return res.send(ret);
                 },
                 function(err) {
@@ -1964,10 +1956,9 @@ router.delete('/singlerelation/:id', util.checkIsPortalUser, (req, res) => {
         logger.error(nameFile + '| singlerelation | search: ' + err);
         res.end("");
     });
-
-
 });
-//Marco aggiungere controllo permessi
+
+//TODO Marco aggiungere controllo permessi
 router.get('/', (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -1998,6 +1989,7 @@ router.get('/', (req, res) => {
         return res.send(ret);
     });
 });
+
 // Validator function
 function isValidObjectId(id) {
     if (ObjectId.isValid(id)) {
@@ -2007,10 +1999,10 @@ function isValidObjectId(id) {
     }
     return false;
 }
+
 router.get('/contentfile/:entityid/:fileid', function(req, res, next) {
-   
     var entityid = req.params.entityid;
-    var file_id = req.params.fileid; 
+    var file_id = req.params.fileid;
     if (!isValidObjectId(file_id)) {
         //console.error("ERROR | " + nameFile + '| get/contentfile/:entityid/:fileid | fileid !isValidObjectId:');
         res.status(404).send('Not Found');
@@ -2048,12 +2040,12 @@ router.get('/contentfile/:entityid/:fileid', function(req, res, next) {
                     logger.info(nameFile + '| contentfile | listpermission:' + JSON.stringify(listperm) + " , " + JSON.stringify(dymeruser));
                     if (listperm.data.view) {
                         recFile(mongoose.Types.ObjectId(file_id))
-                            .then(function(result) { 
+                            .then(function(result) {
                                 if(result==undefined){
                                    res.status(404).send('Not Found');
-                                return; 
+                                return;
                                 }
-                                
+
                                 res.writeHead(200, {
                                     'Content-Type': result.contentType,
                                     'Content-Length': result.length,
@@ -2084,6 +2076,7 @@ router.get('/contentfile/:entityid/:fileid', function(req, res, next) {
         res.end("");
     });
 });
+
 router.get('/content_old/:fileid', function(req, res, next) {
     //Marco console.log(" ROUTER CONTENT ");
     var file_id = req.params.fileid;
@@ -2105,7 +2098,8 @@ router.get('/content_old/:fileid', function(req, res, next) {
             res.end("");
         });
 });
-//Marco gestione permessi
+
+//TODO Marco gestione permessi
 router.get('/allstats/', (req, res) => {
     var ret = new jsonResponse();
     var params = {};
@@ -2135,37 +2129,41 @@ router.get('/allstats/', (req, res) => {
         return res.send(ret);
     });
 });
-router.get('/allstatsglobal', (req, res) => {
-    var ret = new jsonResponse();
-    var params = {};
-   
- client.indices.stats(params, function(err, resp, status) {
-        if (err) {
-            console.error("ERROR | " + nameFile + '| allstats  :', err);
-            logger.error(nameFile + '| allstats : ' + err);
-            ret.setSuccess(false);
-            ret.setExtraData({ log: err.message });
-            ret.setMessages("Entity " + err.displayName);
-            return res.send(ret);
-        } 
-        var listEl = resp.indices;
-        var totEnt = 0;
-        var respData = {
-            total: 0,
-            indices: []
-        };
-        for (const [key, value] of Object.entries(listEl)) {
-            // if (key != "entity_relation") {
-            totEnt += value['primaries']['docs']['count'];
-            respData.indices.push({ index: key, count: value['primaries']['docs']['count'] });
-            //  }
-        }
-        
-        respData.total = totEnt;
-        ret.setData(respData);  
-        return res.send(ret);
-    }); 
-});
+
+router.get( '/allstatsglobal', ( req, res ) => {
+	var ret = new jsonResponse();
+	var params = {};
+
+	client.indices.stats( params, function ( err, resp, status ) {
+		if ( err ) {
+			console.error( "ERROR | " + nameFile + '| allstats  :', err );
+			logger.error( nameFile + '| allstats : ' + err );
+			ret.setSuccess( false );
+			ret.setExtraData( {log : err.message} );
+			ret.setMessages( "Entity " + err.displayName );
+			return res.send( ret );
+		}
+		var listEl = resp.indices;
+		var totEnt = 0;
+		var respData = {
+			total   : 0,
+			indices : []
+		};
+		for ( const [ key, value ] of Object.entries( listEl ) ) {
+			// if (key != "entity_relation") {
+			totEnt += value['primaries']['docs']['count'];
+			respData.indices.push( {index    : key,
+									   count : value['primaries']['docs']['count']
+								   } );
+			//  }
+		}
+
+		respData.total = totEnt;
+		ret.setData( respData );
+		return res.send( ret );
+	} );
+} );
+
 router.get('/relationstat/', (req, res) => {
 
     var ret = new jsonResponse();
@@ -2203,7 +2201,6 @@ router.get('/relationstat/', (req, res) => {
                 return res.send(ret);
             });
         } else {
-
             ret.setData([]);
             return res.send(ret);
             /* let params = { index: "entity_relation", type: "entity_relation" };
@@ -2211,16 +2208,14 @@ router.get('/relationstat/', (req, res) => {
              datasetRel.forEach(element => {
                  createRelation(element);
              });*/
-
         }
-
     });
 });
 //Marco gestione permessi
 router.get('/allindex/:indexes?', (req, res) => {
     var ret = new jsonResponse();
     let params = {};
-    let indexes_ = req.params.indexes ? req.params.indexes.split(",") : ["_all"]; 
+    let indexes_ = req.params.indexes ? req.params.indexes.split(",") : ["_all"];
     //params["index"] = "_all";
     params["index"] = indexes_
     client.indices.get(params, function(err, resp, status) {
@@ -2254,7 +2249,7 @@ let getUserCredential2 = async function(my_authdata) {
 //get with with query
 //Marco router.post('/_search', async function(req, res) {
 
-async function checkPermissionByAction(usr, index, act) {  
+async function checkPermissionByAction(usr, index, act) {
 var url_dservice = util.getServiceUrl("dservice") + '/api/v1/perm/permbyroles'; // Get micro-service endpoint
 let response = await axios.get(url_dservice, { params: { role: usr.roles } }) // Get permission for those roles
 let permret={ };
@@ -2307,7 +2302,7 @@ permret.listind=listIndexes;
                     }]
                 }
             }]
-            
+
         //   return queryFilter;
             if(listIndEdt.length>0){
                 permret.conds = {
@@ -2325,7 +2320,7 @@ permret.listind=listIndexes;
                     }
                 }
         */
- 
+
 
 
 return permret;
@@ -2337,7 +2332,7 @@ async function addPermConstraints(usr, query) {
     let perms = response.data.data
     let queryFileter;
     let index = query?.bool?.must?.[0]?.term?._index
-    if (!perms?.view?.includes(index)) { // User doesn't have permission to view the specified index        
+    if (!perms?.view?.includes(index)) { // User doesn't have permission to view the specified index
         queryFileter = {
             "match_phrase": {
                 "properties.owner.uid": usr.id
@@ -2386,7 +2381,7 @@ router.post('/_search', (req, res) => {
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
        logger.info(nameFile + '|_search| dymeruser :' + JSON.stringify(dymeruser));
 
-    /* 
+	/*
         const authHeader = req.headers.authorization;
         const token = authHeader && authHeader.split(' ')[1]
         var maybenous = false;
@@ -2437,7 +2432,7 @@ router.post('/_search', (req, res) => {
         let _source = callData.source;
 
         let qoptions = callData.qoptions;
- 
+
         let recoverRelation = true;
         let size = 10000;
         let sort = ["title.keyword:asc"];
@@ -2508,7 +2503,7 @@ router.post('/_search', (req, res) => {
                 STATUS  Published 1
                         Not Published 2
                         Draft   3
-                Visibility 
+                Visibility
                         Restricted  2
                         Public  0
                         Private 1
@@ -2601,13 +2596,13 @@ router.post('/_search', (req, res) => {
                             }]
                         }
                     }
-                }; 
+                };
                 if (my_oldquery != null) {
-                    query.query.bool.must.push(my_oldquery);             
+                    query.query.bool.must.push(my_oldquery);
                   //  let permFilter = await addPermConstraints(dymeruser, my_oldquery)
                    // query.query.bool.must.push(permFilter);
                 }
-                
+
               //  console.log("permFilterByAction ", JSON.stringify(permFilterByAction))
         /*
               //  permFilterByAction=false;
@@ -2616,9 +2611,9 @@ router.post('/_search', (req, res) => {
                     query.query.bool.must[0].bool.should.push(permFilterByAction.conds);
                     //query.query.bool.must[0].bool.should.push(permFilterByAction);
                   //  query.query.bool.must[0].bool.must.push(permFilterByAction);
-                //  query.query.bool.must.push(permFilterByAction);      
-                //query.query.bool.must[0].bool.should.push(permFilterByAction);       
-                query.query.bool.must.push(permFilterByAction.condm);       
+                //  query.query.bool.must.push(permFilterByAction);
+                //query.query.bool.must[0].bool.should.push(permFilterByAction);
+                query.query.bool.must.push(permFilterByAction.condm);
                 }*/
              //   console.log("QUERY ", JSON.stringify(query.query))
             }
@@ -2633,7 +2628,7 @@ router.post('/_search', (req, res) => {
                     /* if (qoptions.fields.include != undefined) {
                          params["_source_include"] = qoptions.fields.include;
                      }
- 
+
                      if (qoptions.fields.exclude != undefined)
                          params["_source_excludes"] = qoptions.fields.exclude;*/
                 }
@@ -2655,8 +2650,8 @@ router.post('/_search', (req, res) => {
             let cachedResponse;
             // let hash_ = await redisClient.calculateHash(params) //[2602] aggiunto
              //if (redisEnabled && (hash_ != await redisClient.getRelationKey())) {    //[2602] cambiata la condizione
-             
-             if (redisEnabled) {      
+
+             if (redisEnabled) {
                  cachedResponse = await redisClient.readCacheByKey(params, redisEnabled)
                  if (cachedResponse && Object.keys(cachedResponse).length != 0) {
                     // console.log("entro qui")
@@ -2724,7 +2719,7 @@ router.post('/_search', (req, res) => {
                             }
                         } */
                         ret.setData(nlist);
-                        //console.log(nameFile + '|_search| resp no relations:', JSON.stringify(resp.hits.hits)); 
+                        //console.log(nameFile + '|_search| resp no relations:', JSON.stringify(resp.hits.hits));
                         logger.info(nameFile + '|_search| resp no relations: count:' + resp.hits.hits.length);
                         if (redisEnabled) {
                             let ids = await redisClient.extractIds(ret, redisEnabled)
@@ -2736,7 +2731,6 @@ router.post('/_search', (req, res) => {
                         console.error("ERROR | " + nameFile + '|_search| checkUnionRelation:', err);
                         logger.error(nameFile + '|_search| checkUnionRelation : ' + err);
                     });
-
                 } else {
                    // console.log("entro qui",query );
                     //marco-antonino cache
@@ -2772,8 +2766,9 @@ router.post('/_search', (req, res) => {
                                 if (redisEnabled) {
                                     let ids = await redisClient.extractIds(ret, redisEnabled)
                                     let indexes = await redisClient.extractIndexes(ret, redisEnabled)
-                                    await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                }
-                               
+                                    await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)
+                                }
+
                                 logger.info(nameFile + '|_search| resp filter relations: response cached  ');
                                 return res.send(ret);
                             }).catch(function(err) {
@@ -2833,8 +2828,8 @@ var filertEntitiesFields = function(originalList, minmodelist, hdymeruser) {
         if (dymeruser.roles.length > 1) {
             // console.log('filertEntitiesFields resolve >1');
             return resolve(originalList);
-
         }
+
         //  console.log('filertEntitiesFields resolve >1---continua');
         var urlmodel = util.getServiceUrl("form") + "/api/v1/form/dettagliomodel";
         var myQueryModel = { "query": { "instance._index": minmodelist } };
@@ -2881,7 +2876,6 @@ var filertEntitiesFields = function(originalList, minmodelist, hdymeruser) {
                                         return new Promise(function(resolve, reject) {
                                             let single_compr_struct = ((total_compr_struct).find(x => (x.instance).find(y => y._index == subelement._index)));
                                             // console.log('subelement single_compr_struct', single_compr_struct, subelement);
-
                                             if (_.get(single_compr_struct, 'structure')) {
                                                 let single_compr_struct_visibility = (single_compr_struct.structure.child).filter(x => x.attr['dymer-model-visibility'] == "private")
                                                 single_compr_struct_visibility.forEach(singlel => {
@@ -2986,7 +2980,7 @@ const retriveIndex_Query_ToSearch = (rulesindexquery, obj) => {
                             rulesindexquery.indextosearch = rulesindexquery.indextosearch.concat(element["_index"]);
                             rulesindexquery.query.push(element);
                             //console.log('is terms', rulesindexquery);
-                            // resolve(indextosearch); 
+                            // resolve(indextosearch);
                         }
                         if (key == "wildcard" || key == "match") { //term match
                             rulesindexquery.query.push(element);
@@ -3152,10 +3146,10 @@ const bridgeEsternalEntities = (objconf, callkey, datatosend, reqConfig, files) 
                     /*    (reqConfig.query).forEach(element => {
                             newObjQR = Object.assign({}, element, newObjQR);
                         });*/
-                    //qui 
+                    //qui
                     newObjQR = Object.expand(newObjQR);
                     /* Object.keys(newObjQR).forEach(function(elementk) {
- 
+
                      });*/
                     //console.log(nameFile + '| bridgeEsternalEntities | GET | newObjQR:', JSON.stringify(newObjQR));
                     logger.info(nameFile + '| bridgeEsternalEntities | GET | newObjQR :' + JSON.stringify(newObjQR));
@@ -3291,7 +3285,6 @@ const bridgeEsternalEntities = (objconf, callkey, datatosend, reqConfig, files) 
                 reject("ERROR:" + objconf.api[callkey].method + " external error=" + error.response.status)
             });
         }
-
     })
 }
 const jsonMappingExternalToDymerEntity = (obj, conf, calltype) => {
@@ -3340,7 +3333,7 @@ const jsonMappingDymerEntityToExternal = (obj, conf, calltype, files) => {
             console.error("ERROR | " + nameFile + '| jsonMappingDymerEntityToExternal | jsonMapper : ', error);
             logger.error(nameFile + '| jsonMappingDymerEntityToExternal | jsonMapper : ' + error);
             reject("ERROR:jsonMappingDymerEntityToExternal error")
-        });;
+        });
     })
 }
 
@@ -3361,6 +3354,7 @@ router.post('/entitiesbridge', (req, res) => {
         return res.send(ret);
     });
 });
+
 router.put('/entitiesbridge/:id', (req, res) => {
     var ret = new jsonResponse();
     const id = req.params.id;
@@ -3379,12 +3373,14 @@ router.put('/entitiesbridge/:id', (req, res) => {
         return res.send(ret);
     });
 });
+
 router.get('/entitiesbridge/:doevaljson', (req, res) => {
     var ret = new jsonResponse();
     var list = bE.getmappingList(req.params.doevaljson);
     ret.setData(list);
     return res.send(ret);
 });
+
 router.delete('/entitiesbridge/:id', (req, res) => {
     let id = req.params.id;
     var ret = new jsonResponse();
@@ -3432,12 +3428,10 @@ function appendFormdata(FormData, data, name) {
             }
             index++;
         }
-
     } else {
         FormData.append(name, data);
     }
 }
-
 
 router.post('/:enttype', function(req, res) {
     var ret = new jsonResponse();
@@ -3445,7 +3439,7 @@ router.post('/:enttype', function(req, res) {
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     let requestjsonpath=req.headers.requestjsonpath;
-    console.log('post enttype requestjsonpath',req.headers.requestjsonpath) 
+    console.log('post enttype requestjsonpath',req.headers.requestjsonpath)
     console.log('post enttype req.headers.referer',req.headers.referer)
     let dymerextrainfo = dymeruser.extrainfo;
     //console.log("dymeruser", dymeruser);
@@ -3565,7 +3559,7 @@ router.post('/:enttype', function(req, res) {
                                 data.properties.changed = new Date().toISOString();
                                 data.properties.extrainfo = {};
                                 data.properties.extrainfo.lastupdate = { "uid": urs_uid ,"origin":origin };
-                                data.properties.ipsource=origin; 
+                                data.properties.ipsource=origin;
                             }
                             if (elDymerUuid == undefined) {
                                 instance.id = util.generateDymerUuid();
@@ -3638,6 +3632,7 @@ router.post('/:enttype', function(req, res) {
             return res.send(ret);
         });
 });
+
 router.put('/update/:id', (req, res) => {
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser
@@ -3674,7 +3669,7 @@ router.put('/update/:id', (req, res) => {
             //console.log("INFO | " + nameFile + " | optresp :", entry);
             logger.info(nameFile + '| /update/:id |optresp:' + JSON.stringify(entry));
             // console.log("INFO | " + nameFile + " | entry.configuration.host :", entry.configuration.host, (entry.configuration.host).includes(rfrom));
-            // logger.info(nameFile + '| /update/:id | entry.configuration.host:' + JSON.stringify(entry)); 
+            // logger.info(nameFile + '| /update/:id | entry.configuration.host:' + JSON.stringify(entry));
             //  optresp.data.data.forEach(function(entry) {
             if ((entry.configuration.host).includes(rfrom)) {
                 let listRel = [];
@@ -3723,7 +3718,7 @@ router.put('/update/:id', (req, res) => {
                         logger.info(nameFile + '| /update/:id | oldrelation:' + JSON.stringify(oldrelation));
                         // let oldFilteredrelation=[];
                         oldrelation.forEach(function(relel, index) {
-                            //     console.log("Relation relel", relel);    
+                            //     console.log("Relation relel", relel);
                             if (relel._source["_id1"] == id) {
                                 if (listRel.includes(relel._source["_index2"])) {
                                     if (ref.hasOwnProperty([relel._source["_index2"]])) {
@@ -3731,7 +3726,6 @@ router.put('/update/:id', (req, res) => {
                                             _relationtodelete.push(relel._source["_id2"]);
                                         }
                                     }
-
                                     // oldFilteredrelation.push(relel._source["_id2"]);
                                 }
                             }
@@ -3742,12 +3736,13 @@ router.put('/update/:id', (req, res) => {
                                             _relationtodelete.push(relel._source["_id1"]);
                                         }
                                     }
-
                                     //oldFilteredrelation.push(relel._source["_id1"]);
                                 }
                             }
                         });
+
                         let parmquery = {};
+
                         parmquery["body"] = {
                             "query": {
                                 "match": {
@@ -3755,6 +3750,7 @@ router.put('/update/:id', (req, res) => {
                                 }
                             }
                         };
+
                         parmquery["body"].size = 10000;
                         client.search(parmquery).then(function(resp) {
                             resp["hits"].hits.forEach((element) => {
@@ -3770,11 +3766,12 @@ router.put('/update/:id', (req, res) => {
                                     _relationtodelete.forEach(function(entry) {
                                         deleteRelation(elId, entry);
                                     });
-
                                 }
+
                                 if (ref != undefined) {
                                     checkRelation(ref, oldElement._index, elId);
                                 }
+
                                 var new_Temp_Entity = extend({}, oldElement);;
                                 // console.log("new_Temp_Entity", new_Temp_Entity);
                                 new_Temp_Entity._source = editValues;
@@ -3790,6 +3787,7 @@ router.put('/update/:id', (req, res) => {
                                         ark.shift();
                                         stringAsKey(new_Temp_Entity._source, ark, el);
                                     });
+
                                 new_Temp_Entity._source.properties.changed = new Date().toISOString();
                                 var params_del = {};
                                 params_del["id"] = new_Temp_Entity["_id"];
@@ -3878,6 +3876,7 @@ router.put('/update/:id', (req, res) => {
             return res.send(ret);
         });
 });
+
 //router.put('/:id', (req, res) => {newput
 router.put('/:id', async (req, res) => {
     var ret = new jsonResponse();
@@ -4140,7 +4139,6 @@ router.put('/:id', async (req, res) => {
                             ret.setMessages("Error Updated!");
                             return res.send(ret);
                         });
-
                     } else {
                         ret.setMessages("Permissions denied");
                         res.status(200);
@@ -4163,6 +4161,7 @@ router.put('/:id', async (req, res) => {
         }
     });
 });
+
 //router.put('/oldput/:id', (req, res) => { //to delete
 router.put('/oldput/:id', (req, res) => { //to delete
     var ret = new jsonResponse();
@@ -4424,6 +4423,7 @@ router.put('/oldput/:id', (req, res) => { //to delete
         }
     });
 });
+
 //router.put('/hbput2022/:id', (req, res) => { //to delete
 router.put('/hbput2022/:id', (req, res) => {
     var ret = new jsonResponse();
@@ -4585,7 +4585,6 @@ router.put('/hbput2022/:id', (req, res) => {
                             ).catch(function(err) {
                                 console.error("ERROR | " + nameFile + '| /:id | put | id,deleted relations  ', JSON.stringify(listRelation_old_filtered_todelete), id, err);
                                 logger.error(nameFile + '| /:id | put | id,deleted relations :' + dymeruser.id + ' , ' + JSON.stringify(listRelation_old_filtered_todelete) + ' , ' + err);
-
                             });
 
                         let resrel = await createBulk(datasetRelation, 'entity_relation');
@@ -4642,7 +4641,6 @@ router.put('/hbput2022/:id', (req, res) => {
                             ret.setMessages("Error Updated!");
                             return res.send(ret);
                         });
-
                     } else {
                         ret.setMessages("Permissions denied");
                         res.status(200);
@@ -4665,6 +4663,7 @@ router.put('/hbput2022/:id', (req, res) => {
         }
     });
 });
+
 const checklogged = function(req) {
     return new Promise(function(resolve, reject) {
         const callData = util.getAllQuery(req);
@@ -4778,6 +4777,7 @@ const haspermissionGrants = function(urs, entityprop) {
         return resolve(ret);
     });
 };
+
 const haspermissionGrantByAction = function(urs, action, entityprop) {
     return new Promise(function(resolve, reject) {
         const ret = new jsonResponse();
@@ -4789,15 +4789,17 @@ const haspermissionGrantByAction = function(urs, action, entityprop) {
         const userroles = urs.roles;
         const entityOwner = entityprop.owner;
         const entityGrant = entityprop.grant;
-        const visibility = entityprop.visibility;
+
         //0 Public
         //1 Private
         //2 Restricted
-        const status = entityprop.status;
+        const visibility = entityprop.visibility;
+
+        //0 Deleted
         //1 Published
         //2 Not Published
         //3 Draft
-        //0 Deleted
+        const status = entityprop.status;
 
         let hasperm = false;
         if (userroles.indexOf("app-admin") > -1) {
@@ -4838,7 +4840,6 @@ const haspermissionGrantByAction = function(urs, action, entityprop) {
                     ret.setMessages("Permission authorized!");
                     return resolve(ret);
                 }
-
                 break;
             case "patch":
                 /*  if (!hasperm && entityData.hasOwnProperty('properties')) {
@@ -4858,8 +4859,8 @@ const haspermissionGrantByAction = function(urs, action, entityprop) {
             default:
                 break;
         }
-        //if (entityOwner.uid == user.uid || user.uid == '99999') {
 
+        //if (entityOwner.uid == user.uid || user.uid == '99999') {
         if (!hasperm) {
             ret.setSuccess(false);
             ret.setMessages("Permission denied!");
@@ -4870,9 +4871,9 @@ const haspermissionGrantByAction = function(urs, action, entityprop) {
             ret.setMessages("Permission authorized!");
             return resolve(ret);
         }
-
     });
 };
+
 //router.patch('/:id', [testprecall, testprecall2], (req, res) => {
 router.patch('/:id', async(req, res, next) => {
     var callDatap = util.getAllQuery(req);
@@ -5000,6 +5001,7 @@ router.patch('/:id', async(req, res, next) => {
         }
     })
 });
+
 /*router.put('/updatevalue/:entityid/:key/:value', (req, res) => {
     console.log(" ROUTER PUT ID ");
     //relationtodelete
@@ -5021,19 +5023,19 @@ router.patch('/:id', async(req, res, next) => {
               //
            //    index: new_Temp_Entity._index,
           //  type: new_Temp_Entity._type,
-           
+
         client.update({
             id: ientityid,
-            body: params_update 
+            body: params_update
         }).then(function(resp) {
             //   console.log("-----ESITO", resp);
             ret.setMessages("Updated!");
-             
+
             return res.send(ret);
         }).catch(function(err) {
             console.log('Caught an error on Edit:update param!', err);
             return res.send(ret);
-        });  
+        });
     });
 });*/
 /*giaisg*/
@@ -5321,6 +5323,7 @@ router.delete('/:id',async (req, res) => {
         }
     });
 });
+
 //inoltro al microservizio dservice
 function checkServiceHook(EventSource, objSend, extraInfo, req,originalElement) {
     //insert non ho i dati quindi devo fare un get
@@ -5341,7 +5344,7 @@ function checkServiceHook(EventSource, objSend, extraInfo, req,originalElement) 
             }
         };
         client.search(params, function(err, resp, status) {
-            //marcoper adapter 
+            //marcoper adapter
             checkUnionRelationV2(resp.hits.hits).then(function(match) {
                 let element = match[0];
                 // console.log('ent match element', JSON.stringify(element));
@@ -5404,6 +5407,7 @@ function checkServiceHook(EventSource, objSend, extraInfo, req,originalElement) 
             });
     }
 }
+
 Object.byString = function(o, s) {
     s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
     s = s.replace(/^\./, ''); // strip a leading dot
@@ -5427,4 +5431,5 @@ function stringTemplateParser(expression, valueObj) {
     });
     return text
 }
+
 module.exports = router;

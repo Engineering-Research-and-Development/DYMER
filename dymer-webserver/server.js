@@ -5,7 +5,6 @@ var url = require("url");
 require("./config/config.js");
 const util = require("./utility");
 const app = express();
-const portExpress = global.configService.port; //context-path
 const bodyParser = require("body-parser");
 const path = require('path');
 const fs = require('fs');
@@ -17,7 +16,7 @@ const logger = require('./routes/dymerlogger');
 var jsonResponse = require('./jsonResponse');
 //USO OIDC  
 //var passport = require('passport')
-const router=express.Router();
+const router = express.Router();
 //const appRoutes=require('./app/routes/api')(router);
 const jwt = require('jsonwebtoken');
 var axios = require('axios');
@@ -36,24 +35,53 @@ var dohtmlpage = require('./routes/dohtmlpage');
 const session = require('express-session');
 var cookieParser = require('cookie-parser');
 var memoryStore = new session.MemoryStore();
+
+const gblConfigService = global.configService;
+const portExpress = gblConfigService.port;
+const protocol = gblConfigService.protocol;
+const appName = gblConfigService.app_name;
+const contextPath = util.getContextPath( 'webserver' );
+
+const swaggerUi = require( 'swagger-ui-express' )
+const swaggerFile = require( './swagger_webserver.json' )
+
+const host = gblConfigService.ip + ":" + portExpress;
+const serverUrl = protocol + "://" + host + contextPath
+const docPath = '/api/doc';
+
+const options = {
+	swaggerOptions : {
+		docExpansion : 'none'
+	}
+};
+
 app.use(cookieParser());
 app.use(session({
-    secret: 'thisShouldBeLongAndSecret',
-    resave: false,
-    saveUninitialized: true,
-    store: memoryStore,
-    name: "nodejscookie",
-    cookie: {
-        path: '/'
-    },
-}));
-
+                    secret:            'thisShouldBeLongAndSecret',
+                    resave:            false,
+                    saveUninitialized: true,
+                    store:             memoryStore,
+                    name:              "nodejscookie",
+                    cookie:            {
+                        path: '/'
+                    },
+                }));
 
 var recoverForms = require("./routes/formfiles");
-const contextPath = util.getContextPath('webserver');
 
 var publicdemoDonwlonad = require("./routes/demodownloads");
+const swaggerAutogen = require( "swagger-autogen" );
+
+app.use( docPath, [loadUserInfo, util.checkIsAdmin], swaggerUi.serve, swaggerUi.setup( swaggerFile, options ) );
+
+app.get( '/swaggerdoc', [ loadUserInfo, util.checkIsAdmin ], ( req, res ) => {
+    const data = {swaggerDocUrl : serverUrl + docPath};
+    res.json( data );
+} );
+
 app.get('/deletelog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {
+    // #swagger.tags = ['Webserver']
+
     var ret = new jsonResponse();
     var filetype = req.params.filetype;
     // const dymeruser = util.getDymerUser(req, res);
@@ -66,37 +94,42 @@ app.get('/deletelog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) =>
 });
 
 app.get('/openLog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {
+    // #swagger.tags = ['Webserver']
+
     var filetype = req.params.filetype;
     //console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
     return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
 });
 app.get('/checkservice', [loadUserInfo, util.checkIsPortalUser], (req, res) => {
+    // #swagger.tags = ['Webserver']
+
     var ret = new jsonResponse();
     let infosize = logger.filesize("info");
     let errorsize = logger.filesize("error");
     let regex = /(?<!^).(?!$)/g;
-let infomserv = JSON.parse(JSON.stringify(global.configService));
-infomserv.adminPass = (infomserv.adminPass).replace(regex, '*');
-infomserv.adminUser = (infomserv.adminUser).replace(regex, '*');
+    let infomserv = JSON.parse( JSON.stringify( gblConfigService ) );
+    infomserv.adminPass = (infomserv.adminPass).replace(regex, '*');
+    infomserv.adminUser = (infomserv.adminUser).replace(regex, '*');
     ret.setData({
-        info: {
-            size: infosize
-        },
-        error: {
-            size: errorsize
-        },
-        infomicroservice: infomserv
-    });
+                    info:             {
+                        size: infosize
+                    },
+                    error:            {
+                        size: errorsize
+                    },
+                    infomicroservice: infomserv
+                });
     ret.setMessages("Service is up");
     res.status(200);
     ret.setSuccess(true);
     return res.send(ret);
 });
+
 app.use(express.static(__dirname + '/public'));
 //app.use(express.static(__dirname + global.gConfig.services.webserver["context-path"] + 'public'));
 //app.use(express.static(global.gConfig.services.webserver["context-path"] + 'public'));
 //app.use('/public', express.static('public'));
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     //    res.header("X-Frame-Option", "allow-from http://localhost:8080/");
@@ -105,7 +138,7 @@ app.use(function(req, res, next) {
     var pathname = req.url;
     //  console.log(pathname);
     /*if (pathname == ("/login")) {
-       
+
         res.setHeader(
             'Content-Security-Policy',
             "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:; script-src 'self'  ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
@@ -135,27 +168,32 @@ app.use(function(req, res, next) {
 app.use(cors());
 app.set('trust proxy', true);
 
-
 // 
 app.use("/public/", express.static(path.join(__dirname.replace(contextPath, ""), "public/")));
+
 app.use("/app/", express.static(path.join(__dirname.replace(contextPath, ""), "app/")));
+
 app.use("/public/", publicRoutes);
+
 app.use("/app/", appRoutes);
+
 app.use("/api/portalwebpage/", dohtmlpage);
 
 app.get('/api2/retriveinfoidpadmin', (req, res, next) => {
+    // #swagger.tags = ['Webserver']
+
     if (true) {
         //      console.log("retriveinfo.AAAAAAAAAAAAAAA", pp);
         var objuser = {
-            isGravatarEnabled: false,
+            isGravatarEnabled:      false,
             authorization_decision: '',
-            roles: [{ role: 'app-admin' }],
-            app_azf_domain: '',
-            id: 'admin@dymer.it',
-            gid: 0,
-            app_id: 'dymer',
-            email: 'admin@dymer.it',
-            username: 'admin@dymer.it'
+            roles:                  [{role: 'app-admin'}],
+            app_azf_domain:         '',
+            id:                     'admin@dymer.it',
+            gid:                    0,
+            app_id:                 'dymer',
+            email:                  'admin@dymer.it',
+            username:               'admin@dymer.it'
         };
 
         var obj_isi = {};
@@ -163,7 +201,7 @@ app.get('/api2/retriveinfoidpadmin', (req, res, next) => {
         let base64DYM = new Buffer(JSON.stringify(objuser)).toString("base64")
         let base64DYMisi = new Buffer(JSON.stringify(obj_isi)).toString("base64")
         let dr_value = new Buffer(JSON.stringify(obj_isi.roles)).toString("base64");
-        var objtoSend = { "DYM": base64DYM, "DYMisi": base64DYMisi, "d_rl": dr_value }
+        var objtoSend = {"DYM": base64DYM, "DYMisi": base64DYMisi, "d_rl": dr_value}
         objtoSend.d_uid = objuser.id;
         objtoSend.d_appuid = 0;
         objtoSend.d_gid = objuser.gid;
@@ -171,13 +209,15 @@ app.get('/api2/retriveinfoidpadmin', (req, res, next) => {
 
     } else {
 
-        res.send({ objuser });
+        res.send({objuser});
     }
     //   console.log("---------FINE-------------");
     // res.send(req.session.passport.user);
 
 });
+
 app.get('/api2/retriveinfoidp', (req, res, next) => {
+    // #swagger.tags = ['Webserver']
 
     //   console.log("--------INIZIO retriveinfoIDP--------------");
     //   console.log("retriveinfo", req.session);
@@ -191,32 +231,31 @@ app.get('/api2/retriveinfoidp', (req, res, next) => {
 
         //      console.log("retriveinfo.AAAAAAAAAAAAAAA", pp);
         var objuser = {
-            isGravatarEnabled: false,
+            isGravatarEnabled:      false,
             authorization_decision: '',
-            roles: [],
-            app_azf_domain: '',
-            id: '',
-            app_id: '',
-            email: 'test@test.it',
-            extrainfo: {
+            roles:                  [],
+            app_azf_domain:         '',
+            id:                     '',
+            app_id:                 '',
+            email:                  'test@test.it',
+            extrainfo:              {
                 companyId: 'ccc',
-                groupId: 'ccc',
-                cms: 'lfr',
-                userId: 'ccc'
+                groupId:   'ccc',
+                cms:       'lfr',
+                userId:    'ccc'
             },
-            username: pp.email
+            username:               pp.email
         };
         (pp.realm_access.roles).forEach(element => {
-            objuser.roles.push({ 'role': element, id: '' });
+            objuser.roles.push({'role': element, id: ''});
         });
         var obj_isi = {};
         obj_isi.roles = objuser.roles;
         let base64DYM = new Buffer(JSON.stringify(objuser)).toString("base64")
         let base64DYMisi = new Buffer(JSON.stringify(obj_isi)).toString("base64")
-            //  console.log("retriveinfo objuser", objuser);
+        //  console.log("retriveinfo objuser", objuser);
 
-
-        var objtoSend = { "DYM": base64DYM, "DYMisi": base64DYMisi }
+        var objtoSend = {"DYM": base64DYM, "DYMisi": base64DYMisi}
         objtoSend.d_uid = pp.email;
         objtoSend.d_appuid = pp.sub;
         objtoSend.d_gid = 0;
@@ -224,13 +263,16 @@ app.get('/api2/retriveinfoidp', (req, res, next) => {
 
     } else {
 
-        res.send({ objuser });
+        res.send({objuser});
     }
     //   console.log("---------FINE-------------");
     // res.send(req.session.passport.user);
 
 });
-app.post('/api2/retriveinfo', loadUserInfo,async (req, res, next) => {
+
+app.post('/api2/retriveinfo', loadUserInfo, async (req, res, next) => {
+    // #swagger.tags = ['Webserver']
+
     //   res.send({ "ttttttt": "rrrrrrrrr" });
 
     // console.log("retriveinfo", req.headers);
@@ -241,52 +283,54 @@ app.post('/api2/retriveinfo', loadUserInfo,async (req, res, next) => {
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     //console.log('hdymeruser2',hdymeruser);
     res.clearCookie("DYMisi");
-    res.cookie("dymercookie", 'value', { expire: 360000 + Date.now() });
+    res.cookie("dymercookie", 'value', {expire: 360000 + Date.now()});
 
     //   console.log("retriveinfo req.isAuthenticated()", req.isAuthenticated());
     const authHeader = req.headers.authorization;
     var obj_isi = {};
     let dr_value = new Buffer(JSON.stringify(dymeruser.roles)).toString("base64");
     var url_dservice = util.getServiceUrl("dservice") + '/api/v1/perm/permbyroles'; // Get micro-service endpoint
-let response_perm = await axios.get(url_dservice, { params: { role: dymeruser.roles } })
-let listprm_value= new Buffer(JSON.stringify(response_perm.data.data)).toString("base64");
+    let response_perm = await axios.get(url_dservice, {params: {role: dymeruser.roles}})
+    let listprm_value = new Buffer(JSON.stringify(response_perm.data.data)).toString("base64");
     var objuser = {
-        "d_uid": dymeruser.id,
+        "d_uid":    dymeruser.id,
         "d_appuid": dymeruser.app_id,
-        "d_gid": dymeruser.gid,
-        "d_rl": dr_value,
-        "DYM":hdymeruser,
-        "d_lp":listprm_value
+        "d_gid":    dymeruser.gid,
+        "d_rl":     dr_value,
+        "DYM":      hdymeruser,
+        "d_lp":     listprm_value
     };
     // console.log("api retriveinfo", JSON.stringify(objuser));
     logger.info(nameFile + ' | /api2/retriveinfo :' + JSON.stringify(objuser));
     res.send(objuser);
 });
 app.get('/info/:key?', (req, res, next) => {
-   // var pjson = require('./package.json');
+    // #swagger.tags = ['Webserver']
+
+    // var pjson = require('./package.json');
     var key = req.params.key;
-    
-  //  let infodymer = { "version": global.gConfig.dymer.version };
-    let infodymer =  global.gConfig.dymer ;
+
+    //  let infodymer = { "version": global.gConfig.dymer.version };
+    let infodymer = global.gConfig.dymer;
     let htmlsend_hd =
-        '<!DOCTYPE html>' +
-        '<html lang="en"><head>' +
-        '<meta charset="utf-8">' +
-        '<meta http-equiv="X-UA-Compatible" content="IE=edge">' +
-        '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">' +
-        '<meta name="description" content="DYnamic Information ModElling & Rendering">' +
-        '<meta name="author" content="marco romano">' +
-        '<title> DYMER</title> ' +
-        '<link rel="icon" type="image/png" href="public\cdn\img\dymer-logo.png"/>' +
-        '<link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">' +
-        '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">' +
-        '<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>' +
-        '<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous" ></script>' +
-        '<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>' + '</script>' +
-        ' </head > ' +
-        '<body  style="background-color:#ebecf2;"> ';
+            '<!DOCTYPE html>' +
+            '<html lang="en"><head>' +
+            '<meta charset="utf-8">' +
+            '<meta http-equiv="X-UA-Compatible" content="IE=edge">' +
+            '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">' +
+            '<meta name="description" content="DYnamic Information ModElling & Rendering">' +
+            '<meta name="author" content="marco romano">' +
+            '<title> DYMER</title> ' +
+            '<link rel="icon" type="image/png" href="public\cdn\img\dymer-logo.png"/>' +
+            '<link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">' +
+            '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">' +
+            '<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>' +
+            '<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous" ></script>' +
+            '<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>' + '</script>' +
+            ' </head > ' +
+            '<body  style="background-color:#ebecf2;"> ';
     let htmlcontainer = '<div class="container"> <div class="row justify-content-center">' +
-        ' <div class="col-xl-10 col-lg-12 col-md-9" > ' +
+        '<div class="col-xl-10 col-lg-12 col-md-9" > ' +
         '<div class="card o-hidden border-0 shadow-lg my-5">' +
         '<div class="card-body p-0">' +
         '<div class="row">' +
@@ -325,6 +369,7 @@ app.get('/info/:key?', (req, res, next) => {
             break;
     }
 });
+
 /*
 app.use(session({
     secret: 'secret squirrel',
@@ -415,23 +460,23 @@ function loadUserInfo(req, res, next) {
     console.log('--------------------------');*/
     logger.info(nameFile + ' |loadUserInfo|req url :' + originalRef + "|" + req.method + req.url);
     var config = {
-        method: 'get',
-        url: authuserUrl,
+        method:  'get',
+        url:     authuserUrl,
         headers: {
             'Content-Type': 'application/json'
         },
-        data: {
-            'DYM': dymtoken,
-            'DYMAT': dymtokenAT,
-            'referer': originalRef,
-            'dymtoExtraInfo': dymtoExtraInfo,
+        data:    {
+            'DYM':             dymtoken,
+            'DYMAT':           dymtokenAT,
+            'referer':         originalRef,
+            'dymtoExtraInfo':  dymtoExtraInfo,
             'requestjsonpath': requestjsonpath,
-            'idsadm': idsadm
+            'idsadm':          idsadm
         }
     };
 
     axios(config)
-        .then(function(response) {
+        .then(function (response) {
             // console.log('dymeruserAA', response.data.data);
             req.headers["dymeruser"] = new Buffer(JSON.stringify(response.data.data)).toString("base64");
             //if (req.headers["reqfrom"] == undefined || req.headers["reqfrom"] == 'undefined')
@@ -439,12 +484,13 @@ function loadUserInfo(req, res, next) {
                 req.headers["reqfrom"] = originalRef;
             next();
         })
-        .catch(function(error) {
+        .catch(function (error) {
             logger.error(nameFile + ' |loadUserInfo | axios authuserUrl : ' + error);
             console.log(error);
             next();
         });
 }
+
 app.use("/api/portalweb/", authenticateRoutes);
 
 /*app.use("/public/", express.static(path.join(__dirname.replace('\routes', ""), "..")));
@@ -467,6 +513,7 @@ app.use("/api/entities/", loadUserInfo, entityRoutes);
 app.use("/api/dservice/", loadUserInfo, dserviceRoutes);
 app.use("/api/system/", loadUserInfo, system);
 app.post("/api/test/", loadUserInfo, (req, res, next) => {
+    // #swagger.tags = ['Webserver']
     console.log("test");
     next();
     //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
@@ -485,6 +532,7 @@ const parseToken = raw => {
         console.error('Error while parsing token: ', e);
     }
 };
+
 //app.use(global.gConfig.services.webserver["context-path"] + '/public/cdn/', publicRoutes);
 //app.use(global.gConfig.services.webserver["context-path"] + 'public/cdn/', publicRoutes);
 //app.use('/public/cdn', publicRoutes);
@@ -499,26 +547,31 @@ app.use("/demodownload/", publicdemoDonwlonad);
 });
 */
 
-
 app.get("/public/cdn/*", (req, res, next) => {
+    // #swagger.tags = ['Webserver']
+
     // console.log("app.get");
     next();
     //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
 });
 
 const testRules = (req) => {
-        // keycloak.get
-        // var pp = jwt.decode(JSON.parse(req.session['keycloak-token'])); //['access_token']
-        // console.log('pppppppppppppppppppppp', pp);
-        return 'realm:app-user';
-        // return t 
-    }
-    //app.get('*', keycloak.protect(testRules(req)), (req, res) => {
-    //app.get('*', keycloak.protect('realm:app-user'), (req, res) => {
+    // keycloak.get
+    // var pp = jwt.decode(JSON.parse(req.session['keycloak-token'])); //['access_token']
+    // console.log('pppppppppppppppppppppp', pp);
+    return 'realm:app-user';
+    // return t
+}
+
+//app.get('*', keycloak.protect(testRules(req)), (req, res) => {
+//app.get('*', keycloak.protect('realm:app-user'), (req, res) => {
 
 //app.get('*', require('connect-ensure-login').ensureLoggedIn('/'), (req, res) => {
 //app.get('*', ensureLoggedInOpen, (req, res) => {
+
 app.get('*', (req, res) => {
+    // #swagger.tags = ['Webserver']
+
     //app.get('*', passport.authenticate("oidc"), (req, res) => {
     //app.get('*', keycloak.protect('realm:app-user'), (req, res) => {
     /*console.log(
@@ -530,7 +583,7 @@ app.get('*', (req, res) => {
      console.log("userDT", details);
      console.log(" keycloak.token", token);
      console.log(" keycloak permissions", permissions);*/
-    //+ path.join(__dirname + global.gConfig.services.webserver["context-path"] 
+    //+ path.join(__dirname + global.gConfig.services.webserver["context-path"]
     var realPath = (req.originalUrl).split("?");
     var listdata = fs.readFileSync(path.join(__dirname, '/public/app/views/index.html'));
     var pathname = req.url;
@@ -586,28 +639,30 @@ app.get('*', (req, res) => {
     //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
     // res.sendFile(global.gConfig.services.webserver["context-path"] + '/public/app/views/index.html');
 });
+
 //global.gConfig.services.webserver["context-path"]
 
 //app.use(contextPath, router)
 const root = express();
 root.use(contextPath, app);
+
 if (util.ishttps('webserver')) {
     const Httpsoptions = {
-        key: fs.readFileSync(path.join(__dirname, 'ssl', 'server.key')),
+        key:  fs.readFileSync(path.join(__dirname, 'ssl', 'server.key')),
         cert: fs.readFileSync(path.join(__dirname, 'ssl', 'server.crt'))
     };
-    https.createServer(Httpsoptions, app).listen(portExpress, () => {
-        logger.info(nameFile + " | Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + contextPath);
-        console.log("Up and running-- this is " + global.configService.protocol + " " + global.configService.app_name + " service on port:" + global.configService.port + " context-path:" + contextPath);
+    https.createServer(Httpsoptions, root).listen(portExpress, () => {
+        logger.info( nameFile + " | Up and running-- this is " + appName + " service on port:" + portExpress + " context-path: " + contextPath );
+        console.log( "Up and running-- this is " + protocol + " " + appName + " service on port:" + portExpress + " context-path:" + contextPath );
         // console.log(`${global.gConfig.services.webserver.port} listening on port ${global.gConfigt}`);
     });
 } else {
     root.listen(portExpress, () => {
         // logger.error("testtt");
-        logger.info(nameFile + " | Up and running-- this is " + global.configService.protocol + " " +
-            global.configService.app_name + " service on port:" + global.configService.port + " context-path:" + contextPath);
-        console.log("Up and running-- this is " + global.configService.protocol + " " +
-            global.configService.app_name + " service on port:" + global.configService.port + " context-path:" + util.getContextPath('webserver'));
+        logger.info( nameFile + " | Up and running-- this is " + protocol + " " + appName + " service on port:" + portExpress + " context-path:" + contextPath );
+        console.log( "Up and running-- this is " + protocol + " " + appName + " service on port:" + portExpress + " context-path:" + contextPath );
+        console.log("Server on :", serverUrl);
+        console.log("See Documentation at:", serverUrl + docPath);
         // console.log(`${global.gConfig.services.webserver.port} listening on port ${global.gConfigt}`);
     });
 }
