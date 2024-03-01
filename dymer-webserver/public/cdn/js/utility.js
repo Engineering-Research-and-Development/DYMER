@@ -429,6 +429,7 @@ function reindexRepeatable(matchname) {
 function replaceAll(str, cerca, sostituisci) {
     return str.split(cerca).join(sostituisci);
 }
+
 //----------START Dynamic loader---------------
 var removeTempImport = function(attr) {
         return new Promise(function(resolve, reject) {
@@ -460,7 +461,7 @@ var removeTempImport = function(attr) {
                     ///kkkk
                      e.parentNode.removeChild(e);
                 }
-                   
+
             });
             resolve("ok");
         });
@@ -560,13 +561,13 @@ class ElTemplate {
                         ftype = (ftype == "css") ? "link" : ftype;
                         if (ftype != "octet-stream"){
 let eltopush={ domtype: ftype, filename: lkpath, extrattr: [],data:{} ,name:fl.filename};
-                         
+
                              if(fl.filename=="language.json")
                              eltopush.data.language=fl.data;
-                             t_ar.push(eltopush); 
+                             t_ar.push(eltopush);
 
                         }
-                           
+
                     }
                 });
                 var ret2 = dom_to_render;
@@ -674,7 +675,7 @@ async function onloadFiles2(arr) {
 
 
 async function onloadFiles(arr) {
-    
+
     let tk = localStorage.getItem('DYMAT');
     let tk_extra = localStorage.getItem('DYM_EXTRA');
     let toperm = "";
@@ -742,71 +743,70 @@ async function onloadFiles(arr) {
 //-----------END Dynamic loader---------------
 
 //-----------------START FORM-----------------
-function loadRequireForm() {
-    // Check if dymerconf is defined, otherwise assign an empty array
-    let ckaddimport = typeof dymerconf !== 'undefined' ? dymerconf.notImport : [];
-    let arr = [];
+async function loadRequireForm() {
+    var ckaddimport = [];
+    if (typeof dymerconf !== 'undefined')
+        ckaddimport = dymerconf.notImport;
+    var arr = [];
+    var domtype = "link";
+    var filename = "";
+    var callback = null;
+    var useonload = false;
+    var group = "mandatory";
+    group = "bootstrap";
+    filename = kmsconfig.cdn + "css/lib/bootstrap/4.1.3/bootstrap.min.css";
+    if (!(ckaddimport.indexOf(group) > -1))
+        arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    group = "font-awesome";
+    filename = kmsconfig.cdn + "css/lib/font-awesome/4.7/font-awesome.min.css";
+    if (!(ckaddimport.indexOf(group) > -1))
+        arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    group = "mandatory";
+    filename = kmsconfig.cdn + "css/dymer.base.css";
+    if (!(ckaddimport.indexOf(group) > -1))
+        arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    domtype = "script";
+    callback = null;
+    useonload = true;
+    group = "jquery";
+    filename = kmsconfig.cdn + "js/lib/jquery/jquery-3.3.1.min.js";
+    if (!(ckaddimport.indexOf(group) > -1))
+        arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    group = "mandatory";
+    filename = kmsconfig.cdn + "js/lib/jquery/jquery.serializejson.js";
+    if (!(ckaddimport.indexOf(group) > -1))
+        arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    group = "bootstrap";
+    filename = kmsconfig.cdn + "js/lib/bootstrap/4.1.3/bootstrap.min.js";
+    if (!(ckaddimport.indexOf(group) > -1))
+        arr.push(new Elfile("link", filename, callback, useonload, group));
 
-    // Function to add a file to the array if it's not in ckaddimport
-    function addFileToArr( fileInfo ) {
-        const { domtype, group, filename, callback, useonload } = fileInfo;
-
-        if ( ckaddimport.indexOf( group ) <= -1 ) {
-            let kmsfilename = kmsconfig.cdn + filename;
-                       arr.push( new Elfile( domtype, kmsfilename, callback, useonload, group ) );
-        }
+    group = "summernote";
+    if (!(ckaddimport.indexOf(group) > -1)) {
+        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.css";
+        arr.push(new Elfile("link", filename, callback, useonload, group));
+        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.js";
+        arr.push(new Elfile(domtype, filename, callback, useonload, group));
     }
-
-    // Load fileInfo from external JSON file
-    // let fileInfo = require( './dymer-webserver/public/cdn/js/fileInfo.json' );
-    fetch( './public/cdn/js/fileInfo.json' ).then( response => response.json() )
-                                                            .then( data => callback( data ) )
-                                                            .catch( error => console.error(
-                                                                'Errore nel caricamento del file JSON:',
-                                                                error
-                                                            ) );
-
-
-    callback = ( fileInfo ) => {
-        // Add CSS files
-        addFileToArr( fileInfo.cssBootstrap );
-        addFileToArr( fileInfo.cssFontAwesome );
-        addFileToArr( fileInfo.cssMandatory );
-
-        // Add JavaScript files
-        addFileToArr( fileInfo.jsJquery );
-        addFileToArr( fileInfo.jsJquerySerializeJson );
-        addFileToArr( fileInfo.jsBootstrap );
-
-        // Add Summernote files
-        let summernoteGroup = "summernote";
-        if ( ckaddimport.indexOf( summernoteGroup ) <= -1 ) {
-            addFileToArr( fileInfo.summernoteCss );
-            addFileToArr( fileInfo.summernoteJs );
+    filename = kmsconfig.cdn + "js/ajaxcall.js";
+    var mycallback = function() { // Method which will display type of Animal
+        try {
+            /*	config_postForm = {
+                    url: serviceFormUrl,
+                    processData: false,
+                    enctype: "multipart/form-data; boundary=----------------------------4ebf00fbcf09",
+                    contentType: false,
+                    cache: false
+                };
+                ajaxcall_postForm = new Ajaxcall(config_postForm);*/
+            mainDymerModel();
+        } catch (e) {
+            console.error(e);
         }
-
-        // Add final JavaScript file
-        let mycallback = function () {
-            try {
-                /*	config_postForm = {
-				url: serviceFormUrl,
-					processData: false,
-					enctype: "multipart/form-data; boundary=----------------------------4ebf00fbcf09",
-					contentType: false,
-					cache: false
-			};
-			ajaxcall_postForm = new Ajaxcall(config_postForm);*/
-                mainDymerModel();
-            } catch ( e ) {
-                console.error( e );
-            }
-        };
-
-        addFileToArr( fileInfo.ajaxCallJs );
-
-        // Call the onloadFiles function with the array of files
-        onloadFiles( arr );
-    }
+    };
+    group = "mandatory";
+    arr.push(new Elfile(domtype, filename, mycallback, useonload, group));
+    await onloadFiles(arr);
 }
 
 function getbaseEntityConfig(basedat) {
@@ -897,7 +897,7 @@ const hookReleationForm_Promise = function(item) {
 
 function populateHookRelation(x, y, z, w, k, a, b, arObj2, rel) {
    //mr rel fix
-  // console.log('rel',rel); 
+  // console.log('rel',rel);
    //console.log('arObj2',arObj2);
     var templ_data = flatEsArray(arObj2.data);
     arObj2.data = templ_data.arr
@@ -1034,7 +1034,7 @@ function populateHookTaxonomy(x, y, z, w, k, a, b, arObj2, tax) {
                 sel.append($("<option>").attr('value', value.value).text(value.locales.en.value));
 
                 if (value.nodes.length != 0) {
-                    // sel.append($("<optgroup>"));                  
+                    // sel.append($("<optgroup>"));
                     for (internalValue of value.nodes) {
                         sel.append($("<option>").attr('value', internalValue.value).text("\u00A0" + "\u00A0" + internalValue.locales.en.value));
                     }
@@ -1504,7 +1504,7 @@ async function ldFormFiles2(id) {
     let rs = await removeTempImport('tftemp').then(async function() {
         //  console.log("inizio caricamento file");
         // return onloadFiles((listLoadedAdm[id].tftemp).slice());
-        let onl2=onloadFiles2((listLoadedAdm[id].tftemp).slice()); 
+        let onl2=onloadFiles2((listLoadedAdm[id].tftemp).slice());
         if (typeof afterLoadForm !== "undefined") {
         setTimeout(function() {
                 afterLoadForm(); //marco after
@@ -1568,7 +1568,7 @@ function actionEventPostMultipartForm(type, el, senderForm, callbackfunction, ca
      var complete = check_required(senderForm);
      if (!complete){
          $('#p_p_id'+pnamespace).hideLoader();return complete;
-     }	
+     }
      if (!checkForm){
          $('#p_p_id'+pnamespace).hideLoader();
          return checkForm;
@@ -1577,7 +1577,7 @@ function actionEventPostMultipartForm(type, el, senderForm, callbackfunction, ca
     //	setCheck(senderForm);
     ajax_temp_call.flush();
     ajax_temp_call.addcontainer_ids(senderForm);
-    //var personalData = new Object(); 
+    //var personalData = new Object();
     //personalData[ "p1"] = "v1";
     //var beforeSend={"beforeSend":"beforeSendEntity"};
     //ajaxcall_postForm.addparams(personalData);
@@ -1607,126 +1607,50 @@ function actionEventPostMultipartForm(type, el, senderForm, callbackfunction, ca
     return false;
 }
 //-----------------END FORM-----------------
-//-----------------START VIEW---------------
-function loadRequireView() {
-    var ckaddimport = [];
-    if (typeof dymerconf !== 'undefined')
+
+// -----------------START VIEW---------------
+async function loadRequireView() {
+    let ckaddimport = [];
+    if ( typeof dymerconf !== 'undefined' ) {
         ckaddimport = dymerconf.notImport;
-    var domtype = "link";
-    var filename = "";
-    var callback = null;
-    var useonload = false;
-    var group = "mandatory";
-    var arr = [];
-    //	console.log('kmsconfig.cdn test', kmsconfig.cdn);
-    group = "bootstrap";
-    filename = kmsconfig.cdn + "css/lib/bootstrap/4.1.3/bootstrap.min.css";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    //filename = "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css";
-    group = "bootstrap-select";
-    filename = kmsconfig.cdn + "css/lib/bootstrap-select/bootstrap-select.css";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "font-awesome";
-    filename = kmsconfig.cdn + "css/lib/font-awesome/4.7/font-awesome.min.css";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "mandatory";
-    filename = kmsconfig.cdn + "css/dymer.base.css";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    filename = kmsconfig.cdn + "css/bootstrap-dymertagsinput.css";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    domtype = "script";
-    callback = null;
-    useonload = true;
-    group = "jquery";
-    if (!(ckaddimport.indexOf(group) > -1)) {
-        filename = kmsconfig.cdn + "js/lib/jquery/jquery-3.3.1.min.js";
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    }
-    group = "popper";
-    filename = kmsconfig.cdn + "js/lib/jquery/popper.min.js";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    
-    group = "mandatory";
-    filename = kmsconfig.cdn + "js/dymer.oauth.js";
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "serializejson";
-    filename = kmsconfig.cdn + "js/lib/jquery/jquery.serializejson.js";
-    if (!(ckaddimport.indexOf(group) > -1))
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "ajaxcall";
-    filename = kmsconfig.cdn + "js/ajaxcall.js";
-    if (!(ckaddimport.indexOf(group) > -1))
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "bootstrap";
-    filename = kmsconfig.cdn + "js/lib/bootstrap/4.1.3/bootstrap.min.js";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "mandatory";
-    filename = kmsconfig.cdn + "js/lib/bootstrap/4.1.3/bootstrap-notify.js";
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "mandatory";
-    filename = kmsconfig.cdn + "js/handlebars.min.js";
-    arr.push(new Elfile(domtype, filename, callback, useonload));
-    filename = kmsconfig.cdn + "js/bootstrap-dymertagsinput.js";
-    arr.push(new Elfile(domtype, filename, callback, false));
-    group = "bootstrap";
-    //filename = 'https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js';
-    filename = kmsconfig.cdn + 'js/lib/bootstrap/4.1.3/bootstrap.bundle.min.js';
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload));
-    //filename = 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js';
-    group = "bootstrap-select";
-    filename = kmsconfig.cdn + 'js/lib/bootstrap-select/bootstrap-select.min.js';
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload));
-    group = "summernote";
-    if (!(ckaddimport.indexOf(group) > -1)) {
-        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.css";
-        arr.push(new Elfile("link", filename, callback, useonload, group));
-        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.js";
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
     }
 
-    group = "mandatory";
-    /*filename = kmsconfig.cdn + "js/validate-forms.js";
-    arr.push(new Elfile(domtype, filename, mycallback, useonload));*/
-    filename = kmsconfig.cdn + "js/handlebarshook.js";
+    let arr = [];
 
-    var mycallback = function() { // Method which will display type of Animal
+    let domtype = "";
+    let filename = "";
+    let callback = null;
+    let useonload = false;
+    let group = "";
 
-        document.cookie = "DYMisi=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
-        var temp_config_call = {
-            url: csd + "/api2/retriveinfo",
-            type: 'POST',
-            addDataBody: false
-        };
-        var ajax_temp_call = new Ajaxcall(temp_config_call);
-        ajax_temp_call.flush();
-        var ret = ajax_temp_call.send();
-        for (const [key, value] of Object.entries(ret)) {
-            if (key == "DYMisi")
-                document.cookie = "DYMisi=" + value;
-            else {
-                localStorage.removeItem(key);
-                localStorage.setItem(key, value);
+    // Load libraries from the database
+    try {
+        const response = await fetch( serverUrl + '/api/dservice/api/v1/library/' );
+        const libraries = await response.json();
+
+        libraries.filter( ( { loadtype } ) => loadtype === 'view' ).forEach( library => {
+            if ( library.activated ) {
+                domtype = library.domtype;
+                filename = kmsconfig.cdn + library.filename;
+                callback = library.callback !== null ? eval(`${library.callback}`) : null;
+                useonload = library.useonload;
+                group = library.group;
+                if ( !( ckaddimport.indexOf( group ) > -1 ) ) {
+                    arr.push( new Elfile( domtype, filename, null, useonload, group ) );
+                    console.log( `Add ${ library.name } at arr array:` )
+                }
             }
-        }
-        mainDymerView();
-    };
-    arr.push(new Elfile(domtype, filename, mycallback, useonload));
-    /* useonload = false;
-     */
-    onloadFiles(arr);
-    //loadAllJsCss();
+        } )
+
+    } catch ( error ) {
+        console.error( 'Error fetching and loading libraries:', error );
+    }
+
+    await onloadFiles( arr );
 }
 //-----------------END VIEW---------------
-//-----------------SART MAP-----------------
+
+//-----------------START MAP-----------------
 function loadRequireMap() {
     var domtype = "link";
     var filename = "";
@@ -1737,24 +1661,29 @@ function loadRequireMap() {
     if (typeof dymerconf !== 'undefined')
         ckaddimport = dymerconf.notImport;
     var group = "mandatory";
+
     group = "bootstrap";
     filename = kmsconfig.cdn + "css/lib/bootstrap/4.1.3/bootstrap.min.css";
     if (!(ckaddimport.indexOf(group) > -1))
         arr.push(new Elfile(domtype, filename, callback, useonload, group));
     //filename = "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css";
+
     group = "bootstrap-select";
     filename = kmsconfig.cdn + "css/lib/bootstrap-select/bootstrap-select.css";
     if (!(ckaddimport.indexOf(group) > -1))
         arr.push(new Elfile(domtype, filename, callback, useonload, group));
+
     group = "font-awesome";
     filename = kmsconfig.cdn + "css/lib/font-awesome/4.7/font-awesome.min.css";
     if (!(ckaddimport.indexOf(group) > -1))
         arr.push(new Elfile(domtype, filename, callback, useonload, group));
+
     group = "mandatory";
     filename = kmsconfig.cdn + "leaflet/leaflet.css";
     arr.push(new Elfile(domtype, filename, callback, useonload, group));
     filename = kmsconfig.cdn + "leaflet/plugin/toolbar/leaflet.toolbar.css";
     arr.push(new Elfile(domtype, filename, callback, useonload, group));
+
     group = "jquery.dataTables";
     if (!(ckaddimport.indexOf(group) > -1))
         filename = kmsconfig.cdn + "css/lib/datatables/jquery.dataTables.min.css";
@@ -1769,6 +1698,7 @@ function loadRequireMap() {
     arr.push(new Elfile(domtype, filename, callback, useonload, group));
     filename = kmsconfig.cdn + "css/bootstrap-dymertagsinput.css";
     arr.push(new Elfile(domtype, filename, callback, useonload, group));
+
     group = "mandatory";
     filename = kmsconfig.cdn + "css/dymer.base.css";
     if (!(ckaddimport.indexOf(group) > -1))
@@ -1776,6 +1706,9 @@ function loadRequireMap() {
     filename = kmsconfig.cdn + "leaflet/leaflet.awesome-markers.css";
     if (!(ckaddimport.indexOf(group) > -1))
         arr.push(new Elfile(domtype, filename, callback, useonload, group));
+
+
+
     domtype = "script";
     callback = null;
     useonload = true;
@@ -1865,7 +1798,7 @@ function loadRequireMap() {
     arr.push(new Elfile(domtype, filename, callback, useonload, group));
     filename = kmsconfig.cdn + "js/handlebarshook.js";
     arr.push(new Elfile(domtype, filename, callback, useonload));
-    filename = kmsconfig.cdn + "leaflet/plugin/markercluster/leaflet.markercluster.js";;
+    filename = kmsconfig.cdn + "leaflet/plugin/markercluster/leaflet.markercluster.js";
     var mycallback = function() { // Method which will display type of Animal
         var temp_config_call = {
             url: csd + "/api2/retriveinfo",
@@ -1890,8 +1823,8 @@ function loadRequireMap() {
     //loadAllJsCss();
 }
 //-----------------END MAP------------------
-//-----------------SART ENTITY--------------
 
+//-----------------START ENTITY--------------
 function resetMapFiltered() {
     reloadMarker(undefined).then(function(ars) {
         // populateMap(ars);
@@ -1991,7 +1924,7 @@ function getrendRole(perm) {
           return '<i class="fa fa-user-circle icon-action" title="Admin" ></i>';
           if (perm.iscurator)
           return '<i class="fa fa-user-circle-o icon-action" title="Editor" ></i>';
-         
+
           return '<i class="fa fa-user-o icon-action" title="co-editor"  ></i>';
     }
     return owner;
@@ -2172,13 +2105,13 @@ function checkPermission(actualItem, act) {
         entPerm.view = true;
         entPerm.delete = true;
         entPerm.iscurator =true;
-        
+
     }
     if( entPerm.iscurator ){
-       
+
          return entPerm;
     }
-  
+
     if (typeof actualItem.properties.grant != 'undefined') {
         var entGrant = actualItem.properties.grant;
         if (entGrant.hasOwnProperty("update"))
@@ -2203,14 +2136,14 @@ function checkPermission(actualItem, act) {
         // }*/
 
     }
-    
+
     if (d_uid != entOwner.uid && d_gid == entOwner.gid && !is_spr) {
         entPerm.view = true;
         entPerm.edit = false;
         entPerm.delete = false;
         return entPerm;
     }
-    
+
     return entPerm;
 }
 
@@ -2425,7 +2358,7 @@ function getModelEntity(el) {
     }
 }
 
-// function editEntity(id) { 
+// function editEntity(id) {
 //const editEntity = async function(id) {
 async function editEntity(id) {
     var itemToEdit = actualItem;
@@ -2540,7 +2473,7 @@ async function editEntity(id) {
                 await hookTaxonomy_Promise(itemToEdit);
                 dymphases.setSubPhase("edit", true, "duplicaterepeatable");
                 await duplicateRepeatable_Promise('#entityEdit', itemToEdit); //.then(function() { console.log("duplicated"); });
-                // setTimeout(function() { 
+                // setTimeout(function() {
                 //  hookReleationForm(itemToEdit);
                 // duplicateRepeatable('#entityEdit', itemToEdit);
                 // }, 10000);
@@ -2548,7 +2481,7 @@ async function editEntity(id) {
 
                 dymphases.setSubPhase("edit", true, "prepopulateform");
                 let resprepopulate_ = await prePopulateFormEdit_Promise(itemToEdit);
-               
+
               //console.log("resprepopulate",resprepopulate_);
                 //console.log("resprepopulate", resprepopulate);let filterpos = ($(this).data('filterpos') == undefined) ? 0 : $(this).data('filterpos');
                 var itemToEdit_ = Object.assign({}, itemToEdit);
@@ -2556,10 +2489,10 @@ async function editEntity(id) {
                       $('#entityEdit .selectpicker').selectpicker();
                       console.log("vado a modificare");
                       populateFormEdit('#entityEdit', itemToEdit, undefined, undefined, itemToEdit_);
-                      
+
                       $('#entityEdit .modal-body').hideLoader();
-  
-  
+
+
                   }, 2000);*/
 
                 $('#entityEdit .selectpicker').selectpicker();
@@ -2573,7 +2506,7 @@ async function editEntity(id) {
                 dymphases.setSubPhase("edit", true, "dympostpopulated");
                 await postPopulatedFormEdit_Promise(itemToEdit);
                 dymphases.setSubPhase("edit", true, "editForm");
-                
+
                 /*  setTimeout(function() {
                       $('#entityEdit').trackChanges();
                   }, 7000);*/
@@ -3345,6 +3278,7 @@ function checkbreadcrumb(arObj, fnct, linklabel) {
         $('#dymer_breadcrumb span').hide();
 }
 //-----------------END ENTITY--------------
+
 //-----------------START GLOBAL------------
 /*
 actionPostMultipartForm:POST di multipart/form-data
@@ -3759,7 +3693,7 @@ function showAddEntityBindReload() {
             try {
         $('.selectpicker').selectpicker();
     } catch(e) {
-        
+
       }
     }, 1000);
 }
@@ -4346,7 +4280,7 @@ function dymerphases(options) {
                 "active": false,
                 "phase": "",
                 "subphase": "",
-                "type": "" //full/list/map? 
+                "type": "" //full/list/map?
             },
             "create": {
                 "active": false,
@@ -4446,16 +4380,16 @@ this.getEditPhase = function() {
 return properties.edit.phase;
 }
 this.activeEditPhase = function (phase ) {
-this.setEditPhase(phase,true); 
+this.setEditPhase(phase,true);
 }
- 
+
 this.setViewPhase = function(phase, active, type) {
 properties.view.active = active;
 properties.view.phase = phase;
 properties.view.phase = type;
 properties.phase="view";
 }
- 
+
 this.disableViewPhase = function() {
 properties.view.active = false;
 properties.view.phase = "";
@@ -4545,7 +4479,7 @@ function dymerSearch(options) {
              slides[index].style = "display:none";
              slides[index].className += " too-slide-single-slide too-slide-fade";
          });
- 
+
          this.goToSlide(0)
          this.prepareControls();
          this.orderElement();*/
@@ -4641,7 +4575,7 @@ function dymerSearch(options) {
                         let datapost = {
                             instance: { "index": rel },
                             qoptions: { relations: false }
-                        }; 
+                        };
                         let listToselect = actionPostMultipartForm("entity.search", undefined, datapost, undefined, undefined, undefined, false, undefined);
                         let inde = 0;
                           //mr rel fix
@@ -4662,7 +4596,7 @@ function dymerSearch(options) {
                         /*if (usePlaceholder)
                             $sel.append($('<option value="" disabled selected>').attr('value', "").text($(this).attr('searchable-label')));*/
                         $.each(listToselect.data, function(ind, value) {
-                            // $sel.append($("<option>").attr('value', value._id).text(value.title)); 
+                            // $sel.append($("<option>").attr('value', value._id).text(value.title));
                             // $sel.append($("<option>").attr('data-tokens', value._id).attr('value', value.title).text(value.title));
                             $sel.append($("<option>").attr('value', value._id).text(value.title));
                         });
