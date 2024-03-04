@@ -24,7 +24,7 @@ require("../models/permission/DymerCronJobRule");
 const DymRule = mongoose.model("DymerCronJobRule");
 router.use(bodyParser.json({ limit: '50mb', extended: true }))
 router.use(bodyParser.urlencoded({ limit: '100mb', extended: true }))
-let fn = require("flatnest")
+
     /*router.use(bodyParser.json());
     router.use(bodyParser.urlencoded({
         extended: false,
@@ -241,16 +241,12 @@ router.post('/fromcsv/:enttype', util.checkIsAdmin, (req, res) => {
     let ret = new jsonResponse();
     let listTopost = [];
     let newentityType = req.params.enttype
-    
-    let lista = req.body.dataToImport   
 
-    console.log("lista: ", lista)
-
+    let lista = req.body.dataToImport
     logger.info(nameFile + '| post/fromcsv | import :' + newentityType);
-    
+
     var pt = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/_search";
     const originalrelquery = req.body.indtorel //"dih";
-    
     var query = {
         "query": {
             "query": {
@@ -264,16 +260,17 @@ router.post('/fromcsv/:enttype', util.checkIsAdmin, (req, res) => {
             }
         }
     };
-    
+
 
     axios.post(pt, query).then(response => {
         const listaRel = response.data.data;
-    
+        //////////////
+        // console.log("listaRel", listaRel)
         lista.forEach(element => {
             var propert_ = {
                 owner: {
-                    uid: 0,
-                    gid: 0
+                    uid: element["properties.owner"],  //0
+                    gid: 20121 //0
                 },
                 "grant": {
                     "update": {
@@ -301,13 +298,21 @@ router.post('/fromcsv/:enttype', util.checkIsAdmin, (req, res) => {
                         ]
                     }
                 },
-              
+                ipsource: util.getServiceUrl('webserver') + util.getContextPath('webserver') //"airegio" //url web server
             };
             propert_.status = "1";
             propert_.visibility = "0";
+            propert_.extrainfo = {
+                lastupdate: {
+                    uid: element["properties.owner"], //"admin@dymer.it", // mail owner
+                    origin: util.getServiceUrl('webserver') + util.getContextPath('webserver') //"http://localhost:8080/listentities"  // url web server
+                }
+            }
+            propert_.changed = (new Date()).toISOString(); //"2024-02-28T11:15:17.650Z"  // vuoto
             
-           let elrel = listaRel.find((el) => el["_source"].title == element["DIH"]); //DIHNAME era DIH
-           let rel_id = undefined;
+            let elrel = listaRel.find((el) => el["_source"].title == element["DIH"]); //DIHNAME era DIH
+            // let elrel = listaRel.find((el) => el["_source"].title == element["url"]); //DIHNAME era DIH
+            let rel_id = undefined;
             if (elrel != undefined) rel_id = elrel["_id"];
             
             var singleEntity = {
@@ -315,13 +320,15 @@ router.post('/fromcsv/:enttype', util.checkIsAdmin, (req, res) => {
                     "index": newentityType,
                     "type": newentityType
                 },
-                
+
                 "data": buildNestedObj(element)
             };
             
+            singleEntity.data.properties = propert_
+            //console.log(singleEntity)
             if (rel_id != undefined)
                 singleEntity.data.relation = { dih: [{ to: rel_id }] };
-            
+
             var extrainfo = {
                 "extrainfo": {
                     "companyId": "20097",
@@ -360,41 +367,46 @@ router.post('/fromcsv/:enttype', util.checkIsAdmin, (req, res) => {
             setTimeout(function () {
                 logger.info(nameFile + ' get/fromjson | import timeout axios :' + index + " " + JSON.stringify(obj.data));
                 postMyData(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA);
-                
             }, 1000 * (index + 1));
         });
         return res.send(ret);
-        
+
     })
-    .catch(error => {
-        console.error("ERROR | " + nameFile + " | get/fromjson ", error);
-        logger.error(nameFile + ' | get/fromjson : ' + error);
-    });
-    
+        .catch(error => {
+            console.error("ERROR | " + nameFile + " | get/fromjson ", error);
+            logger.error(nameFile + ' | get/fromjson : ' + error);
+        });
+
 });
 
 function buildNestedObj(dottedObj) {
     const result = {};
-
     for (const key in dottedObj) {
-      if (dottedObj.hasOwnProperty(key)) {
-        const keys = key.split('.');
-        let currentLevel = result;
-  
-        for (let i = 0; i < keys.length; i++) {
-          const nestedKey = keys[i];
-          if (i === keys.length - 1) {
-            currentLevel[nestedKey] = dottedObj[key];
-          } else {
-            currentLevel[nestedKey] = currentLevel[nestedKey] || {};
-            currentLevel = currentLevel[nestedKey];
-          }
+        if (dottedObj.hasOwnProperty(key)) {
+            const keys = key.split('.');
+            let currentLevel = result;
+            
+            for (let i = 0; i < keys.length; i++) {
+                const nestedKey = keys[i];
+                if (i === keys.length - 1) {
+                    currentLevel[nestedKey] = dottedObj[key];
+                } else {
+                    currentLevel[nestedKey] = currentLevel[nestedKey] || {};
+                    currentLevel = currentLevel[nestedKey];
+                }
+            }
         }
-      }
     }
+    /**/
+    if(result["representatives"]) {
+        let representatives = JSON.stringify(result["representatives"]);
+        delete result["representatives"]
+        result["representatives"] = [JSON.parse(representatives)]
+    }
+    /**/
+    // if(!result.properties) result.properties = {}
+    // if(result.properties?.owner) result.properties.owner = {owner: result.properties.owner}
 
-    if(!result.properties) result.properties = {}
-    if(result.properties?.owner) result.properties.owner = {owner: result.properties.owner}
     return result;
 }
 /******************************************/

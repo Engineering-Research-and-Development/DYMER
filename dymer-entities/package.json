@@ -20,6 +20,7 @@
         "express-session": "1.17.2",
         "extend": "3.0.2",
         "flat": "^3.0.1",
+        "flatnest": "^1.0.0",
         "form-data": "4.0.0",
         "fs": "0.0.1-security",
         "gridfs-stream": "1.1.1",
