@@ -1,5 +1,16 @@
-const dataToInsert = require( './initDbLibraries.json' );
-const initLibraries = async ( Libraries ) => {
+const mongoose = require( "mongoose" );
+const dataToInsert = require( './config/coreLibraries.json' );
+
+const dbConnectionString = 'mongodb://localhost:27017/dservice';
+const connectToDatabase = () => {
+	return mongoose.connect( dbConnectionString, {
+		useNewUrlParser : true, useUnifiedTopology : true
+	} );
+};
+
+const Libraries = require( './models/permission/Libraries' );
+
+const initLibraries = async () => {
 	try {
 		//Stats
 		const totStartLibs = await Libraries.countDocuments();
@@ -22,10 +33,8 @@ const initLibraries = async ( Libraries ) => {
 			if ( !existingLibrary ) {
 				const newLibrary = new Libraries( library );
 				await newLibrary.save();
-				// console.log( `Libreria '${ library.name }' aggiunta al database.` );
 				insertedCount++;
 			} else {
-				// console.log( `Libreria '${ library.name }' già presente nel database. Ignorata.` );
 				ignoredCount++;
 			}
 		}
@@ -39,8 +48,24 @@ const initLibraries = async ( Libraries ) => {
 		console.log( 'Total libraries in the database after insertion:', totEndLibs );
 
 	} catch ( error ) {
-		console.error( "Errore durante l'inserimento delle librerie nel database:", error );
+		console.error( "Error during the insertion of libraries into the database:", error );
+	} finally {
+		await mongoose.disconnect();
+		console.log( "Database connection closed." );
 	}
 };
 
-module.exports = initLibraries;
+connectToDatabase().then( () => {
+					   const db = mongoose.connection;
+					   db.on( 'error', console.error.bind( console, 'Database connection error:' ) );
+					   console.log( 'Connected to MongoDB database successfully.' );
+					   initLibraries().then( () => {
+										  console.log( "initLibraries completed." );
+									  } )
+									  .catch( error => {
+										  console.error( "Error during initLibraries:", error );
+									  } );
+				   } )
+				   .catch( error => {
+					   console.error( "Error during the connection to the database:", error );
+				   } );
