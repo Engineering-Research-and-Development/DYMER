@@ -1,4 +1,5 @@
 const mongoose = require( "mongoose" );
+const initLibraries = require( "../../config/initDbLibraries" );
 
 const librarySchema = new mongoose.Schema( {
 											   name      : {
@@ -14,9 +15,8 @@ const librarySchema = new mongoose.Schema( {
 												   required : true
 											   },
 											   callback  : {
-												   type     : String,
-												   default  : null,
-												   required : true
+												   type    : String,
+												   default : null
 											   },
 											   useonload : {
 												   type     : Boolean,
@@ -34,8 +34,11 @@ const librarySchema = new mongoose.Schema( {
 												   type     : String,
 												   required : true
 											   }
-										   } );
+										   }, { versionKey : false } );
 
 const Libraries = mongoose.model( "Libraries", librarySchema );
+
+// uncomment to populate the db with the core libraries
+// initLibraries( Libraries );
 
 module.exports = Libraries;
