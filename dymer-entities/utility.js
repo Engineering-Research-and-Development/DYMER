@@ -211,3 +211,33 @@ exports.getDymerUser = function(req, res, next) {
         return dymeruser;
     }
 }
+
+function jsonValueClean(valore) {
+    if (typeof valore === 'string') {
+        return valore.replace(/[\n\t\r\\,]/g, '');
+    } else if (Array.isArray(valore)) {
+        return valore.map(jsonValueClean);
+    } else if (typeof valore === 'object') {
+        for (const chiave in valore) {
+            valore[chiave] = jsonValueClean(valore[chiave]);
+        }
+        return valore;
+    } else {
+        return valore;
+    }
+}
+
+exports.flatJSON = function (nestedJSONArray) {
+    let flattedJSONArray = []
+        for(let element of nestedJSONArray) {
+            element._source.logo = this.getImgLink(element._id, element._source.logo?.id)
+
+            let newElem = jsonValueClean(flatnest.flatten(element))
+            flattedJSONArray.push(newElem)
+    }
+    return flattedJSONArray
+}
+
+exports.getImgLink = function(resourceId, logoId) {
+    return logoId ? `${this.getServiceUrl("entity")}/api/entities/api/v1/entity/contentfile/${resourceId}/${logoId}` : ""
+}

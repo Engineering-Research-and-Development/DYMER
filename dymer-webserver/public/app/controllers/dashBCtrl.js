@@ -1,5 +1,5 @@
 angular.module('dashCtrl', ['nvd3'])
-    .controller('dashController', function($scope, $http, $location, $browser, $rootScope) {
+    .controller('dashController', function($scope, $http, $location, $browser, $rootScope, exportEntities) {
         var baseContextPath = $rootScope.globals.contextpath; //$rootScope.site_prefix; //'/d4ptest/'; //$browser.baseHref();
         $scope.redison = false;
         $scope.tab = 1;
@@ -190,6 +190,7 @@ angular.module('dashCtrl', ['nvd3'])
                 }).catch(function (response) {
                     console.log(response.status);
                 });*/
+                exportEntities.exportJSONFormat(baseContextPath, obj)
 
         };
         $scope.invalidateCache = function(obj) {
@@ -345,6 +346,6 @@ angular.module('dashCtrl', ['nvd3'])
             });
         }
 
-        lalestEnt(30, ["properties.created:desc"], '#dtlalestEntCreated', 'dtlalestEntCreated');
-        lalestEnt(30, ["properties.changed:desc"], '#dtlalestEntUpdated', 'dtlalestEntUpdated');
+        lalestEnt(50, ["properties.created:desc"], '#dtlalestEntCreated', 'dtlalestEntCreated');
+        lalestEnt(50, ["properties.changed:desc"], '#dtlalestEntUpdated', 'dtlalestEntUpdated');
     });

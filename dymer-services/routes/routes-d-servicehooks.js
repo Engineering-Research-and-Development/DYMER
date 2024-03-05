@@ -19,6 +19,7 @@ router.use(bodyParser.urlencoded({
     extended: false,
     limit: '100MB'
 }));
+
 //   /api/v1/opn/
 /*
 const mongoURI = util.mongoUrlForm();
@@ -37,7 +38,9 @@ mongoose
     })
     .catch(err => {
         console.error("ERROR | " + nameFile + ` | Error connecting to mongo! Database name: "${x.connections[0].name}"`, err);
-    });*/
+    });
+*/
+
 router.post('/addhook', util.checkIsAdmin, function(req, res) {
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -65,6 +68,7 @@ router.post('/addhook', util.checkIsAdmin, function(req, res) {
         }
     })
 });
+
 router.get('/hooks/', (req, res) => {
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
@@ -88,6 +92,7 @@ function findHook(queryFind, res) {
         }
     })
 }
+
 router.delete('/hook/:id', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     var id = req.params.id;
@@ -112,7 +117,7 @@ router.post('/checkhook', function(req, res) {
     let data = callData.data;
     let extraInfo = callData.extraInfo;
     let origindata = callData.origindata;
-    let originheader = callData.originheader; 
+    let originheader = callData.originheader;
     var queryFind = {};
     var eventSource = data.eventSource;
     var queryFind = {
@@ -134,8 +139,9 @@ router.post('/checkhook', function(req, res) {
         els.forEach(el => {
             // console.log("chekkkk el", JSON.stringify(el));
             logger.info(nameFile + ' | post/checkhook | HookModel: chek el' + JSON.stringify(el));
-            var pt = wbsUrl + el.service.servicePath;
-            // pt = el.service.servicePath; 
+            //var pt = wbsUrl + el.service.servicePath;
+            // pt = el.service.servicePath;
+            let pt = util.getServiceUrl("dservice") + '/api/v1/workflow/listener';
             axios.post(pt, { 'data': data, "extraInfo": extraInfo,"origindata":origindata, "originheader":  originheader }, {
                     headers: headers
                 }).then(response => {
@@ -155,4 +161,5 @@ router.post('/checkhook', function(req, res) {
         }
     })
 });
+
 module.exports = router;

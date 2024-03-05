@@ -25,10 +25,10 @@ const oa = new OAuth2(global.gConfig.services.webserver.idm.clientID,
     global.gConfig.services.webserver.idm.xtokenURL
 );
 
-router.post('/login',
+router.post('/login', function(req, res) {
+    // #swagger.tags = ['Webserver']
 
-    function(req, res) {
-        var ret = new jsonResponse();
+    var ret = new jsonResponse();
         ret.setSuccess(false);
         // ret.setMessages("Invalid Credential. Please double-check and try again. ");
       //  console.log('AAAAAAAAAAAAAAAAA');
@@ -53,12 +53,11 @@ router.post('/login',
         console.log('query  ', query);
         //  console.log('path', path);
         //console.log('res', res);
-
     });
+
 /**
  * Event listener for HTTP server "error" event.
  */
-
 function onError(error) {
     if (error.syscall !== 'listen') {
         throw error;
@@ -80,7 +79,10 @@ function onError(error) {
             throw error;
     }
 }
+
 router.post('/logout', (req, res) => {
+    // #swagger.tags = ['Webserver']
+
     var ret = new jsonResponse();
     ret.setSuccess(false);
     let body = req.body;
@@ -97,9 +99,11 @@ router.post('/logout', (req, res) => {
         ret.setMessages('Invalid logout');
         return res.send(ret);
     });
-
 });
+
 router.post('/userinfo', (req, res) => {
+    // #swagger.tags = ['Webserver']
+
     var ret = new jsonResponse();
     ret.setSuccess(false);
     // ret.setMessages("Invalid Credential. Please double-check and try again. ");
@@ -119,7 +123,10 @@ router.post('/userinfo', (req, res) => {
         res.end();
     });
 });
+
 router.post('/refreshtoken', (req, res) => {
+    // #swagger.tags = ['Webserver']
+
     var ret = new jsonResponse();
     ret.setSuccess(false);
     // ret.setMessages("Invalid Credential. Please double-check and try again. ");
@@ -138,14 +145,9 @@ router.post('/refreshtoken', (req, res) => {
     });
 });
 
-
-
-
-
-
-
-
 router.post('/tokeninfo', (req, res) => {
+    // #swagger.tags = ['Webserver']
+
     var ret = new jsonResponse();
     ret.setSuccess(false);
     // ret.setMessages("Invalid Credential. Please double-check and try again. ");
@@ -162,10 +164,11 @@ router.post('/tokeninfo', (req, res) => {
         console.log('CHECK err tokeninfo', err);
         res.send(ret);
     });
-
 });
 
 router.post('/getOAuthClientCredentials', (req, res) => {
+    // #swagger.tags = ['Webserver']
+
     var ret = new jsonResponse();
     ret.setSuccess(false);
     // ret.setMessages("Invalid Credential. Please double-check and try again. ");
@@ -182,10 +185,11 @@ router.post('/getOAuthClientCredentials', (req, res) => {
         console.log('CHECK err getOAuthClientCredentials', err);
         res.send(ret);
     });
-
 });
 
 router.post('/userinfobyadmin', (req, res) => {
+    // #swagger.tags = ['Webserver']
+
     var ret = new jsonResponse();
     ret.setSuccess(false);
     // ret.setMessages("Invalid Credential. Please double-check and try again. ");
@@ -197,16 +201,15 @@ router.post('/userinfobyadmin', (req, res) => {
     var uid = '413c7231-e03c-46e0-b86d-6326d41d9e8e';
     oa.getUserInfoByAdmin('/v1/users/', body.token, uid).then(function(ars) {
         console.log('ss ars', ars);
-
     }).catch(function(err) {
         console.log('CHECK err ars', err);
-
     });
-
     res.end();
 });
 
 router.post('/test1', (req, res) => {
+    // #swagger.tags = ['Webserver']
+
     var ret = new jsonResponse();
     ret.setSuccess(false);
     // ret.setMessages("Invalid Credential. Please double-check and try again. ");
@@ -217,24 +220,34 @@ router.post('/test1', (req, res) => {
 
     oa.getTest('/v1/organizations', body.token).then(function(ars) {
         console.log('cck', ars);
-
     }).catch(function(err) {
         console.log('CHECK err ars', err);
-
     });
-
     res.end();
 });
+
 router.post('/callback', (req, res) => {
+    // #swagger.tags = ['Webserver']
+
     console.log('post(111example/callback');
 });
+
 router.get('/callback', (req, res) => {
+    // #swagger.tags = ['Webserver']
+
     console.log('get(111example/callback');
 });
+
 router.post('/example/callback', (req, res) => {
+    // #swagger.tags = ['Webserver']
+
     console.log('post(example/callback');
 });
+
 router.get('/example/callback', (req, res) => {
+    // #swagger.tags = ['Webserver']
+
     console.log('get(example/callback');
 });
+
 module.exports = router;

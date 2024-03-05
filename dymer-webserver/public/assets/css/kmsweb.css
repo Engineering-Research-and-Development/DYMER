@@ -1284,3 +1284,25 @@ margin: 4px 0;*/
 .modal-fullscreen-xl .modal-body {
   overflow-y: auto;
 }
+
+.btn-login{display: inline-flex;
+    appearance: none;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    user-select: none;
+    position: relative;
+    
+    vertical-align: middle;
+    
+    width: 100%;
+    line-height: 1.2;
+    
+    font-weight: 500;
+ 
+    transition: all 0.25s ease 0s;
+    box-sizing: border-box;
+    height: 50px;
+    
+    margin-bottom: 24px;}

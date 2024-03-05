@@ -1,4 +1,5 @@
-angular.directive('fileModel', ['$parse', function($parse){
+//angular.directive('fileModel', ['$parse', function($parse){
+angular.module('fileModel', []).directive('fileModel', ['$parse', function($parse){
 	return {
 		restrict: 'A',
 		link: function(scope, element, attrs){

@@ -8,8 +8,12 @@
         var site_prefix = 'site_prefix_value';
     </script>
 
-    <link rel="apple-touch-icon" sizes="76x76" href="public/assets/img/apple-icon.png">
-    <link rel="icon" type="image/png" href="public/assets/img/favicon.png">
+ 
+    <link rel="apple-touch-icon" sizes="180x180" href="public/assets/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="public/assets/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="public/assets/img/favicon-16x16.png">
+
+
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <title>
         DYnamic Information ModElling & Rendering
@@ -21,6 +25,13 @@
     <script src="public/assets/wsbuilder/js/popper.min.js"></script>
     <link href="public/assets/css/gapiffacecss.css" rel="stylesheet" />
     <link href="public/assets/css/font-awesome.min.css" rel="stylesheet" />
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@100..900&display=swap" rel="stylesheet">
+
+
     <!-- CSS Files -->
     <!-- Bootstrap core CSS -->
     <link href="public/assets/css/bootstrap.css" rel="stylesheet">
@@ -36,6 +47,9 @@
     <script src="public/app/app.js"></script>
     <script src="public/app/routes.js"></script>
     <!-- <script src="public/app/services/dymerSutility.js"></script>-->
+    <script src="public/app/services/exportEntities.js"></script>
+    <script src="public/app/services/multipartForm.js"></script>
+    <script src="public/app/directive/fileModel.js"></script>
     <script src="public/app/controllers/entitiesCtrl.js"></script>
     <script src="public/app/controllers/templateCtrl.js"></script>
     <script src="public/app/controllers/manageModel.js"></script>
@@ -61,6 +75,9 @@
     <script src="public/app/controllers/syncCtrl.js"></script>
     <script src="public/app/controllers/mclgsCtrl.js"></script>
     <script src="public/app/controllers/relationsCtrl.js"></script>
+    <script src="public/app/controllers/workflowCtrl.js"></script>
+    <script src="public/app/directive/angularjs-dropdown-multiselect.js"></script>
+	<script src="public/app/controllers/swaggerCtrl.js"></script>
 
     <link href="public/assets/css/paper-dashboard.css" rel="stylesheet" />
     <link href="public/assets/css/json-viewer.css" rel="stylesheet">
@@ -79,6 +96,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-nvd3/1.0.9/angular-nvd3.min.js"></script>
     -->
+    <script>
+        var staticPath = '/angularjs-dropdown-multiselect';
+    </script>
+
 </head>
 
 <body class="">
@@ -89,14 +110,12 @@
         Tip 1: You can change the color of the sidebar using: data-color="blue | green | orange | red | yellow"
     -->
             <div class="logo">
-                <a href="/" class="simple-text logo-mini">
+                <a href="/" class="simple-text logo-mid">
                     <div class="logo-image-small">
-                        <img src="public\cdn\img\dymer-logo.png" class="rounded-circle">
+                        <img src="public\cdn\img\dymer-logo.png" class=" ">
                     </div>
                 </a>
-                <a href="/" class="simple-text logo-normal">
-                    DYMER
-                </a>
+                 
             </div>
             <div class="sidebar-wrapper">
                 <ul class="nav">
@@ -105,7 +124,7 @@
                             <i class="nc-icon nc-chart-bar-32"></i>
                             <p>Dashboard</p>
                         </a>
-                        <div class=" kmssublist"  ng-show="hasPermission('app-admin' )">
+                        <div class=" kmssublist" ng-show="hasPermission('app-admin' )">
                             <ul class="">
                                 <li class="  ">
                                     <a href="mclgs"><i class="nc-icon nc-paper"></i>
@@ -116,14 +135,14 @@
                         </div>
                     </li>
 
-                    <li  ng-show="hasPermission('app-admin' )">
+                    <li ng-show="hasPermission('app-admin' )">
                         <a href="#" class="haschild">
 
                             <i class="fa fa-lock"></i>
                             <p>Permissions</p>
 
                         </a>
-                        <div class=" kmssublist"  >
+                        <div class=" kmssublist">
                             <ul class="">
                                 <li class="  ">
                                     <a href="authenticationconfig"><i class="fa fa-key"></i>
@@ -144,27 +163,7 @@
                             </ul>
                         </div>
                     </li>
-                    <li  ng-show="hasPermission('app-admin' )">
-                        <a href="#" class="haschild">
-                            <i class="nc-icon nc-layout-11"></i>
-                            <p>Templates</p>
-                        </a>
-                        <div class=" kmssublist">
-                            <ul class="">
-                                <li class=" "> <a href="managetemplate" target="_self"><i
-                                            class="nc-icon nc-ruler-pencil"></i>
-                                        <p>Manage Templates</p>
-                                    </a>
-                                </li>
-                                <li class="  ">
-                                    <a class="" href="templates"><i class="nc-icon nc-bullet-list-67 lg "></i>
-                                        <p>List Template</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li  ng-show="hasPermission('app-admin' )">
+                    <li ng-show="hasPermission('app-admin' )">
                         <a href="#" class="haschild">
                             <i class="nc-icon nc-tile-56"></i>
                             <p>Models</p>
@@ -189,6 +188,27 @@
                             </ul>
                         </div>
                     </li>
+                    <li ng-show="hasPermission('app-admin' )">
+                        <a href="#" class="haschild">
+                            <i class="nc-icon nc-layout-11"></i>
+                            <p>Templates</p>
+                        </a>
+                        <div class=" kmssublist">
+                            <ul class="">
+                                <li class=" "> <a href="managetemplate" target="_self"><i
+                                            class="nc-icon nc-ruler-pencil"></i>
+                                        <p>Manage Templates</p>
+                                    </a>
+                                </li>
+                                <li class="  ">
+                                    <a class="" href="templates"><i class="nc-icon nc-bullet-list-67 lg "></i>
+                                        <p>List Template</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    
                     <li>
                         <a href="#" class="haschild">
                             <i class="nc-icon nc-world-2"></i>
@@ -210,12 +230,14 @@
                                         <p>Add Entity</p>
                                     </a>
                                 </li>
-                                <li class="  "  ng-show="hasPermission('app-admin' )"> <a class="" href="taxonomy"><i class="fa fa-sitemap"></i>
+                                <li class="  " ng-show="hasPermission('app-admin' )"> <a class="" href="taxonomy"><i
+                                            class="fa fa-sitemap"></i>
                                         <p>Taxonomy</p>
                                     </a>
                                 </li>
-                                <li class="  "  ng-show="hasPermission('app-admin' )"> <a class="" href="importfromfile"><i class="nc-icon nc-air-baloon"></i>
-                                        <p>Import</p>
+                                <li class="  " ng-show="hasPermission('app-admin' )"> <a class=""
+                                        href="importfromfile"><i class="nc-icon nc-cloud-upload-94"></i>
+                                        <p>Import/Export</p>
                                     </a>
                                 </li>
                                 <li class="  ">
@@ -224,7 +246,7 @@
                                     </a>
                                 </li>
 
-                                <li class="  "  ng-show="hasPermission('app-admin' )">
+                                <li class="  " ng-show="hasPermission('app-admin' )">
                                     <a class="" href="hooks"> <i class="fa fa-toggle-on" aria-hidden="true"></i>
                                         <p>Hook</p>
                                     </a>
@@ -233,7 +255,7 @@
                         </div>
                     </li>
                     <!---->
-                    <li class="ng-hide"  ng-show="hasPermission('app-admin' )">
+                    <li class="ng-hide" ng-show="hasPermission('app-admin' )">
                         <a href="#" class="haschild">
                             <i class="fa fa-wrench"></i>
                             <p>Config Tool</p>
@@ -254,9 +276,9 @@
                             </ul>
                         </div>
                     </li>
-                   
+
                     <!---->
-                    <li  ng-show="hasPermission('app-admin' )">
+                    <li ng-show="hasPermission('app-admin' )">
                         <a href="#" class="haschild">
                             <i class="nc-icon nc-box"></i>
                             <p>Services</p>
@@ -289,10 +311,15 @@
                                     <a class="" href="opennessearch"><i class="fa fa-map-signs  "></i>
                                         <p>Openness Search</p>
                                     </a>
-                                </li>  
+                                </li>
                                 <li class="  ">
                                     <a class="" href="sync"><i class="fa fa-retweet" aria-hidden="true"></i>
                                         <p>Sync Dymer</p>
+                                    </a>
+                                </li>
+                                <li class="  ">
+                                    <a class="" href="workflow"><i class="fa fa-play" aria-hidden="true"></i>
+                                        <p>Workflow</p>
                                     </a>
                                 </li>
                             </ul>
@@ -352,6 +379,10 @@
                                         <p>Redis-Cache</p>
                                     </a>
                                 </li>
+								<!--<li class=""> <a class="" href="swaggerapi"><i class="nc-icon nc-bullet-list-67 lg "></i>
+									<p>Swagger API</p>
+								</a>
+								</li> -->
                             </ul>
                         </div>
                     </li>
@@ -394,7 +425,7 @@
                             </div>
                         </form>-->
                         <div>
-                            Benvenuto {{loggedUser.username}} 
+                            Benvenuto {{loggedUser.username}}
                         </div>
                         <ul class="navbar-nav">
                             <!--  <li class="nav-item">
