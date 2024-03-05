@@ -42,8 +42,8 @@ const protocol = gblConfigService.protocol;
 const appName = gblConfigService.app_name;
 const contextPath = util.getContextPath( 'webserver' );
 
-//const swaggerUi = require( 'swagger-ui-express' )
-//const swaggerFile = require( './swagger_webserver.json' )
+/*const swaggerUi = require( 'swagger-ui-express' )
+ const swaggerFile = require( './swagger_webserver.json' ) */
 
 const host = gblConfigService.ip + ":" + portExpress;
 const serverUrl = protocol + "://" + host + contextPath
