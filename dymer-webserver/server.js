@@ -50,9 +50,9 @@ const serverUrl = protocol + "://" + host + contextPath
 const docPath = '/api/doc';
 
 const options = {
-	swaggerOptions : {
+	/*swaggerOptions : {
 		docExpansion : 'none'
-	}
+	}*/
 };
 
 app.use(cookieParser());
