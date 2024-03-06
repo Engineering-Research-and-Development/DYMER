@@ -478,7 +478,7 @@ function loadUserInfo(req, res, next) {
 
     axios(config)
         .then(function (response) {
-            // console.log('dymeruserAA', response.data.data);
+           // console.log('dymeruserAA', response.data.data);
             req.headers["dymeruser"] = new Buffer(JSON.stringify(response.data.data)).toString("base64");
             //if (req.headers["reqfrom"] == undefined || req.headers["reqfrom"] == 'undefined')
             if (req.headers["reqfrom"] == undefined)

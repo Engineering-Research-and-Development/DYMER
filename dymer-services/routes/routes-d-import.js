@@ -237,7 +237,7 @@ router.post('/test-csv', upload.single('file'), async (req, res) => {
     }
 })
 
-router.post('/fromcsv/:enttype', util.checkIsAdmin, (req, res) => {
+router.post('/fromcsv/:enttype', (req, res) => {
     let ret = new jsonResponse();
     let listTopost = [];
     let newentityType = req.params.enttype
@@ -635,6 +635,7 @@ function postMyData(el, index, DYM, DYM_EXTRA) {
             ...formdata.getHeaders(),
             'Authorization': `Bearer ${DYM}`,
             'extrainfo': `${DYM_EXTRA}`,
+            'dymeruser':`${DYM}`
         },
         data: formdata
     };

@@ -3530,11 +3530,12 @@ router.post('/:enttype', function(req, res) {
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     let requestjsonpath=req.headers.requestjsonpath;
-    console.log('post enttype requestjsonpath',req.headers.requestjsonpath)
-    console.log('post enttype req.headers.referer',req.headers.referer)
+    //console.log('post enttype requestjsonpath',req.headers.requestjsonpath)
+    //console.log('post enttype req.headers.referer',req.headers.referer)
     let dymerextrainfo = dymeruser.extrainfo;
-    console.log("dymeruser", dymeruser);
-    console.log("hdymeruser", hdymeruser);
+    
+    logger.info(nameFile + '| /:enttype | create | dymeruser:' + dymeruser);
+    //console.log("hdymeruser", hdymeruser);
     
     // var dymerextrainfo = req.headers.extrainfo;
     /*if (dymerextrainfo != undefined && dymerextrainfo != "null" && dymerextrainfo != null) {
