@@ -42,10 +42,10 @@ const initLibraries = async () => {
 		const totEndLibs = await Libraries.countDocuments();
 
 		console.log( 'Library Summary:' );
-		console.log( 'Total libraries in the database before insertion:', totStartLibs );
-		console.log( 'Libraries inserted:', insertedCount );
-		console.log( 'Libraries ignored', ignoredCount );
-		console.log( 'Total libraries in the database after insertion:', totEndLibs );
+		console.log( 'Total libraries in the database before insertion: ', totStartLibs );
+		console.log( 'Libraries inserted: ', insertedCount );
+		console.log( 'Libraries ignored: ', ignoredCount );
+		console.log( 'Total libraries in the database after insertion: ', totEndLibs );
 
 	} catch ( error ) {
 		console.error( "Error during the insertion of libraries into the database:", error );
