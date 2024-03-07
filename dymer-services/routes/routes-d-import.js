@@ -625,7 +625,9 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
                         /*Se i moduli HTML sono già presenti nella destinazione, li elimino*/
                         if (modulesIds.length > 0){
                             modulesIds.forEach(titleId => {
-                                if (data.title == titleId.title && (data.properties.changed > titleId.changed || forceimport)){
+                                /*DA RIPRISTINARE DOPO AVER AGGIORNATO LA MACCHINA VIRTUALE*/
+                                //if (data.title == titleId.title && (data.properties.changed > titleId.changed || forceimport)){ 
+                                if (data.title == titleId.title){    
                                     var config = {
                                         method: 'delete',
                                         url: localApiUrl + titleId.id,
