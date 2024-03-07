@@ -600,7 +600,8 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
                 console.log("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - " + formTemplate + " Id", data._id);
                 titleId.id = data._id;
                 titleId.title = data.title;
-                titleId.changed = data.properties.changed;
+                /*DA RIPRISTINARE DOPO AVER AGGIORNATO LA MACCHINA VIRTUALE*/
+                //titleId.changed = data.properties.changed;
                 modulesIds.push(titleId);
                 titleId = {};
             //}
@@ -1423,8 +1424,8 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
                             /*fine dih end rel initiatives */
                             var singleEntity = {
                                 "instance": {
-                                    "index": newentityType,
-                                    "type": newentityType
+                                    "index": newentityType
+                                    //"type": newentityType
                                 },
                                 "data": element._source
                             };
@@ -1731,8 +1732,8 @@ router.get('/fromdymer_original/:id', util.checkIsAdmin, (req, res) => {
                             /*fine dih end rel initiatives */
                             var singleEntity = {
                                 "instance": {
-                                    "index": newentityType,
-                                    "type": newentityType
+                                    "index": newentityType
+                                    //"type": newentityType
                                 },
                                 "data": element._source
                             };

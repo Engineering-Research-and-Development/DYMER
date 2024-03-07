@@ -60,8 +60,11 @@ Vvveb.Components.extend("_base", "dymer/dpagination", {
 Vvveb.Components.add("dymer/kmsgeopoint", {
     name: "Geo Point",
     attributes: ["data-component-geopoint"],
+    /*MG - Inizio*/
+    //image: "icons/3d-location-graph.png",
     image: "icons/3d-location-graph.svg",
-    dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/3d-location-graph.png">',
+    /*MG - Fine*/
+    dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/3d-location-graph.svg">',
     html: '<div class="geopointcontgrp form-group field-description ">' +
         '<label for="description" class="kms-title-label">Geo Point</label>' +
         '<div>' +
@@ -120,7 +123,10 @@ Vvveb.Components.add("dymer/kmsrelation", {
     name: "Relation",
     attributes: ["data-component-kmsrelation"],
     image: "icons/network.svg",
-    dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/network.png">',
+    /*MG - Inizio*/
+    //dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/network.png">',
+    dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/network.svg">',
+    /*MG - Fine*/
     html: '<div class="relationcontgrp form-group field-description ">' +
         '<label for="description" class="kms-title-label">Relation</label>' +
         '<div>' +
@@ -461,7 +467,10 @@ Vvveb.Components.extend("_base", "html/mytextinput", {
     //attributes: { "type": "text" },
     attributes: ["data-component-dymerinput"],
     image: "icons/text_input.svg",
-    dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/text_input.png">',
+    /*MG - Inizio*/
+    //dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/text_input.png">',
+    dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/text_input.svg">',
+    /*MG - Fine*/
     html: '<div class="form-group"><label>Text</label><input data-component-dymerinput class="form-control" type="text" ></div></div>',
     properties: [{
             name: "Value",
