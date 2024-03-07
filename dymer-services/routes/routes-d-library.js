@@ -83,22 +83,6 @@ router.put( '/:id', util.checkIsAdmin, async ( req, res ) => {
 // PATCH
 router.patch( '/:id', util.checkIsAdmin, async ( req, res ) => {
 	// console.log(`router-d-library -> PATCH id: [${req.params.id}]`);
-	/* try {
-		const libId = req.params.id;
-		const idFilter = { _id : libId };
-		const updateLibrary = { $set : req.body };
-
-		const result = await DymRule.updateOne( idFilter, updateLibrary );
-
-		if ( result.modifiedCount < 1 ) {
-			res.status( 404 ).json( { error : 'Libreria non trovata o stato non modificato' } );
-		} else {
-			res.json( { message : 'Stato della libreria aggiornato con successo' } );
-		}
-	} catch ( error ) {
-		console.error( "Errore nell'aggiornamento dello stato della libreria:", error );
-		res.status( 500 ).json( { error : "Errore nell'aggiornamento dello stato della libreria" } );
-	} */
 	const libId = req.params.id;
 
 	if ( !isValidObjectId( libId ) ) {

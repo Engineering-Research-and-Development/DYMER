@@ -57,6 +57,7 @@ angular.module( 'libraryCtrl', [] )
 		   $scope.checkboxChanged = library => {
 			   // console.log( `${ library.name } [${ library._id }] changed state in ${ library.activated }` );
 
+			   // Chiamata $http per aggiornare lo stato nel backend
 			   let requestBody = { activated : !library.activated };
 
 			   $http.patch( libsURL + library._id, requestBody )
@@ -90,11 +91,12 @@ angular.module( 'libraryCtrl', [] )
 
 		   function generateLibraryRows( libraries ) {
 			   const viewTableBody = document.getElementById( 'viewLibrariesTableBody' );
+			   const mapTableBody = document.getElementById( 'mapLibrariesTableBody' );
+			   const formTableBody = document.getElementById( 'formLibrariesTableBody' );
 
 			   generateRows( libraries.filter( ( { loadtype } ) => loadtype === 'view' ), viewTableBody );
-
-			   $scope.showViewConfig = true;
-
+			   generateRows( libraries.filter( ( { loadtype } ) => loadtype === 'map' ), mapTableBody );
+			   generateRows( libraries.filter( ( { loadtype } ) => loadtype === 'form' ), formTableBody );
 		   }
 
 		   // Funzione per generare le righe della tabella
@@ -142,4 +144,20 @@ angular.module( 'libraryCtrl', [] )
 				   toggleSwitchCell.appendChild( toggleSwitch );
 			   } );
 		   }
+
+		   function generateCardsConfig(title, showConfig, tableId, tableBodyId) {
+			   return {
+				   title: title,
+				   showConfig: showConfig,
+				   tableId: tableId,
+				   tableBodyId: tableBodyId,
+				   columns: ['Name', 'Domtype',  'Filename', 'Callback',  'Use Onload', 'Group' , 'Load Type']
+			   };
+		   }
+
+		   $scope.libraryCardsConfigs = [
+			   generateCardsConfig('View Libraries', false, 'viewLibrariesTable', 'viewLibrariesTableBody'),
+			   generateCardsConfig('Map Libraries', false, 'mapLibrariesTable', 'mapLibrariesTableBody'),
+			   generateCardsConfig('Form Libraries', false, 'formLibrariesTable', 'formLibrariesTableBody')
+		   ]
 	   } );

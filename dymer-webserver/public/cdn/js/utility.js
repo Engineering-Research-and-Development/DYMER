@@ -1617,34 +1617,52 @@ async function loadRequireView() {
 
     let arr = [];
 
-    let domtype = "";
-    let filename = "";
-    let callback = null;
-    let useonload = false;
-    let group = "";
-
     // Load libraries from the database
     try {
         const response = await fetch( serverUrl + '/api/dservice/api/v1/library/' );
         const libraries = await response.json();
 
-        libraries.filter( ( { loadtype } ) => loadtype === 'view' ).forEach( library => {
-            if ( library.activated ) {
-                domtype = library.domtype;
-                filename = kmsconfig.cdn + library.filename;
-                callback = library.callback !== null ? eval(`${library.callback}`) : null;
-                useonload = library.useonload;
-                group = library.group;
-                if ( !( ckaddimport.indexOf( group ) > -1 ) ) {
-                    arr.push( new Elfile( domtype, filename, null, useonload, group ) );
+        libraries.filter( ( { loadtype, activated  } ) => loadtype === 'view' && activated).forEach( library => {
+            const { domtype, filename, callback, useonload, group, name } = library;
+
+            // Valuta la callback solo se non è nulla (attenzione: eval può comportare rischi di sicurezza)
+            const evalCallback = callback !== null ? eval(`${callback}`) : null;
+
+            if ( !( ckaddimport.indexOf( group ) > -1 ) ) {
+                arr.push(new Elfile(domtype, kmsconfig.cdn + filename, evalCallback, useonload, group));
                     console.log( `Add ${ library.name } at arr array:` )
                 }
-            }
+
         } )
 
     } catch ( error ) {
         console.error( 'Error fetching and loading libraries:', error );
     }
+
+    let filename = kmsconfig.cdn + "js/handlebarshook.js";
+    var mycallback = function() { // Method which will display type of Animal
+
+        document.cookie = "DYMisi=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+        var temp_config_call = {
+            url: csd + "/api2/retriveinfo",
+            type: 'POST',
+            addDataBody: false
+        };
+        var ajax_temp_call = new Ajaxcall(temp_config_call);
+        ajax_temp_call.flush();
+        var ret = ajax_temp_call.send();
+        for (const [key, value] of Object.entries(ret)) {
+            if (key == "DYMisi")
+                document.cookie = "DYMisi=" + value;
+            else {
+                localStorage.removeItem(key);
+                localStorage.setItem(key, value);
+            }
+        }
+        mainDymerView();
+    };
+    arr.push(new Elfile("script", filename, mycallback, true));
+
 
     await onloadFiles( arr );
 }
