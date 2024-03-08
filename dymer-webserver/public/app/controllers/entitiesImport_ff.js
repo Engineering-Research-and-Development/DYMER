@@ -148,12 +148,12 @@ angular.module('entitiesImportControllers', [])
 
                     obj[key] = recArray[index]
                 }
-                //*********/
+                
                 if (model == "service") {
                     let dih_index = fieldNames.indexOf("DIH")
                     obj["DIH"] = recArray[dih_index]
                 }
-                //*********/
+
                 dataToImport.push(obj) //
             }
             dataToImport.shift()
@@ -193,6 +193,11 @@ angular.module('entitiesImportControllers', [])
             //*********/
             if ($scope.selectedIndex == "service") {
                 $scope.originalFields.push({ newName: "DIH", checked: true, index: $scope.indexFields.indexOf("DIH") })
+            }
+
+            if ($scope.selectedIndex == "dih") {
+                $scope.originalFields.push({ newName: "Initiatives", checked: false, index: $scope.indexFields.indexOf("Initiatives") })
+                $scope.originalFields.push({ newName: "Project", checked: false, index: $scope.indexFields.indexOf("Project") })
             }
             //*********/
             $scope.csvFields = fieldNames

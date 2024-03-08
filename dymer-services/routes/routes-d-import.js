@@ -261,7 +261,7 @@ router.post('/fromcsv/:enttype', util.checkIsAdmin, (req, res) => {
         }
     };
 
-
+    console.log("QUERY:", JSON.stringify(query))
     axios.post(pt, query).then(response => {
         const listaRel = response.data.data;
         //////////////
@@ -325,10 +325,29 @@ router.post('/fromcsv/:enttype', util.checkIsAdmin, (req, res) => {
             };
             
             singleEntity.data.properties = propert_
-            //console.log(singleEntity)
+            
             if (rel_id != undefined)
                 singleEntity.data.relation = { dih: [{ to: rel_id }] };
 
+            if(newentityType.toLocaleLowerCase() == "dih") {
+                const initiativesArray = singleEntity.data.Initiatives?.replace(/\r/g, '').split(",").map(el => { return {"to": el}})
+                const projectArray = singleEntity.data.Project?.replace(/\r/g, '').split(",").map(el => { return {"to": el}})
+
+                // initialize if I need
+                singleEntity.data.relation = singleEntity.data.relation || {};
+                singleEntity.data.relation.initiatives = singleEntity.data.relation.initiatives || [];
+                singleEntity.data.relation.project = singleEntity.data.relation.project || [];
+
+                for(let itv of initiativesArray) {
+                    singleEntity.data.relation.initiatives.push(itv);
+                }
+
+                for(let prj of projectArray) {
+                    singleEntity.data.relation.project.push(prj);
+                }
+            }
+            console.log("===============")
+            console.log(JSON.stringify(singleEntity))
             var extrainfo = {
                 "extrainfo": {
                     "companyId": "20097",
