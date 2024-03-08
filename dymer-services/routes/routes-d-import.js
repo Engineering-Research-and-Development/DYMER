@@ -244,7 +244,8 @@ router.post('/fromcsv/:enttype', (req, res) => {
 
     let lista = req.body.dataToImport
     logger.info(nameFile + '| post/fromcsv | import :' + newentityType);
-console.log("lista da gui",lista);
+    logger.info(nameFile + '| post/fromcsv | lista :' + lista);
+     
     var pt = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/_search";
     const originalrelquery = req.body.indtorel //"dih";
 
@@ -832,7 +833,7 @@ function modelTemplatesImport(formTemplate, sourcepath, userinfo_objJsonB64_admi
                                         headers: {
                                             ...postData.getHeaders(),
                                             'dymeruser': userinfo_objJsonB64_admin,
-                                            "Referer": "http://localhost/",
+                                            //"Referer": "http://localhost/",
                                             'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
                                             'extrainfo': `${extrainfo_objJsonB64_admin}`,
                                         }
@@ -848,7 +849,7 @@ function modelTemplatesImport(formTemplate, sourcepath, userinfo_objJsonB64_admi
                                                     headers: {
                                                         ...postData.getHeaders(),
                                                         'dymeruser': userinfo_objJsonB64_admin,
-                                                        "Referer": "http://localhost/",
+                                                       // "Referer": "http://localhost/",
                                                         'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
                                                         'extrainfo': `${extrainfo_objJsonB64_admin}`,
                                                     }
@@ -885,7 +886,7 @@ function modelTemplatesImport(formTemplate, sourcepath, userinfo_objJsonB64_admi
                             headers: {
                                 ...postData.getHeaders(),
                                 'dymeruser': userinfo_objJsonB64_admin,
-                                "Referer": "http://localhost/",
+                               // "Referer": "http://localhost/",
                                 'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
                                 'extrainfo': `${extrainfo_objJsonB64_admin}`,
                             },
@@ -900,7 +901,7 @@ function modelTemplatesImport(formTemplate, sourcepath, userinfo_objJsonB64_admi
                                 headers: {
                                     ...formdata_admin.getHeaders(),
                                     'dymeruser': userinfo_objJsonB64_admin,
-                                    "Referer": "http://localhost/",
+                                    //"Referer": "http://localhost/",
                                     'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
                                     'extrainfo': `${extrainfo_objJsonB64_admin}`,
                                 }
@@ -921,7 +922,7 @@ function modelTemplatesImport(formTemplate, sourcepath, userinfo_objJsonB64_admi
                                                 headers: {
                                                     ...postData.getHeaders(),
                                                     'dymeruser': userinfo_objJsonB64_admin,
-                                                    "Referer": "http://localhost/",
+                                                    //"Referer": "http://localhost/",
                                                     'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
                                                     'extrainfo': `${extrainfo_objJsonB64_admin}`,
                                                 },
