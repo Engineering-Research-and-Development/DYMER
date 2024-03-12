@@ -199,6 +199,14 @@ angular.module('entitiesImportControllers', [])
                 $scope.originalFields.push({ newName: "dih", checked: true, index: $scope.indexFields.indexOf("dih") })
                
             }
+
+            if ($scope.selectedIndex == "dih") {
+				  $scope.originalFields.push({ newName: "Initiatives", checked: false, index: $scope.indexFields.indexOf("Initiatives") })
+                $scope.originalFields.push({ newName: "Project", checked: false, index: $scope.indexFields.indexOf("Project") })
+               
+            }
+
+
             $scope.originalFields.push({ newName: "email", checked: true, index: $scope.indexFields.indexOf("email") })
 
             //*********/
