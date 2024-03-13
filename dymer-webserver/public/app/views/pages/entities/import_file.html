@@ -101,7 +101,7 @@
                                         </tr>
                                         <tr>
                                             <td>
-                                                <input type="file" file-model="myFile" />
+                                                <input type="file" id="uploadBox" file-model="myFile" />
                                             </td>
                                             <td>
                                                 <button type="submit" class="btn btn-primary btn-round"
@@ -160,6 +160,10 @@
                             <div class="update ml-auto mr-auto  ">
                                 <button type="submit" class="btn btn-primary btn-round" ng-click="importCSVFile()">Import
                                     CSV</button>
+                            </div>
+                            <div class="update ml-auto mr-auto  ">
+                                <button type="submit" class="btn btn-primary btn-round" ng-click="resetFields()"> Reset
+                                    </button>
                             </div>
                             </div>
 

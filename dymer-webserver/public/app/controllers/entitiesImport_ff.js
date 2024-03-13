@@ -166,12 +166,12 @@ angular.module('entitiesImportControllers', [])
             let url = "http://localhost:8080/api/dservice/api/v1/import/fromcsv/" + model
             $http.post(url, { dataToImport, indtorel: relto }).then(function (ret) {
                 console.log('Import Resp', ret);
+                useGritterTool("Import from CSV started", ret.status);
 
             }).catch(function (response) {
                 console.log(response.status);
             });
         }
-
 
         $scope.getFieldByCSV = async function () {
             var myFile = $scope.myFile
@@ -223,5 +223,21 @@ angular.module('entitiesImportControllers', [])
             }
             $scope.indexFields = structure
         }
+
+        $scope.resetFields = function () {
+            $scope.indexFields = []
+            $scope.csvRecords = ""
+            $scope.selectedIndex = ""
+            $scope.separator = ""
+            $scope.originalFields = ""
+            $scope.csvRecords = ""
+            $scope.entityToRelation = ""
+            $scope.csvFields = ""
+            $scope.loadedCSV = false
+            $scope.myFile = null
+
+            document.getElementById("uploadBox").value = "";
+        }
+
 
     });
