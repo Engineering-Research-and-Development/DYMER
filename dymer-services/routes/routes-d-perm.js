@@ -214,7 +214,7 @@ router.post('/:id?', util.checkIsAdmin, async function(req, res) {
             const EntitiesURL = util.getServiceUrl("entity") + "/api/v1/entity/redisroleupdate";
             try {
                 await axios.post(EntitiesURL, { updated: callData.data.role });
-            } catch (e) {
+            } catch (err) {
                 console.error("ERROR | " + nameFile + " | post | updateOne ", err);
                 logger.error(nameFile + ' | post | updateOne  : ' + err);
                 ret.setSuccess(false);
