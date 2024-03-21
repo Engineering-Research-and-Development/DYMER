@@ -17,6 +17,12 @@
                 "adminPass": "dymer",
                 "idp": []
             },
+            "swagger":{
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 8080,
+                "context-path": ""
+            },
             "entity": {
                 "protocol": "http",
                 "ip": "kms_entities",

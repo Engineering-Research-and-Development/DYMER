@@ -27,8 +27,9 @@
             },
             "opnsearch": {
                 "user": {
+                    "d_cid": 20095,
                     "d_uid": 5,
-                    "d_gid": 55,
+                    "d_gid": 20118,
                     "d_mail": "test@liferay.com",
                     "d_pwd": "test"
                 }

@@ -8,14 +8,17 @@
         var site_prefix = 'site_prefix_value';
     </script>
 
-    <link rel="apple-touch-icon" sizes="76x76" href="public/assets/img/apple-icon.png">
-    <link rel="icon" type="image/png" href="public/assets/img/favicon.png">
+ 
+    <link rel="apple-touch-icon" sizes="180x180" href="public/assets/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="public/assets/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="public/assets/img/favicon-16x16.png">
+
+
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <title>
         DYnamic Information ModElling & Rendering
     </title>
-    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
-        name='viewport' />
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
     <!--     Fonts and icons     -->
     <!--<script src="public/assets/wsbuilder/js/popper.min.js"></script>-->
     <!-- <script src="public/assets/auth/js/keycloak.js"></script>-->
@@ -64,6 +67,7 @@
     <script src="public/app/controllers/relationsCtrl.js"></script>
     <script src="public/app/controllers/workflowCtrl.js"></script>
     <script src="public/app/directive/angularjs-dropdown-multiselect.js"></script>
+	<script src="public/app/controllers/swaggerCtrl.js"></script>
 
     <link href="public/assets/css/paper-dashboard.css" rel="stylesheet" />
     <link href="public/assets/css/json-viewer.css" rel="stylesheet">
@@ -96,14 +100,12 @@
         Tip 1: You can change the color of the sidebar using: data-color="blue | green | orange | red | yellow"
     -->
             <div class="logo">
-                <a href="/" class="simple-text logo-mini">
+                <a href="/" class="simple-text logo-mid">
                     <div class="logo-image-small">
-                        <img src="public\cdn\img\dymer-logo.png" class="rounded-circle">
+                        <img src="public\cdn\img\dymer-logo.png" class=" ">
                     </div>
                 </a>
-                <a href="/" class="simple-text logo-normal">
-                    DYMER
-                </a>
+                 
             </div>
             <div class="sidebar-wrapper">
                 <ul class="nav">
@@ -153,26 +155,6 @@
                     </li>
                     <li ng-show="hasPermission('app-admin' )">
                         <a href="#" class="haschild">
-                            <i class="nc-icon nc-layout-11"></i>
-                            <p>Templates</p>
-                        </a>
-                        <div class=" kmssublist">
-                            <ul class="">
-                                <li class=" "> <a href="managetemplate" target="_self"><i
-                                            class="nc-icon nc-ruler-pencil"></i>
-                                        <p>Manage Templates</p>
-                                    </a>
-                                </li>
-                                <li class="  ">
-                                    <a class="" href="templates"><i class="nc-icon nc-bullet-list-67 lg "></i>
-                                        <p>List Template</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li ng-show="hasPermission('app-admin' )">
-                        <a href="#" class="haschild">
                             <i class="nc-icon nc-tile-56"></i>
                             <p>Models</p>
                         </a>
@@ -196,6 +178,27 @@
                             </ul>
                         </div>
                     </li>
+                    <li ng-show="hasPermission('app-admin' )">
+                        <a href="#" class="haschild">
+                            <i class="nc-icon nc-layout-11"></i>
+                            <p>Templates</p>
+                        </a>
+                        <div class=" kmssublist">
+                            <ul class="">
+                                <li class=" "> <a href="managetemplate" target="_self"><i
+                                            class="nc-icon nc-ruler-pencil"></i>
+                                        <p>Manage Templates</p>
+                                    </a>
+                                </li>
+                                <li class="  ">
+                                    <a class="" href="templates"><i class="nc-icon nc-bullet-list-67 lg "></i>
+                                        <p>List Template</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    
                     <li>
                         <a href="#" class="haschild">
                             <i class="nc-icon nc-world-2"></i>
@@ -223,8 +226,8 @@
                                     </a>
                                 </li>
                                 <li class="  " ng-show="hasPermission('app-admin' )"> <a class=""
-                                        href="importfromfile"><i class="nc-icon nc-air-baloon"></i>
-                                        <p>Import</p>
+                                        href="importfromfile"><i class="nc-icon nc-cloud-upload-94"></i>
+                                        <p>Import/Export</p>
                                     </a>
                                 </li>
                                 <li class="  ">
@@ -366,6 +369,10 @@
                                         <p>Redis-Cache</p>
                                     </a>
                                 </li>
+								<li class=""> <a class="" href="swaggerapi"><i class="nc-icon nc-bullet-list-67 lg "></i>
+									<p>Swagger API</p>
+								</a>
+								</li>
                             </ul>
                         </div>
                     </li>

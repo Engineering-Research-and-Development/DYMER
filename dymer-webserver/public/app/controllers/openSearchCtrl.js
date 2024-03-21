@@ -3,12 +3,12 @@ angular.module('openSearchCtrl', [])
         var baseContextPath = $rootScope.globals.contextpath;
         $scope.copyPastIndType = function(el) {
 
-            $scope.rule.op_index = el._type;
+            $scope.rule.op_index = el._index;
             $scope.rule.op_type = el._index;
         }
         $scope.clearString = function() {
             $scope.rule.op_index = (($scope.rule.op_index.replace(/[^a-z]/g, "")).trim()).toLowerCase();
-            $scope.rule.op_type = (($scope.rule.op_type.replace(/[^a-z]/g, "")).trim()).toLowerCase();
+            $scope.rule.op_type = (($scope.rule._index.replace(/[^a-z]/g, "")).trim()).toLowerCase();
         }
         var mapping = {
             /* "elasticSearchResourceId": -1,

@@ -201,7 +201,7 @@ router.get('/', [util.checkIsDymerUser], (req, res) => {
         var actions = Models.map(getfilesArrays);
         var results = Promise.all(actions); // pass array of promises
         results.then(function(dat) {
-            console.log("Query result ===>", dat);
+            console.log("dymer-forms | route-v1.js | Models List: ", dat);
             ret.setMessages("List");
             ret.setData(dat);
             return res.send(ret);

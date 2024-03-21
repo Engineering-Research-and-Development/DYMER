@@ -5,7 +5,6 @@ var url = require("url");
 require("./config/config.js");
 const util = require("./utility");
 const app = express();
-const portExpress = global.configService.port; //context-path
 const bodyParser = require("body-parser");
 const path = require('path');
 const fs = require('fs');
@@ -36,6 +35,26 @@ var dohtmlpage = require('./routes/dohtmlpage');
 const session = require('express-session');
 var cookieParser = require('cookie-parser');
 var memoryStore = new session.MemoryStore();
+
+const gblConfigService = global.configService;
+const portExpress = gblConfigService.port;
+const protocol = gblConfigService.protocol;
+const appName = gblConfigService.app_name;
+const contextPath = util.getContextPath( 'webserver' );
+
+const swaggerUi = require( 'swagger-ui-express' )
+const swaggerFile = require( './swagger_webserver.json' )
+
+const host = gblConfigService.ip + ":" + portExpress;
+const serverUrl = protocol + "://" + host + contextPath
+const docPath = '/api/doc';
+
+const options = {
+	swaggerOptions : {
+		docExpansion : 'none'
+	}
+};
+
 app.use(cookieParser());
 app.use(session({
     secret: 'thisShouldBeLongAndSecret',
@@ -50,10 +69,30 @@ app.use(session({
 
 
 var recoverForms = require("./routes/formfiles");
-const contextPath = util.getContextPath('webserver');
 
 var publicdemoDonwlonad = require("./routes/demodownloads");
+const swaggerAutogen = require( "swagger-autogen" );
+
+app.use( docPath, [loadUserInfo, util.checkIsAdmin], swaggerUi.serve, swaggerUi.setup( swaggerFile, options ) );
+//senza controllo utente loggato
+//app.use( docPath, [loadUserInfo], swaggerUi.serve, swaggerUi.setup( swaggerFile, options ) );
+
+/*app.get( '/swaggerdoc', [ loadUserInfo, util.checkIsAdmin ], ( req, res ) => {
+    const data = {swaggerDocUrl : serverUrl + docPath};
+    res.json( data );
+} );*/
+
+app.get( '/swaggerdoc', [ loadUserInfo, util.checkIsAdmin ], ( req, res ) => {
+   
+   let originalRef = req.get('host');
+   var serverUrl_ = protocol + "://" + originalRef + contextPath
+   const data = {swaggerDocUrl : serverUrl_ + docPath};
+   res.json( data );
+} );
+
 app.get('/deletelog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {
+    // #swagger.tags = ['Webserver']
+
     var ret = new jsonResponse();
     var filetype = req.params.filetype;
     // const dymeruser = util.getDymerUser(req, res);
@@ -66,18 +105,22 @@ app.get('/deletelog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) =>
 });
 
 app.get('/openLog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {
+    // #swagger.tags = ['Webserver']
+
     var filetype = req.params.filetype;
     //console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
     return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
 });
 app.get('/checkservice', [loadUserInfo, util.checkIsPortalUser], (req, res) => {
+    // #swagger.tags = ['Webserver']
+
     var ret = new jsonResponse();
     let infosize = logger.filesize("info");
     let errorsize = logger.filesize("error");
     let regex = /(?<!^).(?!$)/g;
-let infomserv = JSON.parse(JSON.stringify(global.configService));
-infomserv.adminPass = (infomserv.adminPass).replace(regex, '*');
-infomserv.adminUser = (infomserv.adminUser).replace(regex, '*');
+    let infomserv = JSON.parse( JSON.stringify( gblConfigService ) );
+    infomserv.adminPass = (infomserv.adminPass).replace(regex, '*');
+    infomserv.adminUser = (infomserv.adminUser).replace(regex, '*');
     ret.setData({
         info: {
             size: infosize
@@ -144,9 +187,11 @@ app.use("/app/", appRoutes);
 app.use("/api/portalwebpage/", dohtmlpage);
 
 app.get('/api2/retriveinfoidpadmin', (req, res, next) => {
+    // #swagger.tags = ['Webserver']
+
     if (true) {
         
-        console.log("retriveinfo.AAAAAAAAAAAAAAA", pp);
+        //console.log("retriveinfo.AAAAAAAAAAAAAAA", pp);
         
         var objuser = {
             isGravatarEnabled: false,
@@ -180,6 +225,7 @@ app.get('/api2/retriveinfoidpadmin', (req, res, next) => {
 
 });
 app.get('/api2/retriveinfoidp', (req, res, next) => {
+    // #swagger.tags = ['Webserver']
 
     //   console.log("--------INIZIO retriveinfoIDP--------------");
     //   console.log("retriveinfo", req.session);
@@ -232,16 +278,16 @@ app.get('/api2/retriveinfoidp', (req, res, next) => {
     // res.send(req.session.passport.user);
 
 });
-app.post('/api2/retriveinfo', loadUserInfo,async (req, res, next) => {
+
+app.post('/api2/retriveinfo', loadUserInfo, async (req, res, next) => {
+    // #swagger.tags = ['Webserver']
+
     //   res.send({ "ttttttt": "rrrrrrrrr" });
 
-    console.log("retriveinfo", req.headers);
-    
+    // console.log("retriveinfo", req.headers);
     // console.log("session1.userid", req.session);
-    
-    console.log("req.originalUrl", req.originalUrl);
-    console.log("req.hostname", req.hostname);
-    
+    // console.log("req.originalUrl", req.originalUrl);
+    // console.log("req.hostname", req.hostname);
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     //console.log('hdymeruser2',hdymeruser);
@@ -263,14 +309,14 @@ let listprm_value= new Buffer(JSON.stringify(response_perm.data.data)).toString(
         "DYM":hdymeruser,
         "d_lp":listprm_value
     };
-    
-    console.log("api retriveinfo", JSON.stringify(objuser));
-    
+    // console.log("api retriveinfo", JSON.stringify(objuser));
     logger.info(nameFile + ' | /api2/retriveinfo :' + JSON.stringify(objuser));
     res.send(objuser);
 });
 app.get('/info/:key?', (req, res, next) => {
-   // var pjson = require('./package.json');
+    // #swagger.tags = ['Webserver']
+
+    // var pjson = require('./package.json');
     var key = req.params.key;
     
   //  let infodymer = { "version": global.gConfig.dymer.version };
@@ -293,7 +339,7 @@ app.get('/info/:key?', (req, res, next) => {
         ' </head > ' +
         '<body  style="background-color:#ebecf2;"> ';
     let htmlcontainer = '<div class="container"> <div class="row justify-content-center">' +
-        ' <div class="col-xl-10 col-lg-12 col-md-9" > ' +
+        '<div class="col-xl-10 col-lg-12 col-md-9" > ' +
         '<div class="card o-hidden border-0 shadow-lg my-5">' +
         '<div class="card-body p-0">' +
         '<div class="row">' +
@@ -356,19 +402,17 @@ function loadUserInfo(req, res, next) {
     //   console.log('TESTSESSION req ', req);
     //  var isLocal = (req.connection.localAddress === req.connection.remoteAddress);
     //  console.log('TESTSESSION isLocal ', isLocal);
-    
-    //console.log('TESTSESSION req referer', req);
-    //console.log('TESTSESSION req referer', req.headers);
+    // console.log('TESTSESSION req referer', req);
+    // console.log('TESTSESSION req referer', req.headers);
 
-    //console.log('TESTSESSION req referer', req.headers.referer);
+    // console.log('TESTSESSION req referer', req.headers.referer);
     // console.log('TESTSESSION req req.headers.authorization', req.headers.authorization);
     // console.log('TESTSESSION req req.headers.Authorization', req.headers.Authorization);
     //  console.log('TESTSESSION req dservice', util.getServiceUrl("dservice"));
     //  console.log('TESTSESSION  req.protocol', req.protocol);
     //console.log('TESTSESSION req host', req.get('host'));
     //logger.info(nameFile + ' | loadUserInfo : req host, originalUrl: ' + req.get('host') + " , " + req.originalUrl);
-    
-    logger.info(nameFile + ' | loadUserInfo : req headers' + JSON.stringify(req.headers) + " , " + req.url);
+    // logger.info(nameFile + ' | loadUserInfo : req headers' + JSON.stringify(req.headers) + " , " + req.url);
 
     var authuserUrl = util.getServiceUrl("dservice") + "/api/v1/authconfig/userinfo";
     var dymtoken = (req.headers.authorization != undefined) ? req.headers.authorization.split(' ')[1] : undefined;
@@ -418,11 +462,10 @@ function loadUserInfo(req, res, next) {
     //logger.info(nameFile + ' | --------------------------');
 
     //logger.info(nameFile + ' | loadUserInfo : requestjsonpath' + requestjsonpath);
-    console.log('loadUserInfo post-referer', req.headers.referer);
+    /*console.log('loadUserInfo post-referer', req.headers.referer);
     console.log('loadUserInfo post-reqfrom', req.headers["reqfrom"]);
     console.log('loadUserInfo originalRef', originalRef, typeof originalRef);
-    console.log('--------------------------');
-    
+    console.log('--------------------------');*/
     logger.info(nameFile + ' |loadUserInfo|req url :' + originalRef + "|" + req.method + req.url);
     var config = {
         method: 'get',
@@ -481,6 +524,7 @@ app.use("/api/entities/", loadUserInfo, entityRoutes);
 app.use("/api/dservice/", loadUserInfo, dserviceRoutes);
 app.use("/api/system/", loadUserInfo, system);
 app.post("/api/test/", loadUserInfo, (req, res, next) => {
+    // #swagger.tags = ['Webserver']
     console.log("test");
     next();
     //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
@@ -499,6 +543,7 @@ const parseToken = raw => {
         console.error('Error while parsing token: ', e);
     }
 };
+
 //app.use(global.gConfig.services.webserver["context-path"] + '/public/cdn/', publicRoutes);
 //app.use(global.gConfig.services.webserver["context-path"] + 'public/cdn/', publicRoutes);
 //app.use('/public/cdn', publicRoutes);
@@ -513,8 +558,9 @@ app.use("/demodownload/", publicdemoDonwlonad);
 });
 */
 
-
 app.get("/public/cdn/*", (req, res, next) => {
+    // #swagger.tags = ['Webserver']
+
     // console.log("app.get");
     next();
     //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
@@ -610,18 +656,18 @@ if (util.ishttps('webserver')) {
         key: fs.readFileSync(path.join(__dirname, 'ssl', 'server.key')),
         cert: fs.readFileSync(path.join(__dirname, 'ssl', 'server.crt'))
     };
-    https.createServer(Httpsoptions, app).listen(portExpress, () => {
-        logger.info(nameFile + " | Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + contextPath);
-        console.log("Up and running-- this is " + global.configService.protocol + " " + global.configService.app_name + " service on port:" + global.configService.port + " context-path:" + contextPath);
+    https.createServer(Httpsoptions, root).listen(portExpress, () => {
+        logger.info( nameFile + " | Up and running-- this is " + appName + " service on port:" + portExpress + " context-path: " + contextPath );
+        console.log( "Up and running-- this is " + protocol + " " + appName + " service on port:" + portExpress + " context-path:" + contextPath );
         // console.log(`${global.gConfig.services.webserver.port} listening on port ${global.gConfigt}`);
     });
 } else {
     root.listen(portExpress, () => {
         // logger.error("testtt");
-        logger.info(nameFile + " | Up and running-- this is " + global.configService.protocol + " " +
-            global.configService.app_name + " service on port:" + global.configService.port + " context-path:" + contextPath);
-        console.log("Up and running-- this is " + global.configService.protocol + " " +
-            global.configService.app_name + " service on port:" + global.configService.port + " context-path:" + util.getContextPath('webserver'));
+        logger.info( nameFile + " | Up and running-- this is " + protocol + " " + appName + " service on port:" + portExpress + " context-path:" + contextPath );
+        console.log( "Up and running-- this is " + protocol + " " + appName + " service on port:" + portExpress + " context-path:" + contextPath );
+        console.log("Server on :", serverUrl);
+        console.log("See Documentation at:", serverUrl + docPath);
         // console.log(`${global.gConfig.services.webserver.port} listening on port ${global.gConfigt}`);
     });
 }

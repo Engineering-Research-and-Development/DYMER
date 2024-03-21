@@ -511,9 +511,10 @@ class Elfile {
     }
 }
 class ElTemplate {
-    constructor(_index, _type) {
+    //constructor(_index, _type) {
+    constructor(_index) {
         this._index = _index;
-        this._type = _type;
+        //this._type = _type;
         this.viewtype = {
             fullcontent: "",
             teaserlist: "",
@@ -528,6 +529,7 @@ class ElTemplate {
         }
     }
     loadAllTemplate() {
+        console.log("dymer-webserver | loadAllTemplate");
         var _this = this;
         var sourceUrl = getendpoint('template');
         var temp_config_call = {
@@ -537,7 +539,9 @@ class ElTemplate {
         };
         var ajax_temp_call = new Ajaxcall(temp_config_call);
         ajax_temp_call.flush();
-        var tempQuery = { "query": { "query": { "instance._index": this._index, "instance._type": this._type } } };
+        //TODO check
+        var tempQuery = { "query": { "query": { "instance._index": this._index } } }; 
+        //var tempQuery = { "query": { "query": { "instance._index": this._index, "instance._type": this._type } } };
         ajax_temp_call.addparams(tempQuery);
         var ret = ajax_temp_call.send();
         //	var appendfiles = new Array();
@@ -899,7 +903,7 @@ function populateHookRelation(x, y, z, w, k, a, b, arObj2, rel) {
    //console.log('arObj2',arObj2);
     var templ_data = flatEsArray(arObj2.data);
     arObj2.data = templ_data.arr
-    //console.log('templ_data',arObj2);
+    console.log('==>populateHookRelation templ_data',arObj2);
     listRelationForm[rel] = arObj2.data;
     $('.senderForm [data-torelation="' + rel + '"]').each(function(inde) {
         var esxtraAttr = "";
@@ -1107,6 +1111,7 @@ function loadFilterModel(index, tagFilterObj) {
             var singleEl = "";
             if ($(this).attr("data-torelation") != undefined) {
                 var rel = $(this).attr('data-torelation');
+                console.log('==> loadFilterModel data-torelation ',rel);
                 var esxtraAttr = "";
                 var datapost = {
                     instance: { "index": rel },
@@ -2311,7 +2316,9 @@ function kmsrenderEl(ar, rendertype) {
         }
         (ar).forEach(function(item, i) {
             // item.cdnpath = baseurlcd;
-            var tmpl = item._index + "@" + item._type;
+            //TODO check
+            var tmpl = item._index;
+            //var tmpl = item._index + "@" + item._type;
             types.indexOf(tmpl) === -1 ? types.push(tmpl) : "";
         });
         if (rendertype == 'fullcontent' || types.length == 1) {
@@ -2320,7 +2327,9 @@ function kmsrenderEl(ar, rendertype) {
                 checkbreadcrumb(item);
             else
                 $("#dymer_breadcrumb span").not(':first').remove();
-            var tmpl = (rendertype == 'fullcontent') ? item._index + "@" + item._type : item[0]._index + "@" + item[0]._type;
+            //TODO check
+            var tmpl = (rendertype == 'fullcontent') ? item._index : item[0]._index;
+            //var tmpl = (rendertype == 'fullcontent') ? item._index + "@" + item._type : item[0]._index + "@" + item[0]._type;
             //   tmpl = item._index + "@" + item._type;
             var typetemplateToRender = (rendertype == 'fullcontent') ? 'fullcontent' : kmsconf.viewtype;
             var mytemplate = templateslist[tmpl]['viewtype'][typetemplateToRender];
@@ -2328,7 +2337,10 @@ function kmsrenderEl(ar, rendertype) {
             if (!$.trim(mytemplate).length) {
                 var itemToEdit = item;
                 var sourceUrl = getendpoint('form');
-                var datapost = { "query": { "instance._index": itemToEdit._index, "instance._type": itemToEdit._type }, "act": "update" };
+                //TODO check
+                var datapost = { "query": { "instance._index": itemToEdit._index }, "act": "update" };
+                //var datapost = { "query": { "instance._index": itemToEdit._index, "instance._type": itemToEdit._type }, "act": "update" };
+                
                 var temp_config_call = {
                     url: sourceUrl,
                     type: 'GET',
@@ -2379,7 +2391,9 @@ function kmsrenderEl(ar, rendertype) {
                 $(targetId).empty();
             action = "append";
             (ar).forEach(function(item, i) {
-                var tmpl = item._index + "@" + item._type;
+                //TODO check
+                var tmpl = item._index;
+                //var tmpl = item._index + "@" + item._type;
                 var typetemplateToRender = 'fullcontent'; // (rendertype == 'fullcontent') ? 'fullcontent' : kmsconf.viewtype;
                 typetemplateToRender = 'teaser'; // (rendertype == 'fullcontent') ? 'fullcontent' : kmsconf.viewtype;
                 var mytemplate = templateslist[tmpl]['viewtype'][typetemplateToRender];
@@ -2399,7 +2413,9 @@ function kmsrenderEl(ar, rendertype) {
 function getModelEntity(el) {
     var itemToEdit = el;
     var sourceUrl = getendpoint('form');
-    var datapost = { "query": { "instance._index": itemToEdit._index, "instance._type": itemToEdit._type }, "act": "update" };
+    //TODO check
+    var datapost = { "query": { "instance._index": itemToEdit._index}, "act": "update" };
+    //var datapost = { "query": { "instance._index": itemToEdit._index, "instance._type": itemToEdit._type }, "act": "update" };
     var temp_config_call = {
         url: sourceUrl,
         type: 'GET',
@@ -2436,7 +2452,7 @@ async function editEntity(id) {
     }
     const perm = checkPermission(actualItem, 'update');
     var sourceUrl = getendpoint('form');
-    var datapost = { "query": { "instance._index": itemToEdit._index, "instance._type": itemToEdit._type }, "act": "update" };
+    var datapost = { "query": { "instance._index": itemToEdit._index }, "act": "update" };
     var indport = sourceUrl + "/";
     var temp_config_call = {
         url: sourceUrl,
@@ -2560,7 +2576,13 @@ async function editEntity(id) {
   
                   }, 2000);*/
 
-                $('#entityEdit .selectpicker').selectpicker();
+                //FRANCO TODO: se esiste la classe selectpicker allora $('#entityEdit .selectpicker').selectpicker();
+                console.log("==>TODO: check if selectpicker exists ",itemToEdit);
+                /*if (xxx.hasClass('selectpicker')) {
+                    console.log("==>itemToEdit.hasClass(selectpicker)");
+                    $('#entityEdit .selectpicker').selectpicker();
+                }*/
+                
                 // console.log("vado a modificare");
                 //  populateFormEdit('#entityEdit', itemToEdit, undefined, undefined, itemToEdit_);
                 dymphases.setSubPhase("edit", true, "populateform");
@@ -2651,12 +2673,14 @@ function duplicateRepeatable(frm, item, basename) {
     var value = item.relations;
     if (value != undefined) {
         for (var i = 0; i < value.length; i++) {
-            if (listRelation[value[i]._type] == undefined)
-                listRelation[value[i]._type] = [];
-            listRelation[value[i]._type].push(value[i]._id);
+            //TODO check
+            if (listRelation[value[i]._index] == undefined)
+                listRelation[value[i]._index] = [];
+            listRelation[value[i]._index].push(value[i]._id);
         }
         $(frm + ' .repeatable [data-torelation]').each(function(index) {
             var rel_type = $(this).attr('data-torelation');
+            console.log('==> duplicateRepeatable data-torelation ',rel_type);
             if (listRelation[rel_type] != undefined) {
                 var currenteDomElement = $(this).closest('.relationcontgrp.repeatable');
                 for (var i = 1; i < listRelation[rel_type].length; i++) {
@@ -2712,12 +2736,14 @@ const duplicateRepeatable_Promise = function(frm, item, basename) {
         var value = item.relations;
         if (value != undefined) {
             for (var i = 0; i < value.length; i++) {
-                if (listRelation[value[i]._type] == undefined)
-                    listRelation[value[i]._type] = [];
-                listRelation[value[i]._type].push(value[i]._id);
+                //TODO check
+                if (listRelation[value[i]._index] == undefined)
+                    listRelation[value[i]._index] = [];
+                listRelation[value[i]._index].push(value[i]._id);
             }
             $(frm + ' .repeatable [data-torelation]').each(function(index) {
                 var rel_type = $(this).attr('data-torelation');
+                console.log('==> duplicateRepeatable_Promise data-torelation ',rel_type);
                 if (listRelation[rel_type] != undefined) {
                     var currenteDomElement = $(this).closest('.relationcontgrp.repeatable');
                     for (var i = 1; i < listRelation[rel_type].length; i++) {
@@ -2811,11 +2837,16 @@ function populateFormEdit(frm, item, basename, wasarr, origitem) {
             //   console.log("elPop", elPop);
             //   console.log("elPop.hasClass('selectpicker')", elPop.hasClass('selectpicker'));
             if (key == 'relations') {
+                console.log("key == relations");
                 let listRelation = {};
+                //AVENDO ELIMINATO IL TYPE NON HA SENSO ESEGUIRE
+                console.log("value.length ", value.length);
                 for (var i = 0; i < value.length; i++) {
-                    if (listRelation[value[i]._type] == undefined)
-                        listRelation[value[i]._type] = [];
-                    listRelation[value[i]._type].push(value[i]._id);
+                    console.log("value["+i+"] ", value[i]);
+                    //TODO check
+                    if (listRelation[value[i]._index] == undefined)
+                        listRelation[value[i]._index] = [];
+                    listRelation[value[i]._index].push(value[i]._id);
                 }
                 /*  Object.keys(listRelation).forEach(function(k) {
                       var r_list = listRelation[k];
@@ -2824,8 +2855,10 @@ function populateFormEdit(frm, item, basename, wasarr, origitem) {
                           $(frm + vs).val(r_list[i]).attr("oldval", r_list[i]);
                       }
                   });*/
+                console.log("listRelation ", listRelation);
                 Object.keys(listRelation).forEach(function(k) {
                     var r_list = listRelation[k];
+                    
                     let vs = '[name="data[relation][' + k + '][0][to]"]';
                     var relElement = $(vs);
                     if (relElement.hasClass('selectpicker')) {
@@ -2949,10 +2982,12 @@ async function populateFormEdit_await(frm, item, basename, wasarr, origitem) {
                 //   console.log("elPop.hasClass('selectpicker')", elPop.hasClass('selectpicker'));
                 if (key == 'relations') {
                     let listRelation = {};
+                    let testListRelation = {};
                     for (var i = 0; i < value.length; i++) {
-                        if (listRelation[value[i]._type] == undefined)
-                            listRelation[value[i]._type] = [];
-                        listRelation[value[i]._type].push(value[i]._id);
+                       // TODO CHECK 
+                        if (listRelation[value[i]._index] == undefined)
+                            listRelation[value[i]._index] = [];
+                        listRelation[value[i]._index].push(value[i]._id);
                     }
                     /*  Object.keys(listRelation).forEach(function(k) {
                           var r_list = listRelation[k];
@@ -2961,12 +2996,14 @@ async function populateFormEdit_await(frm, item, basename, wasarr, origitem) {
                               $(frm + vs).val(r_list[i]).attr("oldval", r_list[i]);
                           }
                       });*/
+                    
                     Object.keys(listRelation).forEach(function(k) {
+                        console.log("nome relation k ", k);
                         var r_list = listRelation[k];
                         let vs = '[name="data[relation][' + k + '][0][to]"]';
                         var relElement = $(vs);
                         if (relElement.hasClass('selectpicker')) {
-
+                            console.log("hasClass  selectpicker");
                             // $(frm + " " + vs).val(r_list);
                             $(frm + " " + vs).selectpicker('val', r_list);
                         } else {
@@ -3080,10 +3117,13 @@ const populateFormEdit_Promise = function(frm, item, basename, wasarr) {
                 var elPop = $(frm + ' [name="data' + actualK + '"]' + extrelPop);
                 if (key == 'relations') {
                     var listRelation = {};
+                    console.log("value");
                     for (var i = 0; i < value.length; i++) {
-                        if (listRelation[value[i]._type] == undefined)
-                            listRelation[value[i]._type] = [];
-                        listRelation[value[i]._type].push(value[i]._id);
+                        //TODO Check
+                        if (listRelation[value[i]._index] == undefined)
+                            listRelation[value[i]._index] = [];
+                        listRelation[value[i]._index].push(value[i]._id);
+                        console.log("value ",value[i]);
                     }
                     Object.keys(listRelation).forEach(function(k) {
                         var r_list = listRelation[k];
@@ -3357,8 +3397,8 @@ actionPostMultipartForm:POST di multipart/form-data
 function actionPostMultipartForm(type, el, datapost, senderForm, callback, callerForm, useGritter, callbackEstraData) {
     var typeEnt = type.split("/");
     var posturl = getendpointnested(typeEnt[0], 'post');
-    console.log('-------------------');
-    console.log(posturl);
+    console.log('==>actionPostMultipartForm posturl', posturl);
+    
     if (typeEnt.length > 1)
         posturl += "/" + typeEnt[1];
     var temp_config_call = {
@@ -3561,9 +3601,11 @@ const actionPostMultipartForm_Promise = function(type, el, datapost, senderForm,
 }
 
 function actionPutMultipartForm(type, el, datapost, senderForm, callback, callerForm, useGritter) {
+    
     var posturl = getendpointnested(type + ".id", 'put');
     var elid = $("#entityEdit").attr('data-identityedit');
     posturl = posturl.replace(':id', elid);
+    console.log("==>actionPutMultipartForm posturl ",posturl);
     var temp_config_call = {
         type: "PUT",
         url: posturl,
@@ -3905,9 +3947,14 @@ function flatEsArray(arr, templates) {
         for (var key in source) {
             arr[i][key] = source[key];
         }
-        if (!templates.hasOwnProperty(el._index + '@' + el._type)) {
-            var temp_templ = new ElTemplate(el._index, el._type);
-            templates[el._index + '@' + el._type] = temp_templ;
+        //TODO check
+        
+        //if (!templates.hasOwnProperty(el._index + '@' + el._type)) {
+            //var temp_templ = new ElTemplate(el._index, el._type);
+            //templates[el._index + '@' + el._type] = temp_templ;
+        if (!templates.hasOwnProperty(el._index)) {
+            var temp_templ = new ElTemplate(el._index);
+            templates[el._index] = temp_templ;
         }
     }
     return {
@@ -3934,7 +3981,9 @@ let getKmsTemplateMap = function(ar, rendertype) {
     var promise = new Promise(function(resolve, reject) {
         removeTempImport("tftemp").then(function() {
             var item = ar[0];
-            var tmpl = item._index + "@" + item._type;
+            //TODO check
+            var tmpl = item._index;
+            //var tmpl = item._index + "@" + item._type;
             var mytemplate = templateslist[tmpl]["viewtype"][rendertype];
             if (mytemplate == "") {
                 rendertype = "teaserlist";

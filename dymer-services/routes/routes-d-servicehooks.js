@@ -108,7 +108,8 @@ router.delete('/hook/:id', util.checkIsAdmin, (req, res) => {
 });
 
 router.post('/checkhook', function(req, res) {
-    console.log("==> checkhook in route-d-servicehooks.js");
+    console.log("routes-d-servicehooks.js | checkhook");
+    
     let callData = util.getAllQuery(req);
     let data = callData.data;
     let extraInfo = callData.extraInfo;
@@ -128,24 +129,22 @@ router.post('/checkhook', function(req, res) {
     if (contp != "")
         wbsUrl += contp;
     //wbsUrl = util.getServiceUrl('dservice');
-    console.log("==>queryFind", JSON.stringify(queryFind));
+    console.log(nameFile + ' | post/checkhook :' + JSON.stringify(queryFind));
     logger.info(nameFile + ' | post/checkhook :' + JSON.stringify(queryFind));
     const headers = {
         'reqfrom': req.headers["reqfrom"]
     }
     HookModel.find(queryFind).then((els) => {
         els.forEach(el => {
-            console.log("chekkkk el", JSON.stringify(el));
-            logger.info(nameFile + ' | post/checkhook | HookModel: chek el' + JSON.stringify(el));
-            var pt = wbsUrl + el.service.servicePath;//VIVIANA - da master
-            //pt = el.service.servicePath; 
-            //let pt = util.getServiceUrl("dservice") + '/api/v1/workflow/listener';//error to comment also in the development branch
             
-            console.log("==>pt ", pt);
+            console.log(nameFile + ' | post/checkhook | HookModel: chek el' + JSON.stringify(el));
+            logger.info(nameFile + ' | post/checkhook | HookModel: chek el' + JSON.stringify(el));
+            var pt = wbsUrl + el.service.servicePath;
+           
+            console.log("==>checkhook pt ", pt);
             axios.post(pt, { 'data': data, "extraInfo": extraInfo,"origindata":origindata, "originheader":  originheader }, {
                     headers: headers
                 }).then(response => {
-                    //console.log("checkhook resp axios ", response);
                     console.log(nameFile + " | post/checkhook | inoltro | response :", response);
                     logger.info(nameFile + '| post/checkhook | inoltro | response ' + response);
                 })

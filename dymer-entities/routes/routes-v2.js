@@ -1168,6 +1168,7 @@ function deleteRelationOneEntity_original(_id1) {
 }
 
 function deleteRelationOneEntityAndIndex(_id, _index) {
+    console.log("route-v2.js | deleteRelationOneEntityAndIndex ");
     let params = { index: "entity_relation" };
     let qrdelete = {
         "query": {
@@ -1237,6 +1238,7 @@ function deleteRelationOneEntityAndIndex(_id, _index) {
  
 
 function deleteRelationOneEntityAndIndex_original(_id, _index) {
+    console.log("route-v2.js | deleteRelationOneEntityAndIndex_original ");
     let params = { index: "entity_relation" };
     params["body"] = {
         "query": {
@@ -1309,6 +1311,7 @@ function deleteRelationOneEntityAndIndex_original(_id, _index) {
     });
 }
 async function CacheRelation(datasetRel) {
+    console.log("route-v2.js | cacheRelation");
     //console.log("risponde CACHE RELATION")
     // console.log("datasetRel: ", datasetRel)
     let newIdstoRel = datasetRel.map((ele) => { return ele._id2 })
@@ -1387,10 +1390,11 @@ async function createRelationV2(dataset) {
     //   let params = { index: "entity_relation", type: "entity_relation" };
     //   params["body"] = newRel;
     //  params["refresh"] = true;
-    console.log('==>createRelationV2', dataset)
+    console.log('route-v2.js | createRelationV2: ', dataset)
     if (dataset.length > 0) {
         const body = dataset.flatMap(doc => [{ index: { "_index": 'entity_relation' } }, doc])
             //const { body: bulkResponse } = await client.bulk({ refresh: true, body })
+        console.log('route-v2.js | createRelationV2 | add body in Elastic: ', body)
         const bulkResponse = await client.bulk({ refresh: true, body })
         if (bulkResponse.errors) {
             const erroredDocuments = []
@@ -2373,27 +2377,27 @@ router.post('/redisroleupdate', async (req, res) => {
 })
 
 router.post('/_search', (req, res) => {
-    console.log('==>route-v2.js | _search');
-    console.log('_search logger', process.env.DYMER_LOGGER);
+    console.log('route-v2.js | _search');
+    //console.log('_search logger', process.env.DYMER_LOGGER);
     let origin=req.get('origin');
     var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-        console.log('user info URLL', req.get('origin') );
+    /*    console.log('user info URLL', req.get('origin') );
         console.log('user info fullurl',fullUrl );
         console.log('req.headers.referer',req.headers.referer );
-        console.log('user info requestjsonpath',req.headers.requestjsonpath)
+        console.log('user info requestjsonpath',req.headers.requestjsonpath)*/
     console.log(' req.headers.dymeruser', req.headers.dymeruser);
     // var decoded = jwt.decode(req.headers.authdata);
     //  var decoded = jwt.decode(req.headers.authdata);
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser;
-    console.log("==>req.headers.VIVIANA ",req.headers.VIVIANA);
-    console.log("==>req.hostname ", req.hostname);
-    console.log("==>req.headers ", JSON.stringify(req.headers));
+    
+    //console.log("==>req.hostname ", req.hostname);
+    //console.log("==>req.headers ", JSON.stringify(req.headers));
     
 
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     logger.info(nameFile + '|_search| dymeruser :' + JSON.stringify(dymeruser));
-    console.log('==>' + nameFile + '|_search| dymeruser : ', JSON.stringify(dymeruser));
+    console.log(nameFile + '|_search| dymeruser : ', JSON.stringify(dymeruser));
     /* 
         const authHeader = req.headers.authorization;
         const token = authHeader && authHeader.split(' ')[1]
@@ -2444,9 +2448,9 @@ router.post('/_search', (req, res) => {
         let source = callData.query.getfields;
         let _source = callData.source;
 
-        console.log('==>' + nameFile + '|_search| instance : ', instance);
-        console.log('==>' + nameFile + '|_search| query : ', query);
-        console.log('==>' + nameFile + '|_search| _source : ', _source);
+        console.log('==>' + nameFile + '|_search| upload instance : ', instance);
+        console.log('==>' + nameFile + '|_search| upload query : ', query);
+        console.log('==>' + nameFile + '|_search| upload _source : ', _source);
 
         let qoptions = callData.qoptions;
  
@@ -2679,18 +2683,11 @@ router.post('/_search', (req, res) => {
                      //return res.send(cachedResponse)
                  }
              }
-            console.log('paramsNNN', JSON.stringify(params));
-            
-
-            
-            //console.log("<-------------------------------------->");
-            console.log("==>params ", params);
+            console.log('Elastic params for query search ', JSON.stringify(params));
             client.search(params).then(function(resp) {
                 
-                console.log('==>' + nameFile + '|_search| client.search response TEST ');
-                console.log('==> resp ', resp);
-                console.log('==> from ', resp.from);
-                console.log('==> data ', resp.data);
+                console.log('==>' + nameFile + '|_search| client.search ', resp);
+                                
                 if (err) {
                     console.error("ERROR | " + nameFile + '|_search| search:', err);
                     logger.error(nameFile + '|_search| search : ' + err);
@@ -3462,14 +3459,14 @@ function appendFormdata(FormData, data, name) {
 
 
 router.post('/:enttype', function(req, res) {
-	console.log("==> add entity ");//ex. by dymer-viewer										  
+	console.log("route-v2.js | /:enttype add entity ");//ex. by dymer-viewer, by add entity into dashboard										  
     var ret = new jsonResponse();
     let origin=(req.get('origin'))?req.headers.referer:req.get('origin');
+    console.log("route-v2.js | /:enttype add entity | req.headers: ", req.headers);
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+    //console.log('==>dymeruser', dymeruser);
     let requestjsonpath=req.headers.requestjsonpath;
-    console.log('post enttype requestjsonpath',req.headers.requestjsonpath) 
-    console.log('post enttype req.headers.referer',req.headers.referer)
     let dymerextrainfo = dymeruser.extrainfo;
     //console.log("dymeruser", dymeruser);
     // var dymerextrainfo = req.headers.extrainfo;
@@ -3500,7 +3497,8 @@ router.post('/:enttype', function(req, res) {
     url += act + "/";
     url += index + "/";
     url += queryString;
-    console.log(nameFile + '| /:enttype | create | dymeruser:', JSON.stringify(dymeruser));
+    console.log(nameFile + '| /:enttype | get url:', url);
+    //console.log(nameFile + '| /:enttype | create | dymeruser:', JSON.stringify(dymeruser));
     axios.get(url)
         .then((response) => {
             console.log(nameFile + '| /:enttype | create | permission create:', JSON.stringify(response.data.data.result));
@@ -3595,15 +3593,15 @@ router.post('/:enttype', function(req, res) {
                             }
                             let params = (instance) ? instance : {};
                             params["body"] = data;
-                            console.log("==>data ",data);
+                            //console.log("==>data ",data);
                             // params["body"].size = 10000;
                             params["refresh"] = true;
                             let ref = Object.assign({}, data.relation);
                             console.log("==>data.relation ",data.relation);
                             if (data != undefined)
                                 delete data.relation;
-                            console.log(nameFile + '| /:enttype | create | params:', dymeruser.id, JSON.stringify(params));
-                            logger.info(nameFile + '| /:enttype | create | params :' + dymeruser.id + " , " + JSON.stringify(params));
+                            console.log(nameFile + '| /:enttype | create entity in Elastic | params:', dymeruser.id, JSON.stringify(params));
+                            logger.info(nameFile + '| /:enttype | create entity in Elastic | params :' + dymeruser.id + " , " + JSON.stringify(params));
                             client.index(params, async function(err, resp, status) {
                                 if (err) {
                                     console.error("ERROR | " + nameFile + '| /:enttype | create:', err);
@@ -3630,7 +3628,7 @@ router.post('/:enttype', function(req, res) {
                                 /* var extraInfo = dymerextrainfo;
                                  if (extraInfo != undefined)
                                      extraInfo.extrainfo.emailAddress = dymeruser.id;*/
-                                // console.log(nameFile + '| /:enttype | create | pre check hook extraInfo: ', dymerextrainfo);
+                                console.log(nameFile + '| /:enttype | create | pre check hook extraInfo: ', dymerextrainfo);
                                 logger.info(nameFile + '| /:enttype | create | pre check hook| obj, extraInfo:' + JSON.stringify(resp) + ' , ' + JSON.stringify(dymerextrainfo));
                                 setTimeout(() => {
                                     checkServiceHook('after_insert', resp, dymerextrainfo, req);
@@ -3664,6 +3662,7 @@ router.post('/:enttype', function(req, res) {
         });
 });
 router.put('/update/:id', (req, res) => {
+    console.log("route-v2.js | /update/:id ");
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
@@ -5349,7 +5348,7 @@ router.delete('/:id',async (req, res) => {
 //inoltro al microservizio dservice
 function checkServiceHook(EventSource, objSend, extraInfo, req,originalElement) {
     //insert non ho i dati quindi devo fare un get
-	console.log("==> checkServiceHook");									
+	console.log("route-v2.js | checkServiceHook");									
     var url_dservice = util.getServiceUrl("dservice") + '/api/v1/servicehook/checkhook';
     // logger.info(nameFile + '| checkServiceHook | url_dservice,EventSource,objSend: ' + url_dservice + ' , ' + EventSource + ' , ' + JSON.stringify(objSend));
     //logger.info(nameFile + '| checkServiceHook | reqfrom: ' + JSON.stringify(req.headers));
@@ -5366,10 +5365,13 @@ function checkServiceHook(EventSource, objSend, extraInfo, req,originalElement) 
                 }
             }
         };
+        console.log("route-v2.js | checkServiceHook | search in Elastic ", params);
         client.search(params, function(err, resp, status) {
             //marcoper adapter 
+            console.log("route-v2.js | before checkUnionRelationV2");
             checkUnionRelationV2(resp.hits.hits).then(function(match) {
                 let element = match[0];
+                console.log("route-v2.js | checkUnionRelationV2 entity match element: ", JSON.stringify(element));
                 // console.log('ent match element', JSON.stringify(element));
                 //logger.info(nameFile + '| checkServiceHook | ent match element: ' + element._source.title);
                 //    match.forEach(element => {

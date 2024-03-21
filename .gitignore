@@ -23,3 +23,8 @@ full.yml
 .env
 dymer-services/tempfolder/basedyml-1ac6-4165-2556-320516522556/supsi.jpg
 dymer-entities/routes/routes-v2_MIA_COPIA_DI_VEN.js
+.env
+dymer-webserver/autogen_locale_swagger_webserver.json
+dymer-webserver/bk_swagger_webserver.json
+.env
+.env

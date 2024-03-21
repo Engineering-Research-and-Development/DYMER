@@ -19,6 +19,14 @@ const logger = require('./routes/dymerlogger');
   next();
 });*/
 const portExpress = global.configService.port;
+const contextPath = util.getContextPath('form');
+
+/*app.all('/', function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next();
+});*/
+
 var routes = require('./routes/routes-v1');
 var publicRoutes = require('./routes/publicfiles');
 app.use(express.json())
@@ -154,7 +162,7 @@ function detectPermission(req, res, next) {
     } else {
         act = "create";
         if ((req.path).includes("/content/")) {
-            var tmpSplit = (req.path).split("/");;
+            var tmpSplit = (req.path).split("/");
             index = tmpSplit[2];
         } else {
             if (req.query.query != undefined) {
@@ -233,7 +241,10 @@ app.post('/setlogconfig', (req, res) => {
     ret.setData({ consoleactive: req.body.consoleactive });
     return res.send(ret);
 });
-app.get(util.getContextPath('form') + '/checkservice', util.checkIsAdmin, (req, res) => {
+
+app.get('/checkservice', util.checkIsAdmin, (req, res) => {
+    // #swagger.tags = ['Models']
+
     var ret = new jsonResponse();
     let infosize = logger.filesize("info");
     let errorsize = logger.filesize("error");
@@ -251,9 +262,16 @@ app.get(util.getContextPath('form') + '/checkservice', util.checkIsAdmin, (req, 
     ret.setSuccess(true);
     return res.send(ret);
 });
-app.use(util.getContextPath('form') + "/api/v1/form/uploads/", publicRoutes);
-app.use(util.getContextPath('form') + '/api/v1/form', detectPermission, routes);
-app.get(util.getContextPath('form') + "/*", (req, res) => {
+
+app.use('/api/v1/form/uploads/', publicRoutes
+        // #swagger.tags = ['Models']
+);
+app.use('/api/v1/form', detectPermission, routes
+        // #swagger.tags = ['Models']
+);
+app.get('/*', (req, res) => {
+    // #swagger.tags = ['Models']
+
     var ret = new jsonResponse();
     //console.error('ERROR | /* : ', "Api error 404", req.path);
     logger.error(nameFile + ' | /* Api error 404  :' + req.path);
@@ -263,8 +281,12 @@ app.get(util.getContextPath('form') + "/*", (req, res) => {
     return res.send(ret);
 });
 //module.exports = app;
-app.listen(portExpress, () => {
-    //logger.flushAllfile(); 
-    logger.info(nameFile + " | Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + util.getContextPath('form'));
-    console.log("Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path :" + util.getContextPath('form'));
+
+const root = express();
+root.use(contextPath, app);
+
+root.listen(portExpress, () => {
+	//logger.flushAllfile();
+	logger.info(nameFile + " | Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + contextPath);
+	console.log("Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path :" + contextPath);
 });

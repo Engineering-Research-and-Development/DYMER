@@ -184,7 +184,7 @@ router.get('/', (req, res) => {
         var actions = templates.map(getfilesArrays);
         var results = Promise.all(actions); // pass array of promises
         results.then(function(dat) {
-            console.log("Query result ===>", dat);
+            console.log("dymer-templates | route-v1.js | templates list: ", dat);
             ret.setMessages("List");
             ret.setData(dat);
             //  console.log('dat', JSON.stringify(dat));

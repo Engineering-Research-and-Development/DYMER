@@ -15,6 +15,8 @@ const portExpress = global.configService.port; //4646;
 const path = require('path');
 const nameFile = path.basename(__filename);
 const logger = require('./routes/dymerlogger');
+const contextPath = util.getContextPath('entity');
+
 /*app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));*/
 var routes = require('./routes/routes-v2');
@@ -114,6 +116,8 @@ function detectPermission(req, res, next) {
 }
 
 app.get('/uuid', util.checkIsPortalUser, (req, res) => {
+    // #swagger.tags = ['Entities']
+
     var ret = new jsonResponse();
     const uuid = util.getDymerUuid();
     ret.setData({ 'uuid': uuid });
@@ -122,6 +126,8 @@ app.get('/uuid', util.checkIsPortalUser, (req, res) => {
     return res.send(ret);
 });
 app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
+    // #swagger.tags = ['Entities']
+
     var ret = new jsonResponse();
     var filetype = req.params.filetype;
     const dymeruser = util.getDymerUser(req, res);
@@ -134,6 +140,8 @@ app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
 });
 
 app.get('/logtypes', async(req, res) => {
+    // #swagger.tags = ['Entities']
+
     var ret = new jsonResponse();
     ret.setSuccess(true);
     let loggerdebug = global.loggerdebug;
@@ -143,6 +151,8 @@ app.get('/logtypes', async(req, res) => {
     return res.send(ret);
 });
 app.post('/setlogconfig', (req, res) => {
+    // #swagger.tags = ['Entities']
+
     var ret = new jsonResponse();
     logger.ts_infologger(req.body.consoleactive);
     ret.setMessages("Settings updated");
@@ -150,12 +160,16 @@ app.post('/setlogconfig', (req, res) => {
     return res.send(ret);
 });
 app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
+    // #swagger.tags = ['Entities']
+
     var ret = new jsonResponse();
     var filetype = req.params.filetype;
     console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
     return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
 });
-app.get(util.getContextPath('entity') + '/checkservice', util.checkIsAdmin, (req, res) => {
+app.get('/checkservice', util.checkIsAdmin, (req, res) => {
+    // #swagger.tags = ['Entities']
+
     var ret = new jsonResponse();
     let infosize = logger.filesize("info");
     let errorsize = logger.filesize("error");
@@ -181,24 +195,37 @@ if(infomserv.services.entity.hasOwnProperty('cache')){
     ret.setSuccess(true);
     return res.send(ret);
 });
-app.use(util.getContextPath('entity') + "/api/v1/entity/uploads/", publicRoutes);
-app.use(util.getContextPath('entity') + '/api/v1/entity', routes);
-//app.use(util.getContextPath('entity') + '/api/endpointtest', routestest);
-app.get(util.getContextPath('entity') + "/", (req, res) => {
-    // res.sendFile(path.resolve(__dirname, "usr/share/www/html/", "index.html"));
-    res.send("this is    our main andpoint Entities");
+
+app.use('/api/v1/entity/uploads/', publicRoutes
+        // #swagger.tags = ['Entities']
+);
+app.use('/api/v1/entity', routes
+        // #swagger.tags = ['Entities']
+);
+//app.use('/api/endpointtest', routestest);
+app.get('/', (req, res) => {
+    // #swagger.tags = ['Entities']
+
+	// res.sendFile(path.resolve(__dirname, "usr/share/www/html/", "index.html"));
+	res.send("this is    our main andpoint Entities");
 });
 
-app.get(util.getContextPath('entity') + "/*", (req, res) => {
-    var ret = new jsonResponse();
-    ret.setMessages("Api error 404");
-    res.status(404);
-    ret.setSuccess(false);
-    return res.send(ret);
-});
-app.listen(portExpress, () => {
-    //logger.flushAllfile();
+app.get('/*', (req, res) => {
+    // #swagger.tags = ['Entities']
 
-    logger.info(nameFile + " | Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + util.getContextPath('entity'));
-    console.log("Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + util.getContextPath('entity'));
+	var ret = new jsonResponse();
+	ret.setMessages("Api error 404");
+	res.status(404);
+	ret.setSuccess(false);
+	return res.send(ret);
+});
+
+const root = express();
+root.use(contextPath, app);
+
+root.listen(portExpress, () => {
+	//logger.flushAllfile();
+
+	logger.info(nameFile + " | Up and running-- this is " + global.configService.app_name + " service on port:" + portExpress + " context-path: " + contextPath);
+	console.log("Up and running-- this is " + global.configService.app_name + " service on port:" + portExpress + " context-path: " + contextPath);
 });

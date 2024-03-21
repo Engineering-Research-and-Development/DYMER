@@ -65,6 +65,7 @@ router.get('/', (req, res) => {
     })
 });
 router.post('/checklogin' , function(req, res) {
+    console.log("routes-d-users.js | checkhook");
     let id = req.params.id;
     let callData = util.getAllQuery(req);
     let data = callData.data;

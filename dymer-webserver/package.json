@@ -34,11 +34,15 @@
         "passport-local": "1.0.0",
         "passport-openidconnect": "0.1.1",
         "qs": "6.11.2",
+        "swagger-autogen": "2.23.7",
+        "swagger-ui-express": "5.0.0",
         "winston": "3.11.0"
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "npm install && node server.js"
+        "start": "npm install && node server.js",
+        "dev": "nodemon server.js",
+        "swagger-autogen": "node swagger.js"
     },
     "author": "marco romano",
     "license": "ISC",

@@ -14,6 +14,7 @@ const logger = require('./dymerlogger');
 const { Console } = require('console');
 
 router.get('/logtypes', async(req, res) => {
+    // #swagger.tags = ['Webserver']
 
     let ret = new jsonResponse();
     let loggerdebug_webserver = global.loggerdebug; // (process.env.DYMER_LOGGER == undefined) ? false : process.env.DYMER_LOGGER;
@@ -44,6 +45,8 @@ router.get('/logtypes', async(req, res) => {
 });
 
 router.post('/setlogConfig', [util.checkIsDymerUser], async(req, res) => {
+    // #swagger.tags = ['Webserver']
+
     var ret = new jsonResponse();
     try {
         

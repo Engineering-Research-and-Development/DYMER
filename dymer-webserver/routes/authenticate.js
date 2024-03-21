@@ -16,13 +16,18 @@ router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
 router.post('/authenticate',async function (req, res) {
+    console.log("dymer-webserver | authenticate.js | /authenticate");
     var username = req.body.username;
     var password = req.body.password;
+    
     var _username = global.configService['adminUser'];
     var _password = global.configService['adminPass'];
    // var _users = global.configService['users'] || [];
     var url_dservice = util.getServiceUrl("dservice") + '/api/v1/duser/checklogin'; // Get micro-service endpoint
-  /*  let listuser= await axios.get(url_dservice, {  }) 
+    
+    //console.log("==>url_dservice ", url_dservice);
+
+    /*  let listuser= await axios.get(url_dservice, {  }) 
       _users=listuser.data.data;*/
     
    // console.log("listuser",listuser.data);
@@ -79,6 +84,7 @@ router.post('/authenticate',async function (req, res) {
     let listprm_value= new Buffer(JSON.stringify( response_perm.data.data)).toString("base64");
   
     var objtoSend = { "DYM": base64DYM, "DYMisi": base64DYMisi, "d_rl": dr_value,"user": loggedUser,"d_lp":listprm_value }
+    
     res.send(objtoSend);
     return;
 });

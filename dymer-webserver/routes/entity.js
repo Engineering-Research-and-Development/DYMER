@@ -44,6 +44,7 @@ router.use(session({
     //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
 });*/
 router.get('*', (req, res, next) => {
+    console.log("dymer-webserver | entity.js | router.get * ");
     // console.log("router.get");
     next();
     //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
@@ -62,7 +63,7 @@ router.get('*', (req, res, next) => {
 });*/
 
 router.post('*', (req, res, next) => {
-
+    console.log("dymer-webserver | entity.js | router.post * ");
     next();
 });
 /*router.post('*', upload.any(), (req, res, next) => {
@@ -126,7 +127,7 @@ var test = function(proxyReq, req, res) {
         next();
     });*/
 router.use((req, res, next) => {
-    // console.log('***----------');
+    console.log("dymer-webserver | entity.js | router.use");
     const { userId } = req.session;
     if (userId) {
         //  console.log('userId', userId);
@@ -139,16 +140,17 @@ router.use((req, res, next) => {
 
 const redirectLogin = (req, res, next) => {
     if (!req.session.userId) {
-        //  console.log("controlla: no logged");
+        console.log("dymer-webserver | entity.js | redirectLogin: no logged");
         next();
     } else {
-        // console.log("controlla: is logged");
+        console.log("dymer-webserver | entity.js | redirectLogin: is logged");
         next();
     }
 }
 router.use('*', redirectLogin, async(req, res, next) => {
+    console.log("dymer-webserver | entity.js | * ");
     //console.log("session", req.session);
-    //  console.log('SessionID: ', req.sessionID);
+    console.log('SessionID: ', req.sessionID);
     /* const { userId } = req.session;
      if (!req.session.count) {
          req.session.count = 0;
@@ -223,12 +225,13 @@ router.use('*', redirectLogin, async(req, res, next) => {
 
 
     req.headers.authdata = tk;
+    
     retriveInfoTk(tk, res);
     next();
 })
 
 const retriveInfoTk = (t, res) => {
-
+    console.log('dymer-webserver | entity.js | retriveInfoTk ', JSON.stringify(decoded));
     var decoded = jwt.decode(t);
     //console.log('R ENT  sessionPPPP', JSON.stringify(decoded));
     if (decoded != null) {
