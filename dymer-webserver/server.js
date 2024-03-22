@@ -42,17 +42,17 @@ const protocol = gblConfigService.protocol;
 const appName = gblConfigService.app_name;
 const contextPath = util.getContextPath( 'webserver' );
 
-/*const swaggerUi = require( 'swagger-ui-express' )
- const swaggerFile = require( './swagger_webserver.json' ) */
+ const swaggerUi = require( 'swagger-ui-express' )
+ const swaggerFile = require( './swagger_webserver.json' )  
 
 const host = gblConfigService.ip + ":" + portExpress;
 const serverUrl = protocol + "://" + host + contextPath
 const docPath = '/api/doc';
 
 const options = {
-	/*swaggerOptions : {
+	 swaggerOptions : {
 		docExpansion : 'none'
-	}*/
+	} 
 };
 
 app.use(cookieParser());
@@ -68,17 +68,34 @@ app.use(session({
                 }));
 
 var recoverForms = require("./routes/formfiles");
-
+var updatejson=false;
 var publicdemoDonwlonad = require("./routes/demodownloads");
 //const swaggerAutogen = require( "swagger-autogen" );
 
-//app.use( docPath, [loadUserInfo, util.checkIsAdmin], swaggerUi.serve, swaggerUi.setup( swaggerFile, options ) );
+ app.use( docPath, [loadUserInfo, util.checkIsAdmin], swaggerUi.serve, swaggerUi.setup( swaggerFile, options ) );
+ 
+ app.get( '/swaggerdoc', [ loadUserInfo, util.checkIsAdmin ], ( req, res ) => {
+   
+    let originalRef = req.get('host');
+    var serverUrl_ = protocol + "://" + originalRef + contextPath
+    if(!updatejson){
+        let content = JSON.parse(fs.readFileSync('swagger_webserver.json', 'utf8'));
+       
+        content.servers[0].url = serverUrl_;
+        content.servers[1].url = serverUrl_+'/api/templates';
+        content.servers[2].url = serverUrl_+'/api/dservice';
+        content.servers[3].url = serverUrl_+'/api/forms';
+        content.servers[4].url = serverUrl_+'/api/entities';
+        
+        fs.writeFileSync('swagger_webserver.json', JSON.stringify(content));
+        
+        updatejson=true;
+    }
 
-/*app.get( '/swaggerdoc', [ loadUserInfo, util.checkIsAdmin ], ( req, res ) => {
-    const data = {swaggerDocUrl : serverUrl + docPath};
+    const data = {swaggerDocUrl : serverUrl_ + docPath};
     res.json( data );
 } );
-*/
+ 
 
 app.get('/deletelog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {
     // #swagger.tags = ['Webserver']

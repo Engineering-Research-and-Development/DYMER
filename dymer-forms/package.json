@@ -2,6 +2,14 @@
     "name": "forms",
     "version": "1.0.0",
     "main": "jsonResponse.js",
+    "author": "ENG DYM TEAM",
+    "license": "ISC",
+    "description": "",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node server.js",
+        "dev": "nodemon server.js"
+    },
     "dependencies": {
         "await": "0.2.6",
         "axios": "0.24.0",
@@ -22,16 +30,9 @@
         "multer": "1.4.3",
         "multer-gridfs-storage": "5.0.2",
         "mv": "2.1.1",
+        "nodemon": "2.0.14",
         "path": "0.12.7",
         "pump-promise": "1.0.0",
         "winston": "3.3.3"
-    },
-    "devDependencies": {},
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "node server.js"
-    },
-    "author": "marco romano",
-    "license": "ISC",
-    "description": ""
+    }
 }

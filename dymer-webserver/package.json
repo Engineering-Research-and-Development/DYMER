@@ -2,7 +2,7 @@
     "name": "webserver",
     "version": "1.1.2",
     "main": "server.js",
-    "author": "marco romano",
+    "author": "ENG DYM TEAM",
     "license": "ISC",
     "description": "",
     "scripts": {
@@ -12,7 +12,7 @@
         "swagger-autogen": "node swagger.js"
     },
     "dependencies": {
-          "angular": "1.8.2",
+        "angular": "1.8.2",
         "angular-file-upload": "2.6.1",
         "axios": "0.24.0",
         "body-parser": "1.19.0",

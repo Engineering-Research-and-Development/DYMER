@@ -6,6 +6,8 @@ var jsonResponse = require('./jsonResponse');
 const path = require("path");
 const nameFile = path.basename(__filename);
 const logger = require('./routes/dymerlogger');
+const flatnest = require("flatnest");
+
 exports.getDymerUuid = function() {
     return global.dymer_uuid;
 };
