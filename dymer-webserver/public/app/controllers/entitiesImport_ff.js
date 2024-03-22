@@ -1,5 +1,6 @@
 angular.module('entitiesImportControllers', [])
-    .controller('entitiesImport_ff', function($scope, $http, $rootScope) {
+    .controller('entitiesImport_ff', function ($scope, $http, $rootScope, exportEntities, multipartForm) {
+
         var baseContextPath = $rootScope.globals.contextpath;
         //   console.log('testing controller entitiesImport_ff');
         $scope.method = "GET";
@@ -14,12 +15,23 @@ angular.module('entitiesImportControllers', [])
         };
         $scope.mapping = JSON.stringify(mapping, '",', '\t');
 
-        $scope.importEntFl = function() {
-            /* console.log($scope.method);
-             console.log($scope.host);
-             console.log($scope.port);
-             console.log($scope.path);
-             console.log($scope.mapping);*/
+
+        $http.get(baseContextPath + '/api/entities/api/v1/entity/allstatsglobal', {
+        }).then(function (retE) {
+            let res = retE.data.data.indices;
+            $scope.listEntities = res.map((e) => e.index)
+            // $scope.listEntities.shift()
+            let entRelIndex = $scope.listEntities.indexOf("entity_relation")
+            if (entRelIndex !== -1) {
+                $scope.listEntities.splice(entRelIndex, 1)
+            }
+        }).catch(function (e) {
+            console.error("error: ", e)
+        })
+
+
+        $scope.importEntFl = function () {
+
             var pathService = $scope.host + ':' + $scope.port + $scope.path
             if ($scope.method == 'GET') {
                 $http.get(pathService,
@@ -41,42 +53,193 @@ angular.module('entitiesImportControllers', [])
                 }).catch(function(response) {
                     console.log(response.status);
                 });
-
-
             }
         }
 
-        // console.log('get my list');
-        /* var par = { "query": { "instance._index": { "$ne": "general" } } };
-        $http.get('/api/forms/api/v1/form/', {
-            params: par
-        }).then(function(ret) {
-            // console.log('Data controller ', ret);
+        $scope.ExportJSON = function () {
+            console.log("Exporting JSON")
+            exportEntities.exportJSONFormat(baseContextPath, { index: $scope.selectedEntity })
+        }
 
-            return $scope.listaModels = ret.data.data;
-        }).catch(function(response) {
-            console.log(response.status);
-        });
-        $scope.xxxx = function(obj, index) {
-            //console.log('evvai', obj);
-            $scope.selected = index;
-            $scope.formtitle = obj.title;
-            $scope.objCreated = obj.created;
-            $("#cont-RenderForm #html-torender").empty();
-            $("#cont-RenderForm #appendfiles").empty();
-            obj.files.forEach(element => {
-                if (element.contentType == "text/html") {
+        $scope.ExportCSV = function () {
+            console.log("Exporting CSV")
+            let options = $scope.myDropdownOptions.map(el => (el.id))
+            let selectedOptions = $scope.myDropdownModel.map(el => el.id)
 
-                    $("#cont-RenderForm #html-torender").append(element.data);
+            let excluededFields = options.filter(element => !selectedOptions.includes(element))
+            exportEntities.exportCSVFormat(baseContextPath, { index: $scope.selectedEntity, exclude: excluededFields })
+        }
+
+        $scope.myDropdownSettings = {
+            smartButtonTextProvider: [],
+            smartButtonMaxItems: 3,
+            smartButtonTextProvider(selectionArray) {
+                if (selectionArray.length === 1) {
+                    return selectionArray[0].label;
+                } else {
+                    return selectionArray.length + ' Selected';
                 }
-                if (element.contentType == "text/css") {
-
-                    // $("<style></style>").appendTo("#cont-RenderForm #appendfiles").html(element.data);
-                }
-            });
-            setTimeout(function() {
-                hookReleationForm();
-            }, 800);
+            }
         };
-*/
+
+        $scope.myDropdownModel = [{ id: "ciao_test" }]
+
+        $scope.selectOptions = function () {
+            let index = $scope.selectedEntity
+            let fields = []
+
+            $http.get(baseContextPath + '/api/entities/api/v1/entity/getstructure/' + index).then(function (rt) {
+                for (let el of rt.data) {
+                    fields.push({ id: el, label: el })
+                }
+                $scope.myDropdownOptions = fields
+            }).catch(function (e) {
+                console.log("Error: ", e)
+            })
+        }
+
+        $scope.importJSONFile = async function () {
+
+            var myFile = $scope.myFile
+            let url = baseContextPath +  "/api/dservice/api/v1/import/test"; 
+
+            let data = {
+                file: myFile
+            }
+
+            let upload = await multipartForm.post(url, data)
+
+            let index = upload.data
+            $scope.selecetdIndex = Object.keys(resp.data.data[index].mappings.properties)
+            console.log("keys: ", $scope.selecetdIndex)
+        }
+
+
+        $scope.importCSVFile = async function () {
+            let separator = $scope.separator ? $scope.separator : ","
+            let model = $scope.selectedIndex
+            let enableRel = $scope.entityToRelation?.checked ? $scope.entityToRelation.checked : false
+            let relto = enableRel ? $scope.entityToRelation.index : ""
+
+            let checkedFields = $scope.originalFields.filter(element => element.checked == true)
+
+            checkedFields.forEach((el) => {
+                if (el.newName == "placeholder" || el.newName == "" || el.newName == undefined) {
+                    el.newName = el.originalName
+                }
+            })
+
+            console.log("checkedFields: ", checkedFields)
+
+            let csvRecords = $scope.csvRecords.data
+            console.log("# REC ", csvRecords.length)
+            let dataToImport = []
+
+            let fieldNames = csvRecords[0].replace(/["]/g, "").split(separator) //header
+
+            for (let _record of csvRecords) {   // for each "line" of the csv
+                let recArray = _record.replace(/["]/g, "").split(separator) // get values-array
+
+                let obj = {}
+                for (let element of checkedFields) {
+
+                    let index = fieldNames.indexOf(element.originalName)
+                    let key = element.newName
+
+                    obj[key] = recArray[index]
+                }
+                
+                if (model == "service") {
+                    let dih_index = fieldNames.indexOf("DIH")
+                    obj["DIH"] = recArray[dih_index]
+                }
+
+                dataToImport.push(obj) //
+            }
+            dataToImport.shift()
+
+            console.log("dataToImport: ", dataToImport)
+            console.log("index:", $scope.selectedIndex)
+
+            console.log("RELATION TO: ", $scope.entityToRelation)
+
+            let url = baseContextPath +  "/api/dservice/api/v1/import/fromcsv/" + model
+            $http.post(url, { dataToImport, indtorel: relto }).then(function (ret) {
+                console.log('Import Resp', ret);
+                useGritterTool("Import from CSV started", ret.status);
+
+            }).catch(function (response) {
+                console.log(response.status);
+            });
+        }
+
+        $scope.getFieldByCSV = async function () {
+            var myFile = $scope.myFile
+            let separator = $scope.separator ? $scope.separator : ","
+            let url = baseContextPath +  '/api/dservice/api/v1/import/test-csv'
+
+            let data = {
+                file: myFile
+            }
+
+            $scope.csvRecords = await multipartForm.post(url, data)
+            let fieldNames = $scope.csvRecords.data[0].split(separator)
+
+            if (fieldNames) {
+                $scope.loadedCSV = true;
+            }
+
+            $scope.originalFields = $scope.indexFields.map(el => { return { newName: el, checked: false, index: $scope.indexFields.indexOf(el) } })
+            //********* only dih4ai/
+            /*if ($scope.selectedIndex == "service") {
+                $scope.originalFields.push({ newName: "DIH", checked: true, index: $scope.indexFields.indexOf("DIH") })
+            }
+
+            if ($scope.selectedIndex == "dih") {
+                $scope.originalFields.push({ newName: "Initiatives", checked: false, index: $scope.indexFields.indexOf("Initiatives") })
+                $scope.originalFields.push({ newName: "Project", checked: false, index: $scope.indexFields.indexOf("Project") })
+            }*/
+            //*********/
+            $scope.csvFields = fieldNames
+            console.log("originalFields ", $scope.originalFields)
+        }
+
+        $scope.getIndexStructure = async function () {
+
+            let index = $scope.selectedIndex
+            let url = baseContextPath + '/api/entities/api/v1/entity/allindex/' + index
+            let JSONStructureResponse = await $http.get(url)
+            //changed schema in elastic 8
+            //let JSONStructure = JSONStructureResponse.data.data[index].mappings[index].properties
+            let JSONStructure = JSONStructureResponse.data.data[index].mappings.properties
+
+            let structure = []
+            for (const key in JSONStructure) {
+                if (JSONStructure[key].hasOwnProperty("properties")) {
+                    for (const subKey in JSONStructure[key]["properties"]) {
+                        structure.push(`${key}.${subKey}`);
+                    }
+                } else {
+                    structure.push(key);
+                }
+            }
+            $scope.indexFields = structure
+        }
+
+        $scope.resetFields = function () {
+            $scope.indexFields = []
+            $scope.csvRecords = ""
+            $scope.selectedIndex = ""
+            $scope.separator = ""
+            $scope.originalFields = ""
+            $scope.csvRecords = ""
+            $scope.entityToRelation = ""
+            $scope.csvFields = ""
+            $scope.loadedCSV = false
+            $scope.myFile = null
+
+            document.getElementById("uploadBox").value = "";
+        }
+
+
     });

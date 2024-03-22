@@ -5,9 +5,9 @@ const util = require( "./utility" );
 const gblConfigService = global.configService;
 const host = gblConfigService.ip + ":" + gblConfigService.port;	//TODO check if port exist or not
 const contextPath = util.getContextPath( 'webserver' );
-//TODO Luca: external host in config.json (ex: swagger.host)
-//const serverUrl = gblConfigService.protocol + "://" + host + contextPath
-const serverUrl = "http://localhost";//TODO use parametric values
+//TODO Luca: external host in config.json (ex: swagger.host) NO
+const serverUrl = gblConfigService.protocol + "://" + host + contextPath
+//const serverUrl = "http://localhost";//TODO use parametric values
 const doc = {
 	info     : {
 		version     : "1.0.0",

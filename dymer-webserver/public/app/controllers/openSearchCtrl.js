@@ -8,7 +8,7 @@ angular.module('openSearchCtrl', [])
         }
         $scope.clearString = function() {
             $scope.rule.op_index = (($scope.rule.op_index.replace(/[^a-z]/g, "")).trim()).toLowerCase();
-            $scope.rule.op_type = (($scope.rule._index.replace(/[^a-z]/g, "")).trim()).toLowerCase();
+            $scope.rule.op_type = (($scope.rule.op_index.replace(/[^a-z]/g, "")).trim()).toLowerCase();
         }
         var mapping = {
             /* "elasticSearchResourceId": -1,

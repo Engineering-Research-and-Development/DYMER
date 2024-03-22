@@ -82,12 +82,35 @@ app.use( docPath, [loadUserInfo, util.checkIsAdmin], swaggerUi.serve, swaggerUi.
     res.json( data );
 } );*/
 
+/*
 app.get( '/swaggerdoc', [ loadUserInfo, util.checkIsAdmin ], ( req, res ) => {
    
    let originalRef = req.get('host');
    var serverUrl_ = protocol + "://" + originalRef + contextPath
    const data = {swaggerDocUrl : serverUrl_ + docPath};
    res.json( data );
+} );*/
+var updatejson=false;
+ app.get( '/swaggerdoc', [ loadUserInfo, util.checkIsAdmin ], ( req, res ) => {
+   
+    let originalRef = req.get('host');
+    var serverUrl_ = protocol + "://" + originalRef + contextPath
+    if(!updatejson){
+        let content = JSON.parse(fs.readFileSync('swagger_webserver.json', 'utf8'));
+       
+        content.servers[0].url = serverUrl_;
+        content.servers[1].url = serverUrl_+'/api/templates';
+        content.servers[2].url = serverUrl_+'/api/dservice';
+        content.servers[3].url = serverUrl_+'/api/forms';
+        content.servers[4].url = serverUrl_+'/api/entities';
+       
+        fs.writeFileSync('swagger_webserver.json', JSON.stringify(content));
+       
+        updatejson=true;
+    }
+ 
+    const data = {swaggerDocUrl : serverUrl_ + docPath};
+    res.json( data );
 } );
 
 app.get('/deletelog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {

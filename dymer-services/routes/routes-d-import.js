@@ -219,6 +219,218 @@ router.delete('/cronjob/:id', util.checkIsAdmin, (req, res) => {
     })
 });
 
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+
+router.post('/test-csv', upload.single('file'), async (req, res) => {
+    if(req.file) {
+
+        let fileBuffer = req.file.buffer.toString("utf8")
+        let records = fileBuffer.split("\n")
+
+        res.status(200).send(records);
+    } else {
+        res.status(400).send("Missing File")
+    }
+})
+
+router.post('/fromcsv/:enttype', util.checkIsAdmin, (req, res) => {
+    let ret = new jsonResponse();
+    let listTopost = [];
+    let newentityType = req.params.enttype
+
+    let lista = req.body.dataToImport
+    logger.info(nameFile + '| post/fromcsv | import :' + newentityType);
+
+    var pt = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/_search";
+    const originalrelquery = req.body.indtorel //"dih";
+    var query = {
+        "query": {
+            "query": {
+                "bool": {
+                    "must": [{
+                        "term": {
+                            "_index": originalrelquery
+                        }
+                    }]
+                }
+            }
+        }
+    };
+
+    console.log("QUERY:", JSON.stringify(query))
+    axios.post(pt, query).then(response => {
+        const listaRel = response.data.data;
+        //////////////
+        // console.log("listaRel", listaRel)
+        lista.forEach(element => {
+            var propert_ = {
+                owner: {
+                    uid: element["properties.owner"],  //0
+                    gid: 20121 //0
+                },
+                "grant": {
+                    "update": {
+                        "uid": [
+                            ""
+                        ],
+                        "gid": [
+                            ""
+                        ]
+                    },
+                    "delete": {
+                        "uid": [
+                            ""
+                        ],
+                        "gid": [
+                            ""
+                        ]
+                    },
+                    "managegrant": {
+                        "uid": [
+                            ""
+                        ],
+                        "gid": [
+                            ""
+                        ]
+                    }
+                },
+                ipsource: util.getServiceUrl('webserver') + util.getContextPath('webserver') //"airegio" //url web server
+            };
+            propert_.status = "1";
+            propert_.visibility = "0";
+            propert_.extrainfo = {
+                lastupdate: {
+                    uid: element["properties.owner"], //"admin@dymer.it", // mail owner
+                    origin: util.getServiceUrl('webserver') + util.getContextPath('webserver') //"http://localhost:8080/listentities"  // url web server
+                }
+            }
+            propert_.changed = (new Date()).toISOString(); //"2024-02-28T11:15:17.650Z"  // vuoto
+            
+            let elrel = listaRel.find((el) => el["_source"].title == element["DIH"]); //DIHNAME era DIH
+            // let elrel = listaRel.find((el) => el["_source"].title == element["url"]); //DIHNAME era DIH
+            let rel_id = undefined;
+            if (elrel != undefined) rel_id = elrel["_id"];
+            
+            var singleEntity = {
+                "instance": {
+                    "index": newentityType
+                    //"type": newentityType
+                },
+
+                "data": buildNestedObj(element)
+            };
+            
+            singleEntity.data.properties = propert_
+            
+            if (rel_id != undefined)
+                singleEntity.data.relation = { dih: [{ to: rel_id }] };
+
+            /* custom code for dih4ai
+            if(newentityType.toLocaleLowerCase() == "dih") {
+                const initiativesArray = singleEntity.data.Initiatives?.replace(/\r/g, '').split(",").map(el => { return {"to": el}})
+                const projectArray = singleEntity.data.Project?.replace(/\r/g, '').split(",").map(el => { return {"to": el}})
+
+                // initialize if I need
+                singleEntity.data.relation = singleEntity.data.relation || {};
+                singleEntity.data.relation.initiatives = singleEntity.data.relation.initiatives || [];
+                singleEntity.data.relation.project = singleEntity.data.relation.project || [];
+
+                for(let itv of initiativesArray) {
+                    singleEntity.data.relation.initiatives.push(itv);
+                }
+
+                for(let prj of projectArray) {
+                    singleEntity.data.relation.project.push(prj);
+                }
+            }
+            */
+            console.log("===============")
+            console.log(JSON.stringify(singleEntity))
+            var extrainfo = {
+                "extrainfo": {
+                    "companyId": "20097",
+                    "groupId": "20121",
+                    "cms": "lfr",
+                    "userId": element["email"],
+                    "virtualhost": "localhost"
+                }
+            };
+            let extrainfo_objJsonStr = JSON.stringify(extrainfo);
+            let extrainfo_objJsonB64 = Buffer.from(extrainfo_objJsonStr).toString("base64");
+            var userinfo = {
+                "isGravatarEnabled": false,
+                "authorization_decision": "",
+                "roles": [{
+                    "role": "User",
+                    "id": "20109"
+                },
+                {
+                    "role": "app-admin",
+                    "id": "20110"
+                }
+                ],
+                "app_azf_domain": "",
+                "id": element["email"],
+                "app_id": "",
+                "email": element["email"],
+                "username": element["email"]
+            };
+            let userinfo_objJsonStr = JSON.stringify(userinfo);
+            let userinfo_objJsonB64 = Buffer.from(userinfo_objJsonStr).toString("base64");
+            var objToPost = { 'data': singleEntity, 'DYM': userinfo_objJsonB64, 'DYM_EXTRA': extrainfo_objJsonB64 };
+            listTopost.push(objToPost);
+        });
+        listTopost.forEach(function (obj, index) {
+            setTimeout(function () {
+                logger.info(nameFile + ' get/fromjson | import timeout axios :' + index + " " + JSON.stringify(obj.data));
+                postMyData(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA);
+            }, 1000 * (index + 1));
+        });
+        return res.send(ret);
+
+    })
+        .catch(error => {
+            console.error("ERROR | " + nameFile + " | get/fromjson ", error);
+            logger.error(nameFile + ' | get/fromjson : ' + error);
+        });
+
+});
+
+function buildNestedObj(dottedObj) {
+    const result = {};
+    for (const key in dottedObj) {
+        if (dottedObj.hasOwnProperty(key)) {
+            const keys = key.split('.');
+            let currentLevel = result;
+            
+            for (let i = 0; i < keys.length; i++) {
+                const nestedKey = keys[i];
+                if (i === keys.length - 1) {
+                    currentLevel[nestedKey] = dottedObj[key];
+                } else {
+                    currentLevel[nestedKey] = currentLevel[nestedKey] || {};
+                    currentLevel = currentLevel[nestedKey];
+                }
+            }
+        }
+    }
+    /**/
+    if(result["representatives"]) {
+        let representatives = JSON.stringify(result["representatives"]);
+        delete result["representatives"]
+        result["representatives"] = [JSON.parse(representatives)]
+    }
+    /**/
+    // if(!result.properties) result.properties = {}
+    // if(result.properties?.owner) result.properties.owner = {owner: result.properties.owner}
+
+    return result;
+}
+/******************************************/
+
 // '/api/dservice/api/v1/import/fromjson'
 router.get('/fromjson', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
