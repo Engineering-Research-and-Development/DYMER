@@ -1,5 +1,6 @@
 angular.module('dashCtrl', ['nvd3'])
-    .controller('dashController', function ($scope, $http, $location, $browser, $rootScope) {
+  .controller('dashController', function($scope, $http, $location, $browser, $rootScope, exportEntities) {      
+    //.controller('dashController', function ($scope, $http, $location, $browser, $rootScope) {
         var baseContextPath = $rootScope.globals.contextpath; //$rootScope.site_prefix; //'/d4ptest/'; //$browser.baseHref();
         $scope.redison = false;
         $scope.tab = 1;

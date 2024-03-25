@@ -472,7 +472,7 @@ router.get('/getstructure/:id', async (req, res) => {
     let index = req.params.id
     let params = {}
     params["index"] = index
-    params["type"] = index
+    //params["type"] = index
     params["body"] = {
         query: {
             match_all: {}
@@ -5474,6 +5474,7 @@ router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let index = callData.index;
+    console.log("==>deleteAllEntityByIndex ", index);
     const dymeruser = util.getDymerUser(req, res);
     const dymerextrainfo = dymeruser.extrainfo;
     /* var dymerextrainfo = req.headers.extrainfo;
@@ -5495,7 +5496,7 @@ router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
     };
     params_["body"].size = 10000;
     logger.info(nameFile + '| deleteAllEntityByIndex | dymeruser.id, index :' + dymeruser.id + ' , ' + index);
-    // console.log(nameFile + '| deleteAllEntityByIndex | dymeruser.id, index :', dymeruser.id, index);
+    console.log(nameFile + '| deleteAllEntityByIndex | dymeruser.id, index :', dymeruser.id, index);
     client.search(params_).then(async function(resp) {
         if (resp.hits.total == 0) {
             ret.setSuccess(true);
@@ -5524,7 +5525,7 @@ router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
             }
             client.delete(delarams).then(
                 async function(resp) {
-                    //console.log(nameFile + '| deleteAllEntityByIndex | dymeruser.id, entity removed :', dymeruser.id, JSON.stringify(resp));
+                    console.log(nameFile + '| deleteAllEntityByIndex | dymeruser.id, entity removed :', dymeruser.id, JSON.stringify(resp));
                     logger.info(nameFile + '| deleteAllEntityByIndex | dymeruser.id, entity removed :' + dymeruser.id + " , " + JSON.stringify(resp));
                     gridfs_delete_queue.forEach(function(element) {
                         gridFSBucket.delete(mongoose.Types.ObjectId(element))
