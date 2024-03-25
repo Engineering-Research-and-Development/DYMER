@@ -50,7 +50,7 @@
         "winston": "3.11.0",
 		"bson": "6.2.0",
 		"cron-job-manager": "2.3.1",
-		"flatnest": "^1.0.1",
+		"flatnest": "1.0.1",
 		"node-cron": "3.0.3",
 		"node-schedule": "2.1.1",
 		"connect-ensure-login": "0.1.1",
