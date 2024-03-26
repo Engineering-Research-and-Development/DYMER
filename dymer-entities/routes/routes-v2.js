@@ -397,7 +397,7 @@ router.post('/invalidateallcache', util.checkIsAdmin, async(req, res) => {
 
 /*----------------------------------------*/
 
-router.post('/export-json-entities', util.checkIsAdmin, async (req, res) => {
+router.post('/export-json-entities', /*util.checkIsAdmin, */async (req, res) => {
     let index = req.body.index
     let params = {}
     params["index"] = index
@@ -424,7 +424,7 @@ router.post('/export-json-entities', util.checkIsAdmin, async (req, res) => {
 
 })
 
-router.post('/export-csv-entities', util.checkIsAdmin, async (req, res) => {
+router.post('/export-csv-entities',/* util.checkIsAdmin,*/ async (req, res) => {
     let index = req.body.index
     let keysToExlude = req.body.exclude
 
@@ -449,7 +449,7 @@ router.post('/export-csv-entities', util.checkIsAdmin, async (req, res) => {
                 delete newResponse[field];
             }
         });
-    
+        console.log("newResponse", newResponse)
         return newResponse;
     });    
     

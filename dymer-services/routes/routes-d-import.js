@@ -329,23 +329,23 @@ router.post('/fromcsv/:enttype', util.checkIsAdmin, (req, res) => {
             if (rel_id != undefined)
                 singleEntity.data.relation = { dih: [{ to: rel_id }] };
 
-            if(newentityType.toLocaleLowerCase() == "dih") {
-                const initiativesArray = singleEntity.data.Initiatives?.replace(/\r/g, '').split(",").map(el => { return {"to": el}})
-                const projectArray = singleEntity.data.Project?.replace(/\r/g, '').split(",").map(el => { return {"to": el}})
-
-                // initialize if I need
-                singleEntity.data.relation = singleEntity.data.relation || {};
-                singleEntity.data.relation.initiatives = singleEntity.data.relation.initiatives || [];
-                singleEntity.data.relation.project = singleEntity.data.relation.project || [];
-
-                for(let itv of initiativesArray) {
-                    singleEntity.data.relation.initiatives.push(itv);
-                }
-
-                for(let prj of projectArray) {
-                    singleEntity.data.relation.project.push(prj);
-                }
-            }
+            // if(newentityType.toLocaleLowerCase() == "dih") {
+            //     const initiativesArray = singleEntity.data.Initiatives?.replace(/\r/g, '').split(",").map(el => { return {"to": el}})
+            //     const projectArray = singleEntity.data.Project?.replace(/\r/g, '').split(",").map(el => { return {"to": el}})
+            //
+            //     // initialize if I need
+            //     singleEntity.data.relation = singleEntity.data.relation || {};
+            //     singleEntity.data.relation.initiatives = singleEntity.data.relation.initiatives || [];
+            //     singleEntity.data.relation.project = singleEntity.data.relation.project || [];
+            //
+            //     for(let itv of initiativesArray) {
+            //         singleEntity.data.relation.initiatives.push(itv);
+            //     }
+            //
+            //     for(let prj of projectArray) {
+            //         singleEntity.data.relation.project.push(prj);
+            //     }
+            // }
             console.log("===============")
             console.log(JSON.stringify(singleEntity))
             var extrainfo = {
@@ -561,7 +561,10 @@ router.get('/fromjson', util.checkIsAdmin, (req, res) => {
                     setTimeout(function() {
                         //  console.log("import timeout axios", index);
                         logger.info(nameFile + ' get/fromjson | import timeout axios :' + index + " " + JSON.stringify(obj.data));
-                        postMyData(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA);
+                        let test = postMyData(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA);
+                        console.log("---------------")
+                        console.log(test)
+                        console.log("---------------")
                     }, 1000 * (index + 1));
                 });
                 return res.send(ret);

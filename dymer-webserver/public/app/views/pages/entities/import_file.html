@@ -131,16 +131,22 @@
                                             <tr ng-repeat="element in originalFields">
                                                 <td><input type="checkbox" ng-model="element.checked"></td>
                                                 <td>{{ element.newName }}</td>
-
                                                 <td>
                                                     <select class="form-control" ng-model="element.originalName"
                                                         ng-options="item for item in csvFields"></select>
-
                                                 </td>
-      
                                             </tr>
+                                            <tr ng-repeat="newRow in newCustomStaticRows">
+                                                <td><input type="checkbox" ng-model="newRow.checked"></td>
+                                                <td><input type="text" ng-model="newRow.newName" placeholder="Field Name"></td>
+                                                <td>
+                                                    <select class="form-control" ng-model="newRow.originalName" ng-options="item for item in csvFields"></select>
+                                                </td>
+                                            </tr>
+<!--                                            -->
                                         </tbody>
                                     </table>
+<!--                                    <button ng-click="addRow()">Aggiungi riga</button>-->
                                 </div>
                             </div>
                         </div>
@@ -203,9 +209,14 @@
                         <div class="col-5" ng-show="selectedEntity">
                             <div class="form-group">
                                 <label> Fields </label><small style="color: #8c8985;"> </small>
-                                <div ng-dropdown-multiselect="" options="myDropdownOptions"
-                                    selected-model="myDropdownModel" extra-settings="myDropdownSettings"
-                                    checkboxes="true"></div>
+<!--                                <div ng-dropdown-multiselect="" options="myDropdownOptions"-->
+<!--                                    selected-model="myDropdownModel" extra-settings="myDropdownSettings"-->
+<!--                                    checkboxes="true"></div>-->
+                                <div>
+                                    <label ng-repeat="option in FieldsForIndex" class="table-fields-export">
+                                        <input type="checkbox" ng-model="selectedOptions[option]"> {{ option }}
+                                    </label>
+                                </div>
                                 
                             </div>
                         </div>

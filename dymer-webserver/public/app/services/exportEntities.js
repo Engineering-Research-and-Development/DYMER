@@ -4,6 +4,8 @@ angular.module("userApp").factory('exportEntities', ['$http', function ($http) {
         exportJSONFormat: function (baseContextPath, obj) {
             console.log("JSON Exporting..")
             console.log("OBJ: ", obj)
+            console.log("CONTENT PATH ", baseContextPath)
+            console.log(`URL: ${baseContextPath}/api/entities/api/v1/entity/export-json-entities`)
             $http.post(`${baseContextPath}/api/entities/api/v1/entity/export-json-entities`, obj)
                 .then(function (response) {
                     let d = new Date();

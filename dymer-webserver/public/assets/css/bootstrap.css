@@ -1535,6 +1535,10 @@ pre code {
   border: 0;
 }
 
+.table-fields-export {
+  display: block;
+}
+
 .table-fields th,
 .table-fields td {
   padding-left: 10px;
