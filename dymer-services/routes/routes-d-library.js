@@ -14,10 +14,31 @@ router.use( express.json( { limit : '50mb', extended : true } ) );
 router.use( express.urlencoded( { limit : '100mb', extended : true } ) );
 
 // POST
-// TODO da scrivere tutta la logica per inserire una libreria nel DB
-router.post( '/:id', util.checkIsAdmin, async ( req, res ) => {
-	console.log( `router-d-library -> POST id: [${ req.params.id }]` );
-	res.sendStatus( 501 ); // Not Implemented
+router.post( '/', util.checkIsAdmin, async ( req, res ) => {
+	// console.log( `router-d-library -> POST: [${ req.body }]` );
+	try {
+		const { name, domtype, filename, callback, useonload, group, activated, loadtype, mandatory } = req.body;
+
+		// Crea una nuova istanza del modello Libraries con i dati ricevuti dalla richiesta
+		const newLibrary = new DymRule( {
+											name,
+											domtype,
+											filename,
+											callback,
+											useonload,
+											group,
+											activated,
+											loadtype,
+											mandatory
+										} );
+
+		// Salva la nuova libreria nel database
+		const savedLibrary = await newLibrary.save();
+
+		res.status( 201 ).json( { message: "New librery added successfully", data: savedLibrary } );
+	} catch ( error ) {
+		handleError( res, error, error.message );
+	}
 } );
 
 // GET ALL

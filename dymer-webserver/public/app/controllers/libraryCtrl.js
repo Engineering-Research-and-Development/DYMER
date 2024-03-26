@@ -193,19 +193,69 @@ angular.module( 'libraryCtrl', [] )
 			   }
 		   }
 
-		   function generateCardsConfig(title, showConfig, tableId, tableBodyId) {
-			   return {
-				   title: title,
-				   showConfig: showConfig,
-				   tableId: tableId,
-				   tableBodyId: tableBodyId,
-				   columns: ['Name', 'Domtype',  'Filename', 'Callback',  'Use Onload', 'Group' , 'Load Type']
-			   };
-		   }
+		   $rootScope.showNewLibrary = false
+		   $scope.selectedLibraryType = '';
+		   $scope.newLibrary = {};
 
-		   $scope.libraryCardsConfigs = [
-			   generateCardsConfig('View Libraries', false, 'viewLibrariesTable', 'viewLibrariesTableBody'),
-			   generateCardsConfig('Map Libraries', false, 'mapLibrariesTable', 'mapLibrariesTableBody'),
-			   generateCardsConfig('Form Libraries', false, 'formLibrariesTable', 'formLibrariesTableBody')
-		   ]
+		   $scope.addLibrary = () => {
+			   $http.post( libsURL, $scope.newLibrary )
+					.then( response => {
+						let success = 'New librery added successfully';
+						console.log( `${ success }: ${ response.data }` );
+						useGritterTool( "<b><i class='nc-icon nc-single-02'></i>Dymer User</b>", success );
+					} )
+					.catch( error => {
+						console.log( error )
+						console.error( 'Errore while created library. Try Again!:', error );
+						useGritterTool( "<b><i class='fa fa-exclamation-triangle'></i>Dymer User</b>", error.data.error,
+										"danger"
+						);
+					} );
+		   };
+
+		   $scope.cancelAddLibrary = () => {
+			   $scope.newLibrary = {
+				   name      : '',
+				   domtype   : '',
+				   filename  : '',
+				   callback  : '',
+				   useonload : null,
+				   group     : '',
+				   loadtype  : '',
+				   mandatory : false
+			   };
+		   };
+
+		   $scope.showLibraryForm = () => {
+			   if ( $scope.selectedLibraryType === 'Javascript' ) {
+				   appendSuffixIfNeeded( $scope.newLibrary, '-js' );
+				   $scope.newLibrary.domtype = 'script';
+				   $scope.newLibrary.useonload = true;
+			   } else if ( $scope.selectedLibraryType === 'CSS' ) {
+				   appendSuffixIfNeeded( $scope.newLibrary, '-css' );
+				   $scope.newLibrary.domtype = 'link';
+				   $scope.newLibrary.useonload = false;
+			   }
+		   };
+
+		   function appendSuffixIfNeeded( library, suffix ) {
+			   const suffixes = [ "-js", "-css" ];
+
+			   // Check if the library name already ends with one of the suffixes
+			   const endsWithOneOfSuffixes = suffixes.some( s => library.name.endsWith( s ) );
+
+			   // If the library name ends with one of the suffixes, removes it
+			   if ( endsWithOneOfSuffixes ) {
+				   suffixes.forEach( s => {
+					   if ( library.name.endsWith( s ) ) {
+						   library.name = library.name.slice( 0, -s.length );
+					   }
+				   } );
+			   }
+
+			   // Adds the new suffix if it is not already present in the library name
+			   if ( !library.name.endsWith( suffix ) ) {
+				   library.name += suffix;
+			   }
+		   }
 	   } );

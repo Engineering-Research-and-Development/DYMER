@@ -32,16 +32,72 @@
 		<div class="card">
 			<div class="card-header">
 				<h4 class="card-title" ng-click="showNewLibrary = ! showNewLibrary">Add Libraries
-					<span class="pull-right">
-						<i class="fa fa-cogs burgherAction"
-						   aria-hidden="true"
-						></i>
-                    </span>
-				</h4>
+					<span class="pull-right"> <i class="fa fa-cogs burgherAction" aria-hidden="true"></i> </span></h4>
 			</div>
 			<div class="card-body" ng-show="showNewLibrary">
 				<h5>Library</h5>
-				<!-- Aggiungi qui il tuo form o altre parti specifiche per "Add Libraries" -->
+				<form name="formNewLibrary" id="formNewLibrary">
+					<div class="form-group">
+						<label for="name">Name:<span>*</span></label>
+						<input type="text" class="form-control" id="name" ng-model="newLibrary.name" ng-focus="nameFocused = true" required>
+					</div>
+					<div class="form-group">
+						<label for="libraryType">Library Type:</label>
+						<select id="libraryType" ng-model="selectedLibraryType" class="form-control" ng-show="nameFocused && newLibrary.name" ng-change="showLibraryForm()">
+							<option value="">Select Library Type</option>
+							<option value="Javascript">Javascript</option>
+							<option value="CSS">CSS</option>
+						</select>
+					</div>
+					<div ng-show="selectedLibraryType">
+						<div class="form-group row">
+							<div class="col-md-6">
+								<label for="domtype">DOM Type:<span>*</span></label>
+								<select class="form-control" id="domtype" ng-model="newLibrary.domtype" required>
+									<option value="link">Link</option>
+									<option value="script">Script</option>
+								</select>
+							</div>
+							<div class="col-md-6">
+								<input type="checkbox" class="form-check-input" id="useonload" ng-model="newLibrary.useonload">
+								<label for="useonload">Use Onload:<span>*</span></label>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="filename">Filename:<span>*</span></label>
+							<input type="text" class="form-control" id="filename" ng-model="newLibrary.filename" required>
+						</div>
+						<div class="form-group">
+							<label for="callback">Callback:</label>
+							<input type="text" class="form-control" id="callback" ng-model="newLibrary.callback">
+						</div>
+						<div class="form-group">
+							<label for="group">Group:<span>*</span></label>
+							<input type="text" class="form-control" id="group" ng-model="newLibrary.group" required>
+						</div>
+						<div class="form-group row">
+							<div class="col-md-6">
+								<label for="loadtype">Load Type:<span>*</span></label>
+								<select class="form-control" id="loadtype" ng-model="newLibrary.loadtype" required>
+									<option value="">Select Load Type</option>
+									<option value="View">View</option>
+									<option value="Map">Map</option>
+									<option value="Form">Form</option>
+								</select>
+							</div>
+							<div class="col-md-6">
+								<input type="checkbox" class="form-check-input" id="mandatory" ng-model="newLibrary.mandatory">
+								<label for="mandatory">Mandatory:</label>
+							</div>
+						</div>
+						<div class="row text-right">
+							<div class="col-12">
+								<button type="button" class="btn btn-info" ng-click="formNewLibrary.$valid && addLibrary()">Save</button>
+								<button type="button" class="btn btn-danger" ng-click="cancelAddLibrary()">Cancel</button>
+							</div>
+						</div>
+					</div>
+				</form>
 			</div>
 		</div>
 	</div>
