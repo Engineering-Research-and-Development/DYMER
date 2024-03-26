@@ -7,7 +7,8 @@
 	"useonload" : false,
 	"group"     : "bootstrap",
 	"activated" : true,
-	"loadtype"  : "view"
+	"loadtype"  : "view",
+	"mandatory" : false
   },
   {
 	"name"      : "bootstrap-css",
@@ -17,7 +18,8 @@
 	"useonload" : false,
 	"group"     : "bootstrap",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
 	"name"      : "bootstrap-css",
@@ -27,77 +29,85 @@
 	"useonload" : false,
 	"group"     : "bootstrap",
 	"activated" : true,
-	"loadtype"  : "form"
+	"loadtype"  : "form",
+	"mandatory" : false
   },
   {
-	"name"      : "font-awesome",
+	"name"      : "font-awesome-css",
 	"domtype"   : "link",
 	"filename"  : "css/lib/font-awesome/4.7/font-awesome.min.css",
 	"callback"  : null,
 	"useonload" : false,
 	"group"     : "font-awesome",
 	"activated" : true,
-	"loadtype"  : "view"
+	"loadtype"  : "view",
+	"mandatory" : false
   },
   {
-	"name"      : "font-awesome",
+	"name"      : "font-awesome-css",
 	"domtype"   : "link",
 	"filename"  : "css/lib/font-awesome/4.7/font-awesome.min.css",
 	"callback"  : null,
 	"useonload" : false,
 	"group"     : "font-awesome",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
-	"name"      : "font-awesome",
+	"name"      : "font-awesome-css",
 	"domtype"   : "link",
 	"filename"  : "css/lib/font-awesome/4.7/font-awesome.min.css",
 	"callback"  : null,
 	"useonload" : false,
 	"group"     : "font-awesome",
 	"activated" : true,
-	"loadtype"  : "form"
+	"loadtype"  : "form",
+	"mandatory" : false
   },
   {
-	"name"      : "jquery",
+	"name"      : "jquery-js",
 	"domtype"   : "script",
 	"filename"  : "js/lib/jquery/jquery-3.3.1.min.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "jquery",
 	"activated" : true,
-	"loadtype"  : "view"
+	"loadtype"  : "view",
+	"mandatory" : true
   },
   {
-	"name"      : "jquery",
+	"name"      : "jquery-js",
 	"domtype"   : "script",
 	"filename"  : "js/lib/jquery/jquery-3.3.1.min.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "jquery",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
-	"name"      : "jquery",
+	"name"      : "jquery-js",
 	"domtype"   : "script",
 	"filename"  : "js/lib/jquery/jquery-3.3.1.min.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "jquery",
 	"activated" : true,
-	"loadtype"  : "form"
+	"loadtype"  : "form",
+	"mandatory" : false
   },
   {
-	"name"      : "jquery-serializejson",
+	"name"      : "jquery-serializejson-js",
 	"domtype"   : "script",
 	"filename"  : "js/lib/jquery/jquery.serializejson.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "mandatory",
 	"activated" : true,
-	"loadtype"  : "form"
+	"loadtype"  : "form",
+	"mandatory" : false
   },
   {
 	"name"      : "bootstrap-js",
@@ -107,7 +117,8 @@
 	"useonload" : true,
 	"group"     : "bootstrap",
 	"activated" : true,
-	"loadtype"  : "view"
+	"loadtype"  : "view",
+	"mandatory" : false
   },
   {
 	"name"      : "bootstrap-js",
@@ -117,7 +128,8 @@
 	"useonload" : true,
 	"group"     : "bootstrap",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
 	"name"      : "bootstrap-js",
@@ -127,7 +139,8 @@
 	"useonload" : true,
 	"group"     : "bootstrap",
 	"activated" : true,
-	"loadtype"  : "form"
+	"loadtype"  : "form",
+	"mandatory" : false
   },
   {
 	"name"      : "summernote-css",
@@ -137,7 +150,8 @@
 	"useonload" : true,
 	"group"     : "summernote",
 	"activated" : true,
-	"loadtype"  : "view"
+	"loadtype"  : "view",
+	"mandatory" : false
   },
   {
 	"name"      : "summernote-css",
@@ -147,7 +161,8 @@
 	"useonload" : true,
 	"group"     : "summernote",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
 	"name"      : "summernote-css",
@@ -157,7 +172,8 @@
 	"useonload" : true,
 	"group"     : "summernote",
 	"activated" : true,
-	"loadtype"  : "form"
+	"loadtype"  : "form",
+	"mandatory" : false
   },
   {
 	"name"      : "summernote-js",
@@ -167,7 +183,8 @@
 	"useonload" : true,
 	"group"     : "summernote",
 	"activated" : true,
-	"loadtype"  : "view"
+	"loadtype"  : "view",
+	"mandatory" : false
   },
   {
 	"name"      : "summernote-js",
@@ -177,7 +194,8 @@
 	"useonload" : true,
 	"group"     : "summernote",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
 	"name"      : "summernote-js",
@@ -187,7 +205,8 @@
 	"useonload" : true,
 	"group"     : "summernote",
 	"activated" : true,
-	"loadtype"  : "form"
+	"loadtype"  : "form",
+	"mandatory" : false
   },
   {
 	"name"      : "bootstrap-select-css",
@@ -197,7 +216,8 @@
 	"useonload" : false,
 	"group"     : "bootstrap-select",
 	"activated" : true,
-	"loadtype"  : "view"
+	"loadtype"  : "view",
+	"mandatory" : false
   },
   {
 	"name"      : "bootstrap-select-css",
@@ -207,7 +227,8 @@
 	"useonload" : false,
 	"group"     : "bootstrap-select",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
 	"name"      : "bootstrap-dymertagsinput-css",
@@ -217,67 +238,74 @@
 	"useonload" : false,
 	"group"     : "mandatory",
 	"activated" : true,
-	"loadtype"  : "view"
+	"loadtype"  : "view",
+	"mandatory" : false
   },
   {
-	"name"      : "popper",
+	"name"      : "popper-js",
 	"domtype"   : "script",
 	"filename"  : "js/lib/jquery/popper.min.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "popper",
 	"activated" : true,
-	"loadtype"  : "view"
+	"loadtype"  : "view",
+	"mandatory" : false
   },
   {
-	"name"      : "popper",
+	"name"      : "popper-js",
 	"domtype"   : "script",
 	"filename"  : "js/lib/jquery/popper.min.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "popper",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
-	"name"      : "dymer-oauth",
+	"name"      : "dymer-oauth-js",
 	"domtype"   : "script",
 	"filename"  : "js/dymer.oauth.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "mandatory",
 	"activated" : true,
-	"loadtype"  : "view"
+	"loadtype"  : "view",
+	"mandatory" : false
   },
   {
-	"name"      : "bootstrap-notify",
+	"name"      : "bootstrap-notify-js",
 	"domtype"   : "script",
 	"filename"  : "js/lib/bootstrap/4.1.3/bootstrap-notify.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "mandatory",
 	"activated" : true,
-	"loadtype"  : "view"
+	"loadtype"  : "view",
+	"mandatory" : false
   },
   {
-	"name"      : "handlebars",
+	"name"      : "handlebars-js",
 	"domtype"   : "script",
 	"filename"  : "js/handlebars.min.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "mandatory",
 	"activated" : true,
-	"loadtype"  : "view"
+	"loadtype"  : "view",
+	"mandatory" : true
   },
   {
-	"name"      : "handlebars",
+	"name"      : "handlebars-js",
 	"domtype"   : "script",
 	"filename"  : "js/handlebars.min.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "mandatory",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
 	"name"      : "bootstrap-dymertagsinput-js",
@@ -287,17 +315,19 @@
 	"useonload" : false,
 	"group"     : "mandatory",
 	"activated" : true,
-	"loadtype"  : "view"
+	"loadtype"  : "view",
+	"mandatory" : false
   },
   {
-	"name"      : "bootstrap-bundle",
+	"name"      : "bootstrap-bundle-js",
 	"domtype"   : "script",
 	"filename"  : "js/lib/bootstrap/4.1.3/bootstrap.bundle.min.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "bootstrap",
 	"activated" : true,
-	"loadtype"  : "view"
+	"loadtype"  : "view",
+	"mandatory" : false
   },
   {
 	"name"      : "bootstrap-select-js",
@@ -307,87 +337,96 @@
 	"useonload" : true,
 	"group"     : "bootstrap-select",
 	"activated" : true,
-	"loadtype"  : "view"
+	"loadtype"  : "view",
+	"mandatory" : false
   },
   {
-	"name"      : "dymer-base",
+	"name"      : "dymer-base-css",
 	"domtype"   : "link",
 	"filename"  : "css/dymer.base.css",
 	"callback"  : null,
 	"useonload" : false,
 	"group"     : "mandatory",
 	"activated" : true,
-	"loadtype"  : "view"
+	"loadtype"  : "view",
+	"mandatory" : false
   },
   {
-	"name"      : "dymer-base",
+	"name"      : "dymer-base-css",
 	"domtype"   : "link",
 	"filename"  : "css/dymer.base.css",
 	"callback"  : null,
 	"useonload" : false,
 	"group"     : "mandatory",
 	"activated" : true,
-	"loadtype"  : "form"
+	"loadtype"  : "form",
+	"mandatory" : false
   },
   {
-	"name"      : "ajaxcall",
+	"name"      : "ajaxcall-js",
 	"domtype"   : "script",
 	"filename"  : "js/ajaxcall.js",
-	"callback"  : "() => { try { mainDymerModel(); } catch ( e ) { console.error( e ); } }",
+	"callback"  : "() => {\n\ttry {\n\t\tmainDymerModel();\n\t} catch ( e ) {\n\t\tconsole.error( e );\n\t}\n}",
 	"useonload" : true,
 	"group"     : "mandatory",
 	"activated" : true,
-	"loadtype"  : "form"
+	"loadtype"  : "form",
+	"mandatory" : false
   },
   {
-	"name"      : "ajaxcall",
+	"name"      : "ajaxcall-js",
 	"domtype"   : "script",
 	"filename"  : "js/ajaxcall.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "ajaxcall",
 	"activated" : true,
-	"loadtype"  : "view"
+	"loadtype"  : "view",
+	"mandatory" : true
   },
   {
-	"name"      : "ajaxcall",
+	"name"      : "ajaxcall-js",
 	"domtype"   : "script",
 	"filename"  : "js/ajaxcall.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "ajaxcall",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
-	"name"      : "jquery-serializejson",
+	"name"      : "jquery-serializejson-js",
 	"domtype"   : "script",
 	"filename"  : "js/lib/jquery/jquery.serializejson.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "serializejson",
 	"activated" : true,
-	"loadtype"  : "view"
+	"loadtype"  : "view",
+	"mandatory" : false
   },
   {
-	"name"      : "jquery-serializejson",
+	"name"      : "jquery-serializejson-js",
 	"domtype"   : "script",
 	"filename"  : "js/lib/jquery/jquery.serializejson.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "serializejson",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
-	"name"      : "leaflet",
+	"name"      : "leaflet-css",
 	"domtype"   : "link",
 	"filename"  : "leaflet/leaflet.css",
 	"callback"  : null,
 	"useonload" : false,
 	"group"     : "mandatory",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
 	"name"      : "leaflet-toolbar-css",
@@ -397,7 +436,8 @@
 	"useonload" : false,
 	"group"     : "mandatory",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
 	"name"      : "jquery-dataTables-css",
@@ -407,17 +447,19 @@
 	"useonload" : false,
 	"group"     : "jquery.dataTables",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
-	"name"      : "markercluster-default",
+	"name"      : "markercluster-default-css",
 	"domtype"   : "link",
 	"filename"  : "leaflet/plugin/markercluster/MarkerCluster.Default.css",
 	"callback"  : null,
 	"useonload" : false,
 	"group"     : "jquery.dataTables",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
 	"name"      : "control-fullscreen-css",
@@ -427,7 +469,8 @@
 	"useonload" : false,
 	"group"     : "jquery.dataTables",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
 	"name"      : "l-control-sidebar-css",
@@ -437,17 +480,19 @@
 	"useonload" : false,
 	"group"     : "jquery.dataTables",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
-	"name"      : "kms-view-map",
+	"name"      : "kms-view-map-css",
 	"domtype"   : "link",
 	"filename"  : "css/kms.view.map.css",
 	"callback"  : null,
 	"useonload" : false,
 	"group"     : "jquery.dataTables",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
 	"name"      : "bootstrap-dymertagsinput-css",
@@ -457,27 +502,30 @@
 	"useonload" : false,
 	"group"     : "jquery.dataTables",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
-	"name"      : "dymer-base",
+	"name"      : "dymer-base-css",
 	"domtype"   : "link",
 	"filename"  : "css/dymer.base.css",
 	"callback"  : null,
 	"useonload" : false,
 	"group"     : "mandatory",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
-	"name"      : "leaflet-awesome-markers",
+	"name"      : "leaflet-awesome-markers-css",
 	"domtype"   : "link",
 	"filename"  : "leaflet/leaflet.awesome-markers.css",
 	"callback"  : null,
 	"useonload" : false,
 	"group"     : "mandatory",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
 	"name"      : "bootstrap-dymertagsinput-js",
@@ -487,27 +535,30 @@
 	"useonload" : true,
 	"group"     : "mandatory",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
-	"name"      : "leaflet-src",
+	"name"      : "leaflet-src-js",
 	"domtype"   : "script",
 	"filename"  : "leaflet/leaflet-src.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "ajaxcall",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
-	"name"      : "leaflet-awesome-markers",
+	"name"      : "leaflet-awesome-markers-js",
 	"domtype"   : "script",
 	"filename"  : "leaflet/leaflet.awesome-markers.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "ajaxcall",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
 	"name"      : "jquery-dataTables-js",
@@ -517,37 +568,41 @@
 	"useonload" : true,
 	"group"     : "jquery.dataTables",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
-	"name"      : "buttons-print",
+	"name"      : "buttons-print-js",
 	"domtype"   : "script",
 	"filename"  : "js/lib/buttons/buttons.print.min.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "jquery.dataTables",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
-	"name"      : "dataTables-buttons",
+	"name"      : "dataTables-buttons-js",
 	"domtype"   : "script",
 	"filename"  : "js/lib/datatables/dataTables.buttons.min.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "jquery.dataTables",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
-	"name"      : "jszip",
+	"name"      : "jszip-js",
 	"domtype"   : "script",
 	"filename"  : "js/lib/jszip.min.js",
 	"callback"  : null,
 	"useonload" : false,
 	"group"     : "jquery.dataTables",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
 	"name"      : "dataTables-bootstrap4-css",
@@ -557,7 +612,8 @@
 	"useonload" : false,
 	"group"     : "jquery.dataTables",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
 	"name"      : "dataTables-bootstrap4-js",
@@ -567,37 +623,41 @@
 	"useonload" : false,
 	"group"     : "jquery.dataTables",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
-	"name"      : "pdfmake",
+	"name"      : "pdfmake-js",
 	"domtype"   : "script",
 	"filename"  : "js/lib/pdfmake.min.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "jquery.dataTables",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
-	"name"      : "vfs-fonts",
+	"name"      : "vfs-fonts-js",
 	"domtype"   : "script",
 	"filename"  : "js/lib/vfs_fonts.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "jquery.dataTables",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
-	"name"      : "buttons-html5",
+	"name"      : "buttons-html5-js",
 	"domtype"   : "script",
 	"filename"  : "js/lib/buttons/buttons.html5.min.js",
 	"callback"  : null,
 	"useonload" : false,
 	"group"     : "jquery.dataTables",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
 	"name"      : "control-fullscreen-js",
@@ -607,7 +667,8 @@
 	"useonload" : true,
 	"group"     : "jquery.dataTables",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
 	"name"      : "leaflet-toolbar-js",
@@ -617,7 +678,8 @@
 	"useonload" : true,
 	"group"     : "mandatory",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
 	"name"      : "l-control-sidebar-js",
@@ -627,36 +689,51 @@
 	"useonload" : true,
 	"group"     : "mandatory",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
 	"name"      : "bootstrap-select-js",
 	"domtype"   : "script",
 	"filename"  : "js/lib/bootstrap-select/bootstrap-select.min.js",
-	"callback"  : "() => { var temp_config_call = { url: csd + '/api2/retriveinfo', type: 'POST', addDataBody: false }; var ajax_temp_call = new Ajaxcall(temp_config_call); ajax_temp_call.flush(); var ret = ajax_temp_call.send(); for (const [key, value] of Object.entries(ret)) { if (key == 'DYMisi') document.cookie = 'DYMisi=' + value; else { localStorage.removeItem(key); localStorage.setItem(key, value); } } mainMapOnLoad(); };",
+	"callback"  : "() => {\n\tvar temp_config_call = {\n\t\turl         : csd + '/api2/retriveinfo',\n\t\ttype        : 'POST',\n\t\taddDataBody : false\n\t};\n\tvar ajax_temp_call = new Ajaxcall( temp_config_call );\n\tajax_temp_call.flush();\n\tvar ret = ajax_temp_call.send();\n\tfor ( const [ key, value ] of Object.entries( ret ) ) {\n\t\tif ( key == 'DYMisi' ) {\n\t\t\tdocument.cookie = 'DYMisi=' + value;\n\t\t} else {\n\t\t\tlocalStorage.removeItem( key );\n\t\t\tlocalStorage.setItem( key, value );\n\t\t}\n\t}\n\tmainMapOnLoad();\n};",
 	"useonload" : true,
 	"group"     : "bootstrap-select",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
-	"name"      : "handlebarshook",
+	"name"      : "handlebarshook-js",
 	"domtype"   : "script",
 	"filename"  : "js/handlebarshook.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "mandatory",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
   },
   {
-	"name"      : "leaflet-markercluster",
+	"name"      : "leaflet-markercluster-js",
 	"domtype"   : "script",
 	"filename"  : "leaflet/plugin/markercluster/leaflet.markercluster.js",
-	"callback"  : "() => { var temp_config_call = { url: csd + '/api2/retriveinfo', type: 'POST', addDataBody: false }; var ajax_temp_call = new Ajaxcall(temp_config_call); ajax_temp_call.flush(); var ret = ajax_temp_call.send(); for (const [key, value] of Object.entries(ret)) { if (key == 'DYMisi') document.cookie = 'DYMisi=' + value; else { localStorage.removeItem(key); localStorage.setItem(key, value); } } mainMapOnLoad(); };",
+	"callback"  : "() => {\n\tvar temp_config_call = {\n\t\turl         : csd + '/api2/retriveinfo',\n\t\ttype        : 'POST',\n\t\taddDataBody : false\n\t};\n\tvar ajax_temp_call = new Ajaxcall( temp_config_call );\n\tajax_temp_call.flush();\n\tvar ret = ajax_temp_call.send();\n\tfor ( const [ key, value ] of Object.entries( ret ) ) {\n\t\tif ( key == 'DYMisi' ) {\n\t\t\tdocument.cookie = 'DYMisi=' + value;\n\t\t} else {\n\t\t\tlocalStorage.removeItem( key );\n\t\t\tlocalStorage.setItem( key, value );\n\t\t}\n\t}\n\tmainMapOnLoad();\n};",
 	"useonload" : true,
 	"group"     : "mandatory",
 	"activated" : true,
-	"loadtype"  : "map"
+	"loadtype"  : "map",
+	"mandatory" : false
+  },
+  {
+	"name"      : "handlebarshook-js",
+	"domtype"   : "script",
+	"filename"  : "js/handlebarshook.js",
+	"callback"  : "() => {\n\tdocument.cookie = 'DYMisi=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';\n\tvar temp_config_call = {\n\t\turl         : csd + '/api2/retriveinfo',\n\t\ttype        : 'POST',\n\t\taddDataBody : false\n\t};\n\tvar ajax_temp_call = new Ajaxcall( temp_config_call );\n\tajax_temp_call.flush();\n\tvar ret = ajax_temp_call.send();\n\tfor ( const [ key, value ] of Object.entries( ret ) ) {\n\t\tif ( key == 'DYMisi' ) {\n\t\t\tdocument.cookie = 'DYMisi=' + value;\n\t\t} else {\n\t\t\tlocalStorage.removeItem( key );\n\t\t\tlocalStorage.setItem( key, value );\n\t\t}\n\t}\n\tmainDymerView();\n};",
+	"useonload" : true,
+	"group"     : "mandatory",
+	"activated" : true,
+	"loadtype"  : "view",
+	"mandatory" : true
   }
 ]

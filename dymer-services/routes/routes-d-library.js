@@ -35,7 +35,7 @@ router.get( '/', /* util.checkIsAdmin,  */async ( req, res ) => {
 // GET by ID
 // TODO da testare
 router.get( '/:id', util.checkIsAdmin, async ( req, res ) => {
-	console.log( `router-d-library -> GET id: [${ req.params.id }]` );
+	// console.log( `router-d-library -> GET id: [${ req.params.id }]` );
 	const libId = req.params.id;
 
 	if ( !isValidObjectId( libId ) ) {
@@ -57,7 +57,7 @@ router.get( '/:id', util.checkIsAdmin, async ( req, res ) => {
 
 // PUT
 router.put( '/:id', util.checkIsAdmin, async ( req, res ) => {
-	console.log( `router-d-library -> PUT id: [${ req.params.id }]` );
+	// console.log( `router-d-library -> PUT id: [${ req.params.id }]` );
 	const libId = req.params.id;
 
 	if ( !isValidObjectId( libId ) ) {
@@ -105,7 +105,7 @@ router.patch( '/:id', util.checkIsAdmin, async ( req, res ) => {
 // DELETE
 // TODO da testare
 router.delete( '/:id', util.checkIsAdmin, async ( req, res ) => {
-	console.log( `router-d-library -> DELETE id: [${ req.params.id }]` );
+	// console.log( `router-d-library -> DELETE id: [${ req.params.id }]` );
 	const libId = req.params.id;
 
 	if ( !isValidObjectId( libId ) ) {

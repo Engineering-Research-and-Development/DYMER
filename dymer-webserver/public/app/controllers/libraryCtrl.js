@@ -2,94 +2,57 @@ angular.module( 'libraryCtrl', [] )
 	   .controller( 'libraryController', function ( $scope, $http, $rootScope ) {
 		   const contextPath = $rootScope.globals.contextpath;
 		   const libsURL = contextPath + '/api/dservice/api/v1/library/';
+
+		   $scope.libraryCardsConfigs = [ generateCardsConfig( 'View Libraries', false, 'viewLibrariesTable', 'viewLibrariesTableBody' ),
+										  generateCardsConfig( 'Map Libraries', false, 'mapLibrariesTable', 'mapLibrariesTableBody' ),
+										  generateCardsConfig( 'Form Libraries', false, 'formLibrariesTable', 'formLibrariesTableBody' )
+		   								]
+
+
+		   //all columns: [ 'Name', 'Domtype', 'Filename', 'Callback', 'Use Onload', 'Group', 'Load Type', 'Mandatory' ]
+		   function generateCardsConfig( title, showConfig, tableId, tableBodyId ) {
+			   return {
+				   title       : title,
+				   showConfig  : showConfig,
+				   tableId     : tableId,
+				   tableBodyId : tableBodyId,
+				   columns     : [ 'Name', 'Filename', 'Callback', 'Use Onload', 'Group', 'Mandatory' ]
+			   };
+		   }
+
 		   $scope.libraries = [];
 
-		   const materialDesignToggleSwitchCSS = `
-				.toggle-switch {
-					position: relative;
-					display: inline-block;
-					width: 60px;
-					height: 35px;
-				}
-			
-				.toggle-switch input {
-					display: none;
-				}
-			
-				.toggle-slider {
-					position: absolute;
-					cursor: pointer;
-					top: 0;
-					left: 0;
-					right: 0;
-					bottom: 0;
-					background-color: #9e9e9e;
-					transition: 0.4s;
-					border-radius: 5px;
-					display: block;
-				}
-			
-				.toggle-slider:before {
-					content: "";
-					position: absolute;
-					height: 26px;
-					width: 26px;
-					left: 4px;
-					bottom: 4px;
-					background-color: white;
-					transition: 0.4s;
-					border-radius: 5px;
-					top: 2px;
-					display: block;
-				}
-			
-				.toggle-switch input:checked + .toggle-slider {
-					background-color: #51cbce;
-				}
-			
-				.toggle-switch input:checked + .toggle-slider:before {
-					transform: translateX(26px);
-				}
-			`;
-
-
-		   // Funzione per gestire il cambio di stato della checkbox
+		   // Manage state of checkbox
 		   $scope.checkboxChanged = library => {
 			   // console.log( `${ library.name } [${ library._id }] changed state in ${ library.activated }` );
 
-			   // Chiamata $http per aggiornare lo stato nel backend
+			   // Update state in backend
 			   let requestBody = { activated : !library.activated };
 
 			   $http.patch( libsURL + library._id, requestBody )
-					.then( function ( response ) {
-						// Aggiorna la proprietà activated dell'oggetto library
+					.then( response => {
+						// Update 'activated' in library Object
 						library.activated = !library.activated;
-						// console.log( 'Stato aggiornato nel backend con successo:', response.data );
+						console.log( `Now ${ library.name } has 'actived': ${ response.data }` );
 					} )
-					.catch( function ( error ) {
+					.catch( error => {
 						console.error( "Errore nell'aggiornamento dello stato nel backend:", error );
 					} );
 		   };
 
-		   // Ottieni data e genera la tabella
+		   // Get data and Generate Tables
 		   $http.get( libsURL )
 				.then( response => {
 					// console.log( 'Risposta dal server: ', response.data );
 					$scope.libraries = response.data;
 
-					// genera le righe della tabella parametricamente
-					generateLibraryRows( $scope.libraries );
-
-					// Aggiungi lo stile CSS al tag <style> nell'intestazione del documento
-					const styleTag = document.createElement( 'style' );
-					styleTag.innerHTML = materialDesignToggleSwitchCSS;
-					document.head.appendChild( styleTag );
+					generateLibrariesTablesBody( $scope.libraries );
 				} )
 				.catch( error => {
 					console.error( 'Errore nel recupero delle librerie:', error );
 				} );
 
-		   function generateLibraryRows( libraries ) {
+		   function generateLibrariesTablesBody( libraries ) {
 			   const viewTableBody = document.getElementById( 'viewLibrariesTableBody' );
 			   const mapTableBody = document.getElementById( 'mapLibrariesTableBody' );
 			   const formTableBody = document.getElementById( 'formLibrariesTableBody' );
@@ -99,50 +62,135 @@ angular.module( 'libraryCtrl', [] )
 			   generateRows( libraries.filter( ( { loadtype } ) => loadtype === 'form' ), formTableBody );
 		   }
 
-		   // Funzione per generare le righe della tabella
 		   function generateRows( libraries, tableBody ) {
 			   libraries.forEach( library => {
-				   const row = tableBody.insertRow();
+				   const row = createRow( library );
+				   tableBody.appendChild( row );
+			   } );
+		   }
 
-				   // Lista dei nomi dei campi esclusi "activated" e "_id"
-				   const headerFieldNames = Object.keys( libraries[ 0 ] ).filter(
-					   fieldName => fieldName !== 'activated' && fieldName !== '_id' );
+		   function createRow( library ) {
+			   const row = document.createElement( 'tr' );
+			   const headerFieldNames = getHeaderFieldNames( library );
 
-				   headerFieldNames.forEach( ( fieldName, index ) => {
-					   const cell = row.insertCell( index );
+			   headerFieldNames.forEach( fieldName => {
+				   const cell = createCell( fieldName, library );
+				   row.appendChild( cell );
+			   } );
 
-					   // Popola la cella con il valore del campo
-					   const label = document.createElement( 'span' );
-					   label.className = 'ng-binding';
-					   label.textContent = library[ fieldName ];
+			   const toggleSwitchCell = createToggleSwitchCell( library );
+			   row.appendChild( toggleSwitchCell );
 
-					   // Aggiungi stile direttamente alla cella
-					   cell.setAttribute( 'style', 'text-align: center;' );
+			   return row;
+		   }
+
+		   function getHeaderFieldNames( library ) {
+			   return Object.keys( library ).filter(
+				   fieldName => ![ '_id', 'domtype', 'activated', 'loadtype' ].includes( fieldName ) );
+		   }
+
+		   function createCell( fieldName, library ) {
+			   const cell = document.createElement( 'td' );
+			   const label = document.createElement( 'span' );
+			   label.className = 'ng-binding';
+
+			   switch ( fieldName ) {
+				   case 'filename':
+					   const nameOfFile = library.filename.split( '/' ).pop();
+					   label.textContent = nameOfFile;
+					   cell.style.textAlign = 'center';
 					   cell.appendChild( label );
-				   } );
+					   cell.addEventListener( 'mouseover', () => showPopup( library.filename, cell ) );
+					   cell.addEventListener( 'mouseout', hidePopup );
+					   break;
 
-				   // Aggiungi una cella per il toggle switch
-				   const toggleSwitchCell = row.insertCell( headerFieldNames.length );
+				   case 'callback':
+					   label.textContent = library.callback !== null ? 'Show Callback' : library[ fieldName ];
+					   label.addEventListener( 'mouseover', () => showPopup( library.callback, cell ) );
+					   label.addEventListener( 'mouseout', hidePopup );
+					   cell.style.textAlign = 'center';
+					   cell.appendChild( label );
+					   break;
+
+				   case 'useonload':
+				   case 'mandatory':
+					   label.textContent = library[ fieldName ];
+					   label.style.fontWeight = library[ fieldName ] ? 'bold' : 'normal';
+					   label.style.fontStyle = library[ fieldName ] ? 'normal' : 'italic';
+					   label.style.color = library[ fieldName ] ? 'green' : 'red';
+					   cell.style.textAlign = 'center';
+					   cell.appendChild( label );
+					   break;
+
+				   default:
+					   label.textContent = library[ fieldName ];
+					   cell.style.textAlign = 'center';
+					   cell.appendChild( label );
+			   }
+
+			   return cell;
+		   }
+
+		   function createToggleSwitchCell( library ) {
+			   const toggleSwitchCell = document.createElement( 'td' );
+			   toggleSwitchCell.style.textAlign = 'center';
+
+			   if ( !library.mandatory ) {
 				   const toggleSwitch = document.createElement( 'div' );
-				   toggleSwitch.className = 'toggle-switch';
+				   toggleSwitch.className = 'library-toggle-switch';
 
 				   const checkbox = document.createElement( 'input' );
 				   checkbox.type = 'checkbox';
-				   checkbox.id = 'myCheckbox' + row.rowIndex; // Utilizza un id univoco per ogni toggle switch
+				   checkbox.checked = library.activated;
+				   checkbox.id = 'myCheckbox' + library._id; // Assuming library._id exists
+				   checkbox.addEventListener( 'change', () => $scope.checkboxChanged( library ) );
 				   toggleSwitch.appendChild( checkbox );
 
 				   const toggleSlider = document.createElement( 'label' );
-				   toggleSlider.setAttribute( 'for', 'myCheckbox' + row.rowIndex );
-				   toggleSlider.className = 'toggle-slider';
+				   toggleSlider.setAttribute( 'for', 'myCheckbox' + library._id ); // Assuming library._id exists
+				   toggleSlider.className = 'library-toggle-slider';
 				   toggleSwitch.appendChild( toggleSlider );
 
-				   checkbox.checked = library.activated;
-				   checkbox.addEventListener( 'change', () => $scope.checkboxChanged( library ) );
-
-				   // Aggiungi stile direttamente alla cella
-				   toggleSwitchCell.setAttribute( 'style', 'text-align: center;' );
 				   toggleSwitchCell.appendChild( toggleSwitch );
-			   } );
+			   }
+
+
+			   return toggleSwitchCell;
+		   }
+
+		   function showPopup( content, anchorElement ) {
+			   const popup = document.createElement( 'div' );
+			   popup.className = 'popup';
+
+			   const preElement = document.createElement( 'pre' );
+			   preElement.className = 'language-javascript';
+			   const codeElement = document.createElement( 'code' );
+			   codeElement.className = 'language-javascript';
+			   codeElement.textContent = content;
+			   preElement.appendChild( codeElement );
+
+			   popup.appendChild( preElement );
+
+			   const rect = anchorElement.getBoundingClientRect();
+
+			   const anchorWidth = anchorElement.offsetWidth;
+			   const popupWidth = popup.offsetWidth;
+			   const leftPosition = rect.left + ( anchorWidth - popupWidth ) / 2;
+
+			   popup.style.position = 'absolute';
+			   popup.style.top = rect.bottom + 'px';
+			   popup.style.left = leftPosition + 'px';
+
+			   document.body.appendChild( popup );
+
+			   Prism.highlightAllUnder( popup );
+		   }
+
+		   function hidePopup() {
+			   const popup = document.querySelector( '.popup' );
+			   if ( popup ) {
+				   document.body.removeChild( popup );
+			   }
 		   }
 
 		   function generateCardsConfig(title, showConfig, tableId, tableBodyId) {
