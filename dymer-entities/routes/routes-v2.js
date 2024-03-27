@@ -3984,7 +3984,7 @@ router.post('/:enttype', function(req, res) {
                             //  logger.info("predata" + JSON.stringify(data));
                             logger.info(nameFile + '| /:enttype | create | predata :' + JSON.stringify(data));
                             //       if (!((JSON.parse(data.properties)).hasOwnProperty("owner") && asis)) {
-                             if (!(data.properties.owner != undefined && asis)) {
+                             if (!(data.properties?.owner != undefined && asis)) {
                             //if (!(data.properties.owner != undefined && asis)) {
                                 data.properties.owner = {};
                                 data.properties.owner.uid = urs_uid;

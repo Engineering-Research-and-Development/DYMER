@@ -168,13 +168,9 @@ angular.module('templateBuilderControllers', [])
                     //  }, 3000);
 
                 }).catch(function(response) {
-                    console.log('MODAL ERROR');
-                    console.log(response);
                     console.log(response.status);
                 });
             }).catch(function(response) {
-                console.log('MODAL ERROR 2');
-                console.log(response);
                 console.log(response.status);
             })
         }).catch(function(response) {

@@ -60,39 +60,34 @@ angular.module('entitiesImportControllers', [])
             console.log("Exporting JSON")
             exportEntities.exportJSONFormat(baseContextPath, { index: $scope.selectedEntity })
         }
+        $scope.selectedOptions = [];
 
         $scope.ExportCSV = function () {
             console.log("Exporting CSV")
-            let options = $scope.myDropdownOptions.map(el => (el.id))
-            let selectedOptions = $scope.myDropdownModel.map(el => el.id)
+            let options = $scope.FieldsForIndex
+            //let selectedOptions = $scope.selectedOptions || [];
+
+            let selectedOptions = [];
+            for (let option in $scope.selectedOptions) {
+                if ($scope.selectedOptions.hasOwnProperty(option) && $scope.selectedOptions[option]) {
+                    selectedOptions.push(option);
+                }
+            }
+
+
+            console.log("SELECTED", selectedOptions)
 
             let excluededFields = options.filter(element => !selectedOptions.includes(element))
             exportEntities.exportCSVFormat(baseContextPath, { index: $scope.selectedEntity, exclude: excluededFields })
         }
 
-        $scope.myDropdownSettings = {
-            smartButtonTextProvider: [],
-            smartButtonMaxItems: 3,
-            smartButtonTextProvider(selectionArray) {
-                if (selectionArray.length === 1) {
-                    return selectionArray[0].label;
-                } else {
-                    return selectionArray.length + ' Selected';
-                }
-            }
-        };
-
-        $scope.myDropdownModel = [{ id: "ciao_test" }]
-
         $scope.selectOptions = function () {
             let index = $scope.selectedEntity
-            let fields = []
+         //   let fields = []
 
             $http.get(baseContextPath + '/api/entities/api/v1/entity/getstructure/' + index).then(function (rt) {
-                for (let el of rt.data) {
-                    fields.push({ id: el, label: el })
-                }
-                $scope.myDropdownOptions = fields
+                $scope.FieldsForIndex = rt.data// fields
+
             }).catch(function (e) {
                 console.log("Error: ", e)
             })
@@ -121,10 +116,10 @@ angular.module('entitiesImportControllers', [])
             let enableRel = $scope.entityToRelation?.checked ? $scope.entityToRelation.checked : false
             let relto = enableRel ? $scope.entityToRelation.index : ""
 
-            let checkedFields = $scope.originalFields.filter(element => element.checked == true)
+            let checkedFields = $scope.originalFields.concat($scope.newCustomStaticRows).filter(element => element.checked === true)
 
             checkedFields.forEach((el) => {
-                if (el.newName == "placeholder" || el.newName == "" || el.newName == undefined) {
+                if (el.newName === "placeholder" || el.newName === "" || el.newName === undefined) {
                     el.newName = el.originalName
                 }
             })
@@ -201,6 +196,14 @@ angular.module('entitiesImportControllers', [])
             }*/
             //*********/
             $scope.csvFields = fieldNames
+
+
+            $scope.newCustomStaticRows = []
+
+            for (let i = 0; i < 5; i++) {
+                $scope.newCustomStaticRows.push({ newName: "", checked: false, index: ($scope.originalFields.length + i) })
+            }
+
             console.log("originalFields ", $scope.originalFields)
         }
 

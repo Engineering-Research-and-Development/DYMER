@@ -1536,6 +1536,10 @@ pre code {
   border-top: 2px solid #dee2e6;
 }
 
+.table-fields-export {
+  display: block;
+}
+
 .table .table {
   background-color: #fff;
 }
