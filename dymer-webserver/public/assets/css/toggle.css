@@ -1,0 +1,50 @@
+/**
+ * Simple Material Design Toggle Switch CSS
+ * @author lucapasquale.curcio@eng.it
+ */
+
+.library-toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 35px;
+}
+
+.library-toggle-switch input {
+    display: none;
+}
+
+.library-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #9e9e9e;
+    transition: 0.4s;
+    border-radius: 5px;
+    display: block;
+}
+
+.library-toggle-slider:before {
+    content: "";
+    position: absolute;
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 5px;
+    top: 2px;
+    display: block;
+}
+
+.library-toggle-switch input:checked + .library-toggle-slider {
+    background-color: #51cbce;
+}
+
+.library-toggle-switch input:checked + .library-toggle-slider:before {
+    transform: translateX(26px);
+}
