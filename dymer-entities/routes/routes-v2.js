@@ -38,6 +38,7 @@ logger.info(nameFile + " | mongoURI: " + JSON.stringify(mongoURI));
 //const connection = mongoose.createConnection(mongoURI, { useNewUrlParser: true });
 let fs = require('fs')
 const jsonexport = require('jsonexport');
+const { stringify } = require('querystring');
 
 
 mongoose
@@ -1010,7 +1011,7 @@ function deleteRelationByIndex(index) {
             }
         }
     };
-
+    console.log("==>deleteRelationByIndex");
     client.indices.exists({ index: "entity_relation" },  function(err_, resp_, status_) {
         if (status_ == 200) {
             client.deleteByQuery({
@@ -5477,6 +5478,7 @@ router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
     console.log("==>deleteAllEntityByIndex ", index);
     const dymeruser = util.getDymerUser(req, res);
     const dymerextrainfo = dymeruser.extrainfo;
+    //console.log("==> dymeruser in deleteAllEntityByIndex", dymeruser);
     /* var dymerextrainfo = req.headers.extrainfo;
      if (dymerextrainfo != undefined && dymerextrainfo != "null" && dymerextrainfo != null) {
          dymerextrainfo = JSON.parse(Buffer.from(req.headers.extrainfo, 'base64').toString('utf-8'));
@@ -5504,9 +5506,13 @@ router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
             return res.send(ret);
         }
         var ind = 0;
-        for (ind = 0; ind < resp.hits.total; ind++) {
+        //console.log("deleteAllEntityByIndex resp.hits.total.value: ", resp.hits.total.value);
+        //console.log("deleteAllEntityByIndex resp.hits: ", JSON.stringify(resp.hits));
+        for (ind = 0; ind < resp.hits.total.value; ind++) {
+            
             var element = resp.hits.hits[ind];
             var elToDelete = element;
+            //console.log("==>deleteAllEntityByIndex elToDelete ", JSON.stringify(elToDelete));
             var delarams = {};
             delarams["index"] = element["_index"];
             //delarams["type"] = element["_type"];
@@ -5515,12 +5521,16 @@ router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
             for (var key in element._source) {
                 if (element._source[key] instanceof Array) {
                     for (var subkey in element._source[key]) {
-                        if (element._source[key][subkey].hasOwnProperty('bucketName'))
+                        if (element._source[key][subkey].hasOwnProperty('bucketName')){
                             gridfs_delete_queue.push(element._source[key][subkey]["id"]);
+                        }
+                            
                     }
                 } else {
-                    if (element._source[key].hasOwnProperty('bucketName'))
+                    if (element._source[key].hasOwnProperty('bucketName')){
                         gridfs_delete_queue.push(element._source[key]["id"]);
+                    }
+                        
                 }
             }
             client.delete(delarams).then(
@@ -5570,6 +5580,7 @@ router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
 });
 
 router.get('/deleteAllEntityAndIndexByIndex/', util.checkIsAdmin, (req, res) => {
+    console.log("==>deleteAllEntityAndIndexByIndex");
     let callData = util.getAllQuery(req);
     let index_ = callData.index;
     const dymeruser = util.getDymerUser(req, res);
@@ -5583,7 +5594,7 @@ router.get('/deleteAllEntityAndIndexByIndex/', util.checkIsAdmin, (req, res) => 
     client.indices.delete({
         index: index_,
     }).then(async function(resp) {
-        //console.log(nameFile + '| deleteAllEntityAndIndexByIndex | index :', dymeruser.id, index_);
+        console.log(nameFile + '| deleteAllEntityAndIndexByIndex | index :', dymeruser.id, index_);
         logger.info(nameFile + '| deleteAllEntityAndIndexByIndex | dymeruser.id, index :' + dymeruser.id + ' , ' + index_);
         deleteRelationByIndex(index_);
         if(redisEnabled) {
