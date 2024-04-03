@@ -42,7 +42,6 @@ router.post( '/', util.checkIsAdmin, async ( req, res ) => {
 } );
 
 // GET ALL
-// TODO indagare sul perché con util.checkIsAdmin la pagina di test "dymer_list_detail_one_page.html" non funzionava
 router.get( '/', /* util.checkIsAdmin,  */async ( req, res ) => {
 	// console.log( "router-d-library -> GET all" );
 	try {
@@ -54,7 +53,6 @@ router.get( '/', /* util.checkIsAdmin,  */async ( req, res ) => {
 } );
 
 // GET by ID
-// TODO da testare
 router.get( '/:id', util.checkIsAdmin, async ( req, res ) => {
 	// console.log( `router-d-library -> GET id: [${ req.params.id }]` );
 	const libId = req.params.id;
@@ -124,7 +122,6 @@ router.patch( '/:id', util.checkIsAdmin, async ( req, res ) => {
 } );
 
 // DELETE
-// TODO da testare
 router.delete( '/:id', util.checkIsAdmin, async ( req, res ) => {
 	// console.log( `router-d-library -> DELETE id: [${ req.params.id }]` );
 	const libId = req.params.id;

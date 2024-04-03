@@ -39,11 +39,11 @@
 				<form name="formNewLibrary" id="formNewLibrary">
 					<div class="form-group">
 						<label for="name">Name:<span>*</span></label>
-						<input type="text" class="form-control" id="name" ng-model="newLibrary.name" ng-focus="nameFocused = true" required>
+						<input type="text" class="form-control" id="name" ng-model="library.name" ng-focus="nameFocused = true" required>
 					</div>
 					<div class="form-group">
-						<label for="libraryType">Library Type:</label>
-						<select id="libraryType" ng-model="selectedLibraryType" class="form-control" ng-show="nameFocused && newLibrary.name" ng-change="showLibraryForm()">
+						<label for="libraryType">Library Type:<span>*</span></label>
+						<select id="libraryType" ng-model="selectedLibraryType" class="form-control" ng-show="nameFocused && library.name" ng-change="showLibraryForm()">
 							<option value="">Select Library Type</option>
 							<option value="Javascript">Javascript</option>
 							<option value="CSS">CSS</option>
@@ -53,40 +53,40 @@
 						<div class="form-group row">
 							<div class="col-md-6">
 								<label for="domtype">DOM Type:<span>*</span></label>
-								<select class="form-control" id="domtype" ng-model="newLibrary.domtype" required>
+								<select class="form-control" id="domtype" ng-model="library.domtype" required>
 									<option value="link">Link</option>
 									<option value="script">Script</option>
 								</select>
 							</div>
 							<div class="col-md-6">
-								<input type="checkbox" class="form-check-input" id="useonload" ng-model="newLibrary.useonload">
+								<input type="checkbox" class="form-check-input" id="useonload" ng-model="library.useonload">
 								<label for="useonload">Use Onload:<span>*</span></label>
 							</div>
 						</div>
 						<div class="form-group">
 							<label for="filename">Filename:<span>*</span></label>
-							<input type="text" class="form-control" id="filename" ng-model="newLibrary.filename" required>
+							<input type="text" class="form-control" id="filename" ng-model="library.filename" required>
 						</div>
 						<div class="form-group">
 							<label for="callback">Callback:</label>
-							<input type="text" class="form-control" id="callback" ng-model="newLibrary.callback">
+							<textarea type="text" class="form-control" id="callback" ng-model="library.callback"></textarea>
 						</div>
 						<div class="form-group">
 							<label for="group">Group:<span>*</span></label>
-							<input type="text" class="form-control" id="group" ng-model="newLibrary.group" required>
+							<input type="text" class="form-control" id="group" ng-model="library.group" required>
 						</div>
 						<div class="form-group row">
 							<div class="col-md-6">
 								<label for="loadtype">Load Type:<span>*</span></label>
-								<select class="form-control" id="loadtype" ng-model="newLibrary.loadtype" required>
+								<select class="form-control" id="loadtype" ng-model="library.loadtype" required>
 									<option value="">Select Load Type</option>
-									<option value="View">View</option>
-									<option value="Map">Map</option>
-									<option value="Form">Form</option>
+									<option value="view">View</option>
+									<option value="map">Map</option>
+									<option value="form">Form</option>
 								</select>
 							</div>
 							<div class="col-md-6">
-								<input type="checkbox" class="form-check-input" id="mandatory" ng-model="newLibrary.mandatory">
+								<input type="checkbox" class="form-check-input" id="mandatory" ng-model="library.mandatory">
 								<label for="mandatory">Mandatory:</label>
 							</div>
 						</div>
