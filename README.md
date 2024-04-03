@@ -76,15 +76,15 @@ The same management features are available respectively for the models/forms
 
 | Description                                     | Language    | Version          |
 | :---------------------------------------------- | :---------: | :--------------: |
-| [Node.js][1]                                    | JavaScript  | 10.13.0          |
-| [Express][2]                                    | JavaScript  | 4.16.4           |
-| [Docker][3]                                     |             | 19.03.8          |
-| [AngularJS][4]                                  | JavaScript  | 1.7.9            |
+| [Node.js][1]                                    | JavaScript  | 20.10.0          |
+| [Express][2]                                    | JavaScript  | 4.18.2           |
+| [Docker][3]                                     |             | 23.0.5           |
+| [AngularJS][4]                                  | JavaScript  | 1.8.2            |
 | [JQuery][5]                                     |             | 3.3              |
 | [Bootstrap][6]                                  |             | 3/4              |
 | [Handlebars][7]                                 |             |                  |
-| [MongoDB][8]                                    |             | 3.6.9            |
-| [ElasticSearch][9]                              |             | 6.5.1            |
+| [MongoDB][8]                                    |             | 7.0.4            |
+| [ElasticSearch][9]                              |             | 8.11.0           |
 
 
 

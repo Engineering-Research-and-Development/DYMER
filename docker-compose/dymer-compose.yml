@@ -1,11 +1,11 @@
 version: "3.3"
 
- 
+   
 
 volumes:
-    mongo_data:
-    mongo_conf:
-    elasticsearch_data:
+    mongo_data_v2:
+    mongo_conf_v2:
+    elasticsearch_data_v2:
 
  
 
@@ -17,8 +17,8 @@ services:
           - published: 27017
             target: 27017
         volumes:
-          - mongo_data:/data/db
-          - mongo_conf:/data/configdb
+          - mongo_data_v2:/data/db
+          - mongo_conf_v2:/data/configdb
           - ./backups_mongo:/opt/backups
 
  
@@ -32,6 +32,9 @@ services:
         environment:
           - discovery.type=single-node
           - xpack.security.enabled=false
+        volumes:
+            - elasticsearch_data_v2:/usr/share/elasticsearch/data
+             
           
           
     kms_webserver:                  # ports: 8080
@@ -99,6 +102,12 @@ services:
           - DYMER_UUID=${DYM_UUID}
         working_dir: /usr/src/app
         command: "npm start"
+    cache:
+        image: redis:7.0.10-alpine3.17
+        restart: always
+        command: redis-server  --loglevel warning
+        volumes: 
+           - ./datacache:/data      
 
 
     
