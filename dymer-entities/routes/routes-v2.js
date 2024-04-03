@@ -143,7 +143,10 @@ function startElastic() {
                 elasticStatusUp = true;
                 console.log(nameFile + '| Connected to elasticsearch! ', elasticStatusUp);
                 logger.info(nameFile + '| Connected to elasticsearch!  :' + elasticStatusUp);
-                if(redisEnabled) { cacheRelations(redisEnabled); }
+                if(redisEnabled) { 
+                    console.log('==>startElasticsearch cacheRelations');
+                    cacheRelations(redisEnabled); 
+                }
             }
             if (!elasticStatusUp) {
                 console.log(nameFile + '| Elasticsearch down!, start setTimeout A', elasticStatusUp);
@@ -354,6 +357,7 @@ router.get('/redisstate', util.checkIsAdmin, async(req, res) => {
     return res.send(ret);
 });
 async function cacheRelations(isRedisActive) {
+    console.log("==> cacheRelations isRedisActive: ", isRedisActive);
     await redisClient.emptyCache(true)
     let cachedRelations = await retrieveAllRelations();
     await redisClient.setRelationKey(cachedRelations[1])
@@ -375,6 +379,7 @@ async function cacheRelations(isRedisActive) {
  */
 router.post('/invalidatecache/:index', util.checkIsAdmin, async(req, res) => {
     let index = req.params['index'];
+    console.log("==> invalidatecache/:", index);
     await redisClient.invalidateCacheByIndex(index, true);
     var ret = new jsonResponse();
     ret.setMessages("invalidated cache");
@@ -386,6 +391,7 @@ router.post('/invalidatecache/:index', util.checkIsAdmin, async(req, res) => {
 
 
 router.post('/invalidateallcache', util.checkIsAdmin, async(req, res) => {
+    console.log("==> invalidateallcache");
     await redisClient.emptyCache(true);
     let cachedRelations = await retrieveAllRelations();
     var ret = new jsonResponse();
@@ -550,7 +556,7 @@ var recFile = function(file_id) {
 
 function checkRelation(params, elIndex, elId) {
     var _id1 = elId;
-    //console.log('checkRelation', params, elIndex);
+    console.log('==>checkRelation', params, elIndex);
     // console.log(nameFile + '| checkRelation | params:', JSON.stringify(params), elIndex);
     logger.info(nameFile + '| checkRelation | params :' + JSON.stringify(params) + " , " + elIndex);
     let datasetRel = [];
@@ -581,7 +587,7 @@ function checkRelation(params, elIndex, elId) {
     }
     let qparams = {};
     qparams["index"] = "entity_relation";
-    qparams["type"] = "entity_relation";
+    //qparams["type"] = "entity_relation";
     qparams["body"] = {
         "bool": {
             "should": [{
@@ -624,6 +630,7 @@ function checkRelation(params, elIndex, elId) {
 }
 
 function checkRelation_original(params, elIndex, elId) {
+    console.log('==>checkRelation_original', params, elIndex);
     var _id1 = elId;
     // console.log('checkRelation', params, elIndex);
     // console.log(nameFile + '| checkRelation | params:', JSON.stringify(params), elIndex);
@@ -642,7 +649,7 @@ function checkRelation_original(params, elIndex, elId) {
             // console.log('myKey', myKey, elre);
             let qparams = {};
             qparams["index"] = "entity_relation";
-            qparams["type"] = "entity_relation";
+            //qparams["type"] = "entity_relation";
             _id2_list.forEach(singleId2 => {
                 // qparams = {}; 
                 /* qparams["body"] = {
@@ -719,7 +726,9 @@ function checkRelation_original(params, elIndex, elId) {
 });*/
 
 function controlAndCreateRel_V2(qparams, datasetRel) {
+    console.log('==>controlAndCreateRel_V2 qparams:',qparams);
     var parm = qparams;
+
     // client.indices.exists({ index: "entity_relation" }, function(err_, resp_, status_) {
     //      if (status_ == 200) {
     //  client.indices.exists({ index: "entity_relation" }).then((isExists) => {
@@ -749,7 +758,7 @@ function controlAndCreateRel_V2(qparams, datasetRel) {
                     createRelationV2(filterdatasetRel);
                 }
             }, function(err) {
-                //console.log('Error controlAndCreateRel search');
+                console.log('Error controlAndCreateRel search');
                 console.trace(err.message);
                 logger.error(nameFile + '| controlAndCreateReld | search : ' + err);
             });
@@ -893,12 +902,13 @@ let deleteBulkByIds = async function(idsToDelete, index) {
 };
 
 function deleteRelation(_id1, _id2) {
+    console.log("==> deleteRelation  _id1, _id2", _id1, _id2);
     //  console.log("-----VAI E _id1, _id2", _id1, _id2);
     client.indices.exists({ index: "entity_relation" }, function(err_, resp_, status_) {
         if (status_ == 200) {
             var params = {};
             params["index"] = "entity_relation";
-            params["type"] = "entity_relation";
+            //params["type"] = "entity_relation";
             // qparams = {};
             params["body"] = {
 
@@ -1368,7 +1378,7 @@ async function CacheRelation(datasetRel) {
     let idEntityAllRel = [];
     let qparams = {};
     qparams["index"] = "entity_relation";
-    qparams["type"] = "entity_relation";
+    //qparams["type"] = "entity_relation";
     qparams["body"] = {
         "query": {
             "bool": {
@@ -1409,13 +1419,14 @@ async function checkIndexExists(index) {
     }
   }
 async function retrieveAllRelations() {
+    console.log('==>retrieveAllRelations');
     let jsonResp = new jsonResponse()
     if(!(await checkIndexExists("entity_relation"))) {
         return [jsonResp, {}]
     }
     let qparams = {};
     qparams["index"] = "entity_relation";
-    qparams["type"] = "entity_relation";
+    //qparams["type"] = "entity_relation";
     qparams["body"] = {
         "query": {
             "bool": {
@@ -1908,7 +1919,7 @@ router.post('/singlerelation/', util.checkIsPortalUser, (req, res) => {
     const dymerextrainfo = dymeruser.extrainfo;
     client.index({
         index: 'entity_relation',
-        type: 'entity_relation',
+        //type: 'entity_relation',
         body: {
             _id1: callData.id1,
             _index1: callData.index1,
@@ -2727,7 +2738,7 @@ router.post('/_search', (req, res) => {
              if (redisEnabled) {      
                  cachedResponse = await redisClient.readCacheByKey(params, redisEnabled)
                  if (cachedResponse && Object.keys(cachedResponse).length != 0) {
-                    // console.log("entro qui")
+                     console.log(nameFile + '|_search| cachedResponse ');
                      logger.info(nameFile + '|_search| cachedResponse ');
                      //return res.send(JSON.parse(cachedResponse.response))
                      return res.send(cachedResponse)
@@ -2888,6 +2899,7 @@ router.post('/_search', (req, res) => {
 
 
             }).catch(function(error) {
+                console.log("ERROR | " + nameFile + '|_search| redis:', err);
                 ret.setMessages("Search Error");
                 ret.setSuccess(false);
                 ret.setExtraData({ "log": error });
