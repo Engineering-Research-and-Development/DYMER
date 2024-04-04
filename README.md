@@ -96,7 +96,7 @@ The same management features are available respectively for the models/forms
 [6]:  https://getbootstrap.com/
 [7]:  https://handlebarsjs.com/
 [8]:  https://www.mongodb.com/try/download/community
-[9]:  https://www.elastic.co/downloads/past-releases/elasticsearch-6-5-1
+[9]:  https://www.elastic.co/downloads/past-releases/elasticsearch-8-11-0
 
 
 ## Features

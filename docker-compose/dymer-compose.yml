@@ -6,6 +6,7 @@ volumes:
     mongo_data_v2:
     mongo_conf_v2:
     elasticsearch_data_v2:
+    kibana-data:
 
  
 
@@ -34,7 +35,19 @@ services:
           - xpack.security.enabled=false
         volumes:
             - elasticsearch_data_v2:/usr/share/elasticsearch/data
-             
+
+    kibana:
+         depends_on:
+           - elasticsearch
+         image: docker.elastic.co/kibana/kibana:8.11.0
+         container_name: kibana
+         volumes:
+           - kibana-data:/usr/share/kibana/data
+         ports:
+           - 8083:5601
+         restart: always
+         environment:
+           - ELASTICSEARCH_HOSTS=http://elasticsearch:9200         
           
           
     kms_webserver:                  # ports: 8080
