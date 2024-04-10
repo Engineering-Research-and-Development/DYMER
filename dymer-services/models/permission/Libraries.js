@@ -26,12 +26,16 @@ const librarySchema = new mongoose.Schema( {
 												   required : true
 											   },
 											   activated : {
-												   type     : Boolean,
+												   type    : Boolean,
 												   default : true
 											   },
 											   loadtype  : {
 												   type     : String,
 												   required : true
+											   },
+											   mandatory : {
+												   type    : Boolean,
+												   default : false
 											   }
 										   }, { versionKey : false } );
 
