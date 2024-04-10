@@ -3592,6 +3592,9 @@ router.post('/:enttype', function(req, res) {
                                 var respResult = resp.result;
                                 ret.setMessages("Entity " + respResult + " successfully");
                                 ret.addData(resp);
+                                /*MG - Creazione organizzazione in LR - Inizio*/
+                                ret.addData(data);
+                                /*MG - Creazione organizzazione in LR - Fine*/
                                 //   console.log('new ent ', resp);
                                 var elId = resp["_id"];
                                 logger.info(nameFile + '| /:enttype | create | dymeruser.id, params:' + dymeruser.id + ' , ' + JSON.stringify(params));
