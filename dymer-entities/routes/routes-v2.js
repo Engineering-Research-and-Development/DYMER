@@ -36,6 +36,7 @@ const mongoURI = util.mongoUrlFiles();
 console.log(nameFile + '| mongoURI :', JSON.stringify(mongoURI));
 logger.info(nameFile + " | mongoURI: " + JSON.stringify(mongoURI));
 //const connection = mongoose.createConnection(mongoURI, { useNewUrlParser: true });
+let fs = require('fs')
 
 mongoose
     .connect(mongoURI, {
@@ -391,6 +392,52 @@ router.post('/invalidateallcache', util.checkIsAdmin, async(req, res) => {
     await redisClient.writeAllRelations(JSON.stringify(cachedRelations[0]), cachedRelations[1], true)
     return res.send(ret);
 });
+
+router.post('/export-entities', util.checkIsAdmin, async (req, res) => {
+    let index = req.body.index
+    let params = {}
+    params["index"] = index
+    params["type"] = index
+    params["body"] = {
+        query: {
+            match_all: {}
+        }
+    }
+    params["body"].size = 10000
+
+    let entitiesFromElastic = await client.search(params)
+    let response = entitiesFromElastic.hits.hits;
+
+    let fileName = `${index}_collection_${Date.now()}.json`
+    let filePath = path.join(__dirname + fileName)
+    try {
+        fs.writeFileSync(filePath, JSON.stringify(response), "utf-8", (err) => {
+            if (err) {
+                console.error(err);
+                res.status(500).send({
+                    error: err,
+                    msg: "Problem writing the file"
+                });
+                return
+            }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({
+            error: error,
+            msg: "Error querying Elasticsearch"
+        });
+        return
+    }
+    res.sendFile(filePath);
+    // Remove file from filesystem
+    fs.unlink(filePath, (err) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+    });
+})
 
 var getfilesArrays = function(files_arr) {
     return new Promise(function(resolve, reject) {
@@ -2170,10 +2217,12 @@ router.get('/relationstat/', (req, res) => {
     });
 });
 //Marco gestione permessi
-router.get('/allindex/', (req, res) => {
+router.get('/allindex/:indexes?', (req, res) => {
     var ret = new jsonResponse();
     let params = {};
-    params["index"] = "_all";
+    let indexes_ = req.params.indexes ? req.params.indexes.split(",") : ["_all"]; 
+    //params["index"] = "_all";
+    params["index"] = indexes_
     client.indices.get(params, function(err, resp, status) {
         if (err) {
             console.error("ERROR | " + nameFile + '| allindex :', err);
@@ -2325,10 +2374,10 @@ router.post('/_search', (req, res) => {
     // console.log('_search logger', process.env.DYMER_LOGGER);
     let origin=req.get('origin');
     var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-        console.log('user info URLL', req.get('origin') );
-        console.log('user info fullurl',fullUrl );
-        console.log('req.headers.referer',req.headers.referer );
-        console.log('user info requestjsonpath',req.headers.requestjsonpath)
+        // console.log('user info URLL', req.get('origin') );
+        // console.log('user info fullurl',fullUrl );
+        // console.log('req.headers.referer',req.headers.referer );
+        // console.log('user info requestjsonpath',req.headers.requestjsonpath)
     // console.log(' req.headers.dymeruser', req.headers.dymeruser);
     // var decoded = jwt.decode(req.headers.authdata);
     //  var decoded = jwt.decode(req.headers.authdata);
@@ -3543,6 +3592,9 @@ router.post('/:enttype', function(req, res) {
                                 var respResult = resp.result;
                                 ret.setMessages("Entity " + respResult + " successfully");
                                 ret.addData(resp);
+                                /*MG - Creazione organizzazione in LR - Inizio*/
+                                ret.addData(data);
+                                /*MG - Creazione organizzazione in LR - Fine*/
                                 //   console.log('new ent ', resp);
                                 var elId = resp["_id"];
                                 logger.info(nameFile + '| /:enttype | create | dymeruser.id, params:' + dymeruser.id + ' , ' + JSON.stringify(params));
