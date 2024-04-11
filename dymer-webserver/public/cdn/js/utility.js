@@ -3177,11 +3177,7 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
         if (callerForm != undefined)
             senderForm = callerForm;
         if (callback != undefined) {
-            /*MG - Creazione organizzazione in LR - Inizio*/
-            //callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret, callbackEstraData);
-            window[callback]((ret.data[1].title),(ret.data[0]._id));
-            return ret;
-            /*MG - Creazione organizzazione in LR - Fine*/
+            callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret, callbackEstraData);
         } else {
             if (senderForm == undefined && el != undefined) {
                 resetContainer(senderForm[0]);
@@ -3204,11 +3200,7 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
         }
     } else {
         if (callback != undefined) {
-             /*MG - Creazione organizzazione in LR - Inizio*/
-            //callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret, callbackEstraData);
-            window[callback]((ret.data[1].title),(ret.data[0]._id));
-            return ret;
-            /*MG - Creazione organizzazione in LR - Fine*/
+            callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret, callbackEstraData);
         } else {
             if (useGritter) {
                 if (senderForm != undefined)
