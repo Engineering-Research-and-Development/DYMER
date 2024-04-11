@@ -100,7 +100,7 @@ angular.module( 'libraryCtrl', [] )
 
 				   case 'useonload':
 				   case 'mandatory':
-					   label.style.color = library[ fieldName ] ? 'green' : 'red';
+					   // label.style.color = library[ fieldName ] ? 'green' : 'red';
 					   const i = document.createElement( 'i' );
 					   i.className = library[ fieldName ] ? 'fa fa-check' : 'fa fa-times'
 					   label.appendChild( i );
@@ -202,17 +202,12 @@ angular.module( 'libraryCtrl', [] )
 			   actionCell.className = 'text-center';
 			   actionCell.style.width = '50px';
 
-			   // Pulsante di update
-
-
 			   // Pulsante di delete
 			   const deleteButton = createIconButton('fa fa-trash deleteAction', () => $scope.removeLibrary(library));
 			   actionCell.appendChild(deleteButton);
 
 			   return actionCell;
 		   }
-
-
 
 		   $scope.removeLibrary = library => {
 			   const libraryId = library._id;
