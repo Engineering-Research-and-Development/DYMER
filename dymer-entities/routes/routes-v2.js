@@ -2099,8 +2099,26 @@ router.get('/contentfile/:entityid/:fileid', function(req, res, next) {
         res.status(404).send('Not Found');
         return;
     }
-    const hdymeruser = req.headers.dymeruser;
-    const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+      
+    //const hdymeruser = req.headers.dymeruser;
+    //console.log("***************** hdymeruser",hdymeruser);
+    //  const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+    
+      
+     
+     
+    var list = {};
+    var cookieHeader = req.headers?.cookie;
+    cookieHeader.split(`;`).forEach(function(cookie) {
+        let [ name, ...rest] = cookie.split(`=`);
+        name = name?.trim();
+        let value = rest.join(`=`).trim();
+        list[name] = decodeURIComponent(value);
+    });
+    var dymeruser = JSON.parse(Buffer.from(list["DYM"], 'base64').toString('utf-8')); 
+  
+     console.log("***************** dymeruser",dymeruser);
+     
     const urs_uid = dymeruser.id;
     var urs_gid = dymeruser.gid;
     //  console.log("file_id", file_id);
@@ -2124,6 +2142,7 @@ router.get('/contentfile/:entityid/:fileid', function(req, res, next) {
     client.search(paramsCheck).then(function(respCheck) {
         if ((respCheck["hits"].hits).length > 0) {
             var checkElemPerm = respCheck["hits"].hits[0]._source.properties;
+              console.log("***************** checkElemPerm",checkElemPerm);
             haspermissionGrants(dymeruser, checkElemPerm).then(function(listperm) {
                     // console.log(nameFile + '| contentfile | permission view:', entityid, file_id, dymeruser.id, listperm.data.view);
                     //   console.log(nameFile + '| contentfile | listpermission:', JSON.stringify(listperm), JSON.stringify(dymeruser));
@@ -2456,360 +2475,6 @@ router.post('/redisroleupdate', async (req, res) => {
     }
     return res.send(resp)
 })
-
-router.get('/_search/:enttype?', (req, res) => {
-    let enttype = req.params.enttype ? req.params.enttype : ""
-
-    let origin = req.get('origin');
-    let fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-    let ret = new jsonResponse();
-
-    const hdymeruser = req.headers.dymeruser;
-    const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
-
-    logger.info(nameFile + '|_search| dymeruser :' + JSON.stringify(dymeruser));
-
-    var act = "view";
-    var index = req.params.enttype;
-    var queryString = "";
-    var hasperm = false;
-    var isadmin = false;
-    if ((dymeruser.roles.indexOf("app-admin") > -1) || (dymeruser.roles.indexOf("app-content-curator") > -1)) {
-        hasperm = true;
-        isadmin = true;
-    }
-
-    queryString = "?role[]=" + dymeruser.roles.join("&role[]=");
-    var url = util.getServiceUrl("dservice") + "/api/v1/perm/entityrole/";
-
-    url += act + "/";
-    url += index + "/";
-    url += queryString;
-
-
-    upload(req, res, async function (err) {
-        if (err) {
-            return res.end("Error!!!!");
-        }
-
-        let callData = { //util.getAllQuery(req);
-            "query": {
-                "query": {
-                    "bool": {
-                        "must": [{
-                            "term": {
-                                "_index": enttype
-                            }
-                        }]
-                    }
-                }
-            }
-        }
-        
-        let instance = callData.instance;
-        let query = callData.query;
-        let source = callData.query.getfields;
-        let _source = callData.source;
-
-        let qoptions = callData.qoptions;
-
-        let recoverRelation = true;
-        let size = 10000;
-        let sort = ["title.keyword:asc"];
-
-        
-        if (qoptions != undefined) {
-            if (qoptions.relations != undefined)
-                recoverRelation = qoptions.relations;
-            if (qoptions.size != undefined)
-                size = qoptions.size;
-            if (qoptions.sort != undefined)
-                sort = qoptions.sort;
-        }
-
-        let params = (instance) ? instance : {};
-        var req_uid = 0;
-        var req_gid = 0;
-        req_uid = dymeruser.id;
-        req_gid = dymeruser.gid;
-
-        logger.info(nameFile + '|_search| dymeruser:' + dymeruser.id + "/" + dymeruser.roles + "/" + JSON.stringify(dymeruser.extrainfo));
-        logger.info(nameFile + '|_search| callData :' + JSON.stringify(callData));
-        var rr = [];
-
-        var rr = { indextosearch: [], query: [] };
-        rr = retriveIndex_Query_ToSearch(rr, query.query);
-
-        var bridgeConf = undefined;
-        if (rr != undefined)
-            bridgeConf = bE.findByIndex(rr.indextosearch[0]);
-
-        
-        if (bridgeConf != undefined) {
-            logger.info(nameFile + '|_search| bridgeConf :' + JSON.stringify(bridgeConf));
-            bridgeEsternalEntities(bridgeConf, "search", undefined, rr).then(function (callresp) {
-                jsonMappingExternalToDymerEntity(callresp.data, bridgeConf, "search").then(function (mapdata) {
-                    let msg = (mapdata.length > 0) ? "List entities" : "Empty list";
-                    ret.setData(mapdata);
-                    ret.setMessages(msg);
-                    return res.send(ret);
-                }).catch(function (error) {
-                    console.error("ERROR | " + nameFile + '|_search| jsonMappingExternalToDymerEntity:', error);
-                    logger.error(nameFile + '|_search| jsonMappingExternalToDymerEntity : ' + error);
-                    ret.setSuccess(false);
-                    ret.setMessages("Entity Mapping Problem");
-                    return res.send(ret);
-                });
-            }).catch(function (error) {
-                console.error("ERROR | " + nameFile + '|_search| bridgeEsternalEntities:', error);
-                logger.error(nameFile + '|_search| bridgeEsternalEntities : ' + error);
-                ret.setSuccess(false);
-                ret.setMessages("Entity Recovery Problem");
-                return res.send(ret);
-            });
-        } else {
-            let filterRelationDymer = {};
-
-            if (query.query != undefined) {
-                if (query.query.relationdymer != undefined) {
-                    filterRelationDymer = query.query.relationdymer;
-                    delete query.query.relationdymer;
-                }
-            }
-
-            if (!isadmin) {
-                var my_oldquery = query.query;
-                let permFilterByAction = await checkPermissionByAction(dymeruser, params.index, act)
-                query = {
-                    "query": {
-                        "bool": {
-                            "must": [{
-                                "bool": {
-                                    "should": [{
-                                        "bool": {
-                                            "must": [{
-                                                "match": {
-                                                    "properties.status": "1"
-                                                }
-                                            }, {
-                                                "match": {
-                                                    "properties.visibility": "0"
-                                                }
-                                            }, {
-                                                "terms": {
-                                                    "_index": permFilterByAction.listind,
-                                                }
-                                            }]
-                                        }
-                                    }, {
-                                        "bool": {
-                                            "must": [{
-                                                "match_phrase": {
-                                                    "properties.owner.uid": req_uid
-                                                }
-                                            }]
-                                        }
-                                    }, {
-                                        "bool": {
-                                            "must": [{
-                                                "match": {
-                                                    "properties.owner.gid": req_gid
-                                                }
-                                            }, {
-                                                "match": {
-                                                    "properties.visibility": "2"
-                                                }
-                                            }],
-                                            "must_not": [{
-                                                "match": {
-                                                    "properties.status": "2"
-                                                }
-                                            }]
-                                        }
-                                    }, {
-                                        "bool": {
-                                            "should": [{
-                                                "match_phrase": {
-                                                    "properties.grant.view.uid": req_uid
-                                                }
-                                            }, {
-                                                "match_phrase": {
-                                                    "properties.grant.view.gid": req_gid
-                                                }
-                                            }]
-                                        }
-                                    }, {
-                                        "bool": {
-                                            "should": [{
-                                                "match_phrase": {
-                                                    "properties.grant.update.uid": req_uid
-                                                }
-                                            }, {
-                                                "match_phrase": {
-                                                    "properties.grant.update.gid": req_gid
-                                                }
-                                            }]
-                                        }
-                                    }, {
-                                        "bool": {
-                                            "should": [{
-                                                "match_phrase": {
-                                                    "properties.grant.delete.uid": req_uid
-                                                }
-                                            }, {
-                                                "match_phrase": {
-                                                    "properties.grant.delete.gid": req_gid
-                                                }
-                                            }]
-                                        }
-                                    }]
-                                }
-                            }]
-                        }
-                    }
-                };
-                if (my_oldquery != null) {
-                    query.query.bool.must.push(my_oldquery);
-
-                }
-
-            }
-
-            if (source != undefined)
-                params["_source"] = source;
-            if (_source != undefined)
-                params["_source"] = _source;
-            if (qoptions != undefined)
-                if (qoptions.fields != undefined) {
-                    if (source == undefined)
-                        params["_source"] = qoptions.fields.include;
-
-                }
-            params["sort"] = sort;
-
-            params["body"] = query;
-            params["body"].size = size;
-
-
-            let cachedResponse;
-
-            if (redisEnabled) {
-                cachedResponse = await redisClient.readCacheByKey(params, redisEnabled)
-                if (cachedResponse && Object.keys(cachedResponse).length != 0) {
-
-                    logger.info(nameFile + '|_search| cachedResponse ');
-
-                    return res.send(cachedResponse)
-
-                }
-            }
-
-
-            client.search(params).then(function (resp) {
-                if (err) {
-                    console.error("ERROR | " + nameFile + '|_search| search:', err);
-                    logger.error(nameFile + '|_search| search : ' + err);
-                    ret.setSuccess(false);
-                    ret.setExtraData({ "log": err.message });
-                    ret.setMessages("Entity " + err.displayName);
-                    return res.send(ret);
-                }
-                let msg = (resp.hits.total > 0) ? "List entities" : "Empty list";
-
-                ret.setMessages(msg);
-                if (resp.hits.total == 0) {
-                    logger.info(nameFile + '|_search| resp:count 0');
-                    return res.send(ret);
-                }
-
-                const unique = [...new Set((resp.hits.hits).map(item => item._index))];
-
-                let minmodelist = [];
-                minmodelist = unique;
-
-                if (recoverRelation == 'false' || recoverRelation == false) {
-                    filertEntitiesFields(resp.hits.hits, minmodelist, hdymeruser).then(async function (nlist) {
-
-                        ret.setData(nlist);
-
-                        logger.info(nameFile + '|_search| resp no relations: count:' + resp.hits.hits.length);
-                        if (redisEnabled) {
-                            let ids = await redisClient.extractIds(ret, redisEnabled)
-                            let indexes = await redisClient.extractIndexes(ret, redisEnabled)
-                            await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                //logger.info(nameFile + '|_search| resp no relations: response cached  ');
-                        }
-                        return res.send(ret);
-                    }).catch(function (err) {
-                        console.error("ERROR | " + nameFile + '|_search| checkUnionRelation:', err);
-                        logger.error(nameFile + '|_search| checkUnionRelation : ' + err);
-                    });
-
-                } else {
-
-                    checkUnionRelationV2(resp.hits.hits, filterRelationDymer).then(function (meatch) {
-                        var fileterdList = meatch; //temp
-
-                        (meatch).map(item => item.relations).filter(
-                            function (thing, i, arr) {
-                                let cc = [...minmodelist, ...new Set((thing).map(item => item._index))];
-                                minmodelist = cc.filter((item, pos) => cc.indexOf(item) === pos)
-                            }
-                        );
-
-                        if (Object.keys(filterRelationDymer).length > 0) {
-
-                            filertEntitiesFields(fileterdList, minmodelist, hdymeruser).then(async function (nlist) {
-
-                                logger.info(nameFile + '|_search| resp filter relations:count ' + nlist.length);
-                                ret.setData(nlist);
-                                if (redisEnabled) {
-                                    let ids = await redisClient.extractIds(ret, redisEnabled)
-                                    let indexes = await redisClient.extractIndexes(ret, redisEnabled)
-                                    await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)
-                                }
-
-                                logger.info(nameFile + '|_search| resp filter relations: response cached  ');
-                                return res.send(ret);
-                            }).catch(function (err) {
-
-                                console.error("ERROR | " + nameFile + '|_search| resp filter relations:count:', err);
-                                logger.error(nameFile + '|_search| resp filter relations count: ' + err);
-                            });
-
-                        } else {
-
-                            logger.info(nameFile + '|_search| resp no detected relations :count ' + resp.hits.hits.length);
-                            filertEntitiesFields(meatch, minmodelist, hdymeruser).then(async function (nlist) {
-
-                                ret.setData(nlist);
-                                if (redisEnabled) {
-                                    let ids = await redisClient.extractIds(ret, redisEnabled)
-                                    let indexes = await redisClient.extractIndexes(ret, redisEnabled)
-                                    await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                        //logger.info(nameFile + '|_search| resp no detected relations: response cached  ');
-                                }
-                                return res.send(ret);
-                            }).catch(function (err) {
-                                console.error("ERROR | " + nameFile + '|_search| checkUnionRelation:', err);
-                                logger.error(nameFile + '|_search| checkUnionRelation: ' + err);
-                            });
-
-                        }
-                    }).catch(function (err) {
-                        console.error("ERROR | " + nameFile + '|_search| checkUnionRelationv2:', err);
-                        logger.error(nameFile + '|_search| checkUnionRelationv2: ' + err);
-                    });
-                }
-
-            }).catch(function (error) {
-                ret.setMessages("Search Error");
-                ret.setSuccess(false);
-                ret.setExtraData({ "log": error });
-                return res.send(ret);
-            });
-        }
-    });
-});
-
 router.post('/_search', (req, res) => {
     // console.log('_search logger', process.env.DYMER_LOGGER);
     let origin=req.get('origin');
@@ -2865,6 +2530,8 @@ router.post('/_search', (req, res) => {
     url += act + "/";
     url += index + "/";
     url += queryString;
+    
+    console.log("************************** URL",url);
     //Marco upload(req, res,   function(err) {
     upload(req, res, async function(err) {
         if (err) {
@@ -3877,6 +3544,366 @@ function appendFormdata(FormData, data, name) {
         FormData.append(name, data);
     }
 }
+
+router.get('/_search/:enttype?', (req, res) => {
+    let enttype = req.params.enttype ? req.params.enttype : ""
+
+    let origin = req.get('origin');
+    let fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+    let ret = new jsonResponse();
+
+    const hdymeruser = req.headers.dymeruser;
+    const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+
+    logger.info(nameFile + '|_search| dymeruser :' + JSON.stringify(dymeruser));
+
+    var act = "view";
+    var index = req.params.enttype;
+    var queryString = "";
+    var hasperm = false;
+    var isadmin = false;
+    if ((dymeruser.roles.indexOf("app-admin") > -1) || (dymeruser.roles.indexOf("app-content-curator") > -1)) {
+        hasperm = true;
+        isadmin = true;
+    }
+
+    queryString = "?role[]=" + dymeruser.roles.join("&role[]=");
+    var url = util.getServiceUrl("dservice") + "/api/v1/perm/entityrole/";
+
+    url += act + "/";
+    url += index + "/";
+    url += queryString;
+
+
+    upload(req, res, async function (err) {
+        if (err) {
+            return res.end("Error!!!!");
+        }
+
+        let callData = { //util.getAllQuery(req);
+            "query": {
+                "query": {
+                    "bool": {
+                        "must": [{
+                            "term": {
+                                "_index": enttype
+                            }
+                        }]
+                    }
+                }
+            }
+        }
+        
+        let instance = callData.instance;
+        let query = callData.query;
+        let source = callData.query.getfields;
+        let _source = callData.source;
+
+        let qoptions = callData.qoptions;
+
+        let recoverRelation = true;
+        let size = 10000;
+        let sort = ["title.keyword:asc"];
+
+        
+        if (qoptions != undefined) {
+            if (qoptions.relations != undefined)
+                recoverRelation = qoptions.relations;
+            if (qoptions.size != undefined)
+                size = qoptions.size;
+            if (qoptions.sort != undefined)
+                sort = qoptions.sort;
+        }
+
+        let params = (instance) ? instance : {};
+        var req_uid = 0;
+        var req_gid = 0;
+        req_uid = dymeruser.id;
+        req_gid = dymeruser.gid;
+
+        logger.info(nameFile + '|_search| dymeruser:' + dymeruser.id + "/" + dymeruser.roles + "/" + JSON.stringify(dymeruser.extrainfo));
+        logger.info(nameFile + '|_search| callData :' + JSON.stringify(callData));
+        var rr = [];
+
+        var rr = { indextosearch: [], query: [] };
+        rr = retriveIndex_Query_ToSearch(rr, query.query);
+
+        var bridgeConf = undefined;
+        if (rr != undefined)
+            bridgeConf = bE.findByIndex(rr.indextosearch[0]);
+
+        
+        if (bridgeConf != undefined) {
+            logger.info(nameFile + '|_search| bridgeConf :' + JSON.stringify(bridgeConf));
+            bridgeEsternalEntities(bridgeConf, "search", undefined, rr).then(function (callresp) {
+                jsonMappingExternalToDymerEntity(callresp.data, bridgeConf, "search").then(function (mapdata) {
+                    let msg = (mapdata.length > 0) ? "List entities" : "Empty list";
+                    ret.setData(mapdata);
+                    ret.setMessages(msg);
+                    return res.send(ret);
+                }).catch(function (error) {
+                    console.error("ERROR | " + nameFile + '|_search| jsonMappingExternalToDymerEntity:', error);
+                    logger.error(nameFile + '|_search| jsonMappingExternalToDymerEntity : ' + error);
+                    ret.setSuccess(false);
+                    ret.setMessages("Entity Mapping Problem");
+                    return res.send(ret);
+                });
+            }).catch(function (error) {
+                console.error("ERROR | " + nameFile + '|_search| bridgeEsternalEntities:', error);
+                logger.error(nameFile + '|_search| bridgeEsternalEntities : ' + error);
+                ret.setSuccess(false);
+                ret.setMessages("Entity Recovery Problem");
+                return res.send(ret);
+            });
+        } else {
+            let filterRelationDymer = {};
+
+            if (query.query != undefined) {
+                if (query.query.relationdymer != undefined) {
+                    filterRelationDymer = query.query.relationdymer;
+                    delete query.query.relationdymer;
+                }
+            }
+
+            if (!isadmin) {
+                var my_oldquery = query.query;
+                let permFilterByAction = await checkPermissionByAction(dymeruser, params.index, act)
+                query = {
+                    "query": {
+                        "bool": {
+                            "must": [{
+                                "bool": {
+                                    "should": [{
+                                        "bool": {
+                                            "must": [{
+                                                "match": {
+                                                    "properties.status": "1"
+                                                }
+                                            }, {
+                                                "match": {
+                                                    "properties.visibility": "0"
+                                                }
+                                            }, {
+                                                "terms": {
+                                                    "_index": permFilterByAction.listind,
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "bool": {
+                                            "must": [{
+                                                "match_phrase": {
+                                                    "properties.owner.uid": req_uid
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "bool": {
+                                            "must": [{
+                                                "match": {
+                                                    "properties.owner.gid": req_gid
+                                                }
+                                            }, {
+                                                "match": {
+                                                    "properties.visibility": "2"
+                                                }
+                                            }],
+                                            "must_not": [{
+                                                "match": {
+                                                    "properties.status": "2"
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "bool": {
+                                            "should": [{
+                                                "match_phrase": {
+                                                    "properties.grant.view.uid": req_uid
+                                                }
+                                            }, {
+                                                "match_phrase": {
+                                                    "properties.grant.view.gid": req_gid
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "bool": {
+                                            "should": [{
+                                                "match_phrase": {
+                                                    "properties.grant.update.uid": req_uid
+                                                }
+                                            }, {
+                                                "match_phrase": {
+                                                    "properties.grant.update.gid": req_gid
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "bool": {
+                                            "should": [{
+                                                "match_phrase": {
+                                                    "properties.grant.delete.uid": req_uid
+                                                }
+                                            }, {
+                                                "match_phrase": {
+                                                    "properties.grant.delete.gid": req_gid
+                                                }
+                                            }]
+                                        }
+                                    }]
+                                }
+                            }]
+                        }
+                    }
+                };
+                if (my_oldquery != null) {
+                    query.query.bool.must.push(my_oldquery);
+
+                }
+
+            }
+
+            if (source != undefined)
+                params["_source"] = source;
+            if (_source != undefined)
+                params["_source"] = _source;
+            if (qoptions != undefined)
+                if (qoptions.fields != undefined) {
+                    if (source == undefined)
+                        params["_source"] = qoptions.fields.include;
+
+                }
+            params["sort"] = sort;
+
+            params["body"] = query;
+            params["body"].size = size;
+
+
+            let cachedResponse;
+
+            if (redisEnabled) {
+                cachedResponse = await redisClient.readCacheByKey(params, redisEnabled)
+                if (cachedResponse && Object.keys(cachedResponse).length != 0) {
+
+                    logger.info(nameFile + '|_search| cachedResponse ');
+
+                    return res.send(cachedResponse)
+
+                }
+            }
+
+
+            client.search(params).then(function (resp) {
+                if (err) {
+                    console.error("ERROR | " + nameFile + '|_search| search:', err);
+                    logger.error(nameFile + '|_search| search : ' + err);
+                    ret.setSuccess(false);
+                    ret.setExtraData({ "log": err.message });
+                    ret.setMessages("Entity " + err.displayName);
+                    return res.send(ret);
+                }
+                let msg = (resp.hits.total > 0) ? "List entities" : "Empty list";
+
+                ret.setMessages(msg);
+                if (resp.hits.total == 0) {
+                    logger.info(nameFile + '|_search| resp:count 0');
+                    return res.send(ret);
+                }
+
+                const unique = [...new Set((resp.hits.hits).map(item => item._index))];
+
+                let minmodelist = [];
+                minmodelist = unique;
+
+                if (recoverRelation == 'false' || recoverRelation == false) {
+                    filertEntitiesFields(resp.hits.hits, minmodelist, hdymeruser).then(async function (nlist) {
+
+                        ret.setData(nlist);
+
+                        logger.info(nameFile + '|_search| resp no relations: count:' + resp.hits.hits.length);
+                        if (redisEnabled) {
+                            let ids = await redisClient.extractIds(ret, redisEnabled)
+                            let indexes = await redisClient.extractIndexes(ret, redisEnabled)
+                            await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                //logger.info(nameFile + '|_search| resp no relations: response cached  ');
+                        }
+                        return res.send(ret);
+                    }).catch(function (err) {
+                        console.error("ERROR | " + nameFile + '|_search| checkUnionRelation:', err);
+                        logger.error(nameFile + '|_search| checkUnionRelation : ' + err);
+                    });
+
+                } else {
+
+                    checkUnionRelationV2(resp.hits.hits, filterRelationDymer).then(function (meatch) {
+                        var fileterdList = meatch; //temp
+
+                        (meatch).map(item => item.relations).filter(
+                            function (thing, i, arr) {
+                                let cc = [...minmodelist, ...new Set((thing).map(item => item._index))];
+                                minmodelist = cc.filter((item, pos) => cc.indexOf(item) === pos)
+                            }
+                        );
+
+                        if (Object.keys(filterRelationDymer).length > 0) {
+
+                            filertEntitiesFields(fileterdList, minmodelist, hdymeruser).then(async function (nlist) {
+
+                                logger.info(nameFile + '|_search| resp filter relations:count ' + nlist.length);
+                                ret.setData(nlist);
+                                if (redisEnabled) {
+                                    let ids = await redisClient.extractIds(ret, redisEnabled)
+                                    let indexes = await redisClient.extractIndexes(ret, redisEnabled)
+                                    await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)
+                                }
+
+                                logger.info(nameFile + '|_search| resp filter relations: response cached  ');
+                                return res.send(ret);
+                            }).catch(function (err) {
+
+                                console.error("ERROR | " + nameFile + '|_search| resp filter relations:count:', err);
+                                logger.error(nameFile + '|_search| resp filter relations count: ' + err);
+                            });
+
+                        } else {
+
+                            logger.info(nameFile + '|_search| resp no detected relations :count ' + resp.hits.hits.length);
+                            filertEntitiesFields(meatch, minmodelist, hdymeruser).then(async function (nlist) {
+
+                                ret.setData(nlist);
+                                if (redisEnabled) {
+                                    let ids = await redisClient.extractIds(ret, redisEnabled)
+                                    let indexes = await redisClient.extractIndexes(ret, redisEnabled)
+                                    await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                        //logger.info(nameFile + '|_search| resp no detected relations: response cached  ');
+                                }
+                                return res.send(ret);
+                            }).catch(function (err) {
+                                console.error("ERROR | " + nameFile + '|_search| checkUnionRelation:', err);
+                                logger.error(nameFile + '|_search| checkUnionRelation: ' + err);
+                            });
+
+                        }
+                    }).catch(function (err) {
+                        console.error("ERROR | " + nameFile + '|_search| checkUnionRelationv2:', err);
+                        logger.error(nameFile + '|_search| checkUnionRelationv2: ' + err);
+                    });
+                }
+
+            }).catch(function (error) {
+                ret.setMessages("Search Error");
+                ret.setSuccess(false);
+                ret.setExtraData({ "log": error });
+                return res.send(ret);
+            });
+        }
+    });
+});
+
+
+
+
+
+
+
 
 router.post('/:enttype', function(req, res) {
     var ret = new jsonResponse();
@@ -5146,12 +5173,13 @@ const haspermissionGrants = function(urs, entityprop) {
         //controllare role permission su tipo entità
         let ret = new jsonResponse();
         let permissions = { view: false, update: false, delete: false };
-        // console.log('haspermission urs', urs);
+        console.log('haspermission urs', urs);
         //console.log('haspermission action', action);
         //console.log('haspermission entityprop', entityprop);
-        let userid = (urs.id).toString();
-        let usergid = (urs.gid).toString();
+        let userid = (urs.email).toString();
+        let usergid = (urs.extrainfo.groupId).toString();
         let userroles = urs.roles;
+        console.log('haspermission urs', userroles);
         let entityOwner = entityprop.owner;
         let entityGrant = entityprop.grant;
         let visibility = entityprop.visibility;
@@ -5163,7 +5191,10 @@ const haspermissionGrants = function(urs, entityprop) {
         //2 Not Published
         //3 Draft
         //0 Deleted
-        if (userroles.indexOf("app-admin") > -1) {
+        if(userroles.map(function (element) {return element.role;}).indexOf("app-admin")){
+        //if (userroles.indexOf("app-admin") > -1) {
+            console.log("ADMIN **************************");
+        //if (userroles.indexOf("app-admin") > -1) {
             permissions.view = true;
             permissions.update = true;
             permissions.delete = true;
@@ -5172,7 +5203,7 @@ const haspermissionGrants = function(urs, entityprop) {
             ret.setMessages("Permission authorized!");
             return resolve(ret);
         }
-        //console.log('entityOwner', entityOwner, entityOwner.uid, userid, entityOwner.uid == userid)
+        console.log('haspermission entityOwner', entityOwner, entityOwner.uid, userid, entityOwner.uid == userid)
         if (entityOwner.uid == userid) {
             permissions.view = true;
             permissions.update = true;
@@ -5183,7 +5214,7 @@ const haspermissionGrants = function(urs, entityprop) {
             return resolve(ret);
         }
         //view
-        //console.log('test', visibility == '0' && status == '1', visibility, status);
+        console.log('haspermission test', visibility == '0' && status == '1', visibility, status);
         if (visibility == '0' && status == '1') {
             permissions.view = true;
         }
@@ -5250,7 +5281,9 @@ const haspermissionGrantByAction = function(urs, action, entityprop) {
         const status = entityprop.status;
 
         let hasperm = false;
-        if (userroles.indexOf("app-admin") > -1) {
+        
+         if (userroles.indexOf("app-admin") > -1) {
+            
             hasperm = true;
             ret.setSuccess(hasperm);
             ret.setMessages("Permission authorized!");
