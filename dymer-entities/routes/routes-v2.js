@@ -2074,7 +2074,7 @@ function isValidObjectId(id) {
     return false;
 }
 router.get('/contentfile/:entityid/:fileid', function(req, res, next) {
-   
+    console.log("==>/contentfile/:entityid/:fileid");
     var entityid = req.params.entityid;
     var file_id = req.params.fileid; 
     if (!isValidObjectId(file_id)) {
@@ -2082,8 +2082,26 @@ router.get('/contentfile/:entityid/:fileid', function(req, res, next) {
         res.status(404).send('Not Found');
         return;
     }
+    //FRANCO BUG FIX PRIDE to get the right user when you try to download documents
+    
+    /*
     const hdymeruser = req.headers.dymeruser;
+    console.log("==>hdymeruser ", hdymeruser);
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+    */
+    //TODO ADD Cookies DYM, DYM_EXTRA in Liferay domain - dymer-viewer portlet
+    var list = {};
+    var cookieHeader = req.headers?.cookie;
+    cookieHeader.split(`;`).forEach(function(cookie) {
+        let [ name, ...rest] = cookie.split(`=`);
+        name = name?.trim();
+        let value = rest.join(`=`).trim();
+        list[name] = decodeURIComponent(value);
+    });
+    var dymeruser = JSON.parse(Buffer.from(list["DYM"], 'base64').toString('utf-8')); 
+  
+    console.log("***************** dymeruser",dymeruser);
+     
     const urs_uid = dymeruser.id;
     var urs_gid = dymeruser.gid;
     //  console.log("file_id", file_id);
@@ -2108,6 +2126,7 @@ router.get('/contentfile/:entityid/:fileid', function(req, res, next) {
         if ((respCheck["hits"].hits).length > 0) {
             var checkElemPerm = respCheck["hits"].hits[0]._source.properties;
             haspermissionGrants(dymeruser, checkElemPerm).then(function(listperm) {
+                    console.log('==>haspermissionGrants');
                     // console.log(nameFile + '| contentfile | permission view:', entityid, file_id, dymeruser.id, listperm.data.view);
                     //   console.log(nameFile + '| contentfile | listpermission:', JSON.stringify(listperm), JSON.stringify(dymeruser));
                     logger.info(nameFile + '| contentfile | permission view:' + entityid + " , " + file_id + " , " + dymeruser.id + " , " + listperm.data.view);
@@ -5145,7 +5164,7 @@ const haspermissionGrants = function(urs, entityprop) {
         //controllare role permission su tipo entità
         let ret = new jsonResponse();
         let permissions = { view: false, update: false, delete: false };
-        // console.log('haspermission urs', urs);
+        console.log('haspermission urs', urs);
         //console.log('haspermission action', action);
         //console.log('haspermission entityprop', entityprop);
         let userid = (urs.id).toString();
@@ -5154,15 +5173,18 @@ const haspermissionGrants = function(urs, entityprop) {
         let entityOwner = entityprop.owner;
         let entityGrant = entityprop.grant;
         let visibility = entityprop.visibility;
+        console.log('=>visibility', visibility);
         //0 Public
         //1 Private
         //2 Restricted
         let status = entityprop.status;
+        console.log('=>status', status);
         //1 Published
         //2 Not Published
         //3 Draft
         //0 Deleted
         if (userroles.indexOf("app-admin") > -1) {
+            console.log('=>app-admin');
             permissions.view = true;
             permissions.update = true;
             permissions.delete = true;
@@ -5173,6 +5195,7 @@ const haspermissionGrants = function(urs, entityprop) {
         }
         //console.log('entityOwner', entityOwner, entityOwner.uid, userid, entityOwner.uid == userid)
         if (entityOwner.uid == userid) {
+            console.log('=>entityOwner.uid == userid');
             permissions.view = true;
             permissions.update = true;
             permissions.delete = true;
@@ -5184,21 +5207,25 @@ const haspermissionGrants = function(urs, entityprop) {
         //view
         //console.log('test', visibility == '0' && status == '1', visibility, status);
         if (visibility == '0' && status == '1') {
+            console.log('=>stato_1');
             permissions.view = true;
         }
         /*  if (((visibility == '2' || visibility == '3') && (status == '2' || status == '3')) && ((entityGrant.view.uid).find(userid) || (entityGrant.view.gid).find(usergid))) {
               permissions.view = true;
           }*/
         if ((visibility == '1' && status == '3') && ((entityGrant.view.uid).find(userid) || (entityGrant.view.gid).find(usergid))) {
+            console.log('=>stato_2');
             permissions.view = true;
         }
         //if (status == '2' && usergid == entityOwner.gid) {
         //    permissions.view = true;
         // }
         if (visibility == '2' && status == '1' && usergid == entityOwner.gid) {
+            console.log('=>stato_3');
             permissions.view = true;
         }
         if (visibility == '2' && status == '3' && usergid == entityOwner.gid) {
+            console.log('=>stato_4');
             permissions.view = true;
         }
         //update
@@ -5207,16 +5234,21 @@ const haspermissionGrants = function(urs, entityprop) {
         console.log('usergid', usergid);
         console.log('update', entityGrant.update.uid);*/
         if (entityGrant != undefined) {
+            console.log('=>entityGrant defined');
             if ((entityGrant.update.uid).includes(userid) || (entityGrant.update.gid).includes(usergid) || (entityGrant.delete.uid).includes(userid) || (entityGrant.delete.gid).includes(usergid)) {
+                console.log('=>entityGrant 1');
                 permissions.view = true;
                 permissions.update = true;
             }
             //delete
             if ((entityGrant.delete.uid).includes(userid) || (entityGrant.delete.gid).includes(usergid) || (entityGrant.delete.uid).includes(userid) || (entityGrant.delete.gid).includes(usergid)) {
+                console.log('=>entityGrant 2');
                 permissions.view = true;
                 permissions.delete = true;
             }
         }
+
+        console.log("==>permissions ", permissions);
         //if (entityOwner.uid == user.uid || user.uid == '99999') {
         ret.setSuccess(true);
         ret.setMessages("Permission's list!");
@@ -5227,7 +5259,7 @@ const haspermissionGrants = function(urs, entityprop) {
 const haspermissionGrantByAction = function(urs, action, entityprop) {
     return new Promise(function(resolve, reject) {
         const ret = new jsonResponse();
-        // console.log('haspermission urs', urs);
+        console.log('haspermissionGrantByAction haspermission urs', urs);
         //console.log('haspermission action', action);
         //console.log('haspermission entityprop', entityprop);
         const userid = urs.id;

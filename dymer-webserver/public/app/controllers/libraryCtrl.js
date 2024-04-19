@@ -1,44 +1,29 @@
 angular.module( 'libraryCtrl', [] )
 	   .controller( 'libraryController', function ( $scope, $http, $rootScope ) {
 		   const contextPath = $rootScope.globals.contextpath;
-		   const libsURL = contextPath + '/api/dservice/api/v1/library/';
+		   const libsURL = `${ contextPath }/api/dservice/api/v1/library/`;
 
-		   $scope.libraryCardsConfigs = [ generateCardsConfig( 'View Libraries', false, 'viewLibrariesTable', 'viewLibrariesTableBody' ),
-										  generateCardsConfig( 'Map Libraries', false, 'mapLibrariesTable', 'mapLibrariesTableBody' ),
-										  generateCardsConfig( 'Form Libraries', false, 'formLibrariesTable', 'formLibrariesTableBody' )
-		   								]
+		   //All Available Cards
+		   const cardTypes = [ 'view', 'map', 'form' ];
 
+		   $scope.libraryCardsConfigs = cardTypes.map( cardType => generateCardsConfig( cardType ) );
 
-		   //all columns: [ 'Name', 'Domtype', 'Filename', 'Callback', 'Use Onload', 'Group', 'Load Type', 'Mandatory' ]
-		   function generateCardsConfig( title, showConfig, tableId, tableBodyId ) {
+		   function generateCardsConfig( cardType ) {
+			   const title = cardType.charAt( 0 ).toUpperCase() + cardType.slice( 1 );
+			   const tableId = `${ cardType }LibrariesTable`;
+			   const tableBodyId = `${ tableId }Body`;
+
 			   return {
-				   title       : title,
-				   showConfig  : showConfig,
+				   title       : `${ title } Libraries`,
+				   showConfig  : false,
 				   tableId     : tableId,
 				   tableBodyId : tableBodyId,
 				   columns     : [ 'Name', 'Filename', 'Callback', 'Use Onload', 'Group', 'Mandatory' ]
+				   //columns: ['Name','Domtype','Filename','Callback','Use Onload','Group','Load Type','Mandatory']
 			   };
 		   }
 
 		   $scope.libraries = [];
-
-		   // Manage state of checkbox
-		   $scope.checkboxChanged = library => {
-			   // console.log( `${ library.name } [${ library._id }] changed state in ${ library.activated }` );
-
-			   // Update state in backend
-			   let requestBody = { activated : !library.activated };
-
-			   $http.patch( libsURL + library._id, requestBody )
-					.then( response => {
-						// Update 'activated' in library Object
-						library.activated = !library.activated;
-						console.log( `Now ${ library.name } has 'actived': ${ response.data }` );
-					} )
-					.catch( error => {
-						console.error( "Errore nell'aggiornamento dello stato nel backend:", error );
-					} );
-		   };
 
 		   // Get data and Generate Tables
 		   $http.get( libsURL )
@@ -52,14 +37,12 @@ angular.module( 'libraryCtrl', [] )
 					console.error( 'Errore nel recupero delle librerie:', error );
 				} );
 
+		   // Generate library tables body
 		   function generateLibrariesTablesBody( libraries ) {
-			   const viewTableBody = document.getElementById( 'viewLibrariesTableBody' );
-			   const mapTableBody = document.getElementById( 'mapLibrariesTableBody' );
-			   const formTableBody = document.getElementById( 'formLibrariesTableBody' );
-
-			   generateRows( libraries.filter( ( { loadtype } ) => loadtype === 'view' ), viewTableBody );
-			   generateRows( libraries.filter( ( { loadtype } ) => loadtype === 'map' ), mapTableBody );
-			   generateRows( libraries.filter( ( { loadtype } ) => loadtype === 'form' ), formTableBody );
+			   cardTypes.forEach( cardType => {
+				   const tableBody = document.getElementById( `${ cardType }LibrariesTableBody` );
+				   generateRows( libraries.filter( ( { loadtype } ) => loadtype === cardType ), tableBody );
+			   } );
 		   }
 
 		   function generateRows( libraries, tableBody ) {
@@ -80,6 +63,9 @@ angular.module( 'libraryCtrl', [] )
 
 			   const toggleSwitchCell = createToggleSwitchCell( library );
 			   row.appendChild( toggleSwitchCell );
+
+			   const actionCell = createActionCell(library);
+			   row.appendChild(actionCell);
 
 			   return row;
 		   }
@@ -114,10 +100,10 @@ angular.module( 'libraryCtrl', [] )
 
 				   case 'useonload':
 				   case 'mandatory':
-					   label.textContent = library[ fieldName ];
-					   label.style.fontWeight = library[ fieldName ] ? 'bold' : 'normal';
-					   label.style.fontStyle = library[ fieldName ] ? 'normal' : 'italic';
-					   label.style.color = library[ fieldName ] ? 'green' : 'red';
+					   // label.style.color = library[ fieldName ] ? 'green' : 'red';
+					   const i = document.createElement( 'i' );
+					   i.className = library[ fieldName ] ? 'fa fa-check' : 'fa fa-times'
+					   label.appendChild( i );
 					   cell.style.textAlign = 'center';
 					   cell.appendChild( label );
 					   break;
@@ -129,33 +115,6 @@ angular.module( 'libraryCtrl', [] )
 			   }
 
 			   return cell;
-		   }
-
-		   function createToggleSwitchCell( library ) {
-			   const toggleSwitchCell = document.createElement( 'td' );
-			   toggleSwitchCell.style.textAlign = 'center';
-
-			   if ( !library.mandatory ) {
-				   const toggleSwitch = document.createElement( 'div' );
-				   toggleSwitch.className = 'library-toggle-switch';
-
-				   const checkbox = document.createElement( 'input' );
-				   checkbox.type = 'checkbox';
-				   checkbox.checked = library.activated;
-				   checkbox.id = 'myCheckbox' + library._id; // Assuming library._id exists
-				   checkbox.addEventListener( 'change', () => $scope.checkboxChanged( library ) );
-				   toggleSwitch.appendChild( checkbox );
-
-				   const toggleSlider = document.createElement( 'label' );
-				   toggleSlider.setAttribute( 'for', 'myCheckbox' + library._id ); // Assuming library._id exists
-				   toggleSlider.className = 'library-toggle-slider';
-				   toggleSwitch.appendChild( toggleSlider );
-
-				   toggleSwitchCell.appendChild( toggleSwitch );
-			   }
-
-
-			   return toggleSwitchCell;
 		   }
 
 		   function showPopup( content, anchorElement ) {
@@ -193,16 +152,101 @@ angular.module( 'libraryCtrl', [] )
 			   }
 		   }
 
+		   function createToggleSwitchCell( library ) {
+			   const toggleSwitchCell = document.createElement( 'td' );
+			   toggleSwitchCell.style.textAlign = 'center';
+
+			   if ( !library.mandatory ) {
+				   const toggleSwitch = document.createElement( 'div' );
+				   toggleSwitch.className = 'library-toggle-switch';
+
+				   const checkbox = document.createElement( 'input' );
+				   checkbox.type = 'checkbox';
+				   checkbox.checked = library.activated;
+				   checkbox.id = 'myCheckbox' + library._id; // Assuming library._id exists
+				   checkbox.addEventListener( 'change', () => $scope.checkboxChanged( library ) );
+				   toggleSwitch.appendChild( checkbox );
+
+				   const toggleSlider = document.createElement( 'label' );
+				   toggleSlider.setAttribute( 'for', 'myCheckbox' + library._id ); // Assuming library._id exists
+				   toggleSlider.className = 'library-toggle-slider';
+				   toggleSwitch.appendChild( toggleSlider );
+
+				   toggleSwitchCell.appendChild( toggleSwitch );
+			   }
+
+
+			   return toggleSwitchCell;
+		   }
+
+		   // Manage state of checkbox
+		   $scope.checkboxChanged = library => {
+			   // console.log( `${ library.name } [${ library._id }] changed state in ${ library.activated }` );
+
+			   // Update state in backend
+			   const requestBody = { activated : !library.activated };
+
+			   $http.patch( `${ libsURL }${ library._id }`, requestBody )
+					.then( response => {
+						// Update 'activated' in library Object
+						library.activated = !library.activated;
+						console.log( `Now ${ library.name } has 'actived': ${ response.data }` );
+					} )
+					.catch( error => {
+						console.error( "Errore nell'aggiornamento dello stato nel backend:", error );
+					} );
+		   };
+
+		   function createActionCell(library) {
+			   const actionCell = document.createElement('td');
+			   actionCell.className = 'text-center';
+			   actionCell.style.width = '50px';
+
+			   // Pulsante di delete
+			   const deleteButton = createIconButton('fa fa-trash deleteAction', () => $scope.removeLibrary(library));
+			   actionCell.appendChild(deleteButton);
+
+			   return actionCell;
+		   }
+
+		   $scope.removeLibrary = library => {
+			   const libraryId = library._id;
+
+			   $http.delete(`${libsURL}${libraryId}`)
+					.then(response => {
+						console.log(`Library deleted successfully: ${response.data.message}`);
+						// Aggiungi qui eventuali azioni da eseguire dopo la rimozione
+					})
+					.catch(error => {
+						console.error('Error while deleting library:', error);
+						// Gestisci l'errore come preferisci
+					});
+		   };
+
+		   function createIconButton(iconClass, clickHandler) {
+			   const icon = document.createElement('i');
+			   icon.className = iconClass;
+			   icon.setAttribute('aria-hidden', 'true');
+			   icon.addEventListener('click', clickHandler);
+
+			   return icon;
+		   }
+
 		   $rootScope.showNewLibrary = false
 		   $scope.selectedLibraryType = '';
-		   $scope.newLibrary = {};
+
+		   $scope.library = {};
 
 		   $scope.addLibrary = () => {
-			   $http.post( libsURL, $scope.newLibrary )
+			   if ( /^\s*$/.test( $scope.library.callback ) ) {
+				   $scope.library.callback = null;
+			   }
+			   $http.post( libsURL, $scope.library )
 					.then( response => {
-						let success = 'New librery added successfully';
-						console.log( `${ success }: ${ response.data }` );
-						useGritterTool( "<b><i class='nc-icon nc-single-02'></i>Dymer User</b>", success );
+						console.log( `New librery added successfully: ${ response.data }` );
+						useGritterTool( "<b><i class='nc-icon nc-single-02'></i>Dymer User</b>",
+										"New librery added successfully"
+						);
 					} )
 					.catch( error => {
 						console.log( error )
@@ -214,11 +258,11 @@ angular.module( 'libraryCtrl', [] )
 		   };
 
 		   $scope.cancelAddLibrary = () => {
-			   $scope.newLibrary = {
+			   $scope.library = {
 				   name      : '',
 				   domtype   : '',
 				   filename  : '',
-				   callback  : '',
+				   callback  : null,
 				   useonload : null,
 				   group     : '',
 				   loadtype  : '',
@@ -228,29 +272,27 @@ angular.module( 'libraryCtrl', [] )
 
 		   $scope.showLibraryForm = () => {
 			   if ( $scope.selectedLibraryType === 'Javascript' ) {
-				   appendSuffixIfNeeded( $scope.newLibrary, '-js' );
-				   $scope.newLibrary.domtype = 'script';
-				   $scope.newLibrary.useonload = true;
+				   setLibraryValues( '-js', 'script', true );
 			   } else if ( $scope.selectedLibraryType === 'CSS' ) {
-				   appendSuffixIfNeeded( $scope.newLibrary, '-css' );
-				   $scope.newLibrary.domtype = 'link';
-				   $scope.newLibrary.useonload = false;
+				   setLibraryValues( '-css', 'link', false );
 			   }
 		   };
+
+		   function setLibraryValues( suffix, domType, useOnLoad ) {
+			   appendSuffixIfNeeded( $scope.library, suffix );
+			   $scope.library.domtype = domType;
+			   $scope.library.useonload = useOnLoad;
+		   }
 
 		   function appendSuffixIfNeeded( library, suffix ) {
 			   const suffixes = [ "-js", "-css" ];
 
 			   // Check if the library name already ends with one of the suffixes
-			   const endsWithOneOfSuffixes = suffixes.some( s => library.name.endsWith( s ) );
+			   const currentSuffix = suffixes.find( s => library.name.endsWith( s ) );
 
 			   // If the library name ends with one of the suffixes, removes it
-			   if ( endsWithOneOfSuffixes ) {
-				   suffixes.forEach( s => {
-					   if ( library.name.endsWith( s ) ) {
-						   library.name = library.name.slice( 0, -s.length );
-					   }
-				   } );
+			   if ( currentSuffix ) {
+				   library.name = library.name.slice( 0, -currentSuffix.length );
 			   }
 
 			   // Adds the new suffix if it is not already present in the library name

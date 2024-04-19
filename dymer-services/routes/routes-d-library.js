@@ -54,7 +54,6 @@ router.get( '/', /* util.checkIsAdmin,  */async ( req, res ) => {
 } );
 
 // GET by ID
-// TODO da testare
 router.get( '/:id', util.checkIsAdmin, async ( req, res ) => {
 	// console.log( `router-d-library -> GET id: [${ req.params.id }]` );
 	const libId = req.params.id;
@@ -124,7 +123,6 @@ router.patch( '/:id', util.checkIsAdmin, async ( req, res ) => {
 } );
 
 // DELETE
-// TODO da testare
 router.delete( '/:id', util.checkIsAdmin, async ( req, res ) => {
 	// console.log( `router-d-library -> DELETE id: [${ req.params.id }]` );
 	const libId = req.params.id;
