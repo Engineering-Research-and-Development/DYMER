@@ -1,6 +1,6 @@
 {
-    "development": {
-        "config_id": "development",
+    "production": {
+        "config_id": "production",
         "services": {
             "entity": {
                 "app_name": "entity",
@@ -55,8 +55,8 @@
             }
         }
     },
-    "production": {
-        "config_id": "production",
+    "development": {
+        "config_id": "development",
         "services": {
             "entity": {
                 "app_name": "entity",

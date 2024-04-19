@@ -1,6 +1,6 @@
 {
-    "development": {
-        "config_id": "development",
+    "production": {
+        "config_id": "production",
         "services": {
             "template": {
                 "app_name": "template",
@@ -19,8 +19,8 @@
             }
         }
     },
-    "production": {
-        "config_id": "production",
+    "development": {
+        "config_id": "development",
         "services": {
             "template": {
                 "app_name": "template",

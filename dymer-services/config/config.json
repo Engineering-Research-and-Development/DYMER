@@ -1,6 +1,6 @@
 {
-    "development": {
-        "config_id": "development",
+    "production": {
+        "config_id": "production",
         "services": {
             "dservice": {
                 "app_name": "dservice",
@@ -27,11 +27,11 @@
             },
             "opnsearch": {
                 "user": {
-                    "d_cid": 20095,
+                    "d_cid": 20097,
                     "d_uid": 5,
-                    "d_gid": 20118,
+                    "d_gid": 20121,
                     "d_mail": "test@liferay.com",
-                    "d_pwd": "test"
+                    "d_pwd": "********"
                 }
             },
             "entity": {
@@ -44,7 +44,7 @@
                 "app_desc": "dymer form",
                 "context-path": "",
                 "protocol": "http",
-                "ip": "192.168.1.58",
+                "ip": "kms_forms",
                 "port": 4747
             },
             "template": {
@@ -52,13 +52,13 @@
                 "app_desc": "dymer template",
                 "context-path": "",
                 "protocol": "http",
-                "ip": "192.168.1.58",
+                "ip": "kms_templates",
                 "port": 4545
             }
         }
     },
-    "production": {
-        "config_id": "production",
+    "development": {
+        "config_id": "development",
         "services": {
             "dservice": {
                 "app_name": "dservice",
@@ -85,11 +85,33 @@
             },
             "opnsearch": {
                 "user": {
+                    "d_cid": 20097,
                     "d_uid": 5,
-                    "d_gid": 55,
-                    "d_mail": "massimo.giacalone@eng.it",
-                    "d_pwd": "test"
+                    "d_gid": 20121,
+                    "d_mail": "test@liferay.com",
+                    "d_pwd": "********"
                 }
+            },
+	    "entity": {
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 1358
+            },
+            "form": {
+                "app_name": "form",
+                "app_desc": "dymer form",
+                "context-path": "",
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 4747
+            },
+            "template": {
+                "app_name": "template",
+                "app_desc": "dymer template",
+                "context-path": "",
+                "protocol": "http",
+                "ip": "localhost",
+                "port": 4545
             }
         }
     }
