@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Entitties Dev" type="js.build_tools.npm" folderName="Run Devs">
+  <configuration default="false" name="Entities Dev" type="js.build_tools.npm" folderName="Run Devs">
     <package-json value="$PROJECT_DIR$/dymer-entities/package.json" />
     <command value="run" />
     <scripts>

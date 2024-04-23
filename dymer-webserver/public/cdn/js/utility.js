@@ -1632,7 +1632,7 @@ async function loadRequireMap() {
 
             if ( ckaddimport.indexOf( group ) <= -1 ) {
                 arr.push( new Elfile( domtype, kmsconfig.cdn + filename, evalCallback, useonload, group ) );
-                console.log( `Add ${ library.name } at arr array:` )
+                // console.log( `Add ${ library.name } at arr array:` )
             }
 
         } )
@@ -3177,7 +3177,10 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
         if (callerForm != undefined)
             senderForm = callerForm;
         if (callback != undefined) {
-            callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret, callbackEstraData);
+            /*MG - Creazione organizzazione in LR - Inizio*/
+            //callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret, callbackEstraData);
+            window[callback]((ret.data[1].title),(ret.data[0]._id));
+            /*MG - Creazione organizzazione in LR - Fine*/
         } else {
             if (senderForm == undefined && el != undefined) {
                 resetContainer(senderForm[0]);
@@ -3200,7 +3203,10 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
         }
     } else {
         if (callback != undefined) {
-            callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret, callbackEstraData);
+             /*MG - Creazione organizzazione in LR - Inizio*/
+            //callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret, callbackEstraData);
+            window[callback]((ret.data[1].title),(ret.data[0]._id));
+            /*MG - Creazione organizzazione in LR - Fine*/
         } else {
             if (useGritter) {
                 if (senderForm != undefined)

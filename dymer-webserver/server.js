@@ -17,7 +17,7 @@ const logger = require('./routes/dymerlogger');
 var jsonResponse = require('./jsonResponse');
 //USO OIDC  
 //var passport = require('passport')
-const router=express.Router();
+const router = express.Router();
 //const appRoutes=require('./app/routes/api')(router);
 const jwt = require('jsonwebtoken');
 var axios = require('axios');
@@ -48,9 +48,8 @@ app.use(session({
     },
 }));
 
-
 var recoverForms = require("./routes/formfiles");
-const contextPath = util.getContextPath('webserver');
+const contextPath = util.getContextPath( 'webserver' );
 
 var publicdemoDonwlonad = require("./routes/demodownloads");
 
@@ -93,6 +92,7 @@ infomserv.adminUser = (infomserv.adminUser).replace(regex, '*');
     ret.setSuccess(true);
     return res.send(ret);
 });
+
 app.use(express.static(__dirname + '/public'));
 //app.use(express.static(__dirname + global.gConfig.services.webserver["context-path"] + 'public'));
 //app.use(express.static(global.gConfig.services.webserver["context-path"] + 'public'));
@@ -106,7 +106,7 @@ app.use(function(req, res, next) {
     var pathname = req.url;
     //  console.log(pathname);
     /*if (pathname == ("/login")) {
-       
+
         res.setHeader(
             'Content-Security-Policy',
             "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:; script-src 'self'  ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
@@ -135,7 +135,6 @@ app.use(function(req, res, next) {
 
 app.use(cors());
 app.set('trust proxy', true);
-
 
 // 
 app.use("/public/", express.static(path.join(__dirname.replace(contextPath, ""), "public/")));

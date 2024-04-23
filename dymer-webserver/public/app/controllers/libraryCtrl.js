@@ -64,8 +64,8 @@ angular.module( 'libraryCtrl', [] )
 			   const toggleSwitchCell = createToggleSwitchCell( library );
 			   row.appendChild( toggleSwitchCell );
 
-			   const actionCell = createActionCell(library);
-			   row.appendChild(actionCell);
+			   const actionCell = createActionCell( library );
+			   row.appendChild( actionCell );
 
 			   return row;
 		   }
@@ -197,14 +197,14 @@ angular.module( 'libraryCtrl', [] )
 					} );
 		   };
 
-		   function createActionCell(library) {
-			   const actionCell = document.createElement('td');
+		   function createActionCell( library ) {
+			   const actionCell = document.createElement( 'td' );
 			   actionCell.className = 'text-center';
 			   actionCell.style.width = '50px';
 
 			   // Pulsante di delete
-			   const deleteButton = createIconButton('fa fa-trash deleteAction', () => $scope.removeLibrary(library));
-			   actionCell.appendChild(deleteButton);
+			   const deleteButton = createIconButton( 'fa fa-trash deleteAction', () => $scope.removeLibrary( library ) );
+			   actionCell.appendChild( deleteButton );
 
 			   return actionCell;
 		   }
@@ -212,22 +212,22 @@ angular.module( 'libraryCtrl', [] )
 		   $scope.removeLibrary = library => {
 			   const libraryId = library._id;
 
-			   $http.delete(`${libsURL}${libraryId}`)
-					.then(response => {
-						console.log(`Library deleted successfully: ${response.data.message}`);
+			   $http.delete( `${ libsURL }${ libraryId }` )
+					.then( response => {
+						console.log( `Library deleted successfully: ${ response.data.message }` );
 						// Aggiungi qui eventuali azioni da eseguire dopo la rimozione
-					})
-					.catch(error => {
-						console.error('Error while deleting library:', error);
+					} )
+					.catch( error => {
+						console.error( 'Error while deleting library:', error );
 						// Gestisci l'errore come preferisci
-					});
+					} );
 		   };
 
-		   function createIconButton(iconClass, clickHandler) {
-			   const icon = document.createElement('i');
+		   function createIconButton( iconClass, clickHandler ) {
+			   const icon = document.createElement( 'i' );
 			   icon.className = iconClass;
-			   icon.setAttribute('aria-hidden', 'true');
-			   icon.addEventListener('click', clickHandler);
+			   icon.setAttribute( 'aria-hidden', 'true' );
+			   icon.addEventListener( 'click', clickHandler );
 
 			   return icon;
 		   }
