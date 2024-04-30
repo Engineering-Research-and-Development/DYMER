@@ -119,7 +119,7 @@ router.put( '/:id', util.checkIsAdmin, async ( req, res ) => {
 			return handleError( res, status, error, message, whatAndPath );
 		} else {
 			logger.info( `${ nameFile } | ${ whatAndPath } | Library [${ libId }] updated successfully: ${ JSON.stringify( result ) }` );
-			res.json( { message : 'Library updated successfully', library : result } );
+			res.json( { message : `Library [${ libId }] updated successfully`, library : result } );
 		}
 	} catch ( error ) {
 		handleError( res, 500, error, "Error updating library status: ", whatAndPath );
@@ -150,7 +150,7 @@ router.patch( '/:id', util.checkIsAdmin, async ( req, res ) => {
 		}
 
 		logger.info( `${ nameFile } | ${ whatAndPath } | Library [${ libId }] updated successfully: ${ JSON.stringify( updatedLibrary ) }` );
-		res.json( { message : 'Library updated successfully', library : updatedLibrary } );
+		res.json( { message : `Library [${ libId }] updated successfully`, library : updatedLibrary } );
 	} catch ( error ) {
 		handleError( res, 500, error, "Error updating library status: ", whatAndPath );
 	}
@@ -179,7 +179,7 @@ router.delete( '/:id', util.checkIsAdmin, async ( req, res ) => {
 			return handleError( res, status, error, message, whatAndPath );
 		} else {
 			logger.info( `${ nameFile } | ${ whatAndPath } | Library [${ libId }] successfully deleted` );
-			res.json( { message : 'Library successfully deleted' } );
+			res.json( { message : `Library [${ libId }] successfully deleted` } );
 		}
 	} catch ( error ) {
 		handleError( res, 500, error, "Error deleting library: ", whatAndPath );

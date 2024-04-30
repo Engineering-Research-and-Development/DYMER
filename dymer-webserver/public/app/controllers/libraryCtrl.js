@@ -190,10 +190,18 @@ angular.module( 'libraryCtrl', [] )
 					.then( response => {
 						// Update 'activated' in library Object
 						library.activated = !library.activated;
-						console.log( `Now ${ library.name } has 'actived': ${ response.data }` );
+						let flag = library.activated ? 'activated' : 'deactivated';
+						console.log( `Now ${ library.name } has been ${ flag }: ${ JSON.stringify( response.data ) }` );
+						useGritterTool( "<b><i class='fa fa-refresh'></i> Reload page to see changes</b>",
+										`Now ${ library.name } has been ${ flag },
+										Reload page to see changes`
+						);
 					} )
 					.catch( error => {
-						console.error( "Errore nell'aggiornamento dello stato nel backend:", error );
+						console.error( "Error updating status in backend:", error );
+						useGritterTool( "<b><i class='fa fa-exclamation-triangle'></i> Error updating status</b>", error.data.error,
+										"danger"
+						);
 					} );
 		   };
 
@@ -203,7 +211,9 @@ angular.module( 'libraryCtrl', [] )
 			   actionCell.style.width = '50px';
 
 			   // Pulsante di delete
-			   const deleteButton = createIconButton( 'fa fa-trash deleteAction', () => $scope.removeLibrary( library ) );
+			   const deleteButton = createIconButton( 'fa fa-trash deleteAction',
+													  () => $scope.removeLibrary( library )
+			   );
 			   actionCell.appendChild( deleteButton );
 
 			   return actionCell;
@@ -215,11 +225,16 @@ angular.module( 'libraryCtrl', [] )
 			   $http.delete( `${ libsURL }${ libraryId }` )
 					.then( response => {
 						console.log( `Library deleted successfully: ${ response.data.message }` );
-						// Aggiungi qui eventuali azioni da eseguire dopo la rimozione
+						useGritterTool( "<b><i class='fa fa-refresh'></i> Reload page to see changes</b>",
+										`Library deleted successfully: ${ response.data.message }
+										Reload page to see changes`
+						);
 					} )
 					.catch( error => {
 						console.error( 'Error while deleting library:', error );
-						// Gestisci l'errore come preferisci
+						useGritterTool( "<b><i class='fa fa-exclamation-triangle'></i> Error deleting library</b>", error.data.error,
+										"danger"
+						);
 					} );
 		   };
 
@@ -243,14 +258,16 @@ angular.module( 'libraryCtrl', [] )
 			   }
 			   $http.post( libsURL, $scope.library )
 					.then( response => {
-						console.log( `New librery added successfully: ${ response.data }` );
-						useGritterTool( "<b><i class='nc-icon nc-single-02'></i>Dymer User</b>",
-										"New librery added successfully"
+						console.log( `New library added successfully: ${ JSON.stringify( response.data.data ) }` );
+						useGritterTool( "<b><i class='fa fa-refresh'></i> Reload page to see changes</b>",
+										`New library ${ response.data.data.name } added successfully,
+										Reload page to see changes`
 						);
 					} )
 					.catch( error => {
-						console.error( 'Errore while created library. Try Again!:', error );
-						useGritterTool( "<b><i class='fa fa-exclamation-triangle'></i>Dymer User</b>", error.data.error,
+						console.error( 'Error while created library. Try Again!:', error );
+						useGritterTool( "<b><i class='fa fa-exclamation-triangle'></i> 'Error creating new library</b>",
+										error.data.error,
 										"danger"
 						);
 					} );
