@@ -54,8 +54,11 @@ var storageEngine = multer.diskStorage({
         fn(null, new Date().getTime().toString() + '-__-' + file.originalname);
     }
 });
+
 var upload = multer({ storage: storageEngine }).any(); // .single('file');
+
 router.post('/setConfig', util.checkIsAdmin, function(req, res) {
+
     let callData = util.getAllQuery(req);
     let data = callData.data;
     var copiaData = Object.assign({}, data);
@@ -99,6 +102,7 @@ router.post('/setConfig', util.checkIsAdmin, function(req, res) {
 });
 
 router.get('/configs', (req, res) => {
+
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -119,9 +123,11 @@ router.get('/configs', (req, res) => {
         })
         //res.send("this is  dd our main andpoint");
 });
+
 router.post('/addrule', util.checkIsAdmin, function(req, res) {
+
     let callData = util.getAllQuery(req);
-    let data = callData.data; 
+    let data = callData.data;
     var ret = new jsonResponse();
     var newObj = {
         _index: data.op_index,
@@ -144,9 +150,10 @@ router.post('/addrule', util.checkIsAdmin, function(req, res) {
             return res.send(ret);
         }
     })
-
 });
+
 router.get('/rules/', (req, res) => {
+
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
     //return res.send(ret);
@@ -171,7 +178,9 @@ function findRule(queryFind, res) {
         }
     })
 }
+
 router.delete('/rule/:id', util.checkIsAdmin, (req, res) => {
+
     var ret = new jsonResponse();
     var id = req.params.id;
     var myfilter = { "_id": id };
@@ -511,6 +520,7 @@ function appendFormdata(FormData, data, name) {
 /*MG - Run RULE - Fine*/ 
 
 router.post('/listener', function(req, res) {
+
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -610,7 +620,6 @@ function postAssettOpenness(typeaction, obj, rule, extraInfo) {
             }
         }
     }).catch((err) => {
-
         logger.error(nameFile + ' | postAssettOpenness | find obj,extraInfo: ' + JSON.stringify(obj) + ',' + JSON.stringify(extraInfo) + ',' + err);
         console.error("ERROR | " + nameFile + " | postAssettOpenness | find : ", err);
     })
@@ -656,11 +665,12 @@ function callOpennessJsw(conf, postObj) {
                 logger.error(nameFile + ' | callOpennessJsw | POST : ' + error);
             });
     } else {
-        logger.info(nameFile + ' | callOpennessJsw | GET | callurl, postObj, configqq' + callurl + " , " + JSON.stringify(postObj));;
+        logger.info(nameFile + ' | callOpennessJsw | GET | callurl, postObj, configqq' + callurl + " , " + JSON.stringify(postObj));
         axios.get(callurl, { params: postObj }).catch(function(error) {
             console.log(nameFile + ' | callOpennessJsw | GET', error);
             logger.error(nameFile + ' | callOpennessJsw | GET : ' + error);
         });
     }
 }
+
 module.exports = router;

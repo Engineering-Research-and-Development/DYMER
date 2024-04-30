@@ -10,6 +10,10 @@ const app = express();
 require("./config/config.js");
 const nameFile = path.basename(__filename);
 const logger = require('./routes/dymerlogger');
+const portExpress = global.configService.port;
+const contextPath = util.getContextPath('dservice');
+
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: false,
@@ -20,7 +24,6 @@ app.use(bodyParser.urlencoded({
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   next();
 });*/
-const portExpress = global.configService.port;
 var routes = require('./routes/routes-v1');
 var routes_dymer_openness = require('./routes/routes-d-opn-v1');
 var routes_dymer_fwadapter = require('./routes/routes-d-fwadapter-v1');
@@ -41,7 +44,7 @@ var routes_dymer_configtool = require('./routes/routes-d-configtool');
 var routes_dymer_authconfig = require('./routes/routes-d-authconfig');
 var routes_dymer_duser = require('./routes/routes-d-users');
 app.use(express.json())
-    //app.use(cors());
+//app.use(cors());
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
@@ -53,24 +56,54 @@ app.use(function(req, res, next) {
         return next();
     }
 });
-app.use(util.getContextPath('dservice') + '/api/v1/opn', routes_dymer_openness);
-app.use(util.getContextPath('dservice') + '/api/v1/fwadapter', routes_dymer_fwadapter);
-app.use(util.getContextPath('dservice') + '/api/v1/sync', routes_dymer_sync);
-app.use(util.getContextPath('dservice') + '/api/v1/servicehook', routes_dymer_hooks);
-app.use(util.getContextPath('dservice') + '/api/v1/eaggregation', routes_dymer_eaggregation);
-app.use(util.getContextPath('dservice') + '/api/v1/workflow', routes_dymer_workflow);
-app.use(util.getContextPath('dservice') + '/api/v1/taxonomy', routes_dymer_taxonomy);
-app.use(util.getContextPath('dservice') + '/api/v1/usermap', routes_dymer_usermap);
-app.use(util.getContextPath('dservice') + '/api/v1/import', routes_dymer_import);
-app.use(util.getContextPath('dservice') + '/api/v1/library', routes_dymer_library);
-//app.use(util.getContextPath('dservice') + '/api/v1/import_socs', routes_dymer_importsocs);
-//app.use(util.getContextPath('dservice') + '/api/v1/import_hb', routes_dymer_importhb);
-app.use(util.getContextPath('dservice') + '/api/v1/perm', routes_dymer_permission);
-//app.use(util.getContextPath('dservice') + '/api/v1/importp4t', routes_dymer_importp4t);
-app.use(util.getContextPath('dservice') + '/api/v1/configtool', routes_dymer_configtool);
-app.use(util.getContextPath('dservice') + '/api/v1/authconfig', routes_dymer_authconfig);
-app.use(util.getContextPath('dservice') + '/api/v1/duser', routes_dymer_duser);
+app.use('/api/v1/opn', routes_dymer_openness
+// #swagger.tags = ['Services']
+);
+app.use('/api/v1/fwadapter', routes_dymer_fwadapter
+// #swagger.tags = ['Services']
+);
+app.use('/api/v1/sync', routes_dymer_sync
+// #swagger.tags = ['Services']
+);
+app.use('/api/v1/servicehook', routes_dymer_hooks
+// #swagger.tags = ['Services']
+);
+app.use('/api/v1/eaggregation', routes_dymer_eaggregation)
+// #swagger.tags = ['Services']
+;
+app.use('/api/v1/workflow', routes_dymer_workflow
+// #swagger.tags = ['Services']
+);
+app.use('/api/v1/taxonomy', routes_dymer_taxonomy
+// #swagger.tags = ['Services']
+);
+app.use('/api/v1/usermap', routes_dymer_usermap
+// #swagger.tags = ['Services']
+);
+app.use('/api/v1/import', routes_dymer_import
+// #swagger.tags = ['Services']
+);
+app.use('/api/v1/library', routes_dymer_library
+// #swagger.tags = ['Services']
+);
+//app.use('/api/v1/import_socs', routes_dymer_importsocs);
+//app.use('/api/v1/import_hb', routes_dymer_importhb);
+app.use('/api/v1/perm', routes_dymer_permission
+// #swagger.tags = ['Services']
+);
+//app.use('/api/v1/importp4t', routes_dymer_importp4t);
+app.use('/api/v1/configtool', routes_dymer_configtool
+// #swagger.tags = ['Services']
+);
+app.use('/api/v1/authconfig', routes_dymer_authconfig
+// #swagger.tags = ['Services']
+);
+app.use('/api/v1/duser', routes_dymer_duser
+// #swagger.tags = ['Services']
+);
 app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
+    // #swagger.tags = ['Services']
+
     var ret = new jsonResponse();
     var filetype = req.params.filetype;
     //const dymeruser = util.getDymerUser(req, res);
@@ -83,11 +116,16 @@ app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
 });
 
 app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
+    // #swagger.tags = ['Services']
+
     var filetype = req.params.filetype;
     //console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
     return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
 });
+
 app.get('/logtypes', async(req, res) => {
+    // #swagger.tags = ['Services']
+
     var ret = new jsonResponse();
     ret.setSuccess(true);
     let loggerdebug = global.loggerdebug;
@@ -95,21 +133,27 @@ app.get('/logtypes', async(req, res) => {
     ret.setMessages("logtypes");
     return res.send(ret);
 });
+
 app.post('/setlogconfig', (req, res) => {
+    // #swagger.tags = ['Services']
+
     var ret = new jsonResponse();
     logger.ts_infologger(req.body.consoleactive);
     ret.setMessages("Settings updated");
     ret.setData({ consoleactive: req.body.consoleactive });
     return res.send(ret);
 });
-app.get(util.getContextPath('dservice') + '/checkservice', util.checkIsAdmin, (req, res) => {
+
+app.get('/checkservice', util.checkIsAdmin, (req, res) => {
+    // #swagger.tags = ['Services']
+
     var ret = new jsonResponse();
     let infosize = logger.filesize("info");
     let errorsize = logger.filesize("error");
     let regex = /(?<!^).(?!$)/g;
-let infomserv = JSON.parse(JSON.stringify(global.gConfig));
-infomserv.services.opnsearch.user.d_mail = (infomserv.services.opnsearch.user.d_mail).replace(regex, '*');
-infomserv.services.opnsearch.user.d_pwd  = (infomserv.services.opnsearch.user.d_pwd).replace(regex, '*');
+    let infomserv = JSON.parse(JSON.stringify(global.gConfig));
+    infomserv.services.opnsearch.user.d_mail = (infomserv.services.opnsearch.user.d_mail).replace(regex, '*');
+    infomserv.services.opnsearch.user.d_pwd  = (infomserv.services.opnsearch.user.d_pwd).replace(regex, '*');
     ret.setData({
         info: {
             size: infosize
@@ -124,7 +168,10 @@ infomserv.services.opnsearch.user.d_pwd  = (infomserv.services.opnsearch.user.d_
     ret.setSuccess(true);
     return res.send(ret);
 });
+
 app.get("/*", (req, res) => {
+    // #swagger.tags = ['Services']
+
     var ret = new jsonResponse();
     logger.error(nameFile + ' | /* Api error 404  :' + req.path);
     ret.setMessages("Api error 404");
@@ -132,9 +179,14 @@ app.get("/*", (req, res) => {
     ret.setSuccess(false);
     return res.send(ret);
 });
+
 //module.exports = app;
-app.listen(portExpress, () => {
-    //logger.flushAllfile();
-    logger.info(nameFile + " | Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path: " + util.getContextPath('dservice'));
-    console.log("Up and running-- this is " + global.configService.app_name + " service on port:" + global.configService.port + " context-path:" + util.getContextPath('dservice'));
+
+const root = express();
+root.use(contextPath, app);
+
+root.listen(portExpress, () => {
+	//logger.flushAllfile();
+	logger.info(nameFile + " | Up and running-- this is " + global.configService.app_name + " service on port:" + portExpress + " context-path: " + contextPath);
+	console.log("Up and running-- this is " + global.configService.app_name + " service on port:" + portExpress + " context-path:" + contextPath);
 });

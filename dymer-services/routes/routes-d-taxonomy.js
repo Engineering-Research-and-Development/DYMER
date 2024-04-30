@@ -20,61 +20,72 @@ var jsonParser = bodyParser.json();
 //const OpnSearchRule = mongoose.model("OpnSearchRule");
 //const OpnSearchConfig = mongoose.model("OpnSearchConfig");
 const axios = require('axios');
-const { after, values } = require('lodash');
+const {after, values} = require('lodash');
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({
-    extended: false,
-    limit: '100MB'
-}));
+									 extended: false,
+									 limit:    '100MB'
+								 }));
 var upload = multer()
 router.use(upload.array())
 
-router.get('/', async(req, res) => {
-    var ret = new jsonResponse();
-    let els = await mongoose.connection.db.collection("vocab").find().toArray()
-    ret.setMessages("List");
-    ret.setData(els);
-    return res.json(ret)
-});
-router.post('/_search', async(req, res) => {
-    let id = req.body.id
-    let objiD = mongoose.Types.ObjectId(id)
-    var ret = new jsonResponse();
-    let els = await mongoose.connection.db.collection("vocab").findOne({ "_id": objiD })
-    ret.setMessages("List");
-    ret.setData(els);
-    return res.json(ret)
+router.get('/', async (req, res) => {
+	//
+
+	var ret = new jsonResponse();
+	let els = await mongoose.connection.db.collection("vocab").find().toArray()
+	ret.setMessages("List");
+	ret.setData(els);
+	return res.json(ret)
 });
 
-router.post('/', async(req, res) => {
-    let newVocab = req.body;
-    newVocab.nodes = [];
-    await mongoose.connection.db.collection("vocab").insertOne(newVocab)
-    var ret = new jsonResponse();
-    ret.setMessages("Create");
-    ret.setData(newVocab);
-    return res.json(ret)
+router.post('/', async (req, res) => {
+	//
+
+	let newVocab = req.body;
+	newVocab.nodes = [];
+	await mongoose.connection.db.collection("vocab").insertOne(newVocab)
+	var ret = new jsonResponse();
+	ret.setMessages("Create");
+	ret.setData(newVocab);
+	return res.json(ret)
 });
 
-router.put("/", async(req, res) => {
-    let id = req.body.id
-    let objiD = mongoose.Types.ObjectId(id)
-    let data = req.body.data
-    var ret = new jsonResponse();
-    let updateVocab = await mongoose.connection.db.collection("vocab").findOneAndUpdate({ "_id": objiD }, { $set: { "nodes": data } })
-    ret.setMessages("Update");
-    ret.setData(updateVocab);
-    return res.json(updateVocab)
+router.put("/", async (req, res) => {
+	//
+
+	let id = req.body.id
+	let objiD = mongoose.Types.ObjectId(id)
+	let data = req.body.data
+	var ret = new jsonResponse();
+	let updateVocab = await mongoose.connection.db.collection("vocab")
+									.findOneAndUpdate({"_id": objiD}, {$set: {"nodes": data}})
+	ret.setMessages("Update");
+	ret.setData(updateVocab);
+	return res.json(updateVocab)
 })
+router.post('/_search', async (req, res) => {
+	//
 
-router.delete("/:id", async(req, res) => {
-    let id = req.params.id
-    let objiD = mongoose.Types.ObjectId(id)
-    var ret = new jsonResponse();
-    await mongoose.connection.db.collection("vocab").deleteOne({ "_id": objiD })
-    ret.setMessages("Delete");
-    ret.setData();
-    return res.json(ret)
+	let id = req.body.id
+	let objiD = mongoose.Types.ObjectId(id)
+	var ret = new jsonResponse();
+	let els = await mongoose.connection.db.collection("vocab").findOne({"_id": objiD})
+	ret.setMessages("List");
+	ret.setData(els);
+	return res.json(ret)
+});
+
+router.delete("/:id", async (req, res) => {
+	//
+
+	let id = req.params.id
+	let objiD = mongoose.Types.ObjectId(id)
+	var ret = new jsonResponse();
+	await mongoose.connection.db.collection("vocab").deleteOne({"_id": objiD})
+	ret.setMessages("Delete");
+	ret.setData();
+	return res.json(ret)
 })
 
 module.exports = router;

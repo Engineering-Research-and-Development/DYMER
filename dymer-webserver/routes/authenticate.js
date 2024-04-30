@@ -16,15 +16,17 @@ router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
 router.post('/authenticate',async function (req, res) {
+    // #swagger.tags = ['Webserver']
+
     var username = req.body.username;
     var password = req.body.password;
     var _username = global.configService['adminUser'];
     var _password = global.configService['adminPass'];
    // var _users = global.configService['users'] || [];
     var url_dservice = util.getServiceUrl("dservice") + '/api/v1/duser/checklogin'; // Get micro-service endpoint
-  /*  let listuser= await axios.get(url_dservice, {  }) 
+  /*  let listuser= await axios.get(url_dservice, {  })
       _users=listuser.data.data;*/
-    
+
    // console.log("listuser",listuser.data);
    // console.log(_users);
     var loggedUser = {
@@ -40,7 +42,7 @@ router.post('/authenticate',async function (req, res) {
     };
    // user = _users.find(usr => usr.email === username && usr.password === password );
    // if ((!user) && (username !== _username || password !== _password)) {
-    
+
     if (username === _username && password === _password) {
         loggedUser.roles = [{ role: 'app-admin' }]
         loggedUser.id = 'admin@dymer.it'
@@ -75,13 +77,14 @@ router.post('/authenticate',async function (req, res) {
 });
     let response_perm = await axios.get(url_dservice, { params: { role: lsrole } })
     //console.log('response_perm', response_perm.data);
-   
+
     let listprm_value= new Buffer(JSON.stringify( response_perm.data.data)).toString("base64");
-  
+
     var objtoSend = { "DYM": base64DYM, "DYMisi": base64DYMisi, "d_rl": dr_value,"user": loggedUser,"d_lp":listprm_value }
     res.send(objtoSend);
     return;
 });
+
 /*
 router.post('/authenticate', function(req, res) {
     var username = req.body.username;
@@ -107,4 +110,5 @@ router.post('/authenticate', function(req, res) {
     }
 });
 */
+
 module.exports = router;
