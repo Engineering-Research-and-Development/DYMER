@@ -1598,6 +1598,51 @@ function getAllIdsRelations(listIds) {
     });
 };
 
+//FIX del 13/05 per bypssare il delete delle relazioni indirette
+function getAllIdsRelationsById1(listIds) {
+    return new Promise(function(resolve, reject) {
+        // listIds = listIds.filter(o => o != "");
+        //  console.log('superlistIds', listIds);
+        let qparams = { index: "entity_relation" };
+        qparams["body"] = {
+            "query": {
+                "bool": {
+                    "should": [{
+                        "terms": {
+                            "_id1.keyword": listIds
+                        }
+                    }]
+                }
+            }
+        };
+ 
+        qparams["body"].size = 10000;
+ 
+        client.indices.exists({ index: "entity_relation" }, function(err_, resp_, status_) {
+            console.log("RESPENT", err_, resp_, status_);
+            if (status_ == 200) {
+                client.search(qparams).then(function(relresp) {
+                    console.log("Relation get query sort", relresp.hits.hits.length);
+                    let lstid1 = (relresp.hits.hits).filter(o => o !== '');
+                    resolve(lstid1);
+                }, function(err) {
+                    console.error("ERROR | " + nameFile + '| getAllIdsRelations | search qparams : ', err.response);
+                    logger.error(nameFile + '| getAllIdsRelations | search qparams : ' + err.response);
+                    resolve([]);
+                });
+            } else {
+                resolve([]);
+            }
+        });
+    }).catch(function(err) {
+        console.error("ERROR | " + nameFile + '| getAllIdsRelations | promise  : ', err);
+        logger.error(nameFile + '| getAllIdsRelations | promise : ' + err);
+        return [];
+    });
+};
+
+
+
 function getAllEntitiesFromIDS(listIds) {
     // console.log('fetchSingleRelation', element);
     return new Promise(function(resolve, reject) {
@@ -3897,13 +3942,7 @@ router.get('/_search/:enttype?', (req, res) => {
         }
     });
 });
-
-
-
-
-
-
-
+ 
 
 router.post('/:enttype', function(req, res) {
     var ret = new jsonResponse();
@@ -4444,8 +4483,15 @@ router.put('/:id', async (req, res) => {
                         var listRelation_todelete = (editValues.relationtodelete != undefined) ? (editValues.relationtodelete).slice() : [];
                         delete editValues.relationtodelete;
 
-                        logger.info(nameFile + '| /:id | put | listRelation_New :' + JSON.stringify(listRelation_New));
-                        logger.info(nameFile + '| /:id | put | editValues.relationtodelete :' + JSON.stringify(editValues.relationtodelete));
+                        logger.info(nameFile + '| /:id | put 1| listRelation_New :' + JSON.stringify(listRelation_New));
+                        logger.info(nameFile + '| /:id | put 2| editValues.relationtodelete :' + JSON.stringify(listRelation_todelete));
+                        
+                        console.log(nameFile + '| /:id | put 1| listRelation_New :' + JSON.stringify(listRelation_New));
+                        console.log(nameFile + '| /:id | put 2| editValues.relationtodelete :' + JSON.stringify(listRelation_todelete));
+                    
+						
+						
+						
                         var _split = data.todelete;
                         var _todeleteObj = data.todeleteObj;
                         if (_split != undefined) {
@@ -4469,11 +4515,27 @@ router.put('/:id', async (req, res) => {
                             delete editValues.todelete;
                             delete editValues.todeleteObj;
                         }
-                        let listRelation_old = await getAllIdsRelations([oldElement._id]);
+						
+                        let listRelation_old = await getAllIdsRelationsById1([oldElement._id]);
+						
+						
+						
+						 logger.info(nameFile + '| /:id | put 3 | listRelation_old da getAllIdsRelations :' + JSON.stringify(listRelation_old) );
+                        console.log(nameFile + '| /:id | put 3 | listRelation_old da getAllIdsRelations :' + JSON.stringify(listRelation_old) );
+						
+						
+						 
+					  
+					  
                         // console.log('listRelation_old', listRelation_old);
                         let listRelation_New_indexes = Object.keys(listRelation_New);
                         let listRelation_old_filtered = listRelation_old.filter(a => (listRelation_New_indexes.includes(a._source._index1) || listRelation_New_indexes.includes(a._source._index2)));
                         //   console.log('listRelation_old_filtered', listRelation_old_filtered);
+						
+						 logger.info(nameFile + '| /:id | put 4| listRelation_New_indexes:' + JSON.stringify(listRelation_New_indexes) );
+                        console.log(nameFile + '| /:id | put 4| listRelation_New_indexes:' + JSON.stringify(listRelation_New_indexes) );
+                      
+					  
                         let listRelation_New_ids = [];
                         for (const [key, value] of Object.entries(listRelation_New)) {
                             //console.log(`${key}: ${value}`);
@@ -4483,10 +4545,23 @@ router.put('/:id', async (req, res) => {
                         }
                         //   console.log('listRelation_New_indexes', listRelation_New_indexes);
                         //    console.log('listRelation_New_ids', listRelation_New_ids);
+					      console.log(nameFile + '| /:id | put 5| listRelation_old_filtered:' + JSON.stringify(listRelation_old_filtered));
+                          logger.info(nameFile + '| /:id | put 5| listRelation_old_filtered:' + JSON.stringify(listRelation_old_filtered) );
+                       
+					  console.log(nameFile + '| /:id | put 6| listRelation_New_ids:' + JSON.stringify(listRelation_New_ids));
+                          logger.info(nameFile + '| /:id | put 6| listRelation_New_ids:' + JSON.stringify(listRelation_New_ids) );
+                       
+					  
                         let listRelation_old_filtered_todelete = listRelation_old_filtered.filter(a => (!(listRelation_New_ids.includes(a._source._id1) || listRelation_New_ids.includes(a._source._id2))));
                         let listRelation_ids_todelete = listRelation_old_filtered_todelete.map(a => {
                             return a._id
                         });
+						
+						 console.log(nameFile + '| /:id | put 7| listRelation_old_filtered_todelete:' + JSON.stringify(listRelation_old_filtered_todelete));
+                          logger.info(nameFile + '| /:id | put 7| listRelation_old_filtered_todelete:' + JSON.stringify(listRelation_old_filtered_todelete) );
+                       
+					   
+					   
                         let listRelation_New_toadd = {};
                         let listRelation_Old_ids = [...new Set(listRelation_old.map(a => {
                             //  console.log('element._id', element._id, a._source._id1, (element._id == a._source._id1));
@@ -4496,6 +4571,9 @@ router.put('/:id', async (req, res) => {
                                 return a._source._id1
                         }).filter(o => o != undefined))];
 
+                       console.log(nameFile + '| /:id | put 8| listRelation_Old_ids:' + JSON.stringify(listRelation_Old_ids));
+                       logger.info(nameFile + '| /:id | put 8| listRelation_Old_ids:' + JSON.stringify(listRelation_Old_ids) );
+                   
                         //      console.log('listRelation_Old_ids', listRelation_Old_ids);
                         /*  for (const [key, value] of Object.entries(listRelation_New)) {
                               //console.log(`${key}: ${value}`);
@@ -4528,6 +4606,23 @@ router.put('/:id', async (req, res) => {
                                     });
                             });
                         }
+						
+						
+						    
+                         console.log(nameFile + '| /:id | put 9| listRelation_New_toadd:' + JSON.stringify(listRelation_New_toadd));
+                       logger.info(nameFile + '| /:id | put 9| listRelation_New_toadd:' + JSON.stringify(listRelation_New_toadd) );
+                      
+                        
+                           console.log(nameFile + '| /:id | put 10| datasetRelation:' + JSON.stringify(datasetRelation));
+                       logger.info(nameFile + '| /:id | put 10| datasetRelation:' + JSON.stringify(datasetRelation) );
+                      
+                  
+						
+						  console.log(nameFile + '| /:id | put 11| listRelation_ids_todelete:' + JSON.stringify(listRelation_ids_todelete));
+                       logger.info(nameFile + '| /:id | put 11| listRelation_ids_todelete:' + JSON.stringify(listRelation_ids_todelete) );
+                    
+						
+						
                         /* console.log('listRelation_old_filtered_todelete', listRelation_old_filtered_todelete);
                          console.log('listRelation_ids_todelete', listRelation_ids_todelete);
                          console.log('listRelation_New_toadd', listRelation_New_toadd);
@@ -4899,245 +4994,7 @@ router.put('/oldput/:id', (req, res) => { //to delete
     });
 });
 
-//router.put('/hbput2022/:id', (req, res) => { //to delete
-router.put('/hbput2022/:id', (req, res) => {
-    var ret = new jsonResponse();
-    const hdymeruser = req.headers.dymeruser
-    const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
-    const dymerextrainfo = dymeruser.extrainfo;
-    const urs_uid = dymeruser.id;
-    let urs_gid = dymeruser.gid;
-    if (dymerextrainfo != undefined)
-        urs_gid = dymerextrainfo.groupId;
-    upload(req, res, function(err) {
-        if (err) {
-            console.error("ERROR | " + nameFile + '| /:id | put | upload:', err);
-            logger.error(nameFile + '| /:id | put | upload:' + err);
-            ret.setMessages("Upload Error");
-            ret.setSuccess(false);
-            ret.setExtraData({ "log": err.stack });
-            return res.send(ret);
-        }
-        var id = req.params.id;
-        var callData = util.getAllQuery(req);
-        var instance = callData.instance;
-        var data = callData.data;
-        var params = (instance) ? instance : {};
-        var editValues = data;
-        let elIndex = instance.index;
-        var bridgeConf = bE.findByIndex(elIndex);
-        if (bridgeConf != undefined) {
-            var globalData = callData;
-            logger.info(nameFile + '| /:id | put | bridgeConf :' + JSON.stringify(bridgeConf));
-            jsonMappingDymerEntityToExternal(globalData, bridgeConf, "update").then(function(mapdata) {
-                //  console.log("jsonMapper FINALE", JSON.stringify(mapdata));
-                bridgeEsternalEntities(bridgeConf, "update", mapdata).then(function(callresp) {
-                    //console.log(nameFile + '| /:id | put | bridgeEsternalEntities: ', JSON.stringify(mapdata), JSON.stringify(callresp.data));
-                    logger.info(nameFile + '| /:id | put | bridgeEsternalEntities :' + JSON.stringify(mapdata) + " , " + JSON.stringify(callresp.data));
-                    ret.setData(callresp.data);
-                    ret.setMessages("Entity Edited successfully");
-                    return res.send(ret);
-                }).catch(function(error) {
-                    console.error("ERROR | " + nameFile + '| /:id | put | bridgeEsternalEntities:', error);
-                    logger.error(nameFile + '| /:id | put | bridgeEsternalEntities: ' + error);
-                    ret.setSuccess(false);
-                    ret.setMessages("Entity Edit Problem");
-                    return res.send(ret);
-                });
-            }).catch(function(error) {
-                console.error("ERROR | " + nameFile + '| /:id | put | jsonMappingDymerEntityToExternal:', error);
-                logger.error(nameFile + '| /:id | put | jsonMappingDymerEntityToExternal: ' + error);
-                ret.setSuccess(false);
-                ret.setMessages("Entity Edit Problem");
-                return res.send(ret);
-            });
-        } else {
-            // console.log("editValues", editValues)
-            let paramsCheck = {};
-            paramsCheck["body"] = {
-                "query": {
-                    "match": {
-                        "_id": id
-                    }
-                }
-            };
-            paramsCheck["body"].size = 1;
-            client.search(paramsCheck).then(async function(respCheck) {
-                if ((respCheck["hits"].hits).length > 0) {
-                    let oldElement = Object.assign({}, respCheck["hits"].hits[0]);
-                    //console.log('oldElement', oldElement);
-                    //  return res.send(ret);
-                    var checkElemPerm = respCheck["hits"].hits[0]._source.properties;
-                    let harpermEdit = false;
-                    if (checkElemPerm.owner.uid == urs_uid || dymeruser.roles.indexOf("app-admin") > -1)
-                        harpermEdit = true;
-                    if (checkElemPerm.grant != undefined) {
-                        if (checkElemPerm.grant.update != undefined) {
-                            if ((checkElemPerm.grant.update.uid).find(x => x == urs_uid)) {
-                                harpermEdit = true;
-                            }
-                        }
-                    }
-                    //console.log(nameFile + '| /:id | put | permission update:', dymeruser.id, id, harpermEdit);
-                    logger.info(nameFile + '| /:id | put | permission to edit | dymeruser.id, entityid,title, haspermEdit :' + dymeruser.id + ' , ' + id + ' , ' + data.title + ' , ' + harpermEdit);
-                    if (harpermEdit) {
-                        //editValues entity edited
-                        let listRelation_New = (editValues.relation != undefined) ? Object.assign({}, editValues.relation) : {};
-                        delete editValues.relation;
-                        var listRelation_todelete = (editValues.relationtodelete != undefined) ? (editValues.relationtodelete).slice() : [];
-                        delete editValues.relationtodelete;
-
-                        logger.info(nameFile + '| /:id | put | listRelation_New :' + JSON.stringify(listRelation_New));
-                        logger.info(nameFile + '| /:id | put | editValues.relationtodelete :' + JSON.stringify(editValues.relationtodelete));
-                        var _split = data.todelete;
-                        var _todeleteObj = data.todeleteObj;
-                        if (_split != undefined) {
-                            _split.forEach(function(entry) {
-                                recFile(mongoose.Types.ObjectId(entry)).then(function(result) {
-                                        gridFSBucket.delete(mongoose.Types.ObjectId(entry)).then(() => {
-                                                //console.log(nameFile + '| /:id | put | deleted Attachments :', entry);
-                                                logger.info(nameFile + '| /:id | put | deleted Attachments :' + entry);
-                                            })
-                                            .catch(function(err) {
-                                                console.error("ERROR | " + nameFile + '| /:id | put | deleted Attachments :', err);
-                                                logger.error(nameFile + '| /:id | put | deleted Attachments : ' + err);
-                                            });
-                                    })
-                                    .catch(function(err) {
-                                        console.error("ERROR | " + nameFile + '| /:id | put | recFile :', err);
-                                        logger.error(nameFile + '| /:id | put | recFile : ' + err);
-                                        //  res.end("");
-                                    });
-                            });
-                            delete editValues.todelete;
-                            delete editValues.todeleteObj;
-                        }
-                        let listRelation_old = await getAllIdsRelations([oldElement._id]);
-                        // console.log('listRelation_old', listRelation_old);
-                        let listRelation_New_indexes = Object.keys(listRelation_New);
-                        let listRelation_old_filtered = listRelation_old.filter(a => (listRelation_New_indexes.includes(a._source._index1) || listRelation_New_indexes.includes(a._source._index2)));
-                        //   console.log('listRelation_old_filtered', listRelation_old_filtered);
-                        let listRelation_New_ids = [];
-                        for (const [key, value] of Object.entries(listRelation_New)) {
-                            //console.log(`${key}: ${value}`);
-                            listRelation_New_ids = [...new Set([...listRelation_New_ids, ...[...new Set(listRelation_New[key].map(a => {
-                                return a.to
-                            }).filter(x => x != undefined))]])];
-                        }
-                        //   console.log('listRelation_New_indexes', listRelation_New_indexes);
-                        //    console.log('listRelation_New_ids', listRelation_New_ids);
-                        let listRelation_old_filtered_todelete = listRelation_old_filtered.filter(a => (!(listRelation_New_ids.includes(a._source._id1) || listRelation_New_ids.includes(a._source._id2))));
-                        let listRelation_ids_todelete = listRelation_old_filtered_todelete.map(a => {
-                            return a._id
-                        });
-                        let listRelation_New_toadd = {};
-                        let listRelation_Old_ids = [...new Set(listRelation_old.map(a => {
-                            //  console.log('element._id', element._id, a._source._id1, (element._id == a._source._id1));
-                            if (id == a._source._id1)
-                                return a._source._id2
-                            if (id == a._source._id2)
-                                return a._source._id1
-                        }).filter(o => o != undefined))];
-                        let datasetRelation = [];
-                        for (const [key, value] of Object.entries(listRelation_New)) {
-                            listRelation_New_toadd[key] = listRelation_New[key].filter((a, index, arr) => { return !(listRelation_Old_ids.includes(a.to)) })
-                            listRelation_New_toadd[key].forEach(elid => {
-                                if (elid.to !== '')
-                                    datasetRelation.push({
-                                        _index1: elIndex,
-                                        "_id1": id,
-                                        "_id2": elid.to,
-                                        _index2: key
-                                    });
-                            });
-                        }
-                        if (listRelation_ids_todelete.length > 0)
-                            deleteBulkByIds(listRelation_ids_todelete, 'entity_relation').then(
-                                function(resp) {
-                                    logger.info(nameFile + '| /:id | put | id,deleted relations :' + dymeruser.id + ' , ' + id + ' , ' + JSON.stringify(listRelation_old_filtered_todelete));
-                                    logger.info(nameFile + '| singlerelation | delete| dymeruser.id, relation removed :' + dymeruser.id + " , " + JSON.stringify(resp));
-                                },
-                            ).catch(function(err) {
-                                console.error("ERROR | " + nameFile + '| /:id | put | id,deleted relations  ', JSON.stringify(listRelation_old_filtered_todelete), id, err);
-                                logger.error(nameFile + '| /:id | put | id,deleted relations :' + dymeruser.id + ' , ' + JSON.stringify(listRelation_old_filtered_todelete) + ' , ' + err);
-                            });
-
-                        let resrel = await createBulk(datasetRelation, 'entity_relation');
-                        if (!resrel.isSuccess()) {
-                            logger.error(nameFile + '| /:id | put | entityid,uid,create relations :' + id + ' , ' + dymeruser.id + ' , ' + JSON.stringify(datasetRelation) + ' , ' + err);
-                        }
-                        var new_Temp_Entity = extend({}, oldElement);
-                        //console.log('new_Temp_Entity', new_Temp_Entity);
-                        new_Temp_Entity._source = {...editValues };
-                        new_Temp_Entity._source.properties = extend(oldElement._source.properties, editValues.properties);
-                        if (req.files != undefined)
-                            req.files.forEach(function(el) {
-                                var ark = replaceAll(el.fieldname, '[', '@@');
-                                var temp_el = el;
-                                delete el.fieldname;
-                                ark = replaceAll(ark, ']', '');
-                                ark = ark.split("@@");
-                                ark.shift();
-                                stringAsKey(new_Temp_Entity._source, ark, el);
-                            });
-                        //console.log("date mod", oldElement._source.properties.changed, editValues.properties.changed);
-                        // console.log("date mod", oldElement._source.properties.changed, editValues.properties.changed);
-                        if (editValues.properties.changed == undefined) {
-                            new_Temp_Entity._source.properties.changed = new Date().toISOString();
-                        }
-                        if (!new_Temp_Entity._source.properties.hasOwnProperty('extrainfo'))
-                            new_Temp_Entity._source.properties.extrainfo = {};
-                        new_Temp_Entity._source.properties.extrainfo.lastupdate = { "uid": dymeruser.id };
-                        client.update({
-                            index: elIndex,
-                            type: elIndex,
-                            id: id,
-                            body: {
-                                // put the partial document under the `doc` key
-                                doc: new_Temp_Entity._source
-                            },
-                            refresh: 'true'
-                        }).then(async function(resp) {
-                            logger.info(nameFile + '| /:id | put | updated dymeruser.id, id,title, entity :' + dymeruser.id + ' , ' + id + ' , ' + new_Temp_Entity._source.title);
-                            ret.setMessages("Updated!");
-                            // var objHook = new_Temp_Entity;
-                            console.log('resp update 1 ', resp);
-                            /* var extraInfo = dymerextrainfo;
-                             if (extraInfo != undefined)
-                                 extraInfo.extrainfo.emailAddress = dymeruser.id;*/
-                            logger.info(nameFile + '| /:id | put | pre check hook| obj, extraInfo:' + dymeruser.id + ' , ' + JSON.stringify(new_Temp_Entity) + ' , ' + JSON.stringify(dymerextrainfo));
-                            checkServiceHook('after_update', new_Temp_Entity, dymerextrainfo, req);
-                            await redisClient.invalidateCacheById(id, redisEnabled)
-                            return res.send(ret);
-                        }).catch(function(err) {
-                            console.error("ERROR | " + nameFile + '| /:id | put | id: ', id, err);
-                            logger.error(nameFile + '| /:id | put | updated dymeruser.id, extraInfo, id,title, entity :' + dymeruser.id + ' , ' + JSON.stringify(dymerextrainfo) + ' , ' + id + ' , ' + new_Temp_Entity._source.title + ' , ' + JSON.stringify(new_Temp_Entity) + " , " + err);
-                            ret.setSuccess(false);
-                            ret.setMessages("Error Updated!");
-                            return res.send(ret);
-                        });
-                    } else {
-                        ret.setMessages("Permissions denied");
-                        res.status(200);
-                        ret.setSuccess(false);
-                        return res.send(ret);
-                    }
-                } else {
-                    ret.setMessages("You don't have permission");
-                    res.status(200);
-                    ret.setSuccess(false);
-                    return res.send(ret);
-                }
-            }).catch(function(err) {
-                console.error("ERROR | " + nameFile + '| /:id | put | search entity: ', id, err);
-                logger.error(nameFile + '| /:id | put | search entity: ' + dymeruser.id + ' , ' + id + ' , ' + err);
-                ret.setSuccess(false);
-                ret.setMessages("Error Updated!");
-                return res.send(ret);
-            });
-        }
-    });
-});
+ 
 
 const checklogged = function(req) {
     return new Promise(function(resolve, reject) {
@@ -5483,43 +5340,8 @@ router.patch('/:id', async(req, res, next) => {
     })
 });
 
-/*router.put('/updatevalue/:entityid/:key/:value', (req, res) => {
-    console.log(" ROUTER PUT ID ");
-    //relationtodelete
-    var ret = new jsonResponse();
-    upload(req, res, function(err) {
-        if (err) {
-            console.log(err);
-            ret.setMessages("Upload Error");
-            ret.setSuccess(false);
-            ret.setExtraData({ "log": err.stack });
-            return res.send(ret);
-        }
-        var ientityid = req.params.entityid;
-        var key = req.params.key;
-        var value = req.params.value;
-        var params_update = {};
-        params_update["doc"]={};
-        params_update["doc"][key] = value;
-              //
-           //    index: new_Temp_Entity._index,
-          //  type: new_Temp_Entity._type,
-
-        client.update({
-            id: ientityid,
-            body: params_update
-        }).then(function(resp) {
-            //   console.log("-----ESITO", resp);
-            ret.setMessages("Updated!");
-
-            return res.send(ret);
-        }).catch(function(err) {
-            console.log('Caught an error on Edit:update param!', err);
-            return res.send(ret);
-        });
-    });
-});*/
-/*giaisg*/
+ 
+ 
 router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
