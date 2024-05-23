@@ -7,6 +7,8 @@ const DymRule = require( '../models/permission/Libraries' );
 const path = require( 'path' );
 const nameFile = path.basename( __filename );
 const logger = require( "./dymerlogger" );
+const multer = require('multer');
+const fs = require('fs');
 
 function handleError( res, status, error, message, origin ) {
 	console.error( message, error );
@@ -24,9 +26,10 @@ router.use( express.urlencoded( { limit : '100mb', extended : true } ) );
 // POST
 router.post( '/', util.checkIsAdmin, async ( req, res ) => {
 	// console.log( `router-d-library -> POST: [${ req.body }]` );
+	let folder;
 	let whatAndPath = "post/library/";
 	try {
-		const { name, domtype, filename, callback, useonload, group, activated, loadtype, mandatory } = req.body;
+		const { name, domtype, filename, callback, useonload, group, activated, loadtype, mandatory, root } = req.body;
 
 		// Crea una nuova istanza del modello Libraries con i dati ricevuti dalla richiesta
 		const newLibrary = new DymRule( {
@@ -40,6 +43,14 @@ router.post( '/', util.checkIsAdmin, async ( req, res ) => {
 											loadtype,
 											mandatory
 										} );
+
+		// remove the "-js" or "-css" suffix from the library name
+		folder = `${ root }/${ name.replace( /-(js|css)$/, '' ) }/`;
+		// Check if the destination folder exists, otherwise create it
+		if (!fs.existsSync(folder)) {
+			fs.mkdirSync(folder, { recursive: true });
+		}
+		upload = multer( { dest : `${ folder }/` } );
 
 		// Salva la nuova libreria nel database
 		const savedLibrary = await newLibrary.save();

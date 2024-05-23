@@ -216,6 +216,12 @@ angular.module( 'libraryCtrl', [] )
 			   );
 			   actionCell.appendChild( deleteButton );
 
+			   /* // Pulsante di update
+			   const updateButton = createIconButton( 'fa fa-pencil updateAction',
+													  () => $scope.setupdateLibrary( library )
+			   );
+			   actionCell.appendChild( updateButton ); */
+
 			   return actionCell;
 		   }
 
@@ -237,6 +243,23 @@ angular.module( 'libraryCtrl', [] )
 						);
 					} );
 		   };
+
+		   /* $scope.setupdateLibrary = library => {
+			   const libraryId = library._id;
+			   const requestBody = {
+				   // TODO fields to update
+			   };
+
+			   $http.put( `${ libsURL }${ libraryId }`, requestBody )
+					.then( response => {
+						console.log( `Library updated successfully: ${ response.data.message }` );
+						// Aggiungi qui eventuali azioni da eseguire dopo l'aggiornamento
+					} )
+					.catch( error => {
+						console.error( 'Error while updating library:', error );
+						// Gestisci l'errore come preferisci
+					} );
+		   }; */
 
 		   function createIconButton( iconClass, clickHandler ) {
 			   const icon = document.createElement( 'i' );
@@ -288,16 +311,17 @@ angular.module( 'libraryCtrl', [] )
 
 		   $scope.showLibraryForm = () => {
 			   if ( $scope.selectedLibraryType === 'Javascript' ) {
-				   setLibraryValues( '-js', 'script', true );
+				   setLibraryValues( '-js', 'script', true, "js" );
 			   } else if ( $scope.selectedLibraryType === 'CSS' ) {
-				   setLibraryValues( '-css', 'link', false );
+				   setLibraryValues( '-css', 'link', false, "css" );
 			   }
 		   };
 
-		   function setLibraryValues( suffix, domType, useOnLoad ) {
+		   function setLibraryValues( suffix, domType, useOnLoad, folder ) {
 			   appendSuffixIfNeeded( $scope.library, suffix );
 			   $scope.library.domtype = domType;
 			   $scope.library.useonload = useOnLoad;
+			   $scope.library.folder = `${ folder }/lib`;
 		   }
 
 		   function appendSuffixIfNeeded( library, suffix ) {
