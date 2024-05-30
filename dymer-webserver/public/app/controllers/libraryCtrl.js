@@ -200,7 +200,8 @@ angular.module( 'libraryCtrl', [] )
 					.catch( error => {
 						console.error( "Error updating status in backend:", error );
 						useGritterTool( "<b><i class='fa fa-exclamation-triangle'></i> Error updating status</b>",
-										error.data.error, "danger"
+										error.data.error,
+										"danger"
 						);
 					} );
 		   };
@@ -226,9 +227,7 @@ angular.module( 'libraryCtrl', [] )
 		   }
 
 		   $scope.removeLibrary = library => {
-
 			   const libraryId = library._id;
-			 //  const filename = library.filename;
 
 			   $http.delete( `${ contextPath }/public/filelibrary/${ libraryId }` )
 					.then( response => {
@@ -238,12 +237,14 @@ angular.module( 'libraryCtrl', [] )
 						.then( response => {
 							console.log( `Library deleted successfully: ${ response.data.message }` );
 							useGritterTool( "<b><i class='fa fa-refresh'></i> Reload page to see changes</b>",
-											`Library deleted successfully: ${ response.data.message } Reload page to see changes`
+											`Library deleted successfully: ${ response.data.message }
+										Reload page to see changes`
 							);
 						} ).catch( error => {
 					   console.error( 'Error while deleting library:', error );
 					   useGritterTool( "<b><i class='fa fa-exclamation-triangle'></i> Error deleting library</b>",
-									   error.data.error, "danger"
+									   error.data.error,
+									   "danger"
 					   );
 				   } );
 			   } );
@@ -304,7 +305,8 @@ angular.module( 'libraryCtrl', [] )
 												   console.error( 'Error while created library. Try Again!:', error );
 												   useGritterTool(
 													   "<b><i class='fa fa-exclamation-triangle'></i> 'Error creating new library</b>",
-													   error.data.error, "danger"
+													   error.data.error,
+													   "danger"
 												   );
 											   } );
 									  }

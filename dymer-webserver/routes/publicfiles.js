@@ -1,7 +1,7 @@
-var util = require('../utility');
-var jsonResponse = require('../jsonResponse');
-var express = require('express');
-var router = express.Router();
+const util = require( '../utility' );
+const jsonResponse = require( '../jsonResponse' );
+const express = require( 'express' );
+const router = express.Router();
 const path = require('path');
 const logger = require( "./dymerlogger" );
 const fs = require( "fs" );
@@ -29,8 +29,8 @@ db.once('open', () => {
 
 // Definizione del modello Mongoose
 const librarySchema = new mongoose.Schema({
-	filename: String
-	// altri campi se necessari
+											  name     : String,
+											  filename : String
 });
 
 const Library = mongoose.model('Library', librarySchema);
@@ -62,16 +62,7 @@ function saveFile( file, destinationPath ) {
 	} );
 }
 
-function deleteFile(filePath) {
-
-/* 	fs.unlink(filePath, (err) => {
-		if (err) {
-			console.error(`Errore durante la cancellazione del file ${filePath}:`, err);
-		} else {
-			console.log(`File ${filePath} cancellato con successo.`);
-		}
-	}); */
-
+function deleteFileAndDir( filePath, dirPath ) {
 	fs.unlink(filePath, function(err) {
 		if(err && err.code == 'ENOENT') {
 			// file doens't exist
@@ -84,29 +75,11 @@ function deleteFile(filePath) {
 		}
 	});
 
-	
-	// fs.unlink(filePath, (err) => {
-	// 	if (err) {
-	// 		console.error("Errore durante l'eliminazione del file:", err);
-	// 		return;
-	// 	}
-	//
-	// 	console.log('File eliminato correttamente:', filePath);
-	//
-	// 	// Elimina la cartella vuota
-	// 	fs.rmdir(path.dirname(filePath), (err) => {
-	// 		if (err) {
-	// 			if (err.code === 'ENOENT') {
-	// 				console.log('La cartella è già vuota o non esiste.');
-	// 			} else {
-	// 				console.error("Errore durante l'eliminazione della cartella:", err);
-	// 			}
-	// 			return;
-	// 		}
-	//
-	// 		console.log('Cartella eliminata correttamente:', path.dirname(filePath));
-	// 	});
-	// });
+	// Controlla se la cartella è vuota e, in tal caso, eliminala
+	const files = fs.readdir( dirPath );
+	if ( files.length === 0 ) {
+		fs.rmdir( dirPath );
+	}
 }
 
 //POST File
@@ -145,19 +118,26 @@ router.post( '/filelibrary', upload.single( 'file' ), async ( req, res ) => {
 
 router.delete( '/filelibrary/:id', async ( req, res ) => {
 	// #swagger.tags = ['Webserver']
-	const idLibrary = req.params.id
+
 	const whatAndPath = "delete/public/filelibrary/";
 
-	//let library =  mongoose.libreries.findById(idLibrary)
-	const library = await Library.findById(idLibrary).lean()
-
-
-
 	const cdnAbsolutePath = path.resolve( __dirname, '..', 'public', 'cdn' );
-	const filePath = path.join( cdnAbsolutePath, library.filename );
 
 	try {
-		await deleteFile( filePath );
+		const library = await Library.findById( req.params.id ).lean()
+
+		if ( !library ) {
+			return res.status( 404 ).json( { error : 'Library not found' } );
+		}
+
+		const filePath = path.join( cdnAbsolutePath, library.filename.trim() );
+		const dirPath = path.dirname( filePath );
+
+		if ( !fs.existsSync( filePath ) ) {
+			return res.status( 404 ).json( { error : 'File not found' } );
+		}
+
+		await deleteFileAndDir( filePath, dirPath );
 
 		logger.info(
 			`${ nameFile } | ${ whatAndPath } | Library [${ library.name }] has been deleted!` );
@@ -169,7 +149,7 @@ router.delete( '/filelibrary/:id', async ( req, res ) => {
 	} catch ( error ) {
 		console.error( error.message, error );
 		logger.error(
-			`${ nameFile } | ${ origin } | Status ${ 500 } | ${ error.message } : ${ JSON.stringify( error ) }` );
+			`${ nameFile } | ${ whatAndPath } | Status ${ 500 } | ${ error.message } : ${ JSON.stringify( error ) }` );
 		res.status( 500 ).json( { error : error.message } );
 	}
 } )
