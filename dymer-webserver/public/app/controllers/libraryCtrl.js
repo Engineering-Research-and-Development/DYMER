@@ -1,5 +1,5 @@
 angular.module( 'libraryCtrl', [] )
-	   .controller( 'libraryController', function ( $scope, $http, $rootScope ) {
+	   .controller( 'libraryController', function ( $scope, $http, $rootScope, multipartForm ) {
 		   const contextPath = $rootScope.globals.contextpath;
 		   const libsURL = `${ contextPath }/api/dservice/api/v1/library/`;
 
@@ -199,8 +199,8 @@ angular.module( 'libraryCtrl', [] )
 					} )
 					.catch( error => {
 						console.error( "Error updating status in backend:", error );
-						useGritterTool( "<b><i class='fa fa-exclamation-triangle'></i> Error updating status</b>", error.data.error,
-										"danger"
+						useGritterTool( "<b><i class='fa fa-exclamation-triangle'></i> Error updating status</b>",
+										error.data.error, "danger"
 						);
 					} );
 		   };
@@ -227,22 +227,27 @@ angular.module( 'libraryCtrl', [] )
 
 		   $scope.removeLibrary = library => {
 			   const libraryId = library._id;
+			   const filename = library.filename;
 
-			   $http.delete( `${ libsURL }${ libraryId }` )
+			   $http.delete( `${ contextPath }/public/filelibrary/${ filename }` )
 					.then( response => {
-						console.log( `Library deleted successfully: ${ response.data.message }` );
-						useGritterTool( "<b><i class='fa fa-refresh'></i> Reload page to see changes</b>",
-										`Library deleted successfully: ${ response.data.message }
-										Reload page to see changes`
-						);
-					} )
-					.catch( error => {
-						console.error( 'Error while deleting library:', error );
-						useGritterTool( "<b><i class='fa fa-exclamation-triangle'></i> Error deleting library</b>", error.data.error,
-										"danger"
-						);
-					} );
-		   };
+						console.log()
+						//TODO completare il delete
+					} ).then( () => {
+				   $http.delete( `${ libsURL }${ libraryId }` )
+						.then( response => {
+							console.log( `Library deleted successfully: ${ response.data.message }` );
+							useGritterTool( "<b><i class='fa fa-refresh'></i> Reload page to see changes</b>",
+											`Library deleted successfully: ${ response.data.message } Reload page to see changes`
+							);
+						} ).catch( error => {
+					   console.error( 'Error while deleting library:', error );
+					   useGritterTool( "<b><i class='fa fa-exclamation-triangle'></i> Error deleting library</b>",
+									   error.data.error, "danger"
+					   );
+				   } );
+			   } );
+		   }
 
 		   /* $scope.setupdateLibrary = library => {
 			   const libraryId = library._id;
@@ -279,21 +284,34 @@ angular.module( 'libraryCtrl', [] )
 			   if ( /^\s*$/.test( $scope.library.callback ) ) {
 				   $scope.library.callback = null;
 			   }
-			   $http.post( libsURL, $scope.library )
-					.then( response => {
-						console.log( `New library added successfully: ${ JSON.stringify( response.data.data ) }` );
-						useGritterTool( "<b><i class='fa fa-refresh'></i> Reload page to see changes</b>",
-										`New library ${ response.data.data.name } added successfully,
-										Reload page to see changes`
-						);
-					} )
-					.catch( error => {
-						console.error( 'Error while created library. Try Again!:', error );
-						useGritterTool( "<b><i class='fa fa-exclamation-triangle'></i> 'Error creating new library</b>",
-										error.data.error,
-										"danger"
-						);
-					} );
+
+			   let data = { file : $scope.fileUpload, path : $scope.library.filename }
+			   multipartForm.post( `${ contextPath }/public/filelibrary`, data )
+							.then( response => {
+								$scope.library.filename += `/${ response.data.data } `
+								// Log the response
+								console.log( 'File uploaded successfully:', response );
+							} ).then( () => {
+										  // $scope.library.filename +=  `/${ response.data } `
+										  $http.post( libsURL, $scope.library )
+											   .then( response => {
+												   console.log( `New library added successfully: ${ JSON.stringify( response.data.data ) }` );
+												   useGritterTool( "<b><i class='fa fa-refresh'></i> Reload page to see changes</b>",
+																   `New library ${ response.data.data.name } added successfully, Reload page to see changes`
+												   );
+											   } )
+											   .catch( error => {
+												   console.error( 'Error while created library. Try Again!:', error );
+												   useGritterTool(
+													   "<b><i class='fa fa-exclamation-triangle'></i> 'Error creating new library</b>",
+													   error.data.error, "danger"
+												   );
+											   } );
+									  }
+							)
+							.catch( error => {
+								console.error( 'Error while created library. Try Again!:', error );
+							} );
 		   };
 
 		   $scope.cancelAddLibrary = () => {
@@ -321,7 +339,7 @@ angular.module( 'libraryCtrl', [] )
 			   appendSuffixIfNeeded( $scope.library, suffix );
 			   $scope.library.domtype = domType;
 			   $scope.library.useonload = useOnLoad;
-			   $scope.library.folder = `${ folder }/lib`;
+			   $scope.library.filename = `${ folder }/lib/${ $scope.library.name }`;
 		   }
 
 		   function appendSuffixIfNeeded( library, suffix ) {

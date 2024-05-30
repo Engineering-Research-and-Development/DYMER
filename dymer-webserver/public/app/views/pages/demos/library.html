@@ -14,7 +14,11 @@
 					<caption></caption>
 					<thead class="text-primary">
 					<tr role="row">
-						<th class="text-center" ng-repeat="column in config.columns" aria-controls="{{config.tableId}}">{{column}}</th>
+						<th class="text-center"
+						    ng-repeat="column in config.columns"
+						    aria-controls="{{config.tableId}}"
+						>{{column}}
+						</th>
 						<th class="text-center" aria-controls="{{config.tableId}}">Activated</th>
 					</tr>
 					</thead>
@@ -39,11 +43,22 @@
 				<form name="formNewLibrary" id="formNewLibrary">
 					<div class="form-group">
 						<label for="name">Name:<span>*</span></label>
-						<input type="text" class="form-control" id="name" ng-model="library.name" ng-focus="nameFocused = true" required>
+						<input type="text"
+						       class="form-control"
+						       id="name"
+						       ng-model="library.name"
+						       ng-focus="nameFocused = true"
+						       required
+						>
 					</div>
 					<div class="form-group">
 						<label for="libraryType">Library Type:<span>*</span></label>
-						<select id="libraryType" ng-model="selectedLibraryType" class="form-control" ng-show="nameFocused && library.name" ng-change="showLibraryForm()">
+						<select id="libraryType"
+						        ng-model="selectedLibraryType"
+						        class="form-control"
+						        ng-show="nameFocused && library.name"
+						        ng-change="showLibraryForm()"
+						>
 							<option value="">Select Library Type</option>
 							<option value="Javascript">Javascript</option>
 							<option value="CSS">CSS</option>
@@ -59,7 +74,11 @@
 								</select>
 							</div>
 							<div class="col-md-6">
-								<input type="checkbox" class="form-check-input" id="useonload" ng-model="library.useonload">
+								<input type="checkbox"
+								       class="form-check-input"
+								       id="useonload"
+								       ng-model="library.useonload"
+								>
 								<label for="useonload">Use Onload <span>(change only if necessary)</span></label>
 							</div>
 						</div>
@@ -68,12 +87,22 @@
 							<input type="text" class="form-control" id="filename" ng-model="library.filename" required placeholder="Example: css/lib/library.css">
 						</div> -->
 						<div class="form-group">
-							<label for="fileUpload">Upload Library:<span>*</span></label>
-							<input type="file" class="form-control-file" id="fileUpload" ng-model="fileUpload" multiple required>
+							<label>Upload Library:<span>*</span></label>
+							<input type="file"
+							       class="form-control-file"
+							       id="filename"
+							       file-model="fileUpload"
+							       ng-model="library.filename"
+							       required
+							>
 						</div>
 						<div class="form-group">
 							<label for="callback">Callback:</label>
-							<textarea type="text" class="form-control" id="callback" ng-model="library.callback"></textarea>
+							<textarea type="text"
+							          class="form-control"
+							          id="callback"
+							          ng-model="library.callback"
+							></textarea>
 						</div>
 						<div class="form-group">
 							<label for="group">Group:<span>*</span></label>
@@ -90,14 +119,22 @@
 								</select>
 							</div>
 							<div class="col-md-6">
-								<input type="checkbox" class="form-check-input" id="mandatory" ng-model="library.mandatory">
+								<input type="checkbox"
+								       class="form-check-input"
+								       id="mandatory"
+								       ng-model="library.mandatory"
+								>
 								<label for="mandatory">Mandatory:</label>
 							</div>
 						</div>
 						<div class="row text-right">
 							<div class="col-12">
-								<button type="button" class="btn btn-info" ng-click="formNewLibrary.$valid && addLibrary()">Save</button>
-								<button type="button" class="btn btn-danger" ng-click="cancelAddLibrary()">Cancel</button>
+								<button type="button" class="btn btn-info" ng-click="addLibrary()">Save</button>
+								<button type="button"
+								        class="btn btn-danger"
+								        ng-click="cancelAddLibrary()"
+								>Cancel
+								</button>
 							</div>
 						</div>
 					</div>

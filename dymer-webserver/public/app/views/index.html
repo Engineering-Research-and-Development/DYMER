@@ -35,7 +35,8 @@
     <script src="public/app/app.js"></script>
     <script src="public/app/routes.js"></script>
     <!-- <script src="public/app/services/dymerSutility.js"></script>-->
-    <script src="public/app/controllers/entitiesCtrl.js"></script>
+	<script src="public/app/services/multipartForm.js"></script>
+	<script src="public/app/controllers/entitiesCtrl.js"></script>
     <script src="public/app/controllers/templateCtrl.js"></script>
     <script src="public/app/controllers/manageModel.js"></script>
     <script src="public/app/controllers/manageTemplate.js"></script>
@@ -62,6 +63,7 @@
     <script src="public/app/controllers/relationsCtrl.js"></script>
     <script src="public/app/controllers/workflowCtrl.js"></script>
     <script src="public/app/directive/angularjs-dropdown-multiselect.js"></script>
+	<script src="public/app/directive/fileModel.js"></script>
 	<script src="public/app/controllers/swaggerCtrl.js"></script>
 	<script src="public/app/controllers/libraryCtrl.js"></script>
 
@@ -224,7 +226,7 @@
                                 </li>
                                 <li class="  " ng-show="hasPermission('app-admin' )"> <a class=""
                                         href="importfromfile"><i class="nc-icon nc-air-baloon"></i>
-                                        <p>Import</p>
+                                        <p>Import/Export</p>
                                     </a>
                                 </li>
                                 <li class="  ">

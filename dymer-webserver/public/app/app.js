@@ -29,5 +29,6 @@ angular.module("userApp", [
     "workflowCtrl",
     "angularjs-dropdown-multiselect",
     "swaggerCtrl",
-    "libraryCtrl"
+    "libraryCtrl",
+    "fileModel"
 ]);
