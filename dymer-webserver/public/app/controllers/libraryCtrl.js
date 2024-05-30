@@ -226,13 +226,13 @@ angular.module( 'libraryCtrl', [] )
 		   }
 
 		   $scope.removeLibrary = library => {
-			   const libraryId = library._id;
-			   const filename = library.filename;
 
-			   $http.delete( `${ contextPath }/public/filelibrary/${ filename }` )
+			   const libraryId = library._id;
+			 //  const filename = library.filename;
+
+			   $http.delete( `${ contextPath }/public/filelibrary/${ libraryId }` )
 					.then( response => {
-						console.log()
-						//TODO completare il delete
+						console.log(`Library [${ library.name }] has been deleted from disk!`)
 					} ).then( () => {
 				   $http.delete( `${ libsURL }${ libraryId }` )
 						.then( response => {
@@ -288,7 +288,7 @@ angular.module( 'libraryCtrl', [] )
 			   let data = { file : $scope.fileUpload, path : $scope.library.filename }
 			   multipartForm.post( `${ contextPath }/public/filelibrary`, data )
 							.then( response => {
-								$scope.library.filename += `/${ response.data.data } `
+								$scope.library.filename += `/${ response.data.data }`
 								// Log the response
 								console.log( 'File uploaded successfully:', response );
 							} ).then( () => {
