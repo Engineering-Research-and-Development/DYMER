@@ -77,7 +77,7 @@ function deleteFileAndDir(filePath, dirPath) {
 
 	const files = fs.readdirSync(dirPath)
 	if (!files.length) {
-		fs.rmdirSync(dirPath)
+		fs.rmSync(dirPath, {recursive: true})
 	} else {
 		console.error("ERROR | " + nameFile + " | Directory path not found ", dirPath);
 		logger.error(nameFile + ' | removeDir | Directory path not found  : ' + dirPath);
