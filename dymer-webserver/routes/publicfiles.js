@@ -62,9 +62,9 @@ function saveFile( file, destinationPath ) {
 	} );
 }
 
-function deleteFileAndDir( filePath, dirPath ) {
-	fs.unlink(filePath, function(err) {
-		if(err && err.code == 'ENOENT') {
+function deleteFileAndDir(filePath, dirPath) {
+	fs.unlink(filePath, function (err) {
+		if (err && err.code == 'ENOENT') {
 			// file doens't exist
 			console.info("File doesn't exist, won't remove it.");
 		} else if (err) {
@@ -75,10 +75,12 @@ function deleteFileAndDir( filePath, dirPath ) {
 		}
 	});
 
-	// Controlla se la cartella è vuota e, in tal caso, eliminala
-	const files = fs.readdir( dirPath );
-	if ( files.length === 0 ) {
-		fs.rmdir( dirPath );
+	const files = fs.readdirSync(dirPath)
+	if (!files.length) {
+		fs.rmdirSync(dirPath)
+	} else {
+		console.error("ERROR | " + nameFile + " | Directory path not found ", dirPath);
+		logger.error(nameFile + ' | removeDir | Directory path not found  : ' + dirPath);
 	}
 }
 
