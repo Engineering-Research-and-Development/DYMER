@@ -78,8 +78,8 @@ router.get('/dispatch', util.checkIsAdmin, function(req, res) {
         "app_azf_domain": "",
         "id": 1,
         "app_id": "",
-        "email": "marcoromano12@gmail.com",
-        "username": "marcoromano12@gmail.com"
+        "email": "admin@dymer.it",
+        "username": "admin@dymer.it"
     };
 
     let userinfo_objJsonStr_admin = JSON.stringify(userinfo_admin);

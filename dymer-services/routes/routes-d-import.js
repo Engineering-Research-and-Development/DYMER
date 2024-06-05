@@ -24,30 +24,9 @@ require("../models/permission/DymerCronJobRule");
 const DymRule = mongoose.model("DymerCronJobRule");
 router.use(bodyParser.json({ limit: '50mb', extended: true }))
 router.use(bodyParser.urlencoded({ limit: '100mb', extended: true }))
-    /*router.use(bodyParser.json());
-    router.use(bodyParser.urlencoded({
-        extended: false,
-        limit: '100MB'
-    }));*/
 
-//   /api/v1/opn/
-/*const mongoURI = util.mongoUrlForm();
-console.log(nameFile + ' | mongoURI :', JSON.stringify(mongoURI));
-var db;
-mongoose
-    .connect(mongoURI, {
-        //  useCreateIndex: true,
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    })
-    .then(x => {
-        console.log(nameFile + ` | Connected to Mongo! Database name: "${x.connections[0].name}"`);
-        db = x.connections[0].db;
-        //console.log(x.connections[0].db);
-    })
-    .catch(err => {
-        console.error("ERROR | " + nameFile + ` | Error connecting to mongo! Database name: "${x.connections[0].name}"`, err);
-    });*/
+// TODO lfr companyId and groupId customization
+
 router.get('/cronjob', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -1101,8 +1080,8 @@ router.get('/updategeo/:entype', (req, res) => {
         "app_azf_domain": "",
         "id": 1,
         "app_id": "",
-        "email": "marcoromano12@gmail.com",
-        "username": "marcoromano12@gmail.com"
+        "email": "admin@dymer.it",
+        "username": "admin@dymer.it"
     };
     let userinfo_objJsonStr_admin = JSON.stringify(userinfo_admin);
     let userinfo_objJsonB64_admin = Buffer.from(userinfo_objJsonStr_admin).toString("base64");
@@ -1376,8 +1355,8 @@ router.get('/updategid/:entype/:gid/:forceall?', util.checkIsAdmin, (req, res) =
         "app_azf_domain": "",
         "id": 1,
         "app_id": "",
-        "email": "marcoromano12@gmail.com",
-        "username": "marcoromano12@gmail.com"
+        "email": "admin@dymer.it",
+        "username": "admin@dymer.it"
     };
 
     let userinfo_objJsonStr_admin = JSON.stringify(userinfo_admin);
@@ -1575,8 +1554,8 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
             "app_azf_domain": "",
             "id": 1,
             "app_id": "",
-            "email": "marcoromano12@gmail.com",
-            "username": "marcoromano12@gmail.com"
+            "email": "admin@dymer.it",
+            "username": "admin@dymer.it"
         };
 
 
@@ -1691,6 +1670,8 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
                             //  singleEntity.data.
                             var extrainfo = {
                                 "extrainfo": {
+                                    //"companyId": "37504",
+                                    //"groupId": "37623",
                                     "companyId": "20097",
                                     "groupId": "20121",
                                     "cms": "lfr",
