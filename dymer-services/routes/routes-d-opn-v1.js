@@ -604,18 +604,18 @@ function postAssettOpenness(typeaction, obj, rule, extraInfo) {
     var opnConfUtil = util.getServiceConfig("opnsearch");
     
     var queryFind = { 'servicetype': typeaction };
-    
+
     OpnSearchConfig.find(queryFind).then((els) => {
-        console.log('==>els', els);
+        console.log('==>els ', els);
         if (els.length > 0) {
-            
+
             try {
                 let notify=true;
 
                 //console.log("rule.sendnotification ",rule.sendnotification);
 
                 if(rule.sendnotification===false)
-                    notify= rule.sendnotification;
+                    notify = rule.sendnotification;
                 var el = els[0];
                 
                 //TODO check
@@ -623,7 +623,7 @@ function postAssettOpenness(typeaction, obj, rule, extraInfo) {
                 
                 var companyId = (extraInfo != undefined) ? extraInfo.companyId : opnConfUtil.user.d_cid;
                 var userId = (extraInfo != undefined) ? extraInfo.userId : opnConfUtil.user.d_uid;
-                
+
                 // var groupId = (obj._source.properties.owner.uid == "admin@dymer.it") ? opnConfUtil.user.d_gid : obj._source.properties.owner.gid;
                 // var emailAddress = (obj._source.properties.owner.uid == "admin@dymer.it") ? opnConfUtil.user.d_mail : obj._source.properties.owner.uid;             
 

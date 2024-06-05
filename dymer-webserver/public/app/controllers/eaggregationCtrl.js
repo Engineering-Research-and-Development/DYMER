@@ -3,7 +3,7 @@ angular.module('eaggregationCtrl', [])
         var baseContextPath = $rootScope.globals.contextpath;
         $scope.copyPastIndType = function(el) {
 
-            $scope.rule.op_index = el._type;
+            $scope.rule.op_index = el._index;
             $scope.rule.op_type = el._index;
         }
         $scope.clearString = function() {

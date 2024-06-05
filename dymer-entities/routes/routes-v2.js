@@ -2082,15 +2082,14 @@ router.get('/contentfile/:entityid/:fileid', function(req, res, next) {
         res.status(404).send('Not Found');
         return;
     }
-    //FRANCO BUG FIX PRIDE to get the right user when you try to download documents
+
     
-    /*
     const hdymeruser = req.headers.dymeruser;
     console.log("==>hdymeruser ", hdymeruser);
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
-    */
-    //TODO ADD Cookies DYM, DYM_EXTRA in Liferay domain - dymer-viewer portlet
-    var list = {};
+    
+    /*
+	var list = {};
     var cookieHeader = req.headers?.cookie;
     cookieHeader.split(`;`).forEach(function(cookie) {
         let [ name, ...rest] = cookie.split(`=`);
@@ -2099,8 +2098,8 @@ router.get('/contentfile/:entityid/:fileid', function(req, res, next) {
         list[name] = decodeURIComponent(value);
     });
     var dymeruser = JSON.parse(Buffer.from(list["DYM"], 'base64').toString('utf-8')); 
-  
-    console.log("***************** dymeruser",dymeruser);
+    */
+    console.log("dymeruser ",dymeruser);
      
     const urs_uid = dymeruser.id;
     var urs_gid = dymeruser.gid;

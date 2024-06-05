@@ -177,6 +177,7 @@ router.get('/', (req, res) => {
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
     console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
+    console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
     logger.info(nameFile + '  | get  | queryFind:' + JSON.stringify(queryFind));
     Template.find(queryFind, {}).collation({ locale: "en" }).sort({ title: +1 }).then((templates) => {
         //Template.find(queryFind).then((templates) => {
@@ -184,7 +185,7 @@ router.get('/', (req, res) => {
         var actions = templates.map(getfilesArrays);
         var results = Promise.all(actions); // pass array of promises
         results.then(function(dat) {
-            console.log("dymer-templates | route-v1.js | templates list: ", dat);
+            //console.log("dymer-templates | route-v1.js | templates list: ", dat);
             ret.setMessages("List");
             ret.setData(dat);
             //  console.log('dat', JSON.stringify(dat));
@@ -207,8 +208,8 @@ router.get('/content/:fileid', function(req, res, next) {
     }
     recFile(mongoose.Types.ObjectId(file_id))
         .then(function(result) {
-            // console.log(nameFile + ' | get/content/:fileid |  fileid :', result);
-            // logger.info(nameFile + '  | get/content/:fileid |  fileid :' + JSON.stringify(queryFind));
+            //console.log(nameFile + ' | get/content/:fileid |  fileid :', result);
+            //logger.info(nameFile + '  | get/content/:fileid |  fileid :' + JSON.stringify(queryFind));
             res.setHeader('Content-type', result.contentType);
             res.setHeader('Content-disposition', 'filename=' + result.filename);
             res.charset = 'utf-8';
@@ -235,6 +236,7 @@ router.post('/', util.checkIsAdmin, function(req, res) {
         }
         let callData = util.getAllQuery(req);
         let data = callData.data;
+        console.log("template root POST / ", data);
         let files_arr = [];
         req.files.forEach(element => {
             files_arr.push(element.id);

@@ -316,8 +316,8 @@ router.post('/fromcsv/:enttype', util.checkIsAdmin, (req, res) => {
             
             var singleEntity = {
                 "instance": {
-                    "index": newentityType
-                    //"type": newentityType
+                    "index": newentityType,
+                    "type": newentityType
                 },
 
                 "data": buildNestedObj(element)
@@ -510,8 +510,8 @@ router.get('/fromjson', util.checkIsAdmin, (req, res) => {
                     if (elrel != undefined) rel_id = elrel["_id"];
                     var singleEntity = {
                         "instance": {
-                            "index": newentityType,
-                            "type": newentityType
+                            "index": newentityType
+                            //"type": newentityType
                         },
                         "data": {
                             title: element["TITLE"],
@@ -795,15 +795,26 @@ function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action, fileurl) {
 function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_objJsonB64_admin, extrainfo_objJsonB64_admin, originalrelquery, newentityType){
     let localApiUrl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + '/api/' + formTemplate + 's/api/v1/' + formTemplate + "/";
     let externalApiUrl = sourcepath +'/api/' + formTemplate + 's/api/v1/' + formTemplate + "/";
+    console.log("localApiUrl ",localApiUrl);
+    console.log("externalApiUrl ",externalApiUrl);
     /*Verifico se i moduli da importare sono già presenti nella destinazione*/
     let modulesIds = [];
     let titleId = {};
     let formdata_admin = new FormData();
     let postData = new FormData();
+
+    //TODO params per modelli e per template
+    let modelTemplateParameters ="";
+    if (formTemplate==="form")
+        modelTemplateParameters = { "query": { "instance._index": { "$eq": newentityType } } };
+    if (formTemplate==="template")
+        modelTemplateParameters = { "query": { "query": { "instance._index": { "$eq": newentityType } } } };
+
+    console.log("==> modelTemplateParameters ", modelTemplateParameters);
     let config = {
         method: 'GET',
         url: localApiUrl,
-        params: { "query": { "instance._index": { "$eq": newentityType } } },
+        params: modelTemplateParameters,
         headers: {
             ...formdata_admin.getHeaders(),
             'dymeruser': userinfo_objJsonB64_admin,
@@ -920,6 +931,7 @@ function createModules(formTemplate, userinfo_objJsonB64_admin, extrainfo_objJso
     data.name = data.title;
     infoData = data;
     infoData.instance._index = newentityType;
+    infoData.instance._type = newentityType;
     //TODO check
     //infoData.instance._type = newentityType;
     delete delete infoData._id;

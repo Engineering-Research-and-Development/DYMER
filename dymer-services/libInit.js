@@ -1,9 +1,12 @@
 const mongoose = require( "mongoose" );
 const dataToInsert = require( './config/coreLibraries.json' );
 
-const dbConnectionString = 'mongodb://localhost:27017/dservice';
+//TODO copy to the master
+var util = require('./utility');
+const mongoURI = util.mongoUrl();
+
 const connectToDatabase = () => {
-	return mongoose.connect( dbConnectionString, {
+	return mongoose.connect( mongoURI, {
 		useNewUrlParser : true, useUnifiedTopology : true
 	} );
 };

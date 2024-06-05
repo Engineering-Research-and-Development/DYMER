@@ -71,14 +71,14 @@ function isEmpty(obj) {
 }*/
 
 exports.getAllQuery = function(req) {
-
+    console.log('====>getAllQuery');
     let obj = { "query": {} };
     let body = req.body;
     let params = req.params;
     let query = req.query;
-    /* console.log('body', body);
-     console.log('params', params);
-     console.log('query', query);*/
+    /*console.log('body', body);
+    console.log('params', params);
+    console.log('query', query);*/
     if (!isEmpty(body))
         Object.assign(obj, body);
     if (!isEmpty(params)) {
@@ -88,10 +88,9 @@ exports.getAllQuery = function(req) {
     if (!isEmpty(query)) {
         if (typeof(query.query) == 'string')
             query.query = JSON.parse(query.query);
-        /*MG - query e non query.query*/    
-        Object.assign(obj, query);
+        Object.assign(obj, query.query);
     }
-    //  console.log("obj", obj );
+    console.log("obj ", obj)
     return obj;
 }
 exports.convertBodyQuery = function(req) {
