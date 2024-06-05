@@ -69,3 +69,8 @@ connectToDatabase().then( () => {
 				   .catch( error => {
 					   console.error( "Error during the connection to the database:", error );
 				   } );
+
+module.exports = {
+	connectToDatabase,
+	initLibraries
+}
