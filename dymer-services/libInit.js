@@ -49,9 +49,6 @@ const initLibraries = async () => {
 
 	} catch ( error ) {
 		console.error( "Error during the insertion of libraries into the database:", error );
-	} finally {
-		await mongoose.disconnect();
-		console.log( "Database connection closed." );
 	}
 };
 
