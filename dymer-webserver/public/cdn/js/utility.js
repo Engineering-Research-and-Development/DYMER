@@ -514,7 +514,7 @@ class Elfile {
 class ElTemplate {
     //constructor(_index, _type) {
     constructor(_index, _type) {
-        console.log("====>ElTemplate constructor");
+        //console.log("====>ElTemplate constructor");
         //constructor(_index) {
         this._index = _index;
         //this._type = _type;
@@ -534,8 +534,8 @@ class ElTemplate {
     }
 
     loadAllTemplate() {
-        console.log("==>ElTemplate loadAllTemplate");
-        console.log("dymer-webserver | loadAllTemplate");
+        //console.log("==>ElTemplate loadAllTemplate");
+        //console.log("dymer-webserver | loadAllTemplate");
         var _this = this;
         var sourceUrl = getendpoint('template');
         var temp_config_call = {
@@ -543,7 +543,7 @@ class ElTemplate {
             type: 'GET',
             addDataBody: false
         };
-        console.log("temp_config_call ", temp_config_call);
+        //console.log("temp_config_call ", temp_config_call);
         var ajax_temp_call = new Ajaxcall(temp_config_call);
         ajax_temp_call.flush();
         //TODO check
@@ -555,7 +555,7 @@ class ElTemplate {
         var ret = ajax_temp_call.send();
         //	var appendfiles = new Array();
         if (ret.success) {
-            console.log("==> ret.data ", ret.data);
+            //console.log("==> ret.data ", ret.data);
             (ret.data).forEach(function(el, i) {
                 var dom_to_render = undefined;
                 var t_ar = [];
@@ -566,7 +566,7 @@ class ElTemplate {
                     //MArco da valutare
                     //console.log("fl",fl);
                     var lkpath = indport + "content/" + fl._id;
-                    console.log("==>lkpath ",lkpath);
+                    //console.log("==>lkpath ",lkpath);
                     var splmime = (fl.contentType).split("/");
                     var ftype = splmime[1];
                     if (ftype == "html")
@@ -583,18 +583,18 @@ class ElTemplate {
                         }
 
                     }
-                    console.log("==>t_ar ", t_ar);
+                    //console.log("==>t_ar ", t_ar);
                 });
                 var ret2 = dom_to_render;
                 for (var s = 0; s < el.viewtype.length; s++) {
                     var rt = (el.viewtype[s].rendertype).slice();
                     _this.setTemplate(rt, ret2);
-                    console.log("==>rt ", rt);
-                    console.log("==>ret2 ", ret2);
+                    //console.log("==>rt ", rt);
+                    //console.log("==>ret2 ", ret2);
                     for (var j = 0; j < t_ar.length; j++) {
                         (t_ar[j]).extrattr.push({ key: 'tftemp', value: rt });
                     }
-                    console.log("==>setAppendfiles  t_ar ", rt, t_ar);
+                    //console.log("==>setAppendfiles  t_ar ", rt, t_ar);
                     _this.setAppendfiles(rt, t_ar);
                 }
 
@@ -603,7 +603,7 @@ class ElTemplate {
     }
     setTemplate(type, scriptTemplate) {
         var _this = this;
-        console.log("scriptTemplate ", scriptTemplate)
+        //console.log("scriptTemplate ", scriptTemplate)
         _this.viewtype[type] = scriptTemplate;
         return true;
     }
@@ -954,7 +954,7 @@ function populateHookRelation(x, y, z, w, k, a, b, arObj2, rel) {
     //console.log('arObj2',arObj2);
     var templ_data = flatEsArray(arObj2.data);
     arObj2.data = templ_data.arr
-    console.log('==>populateHookRelation templ_data',arObj2);
+    //console.log('==>populateHookRelation templ_data',arObj2);
     listRelationForm[rel] = arObj2.data;
     $('.senderForm [data-torelation="' + rel + '"]').each(function(inde) {
         var esxtraAttr = "";
@@ -1162,7 +1162,7 @@ function loadFilterModel(index, tagFilterObj) {
             var singleEl = "";
             if ($(this).attr("data-torelation") != undefined) {
                 var rel = $(this).attr('data-torelation');
-                console.log('==> loadFilterModel data-torelation ',rel);
+                //console.log('==> loadFilterModel data-torelation ',rel);
                 var esxtraAttr = "";
                 var datapost = {
                     instance: { "index": rel },
@@ -1977,7 +1977,7 @@ async function loadRequireMap() {
 
             if ( ckaddimport.indexOf( group ) <= -1 ) {
                 arr.push( new Elfile( domtype, kmsconfig.cdn + filename, evalCallback, useonload, group ) );
-                console.log( `Add ${ library.name } at arr array:` )
+                //console.log( `Add ${ library.name } at arr array:` )
 
 
 
@@ -2184,7 +2184,7 @@ function loadEntitiesTemplate(conf) {
                 reload = (kmsconf.target.list.reload != undefined) ? kmsconf.target.list.reload : false;
     }
     if (reload) { //reload
-        console.log("===>kmsconf.query", kmsconf.query);
+        //console.log("===>kmsconf.query", kmsconf.query);
         var ret = actionPostMultipartForm(kmsconf.endpoint, undefined, kmsconf.query, undefined, undefined, undefined, false);
         var templ_data = flatEsArray(ret.data);
         kmsdataset = templ_data.arr;
@@ -2193,7 +2193,7 @@ function loadEntitiesTemplate(conf) {
 }
 
 function drawEntities(conf) {
-    console.log("===================> conf ", conf);
+    //console.log("===================> conf ", conf);
     loadEntitiesTemplate(conf);
     kmsrenderEl(kmsdataset, kmsconf.viewtype);
 }
@@ -2321,7 +2321,7 @@ function checkPermission(actualItem, act) {
     let d_gid = localStorage.getItem("d_gid");
     let d_rl = localStorage.getItem("d_rl");
     let d_lp =  JSON.parse(atob( localStorage.getItem("d_lp")));
-    console.log("d_lp",d_lp);
+    //console.log("d_lp",d_lp);
     var entPerm = {
         isowner: false,
         view: false,
@@ -2802,7 +2802,7 @@ async function editEntity(id) {
                   }, 2000);*/
 
                 //FRANCO TODO: se esiste la classe selectpicker allora $('#entityEdit .selectpicker').selectpicker();
-                console.log("==>TODO: check if selectpicker exists ",itemToEdit);
+                //console.log("==>TODO: check if selectpicker exists ",itemToEdit);
                 /*if (xxx.hasClass('selectpicker')) {
                     console.log("==>itemToEdit.hasClass(selectpicker)");
                     $('#entityEdit .selectpicker').selectpicker();
@@ -2905,7 +2905,7 @@ function duplicateRepeatable(frm, item, basename) {
         }
         $(frm + ' .repeatable [data-torelation]').each(function(index) {
             var rel_type = $(this).attr('data-torelation');
-            console.log('==> duplicateRepeatable data-torelation ',rel_type);
+            //console.log('==> duplicateRepeatable data-torelation ',rel_type);
             if (listRelation[rel_type] != undefined) {
                 var currenteDomElement = $(this).closest('.relationcontgrp.repeatable');
                 for (var i = 1; i < listRelation[rel_type].length; i++) {
@@ -2968,7 +2968,7 @@ const duplicateRepeatable_Promise = function(frm, item, basename) {
             }
             $(frm + ' .repeatable [data-torelation]').each(function(index) {
                 var rel_type = $(this).attr('data-torelation');
-                console.log('==> duplicateRepeatable_Promise data-torelation ',rel_type);
+                //console.log('==> duplicateRepeatable_Promise data-torelation ',rel_type);
                 if (listRelation[rel_type] != undefined) {
                     var currenteDomElement = $(this).closest('.relationcontgrp.repeatable');
                     for (var i = 1; i < listRelation[rel_type].length; i++) {
@@ -3062,12 +3062,12 @@ function populateFormEdit(frm, item, basename, wasarr, origitem) {
             //   console.log("elPop", elPop);
             //   console.log("elPop.hasClass('selectpicker')", elPop.hasClass('selectpicker'));
             if (key == 'relations') {
-                console.log("key == relations");
+                //console.log("key == relations");
                 let listRelation = {};
                 //AVENDO ELIMINATO IL TYPE NON HA SENSO ESEGUIRE
-                console.log("value.length ", value.length);
+                //console.log("value.length ", value.length);
                 for (var i = 0; i < value.length; i++) {
-                    console.log("value["+i+"] ", value[i]);
+                    //console.log("value["+i+"] ", value[i]);
                     //TODO check
                     if (listRelation[value[i]._index] == undefined)
                         listRelation[value[i]._index] = [];
@@ -3080,7 +3080,7 @@ function populateFormEdit(frm, item, basename, wasarr, origitem) {
                           $(frm + vs).val(r_list[i]).attr("oldval", r_list[i]);
                       }
                   });*/
-                console.log("listRelation ", listRelation);
+                //console.log("listRelation ", listRelation);
                 Object.keys(listRelation).forEach(function(k) {
                     var r_list = listRelation[k];
 
@@ -3223,12 +3223,12 @@ async function populateFormEdit_await(frm, item, basename, wasarr, origitem) {
                       });*/
 
                     Object.keys(listRelation).forEach(function(k) {
-                        console.log("nome relation k ", k);
+                        //console.log("nome relation k ", k);
                         var r_list = listRelation[k];
                         let vs = '[name="data[relation][' + k + '][0][to]"]';
                         var relElement = $(vs);
                         if (relElement.hasClass('selectpicker')) {
-                            console.log("hasClass  selectpicker");
+                            //console.log("hasClass  selectpicker");
                             // $(frm + " " + vs).val(r_list);
                             $(frm + " " + vs).selectpicker('val', r_list);
                         } else {
@@ -3342,13 +3342,13 @@ const populateFormEdit_Promise = function(frm, item, basename, wasarr) {
                 var elPop = $(frm + ' [name="data' + actualK + '"]' + extrelPop);
                 if (key == 'relations') {
                     var listRelation = {};
-                    console.log("value");
+                    //console.log("value");
                     for (var i = 0; i < value.length; i++) {
                         //TODO Check
                         if (listRelation[value[i]._index] == undefined)
                             listRelation[value[i]._index] = [];
                         listRelation[value[i]._index].push(value[i]._id);
-                        console.log("value ",value[i]);
+                        //console.log("value ",value[i]);
                     }
                     Object.keys(listRelation).forEach(function(k) {
                         var r_list = listRelation[k];
@@ -3623,7 +3623,7 @@ actionPostMultipartForm:POST di multipart/form-data
 function actionPostMultipartForm(type, el, datapost, senderForm, callback, callerForm, useGritter, callbackEstraData) {
     var typeEnt = type.split("/");
     var posturl = getendpointnested(typeEnt[0], 'post');
-    console.log('==>actionPostMultipartForm posturl', posturl);
+    //console.log('==>actionPostMultipartForm posturl', posturl);
 
     if (typeEnt.length > 1)
         posturl += "/" + typeEnt[1];
@@ -3688,6 +3688,8 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
         if (callerForm != undefined)
             senderForm = callerForm;
         if (callback != undefined) {
+            //TODO chiedere a franco il codice inserito massimo
+            //window[callback]((ret.data[1].title),(ret.data[0]._id));
             callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret, callbackEstraData);
         } else {
             if (senderForm == undefined && el != undefined) {
@@ -3711,6 +3713,8 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
         }
     } else {
         if (callback != undefined) {
+            //TODO chiedere a franco il codice inserito massimo
+            //window[callback]((ret.data[1].title),(ret.data[0]._id));
             callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret, callbackEstraData);
         } else {
             if (useGritter) {
@@ -3831,7 +3835,7 @@ function actionPutMultipartForm(type, el, datapost, senderForm, callback, caller
     var posturl = getendpointnested(type + ".id", 'put');
     var elid = $("#entityEdit").attr('data-identityedit');
     posturl = posturl.replace(':id', elid);
-    console.log("==>actionPutMultipartForm posturl ",posturl);
+    //console.log("==>actionPutMultipartForm posturl ",posturl);
     var temp_config_call = {
         type: "PUT",
         url: posturl,
@@ -4151,7 +4155,7 @@ function manageTamplateList(ar) {
             templateslist[k] = ar[k];
         }
     }
-    console.log("==> templateslist ", templateslist);
+    //console.log("==> templateslist ", templateslist);
     for (var k in templateslist) {
         templateslist[k].loadAllTemplate();
     }
@@ -4288,12 +4292,13 @@ function extractStrElast(allindex) {
         /*if (key == 'geopoint')
             tempSchema = allindex[key].mappings['webcontent'].properties;
         else*/
-        console.log('allindex');
+        /*console.log('allindex');
         console.log(allindex[key]);
-        console.log(key);
+        console.log(key);*/
         if (allindex[key].mappings[key] == undefined)
             //tempSchema = allindex[key].mappings["_doc"].properties;
             //TODO check: sembra caricare la entity corretta in opennsearch config
+            //tempSchema = allindex[key].mappings["_doc"].properties; old elastic
             tempSchema = allindex[key];
         else
             //TODO controlla se va eliminato key da mappings

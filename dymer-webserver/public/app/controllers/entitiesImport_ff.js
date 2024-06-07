@@ -1,6 +1,6 @@
 angular.module('entitiesImportControllers', [])
     .controller('entitiesImport_ff', function ($scope, $http, $rootScope, exportEntities, multipartForm) {
-
+    //TODO check .controller('entitiesImport_ff', function($scope, $http, $rootScope) {
         var baseContextPath = $rootScope.globals.contextpath;
         //   console.log('testing controller entitiesImport_ff');
         $scope.method = "GET";
@@ -95,8 +95,9 @@ angular.module('entitiesImportControllers', [])
 
         $scope.importJSONFile = async function () {
 
-            var myFile = $scope.myFile
-            let url = baseContextPath +  "/api/dservice/api/v1/import/test"; 
+			      var myFile = $scope.myFile
+			      let url = baseContextPath + '/api/dservice/api/v1/import/test'; //baseContextPath +
+																			  // "/api/entities/api/v1/entity/test"
 
             let data = {
                 file: myFile
@@ -105,6 +106,7 @@ angular.module('entitiesImportControllers', [])
             let upload = await multipartForm.post(url, data)
 
             let index = upload.data
+            //TODO check:  $scope.selecetdIndex = Object.keys( resp.data.data[ index ].mappings[ index ].properties )
             $scope.selecetdIndex = Object.keys(resp.data.data[index].mappings.properties)
             console.log("keys: ", $scope.selecetdIndex)
         }
@@ -171,8 +173,9 @@ angular.module('entitiesImportControllers', [])
         $scope.getFieldByCSV = async function () {
             var myFile = $scope.myFile
             let separator = $scope.separator ? $scope.separator : ","
-            let url = baseContextPath +  '/api/dservice/api/v1/import/test-csv'
-
+            console.log( "baseContextPath: ", baseContextPath )
+            let url = baseContextPath + '/api/dservice/api/v1/import/test-csv' //baseContextPath +
+																				  // "/api/entities/api/v1/entity/test"
             let data = {
                 file: myFile
             }

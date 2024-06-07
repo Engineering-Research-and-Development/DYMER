@@ -1,11 +1,16 @@
 require("./config/config.js");
-/*let esUrl = "http://192.168.99.100:9200";
-let serviceTemplateUrl = "http://localhost:4545/";
-let serviceFormUrl = "http://localhost:4747/"; */
+/*let esUrl="http://192.168.99.100:9200/";
+let serviceTemplateUrl="http://localhost:4545/";
+let serviceFormUrl="http://localhost:4747/";
+let serviceEntityUrl="http://localhost:1358/";
+let mongoUrlForm="mongodb://192.168.99.100:27017/form";*/
+//let mongoUrlFormFile = "mongodb://192.168.99.100:27017/formsFile";
 var jsonResponse = require('./jsonResponse');
 const path = require("path");
 const nameFile = path.basename(__filename);
 const logger = require('./routes/dymerlogger');
+const http = require('http');
+
 const flatnest = require("flatnest")
 exports.getDymerUuid = function() {
     return global.dymer_uuid;
@@ -33,6 +38,7 @@ exports.getContextPath = function(typeServ) {
 };
 exports.getServiceUrl = function(typeServ) {
     let url = global.gConfig.services[typeServ].protocol + "://" + global.gConfig.services[typeServ].ip + ':' + global.gConfig.services[typeServ].port;
+    // url += this.getContextPath(typeServ);
     return url;
 };
 exports.getbasehUrl = function() {
@@ -99,7 +105,9 @@ exports.getAllQuery = function(req) {
     let body = req.body;
     let params = req.params;
     let query = req.query;
-    
+    /* console.log('body', body);
+     console.log('params', params);
+     console.log('query', query);*/
     if (!isEmpty(body))
         Object.assign(obj, body);
     if (!isEmpty(params)) {
@@ -156,6 +164,7 @@ exports.checkIsDymerUser = function(req, res, next) {
     const hdymeruser = req.headers.dymeruser;
     if (hdymeruser == undefined) {
         logger.info(nameFile + ' | checkIsDymerUser | No permission, hdymeruser=undefined :' + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
+        //console.log('checkUser | No permission:', req.originalUrl, req.method, req.url);
         var ret = new jsonResponse();
         ret.setMessages("Sorry, something went wrong: you don't have permission or your authentication has expired");
         // res.status(200);
@@ -164,17 +173,41 @@ exports.checkIsDymerUser = function(req, res, next) {
     } else {
         const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
         logger.info(nameFile + ' | checkIsDymerUser | Yes permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
+
         next();
     }
 }
 exports.checkIsAdmin = function(req, res, next) {
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
-    //console.log("dymeruser", dymeruser);
+    //console.log("==> checkIsAdmin dymeruser:", dymeruser);
     if ((dymeruser.roles.indexOf("app-admin") > -1)) {
+        console.log(nameFile + ' | checkIsAdmin | Yes permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
         logger.info(nameFile + ' | checkIsAdmin | Yes permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
         next();
     } else {
+        console.log('checkIsAdmin | No permission:', dymeruser.id, req.originalUrl, req.method, req.url);
+        logger.info(nameFile + ' | checkIsAdmin | No permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
+        var ret = new jsonResponse();
+        ret.setMessages("Sorry, something went wrong: you don't have permission or your authentication has expired");
+        // res.status(200);
+        ret.setSuccess(false);
+        return res.send(ret);
+    }
+}
+
+exports.checkIsAdminRun = function(req, res, next) {
+    const hdymeruser = req.headers.dymeruser;
+    const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+    //console.log("==> checkIsAdmin dymeruser:", dymeruser);
+    if ((dymeruser.roles.indexOf("app-admin") > -1)) {
+        //console.log("==>ruolo app-admin");
+        req.dymeruser = dymeruser;
+        console.log(nameFile + ' | checkIsAdmin | Yes permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
+        logger.info(nameFile + ' | checkIsAdmin | Yes permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
+        next();
+    } else {
+        console.log('checkIsAdmin | No permission:', dymeruser.id, req.originalUrl, req.method, req.url);
         logger.info(nameFile + ' | checkIsAdmin | No permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
         var ret = new jsonResponse();
         ret.setMessages("Sorry, something went wrong: you don't have permission or your authentication has expired");
@@ -204,39 +237,23 @@ exports.checkIsPortalUser = function(req, res, next) {
 exports.getDymerUser = function(req, res, next) {
     const hdymeruser = req.headers.dymeruser;
     if (hdymeruser == undefined) {
+        //console.log("==> getDymerUser hdymeruser is undefined");
         return null;
     } else {
         const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+        //console.log("==> getDymerUser dymeruser:", dymeruser);
         return dymeruser;
     }
 }
-
-function jsonValueClean(valore) {
-    if (typeof valore === 'string') {
-        return valore.replace(/[\n\t\r\\,]/g, '');
-    } else if (Array.isArray(valore)) {
-        return valore.map(jsonValueClean);
-    } else if (typeof valore === 'object') {
-        for (const chiave in valore) {
-            valore[chiave] = jsonValueClean(valore[chiave]);
-        }
-        return valore;
+exports.getDymerUser2 = function(req, res, next) {
+    /*const hdymeruser = req.headers.dymeruser;
+    if (hdymeruser == undefined) {
+        console.log("==> getDymerUser hdymeruser is undefined");
+        return "test"";
     } else {
-        return valore;
-    }
-}
-
-exports.flatJSON = function (nestedJSONArray) {
-    let flattedJSONArray = []
-        for(let element of nestedJSONArray) {
-            element._source.logo = this.getImgLink(element._id, element._source.logo?.id)
-
-            let newElem = jsonValueClean(flatnest.flatten(element))
-            flattedJSONArray.push(newElem)
-    }
-    return flattedJSONArray
-}
-
-exports.getImgLink = function(resourceId, logoId) {
-    return logoId ? `${this.getServiceUrl("entity")}/api/entities/api/v1/entity/contentfile/${resourceId}/${logoId}` : ""
+        const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+        console.log("==> getDymerUser dymeruser:", dymeruser);
+        return "test2"";
+    }*/
+    return "test";
 }

@@ -1584,6 +1584,52 @@ function getAllIdsRelations(listIds) {
     });
 };
 
+//FIX del 13/05 per bypssare il delete delle relazioni indirette
+function getAllIdsRelationsById1(listIds) {
+    return new Promise(function(resolve, reject) {
+        // listIds = listIds.filter(o => o != "");
+        //  console.log('superlistIds', listIds);
+        let qparams = { index: "entity_relation" };
+        qparams["body"] = {
+            "query": {
+                "bool": {
+                    "should": [{
+                        "terms": {
+                            "_id1.keyword": listIds
+                        }
+                    }]
+                }
+            }
+        };
+
+        qparams["body"].size = 10000;
+
+        client.indices.exists({ index: "entity_relation" }, function(err_, resp_, status_) {
+            console.log("RESPENT", err_, resp_, status_);
+            if (status_ == 200) {
+                client.search(qparams).then(function(relresp) {
+                    //console.log("Relation get query sort", relresp.hits.hits.length);
+                    let lstid1 = (relresp.hits.hits).filter(o => o !== '');
+                    resolve(lstid1);
+                }, function(err) {
+                    console.error("ERROR | " + nameFile + '| getAllIdsRelations | search qparams : ', err.response);
+                    logger.error(nameFile + '| getAllIdsRelations | search qparams : ' + err.response);
+                    resolve([]);
+                });
+
+            } else {
+
+                resolve([]);
+            }
+        });
+    }).catch(function(err) {
+        console.error("ERROR | " + nameFile + '| getAllIdsRelations | promise  : ', err);
+        logger.error(nameFile + '| getAllIdsRelations | promise : ' + err);
+        return [];
+    });
+};
+
+
 function getAllEntitiesFromIDS(listIds) {
     // console.log('fetchSingleRelation', element);
     return new Promise(function(resolve, reject) {
@@ -4459,7 +4505,8 @@ router.put('/:id', async (req, res) => {
                             delete editValues.todelete;
                             delete editValues.todeleteObj;
                         }
-                        let listRelation_old = await getAllIdsRelations([oldElement._id]);
+                        let listRelation_old = await getAllIdsRelationsById1([oldElement._id]);
+                        //let listRelation_old = await getAllIdsRelations([oldElement._id]);
                         // console.log('listRelation_old', listRelation_old);
                         let listRelation_New_indexes = Object.keys(listRelation_New);
                         let listRelation_old_filtered = listRelation_old.filter(a => (listRelation_New_indexes.includes(a._source._index1) || listRelation_New_indexes.includes(a._source._index2)));
@@ -5001,7 +5048,8 @@ router.put('/hbput2022/:id', (req, res) => {
                             delete editValues.todelete;
                             delete editValues.todeleteObj;
                         }
-                        let listRelation_old = await getAllIdsRelations([oldElement._id]);
+                        let listRelation_old = await getAllIdsRelationsById1([oldElement._id]);
+                        //let listRelation_old = await getAllIdsRelations([oldElement._id]);
                         // console.log('listRelation_old', listRelation_old);
                         let listRelation_New_indexes = Object.keys(listRelation_New);
                         let listRelation_old_filtered = listRelation_old.filter(a => (listRelation_New_indexes.includes(a._source._index1) || listRelation_New_indexes.includes(a._source._index2)));

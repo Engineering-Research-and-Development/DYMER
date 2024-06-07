@@ -4,10 +4,18 @@ const router = express.Router();
 const mongoose = require( "mongoose" );
 const isValidObjectId = mongoose.isValidObjectId;
 const DymRule = require( '../models/permission/Libraries' );
+const path = require( 'path' );
+const nameFile = path.basename( __filename );
+const logger = require( "./dymerlogger" );
 
-function handleError( res, error, message ) {
+function handleError( res, status, error, message, origin ) {
 	console.error( message, error );
-	res.status( 500 ).json( { error : message } );
+	logger.error( `${ nameFile } | ${ origin } | Status ${ status } | ${ error.message } : ${ JSON.stringify( error ) }` );
+	res.status( status ).json( { error : message } );
+}
+
+function errorStringify( status, origin, message ) {
+	return { "status" : status, "origin" : origin, "message" : message }
 }
 
 router.use( express.json( { limit : '50mb', extended : true } ) );
@@ -16,10 +24,9 @@ router.use( express.urlencoded( { limit : '100mb', extended : true } ) );
 // POST
 router.post( '/', util.checkIsAdmin, async ( req, res ) => {
 	// console.log( `router-d-library -> POST: [${ req.body }]` );
+	let whatAndPath = "post/library/";
 	try {
-		const { name, domtype, filename, callback, useonload, group, activated, loadtype, mandatory } = req.body;
-
-		// Crea una nuova istanza del modello Libraries con i dati ricevuti dalla richiesta
+		let { name, domtype, filename, callback, useonload, group, activated, loadtype, mandatory } = req.body;
 		const newLibrary = new DymRule( {
 											name,
 											domtype,
@@ -31,13 +38,13 @@ router.post( '/', util.checkIsAdmin, async ( req, res ) => {
 											loadtype,
 											mandatory
 										} );
-
 		// Salva la nuova libreria nel database
 		const savedLibrary = await newLibrary.save();
 
-		res.status( 201 ).json( { message: "New librery added successfully", data: savedLibrary } );
+		logger.info( `${ nameFile } | ${ whatAndPath } | New library added successfully: ${ JSON.stringify( savedLibrary ) }` );
+		res.status( 201 ).json( { message : "New library added successfully", data : savedLibrary } );
 	} catch ( error ) {
-		handleError( res, error, error.message );
+		handleError( res, 500, error, error.message, whatAndPath );
 	}
 } );
 
@@ -45,11 +52,13 @@ router.post( '/', util.checkIsAdmin, async ( req, res ) => {
 // TODO indagare sul perché con util.checkIsAdmin la pagina di test "dymer_list_detail_one_page.html" non funzionava
 router.get( '/', /* util.checkIsAdmin,  */async ( req, res ) => {
 	// console.log( "router-d-library -> GET all" );
+	let whatAndPath = "getAll/library/";
 	try {
 		const libraries = await DymRule.find();
+		logger.info( `${ nameFile } | ${ whatAndPath } | Fetched all libraries: ${ JSON.stringify( libraries ) }` );
 		res.json( libraries );
 	} catch ( error ) {
-		handleError( res, error, "Errore nel recupero della configurazione delle librerie:" );
+		handleError( res, 500, error, "Error retrieving library configuration: ", whatAndPath );
 	}
 } );
 
@@ -57,21 +66,28 @@ router.get( '/', /* util.checkIsAdmin,  */async ( req, res ) => {
 router.get( '/:id', util.checkIsAdmin, async ( req, res ) => {
 	// console.log( `router-d-library -> GET id: [${ req.params.id }]` );
 	const libId = req.params.id;
+	let whatAndPath = "getById/library/:id";
 
 	if ( !isValidObjectId( libId ) ) {
-		return res.status( 400 ).json( { error : 'ID non valido' } );
+		let status = 400;
+		let message = `[${ libId }] invalid ID`;
+		let error = errorStringify( status, whatAndPath, message );
+		return handleError( res, status, error, message, whatAndPath );
 	}
 
 	try {
 		const library = await DymRule.findById( libId );
 
 		if ( !library ) {
-			return res.status( 404 ).json( { error : 'Libreria non trovata' } );
+			let status = 404;
+			let message = `Library [${ libId }] not found`;
+			let error = errorStringify( status, whatAndPath, message );
+			return handleError( res, status, error, message, whatAndPath );
 		}
-
+		logger.info( `${ nameFile } | ${ whatAndPath } | Found library [${ libId }]: ${ JSON.stringify( library ) }` );
 		res.json( library );
 	} catch ( error ) {
-		handleError( res, error, "Errore nel recupero della libreria:" );
+		handleError( res, 500, error, "Error fetching library: ", whatAndPath );
 	}
 } );
 
@@ -79,9 +95,13 @@ router.get( '/:id', util.checkIsAdmin, async ( req, res ) => {
 router.put( '/:id', util.checkIsAdmin, async ( req, res ) => {
 	// console.log( `router-d-library -> PUT id: [${ req.params.id }]` );
 	const libId = req.params.id;
+	let whatAndPath = "put/library/:id";
 
 	if ( !isValidObjectId( libId ) ) {
-		return res.status( 400 ).json( { error : 'ID non valido' } );
+		let status = 400;
+		let message = `[${ libId }] invalid ID`;
+		let error = errorStringify( status, whatAndPath, message );
+		return handleError( res, status, error, message, whatAndPath );
 	}
 
 	try {
@@ -91,12 +111,16 @@ router.put( '/:id', util.checkIsAdmin, async ( req, res ) => {
 		const result = await DymRule.updateOne( idFilter, updateLibrary );
 
 		if ( result.modifiedCount < 1 ) {
-			res.status( 404 ).json( { error : 'Libreria non trovata o stato non modificato' } );
+			let status = 404;
+			let message = `Library [${ libId }] not found or state not changed`;
+			let error = errorStringify( status, whatAndPath, message );
+			return handleError( res, status, error, message, whatAndPath );
 		} else {
-			res.json( { message : 'Stato della libreria aggiornato con successo' } );
+			logger.info( `${ nameFile } | ${ whatAndPath } | Library [${ libId }] updated successfully: ${ JSON.stringify( result ) }` );
+			res.json( { message : `Library [${ libId }] updated successfully`, library : result } );
 		}
 	} catch ( error ) {
-		handleError( res, error, "Errore nell'aggiornamento dello stato della libreria:" );
+		handleError( res, 500, error, "Error updating library status: ", whatAndPath );
 	}
 } );
 
@@ -104,21 +128,29 @@ router.put( '/:id', util.checkIsAdmin, async ( req, res ) => {
 router.patch( '/:id', util.checkIsAdmin, async ( req, res ) => {
 	// console.log(`router-d-library -> PATCH id: [${req.params.id}]`);
 	const libId = req.params.id;
+	let whatAndPath = "patch/library/:id";
 
 	if ( !isValidObjectId( libId ) ) {
-		return res.status( 400 ).json( { error : 'ID non valido' } );
+		let status = 400;
+		let message = `[${ libId }] invalid ID`;
+		let error = errorStringify( status, whatAndPath, message );
+		return handleError( res, status, error, message, whatAndPath );
 	}
 
 	try {
 		const updatedLibrary = await DymRule.findOneAndUpdate( { _id : libId }, { $set : req.body }, { new : true } );
 
 		if ( !updatedLibrary ) {
-			return res.status( 404 ).json( { error : 'Libreria non trovata o stato non modificato' } );
+			let status = 404;
+			let message = `Library [${ libId }] not found or state not modified`;
+			let error = errorStringify( status, whatAndPath, message );
+			return handleError( res, status, error, message, whatAndPath );
 		}
 
-		res.json( { message : 'Stato della libreria aggiornato con successo', library : updatedLibrary } );
+		logger.info( `${ nameFile } | ${ whatAndPath } | Library [${ libId }] updated successfully: ${ JSON.stringify( updatedLibrary ) }` );
+		res.json( { message : `Library [${ libId }] updated successfully`, library : updatedLibrary } );
 	} catch ( error ) {
-		handleError( res, error, "Errore nell'aggiornamento dello stato della libreria:" );
+		handleError( res, 500, error, "Error updating library status: ", whatAndPath );
 	}
 } );
 
@@ -126,21 +158,29 @@ router.patch( '/:id', util.checkIsAdmin, async ( req, res ) => {
 router.delete( '/:id', util.checkIsAdmin, async ( req, res ) => {
 	// console.log( `router-d-library -> DELETE id: [${ req.params.id }]` );
 	const libId = req.params.id;
+	let whatAndPath = "delete/library/:id";
 
 	if ( !isValidObjectId( libId ) ) {
-		return res.status( 400 ).json( { error : 'ID non valido' } );
+		let status = 400;
+		let message = `[${ libId }] invalid ID`;
+		let error = errorStringify( status, whatAndPath, message );
+		return handleError( res, status, error, message, whatAndPath );
 	}
 
 	try {
 		const result = await DymRule.deleteOne( { _id : libId } );
 
 		if ( result.deletedCount < 1 ) {
-			res.status( 404 ).json( { error : 'Libreria non trovata' } );
+			let status = 404;
+			let message = `Library [${ libId }] not found`;
+			let error = errorStringify( status, whatAndPath, message );
+			return handleError( res, status, error, message, whatAndPath );
 		} else {
-			res.json( { message : 'Libreria eliminata con successo' } );
+			logger.info( `${ nameFile } | ${ whatAndPath } | Library [${ libId }] successfully deleted` );
+			res.json( { message : `Library [${ libId }] successfully deleted` } );
 		}
 	} catch ( error ) {
-		handleError( res, error, "Errore nella cancellazione della libreria:" );
+		handleError( res, 500, error, "Error deleting library: ", whatAndPath );
 	}
 } );
 

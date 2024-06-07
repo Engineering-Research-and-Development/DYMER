@@ -60,7 +60,8 @@
 		"swagger-autogen": "2.23.7",
         "swagger-ui-express": "5.0.0",
         "winston": "3.11.0",
-		"connect-ensure-login": "0.1.1"
+		"connect-ensure-login": "0.1.1",
+        "cheerio": "1.0.0-rc.12"
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
@@ -68,4 +69,5 @@
         "dev": "nodemon server.js",
         "swagger-autogen": "node swagger.js"
     }
+    
 }

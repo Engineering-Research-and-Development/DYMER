@@ -10,6 +10,7 @@ const path = require("path");
 const nameFile = path.basename(__filename);
 const logger = require('./routes/dymerlogger');
 const http = require('http');
+const custumLibraries = require('./libInit');
 
 exports.getContextPath = function(typeServ) {
     let cpath = global.gConfig.services[typeServ]["context-path"];
@@ -236,3 +237,10 @@ exports.getDymerUser2 = function(req, res, next) {
     }*/
     return "test";
 }
+
+const initCustomLibraries = async function (){
+    await custumLibraries.connectToDatabase();
+    await custumLibraries.initLibraries();
+}
+
+initCustomLibraries();

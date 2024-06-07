@@ -2,14 +2,22 @@ const mongoose = require( "mongoose" );
 const dataToInsert = require( './config/coreLibraries.json' );
 
 //TODO copy to the master
-var util = require('./utility');
-const mongoURI = util.mongoUrl();
+var util = require('./utilityLib');
+//const mongoURI = util.mongoUrl()
+const mongoURILib = util.mongoUrlLibInit()
 
 const connectToDatabase = () => {
-	return mongoose.connect( mongoURI, {
+	return mongoose.connect( mongoURILib, {
 		useNewUrlParser : true, useUnifiedTopology : true
 	} );
 };
+
+//const dbConnectionString = 'mongodb://localhost:27017/dservice';
+/*const connectToDatabase = () => {
+	return mongoose.connect( mongoURI, {
+		useNewUrlParser : true, useUnifiedTopology : true
+	} );
+};*/
 
 const Libraries = require( './models/permission/Libraries' );
 
@@ -23,15 +31,15 @@ const initLibraries = async () => {
 
 		for ( const library of dataToInsert ) {
 			const existingLibrary = await Libraries.findOne( {
-																 name      : library.name,
-																 domtype   : library.domtype,
-																 filename  : library.filename,
-																 callback  : library.callback,
-																 useonload : library.useonload,
-																 group     : library.group,
-																 activated : library.activated,
-																 loadtype  : library.loadtype
-															 } );
+				name      : library.name,
+				domtype   : library.domtype,
+				filename  : library.filename,
+				callback  : library.callback,
+				useonload : library.useonload,
+				group     : library.group,
+				activated : library.activated,
+				loadtype  : library.loadtype
+			} );
 
 			if ( !existingLibrary ) {
 				const newLibrary = new Libraries( library );
@@ -52,23 +60,25 @@ const initLibraries = async () => {
 
 	} catch ( error ) {
 		console.error( "Error during the insertion of libraries into the database:", error );
-	} finally {
-		await mongoose.disconnect();
-		console.log( "Database connection closed." );
 	}
 };
 
 connectToDatabase().then( () => {
-					   const db = mongoose.connection;
-					   db.on( 'error', console.error.bind( console, 'Database connection error:' ) );
-					   console.log( 'Connected to MongoDB database successfully.' );
-					   initLibraries().then( () => {
-										  console.log( "initLibraries completed." );
-									  } )
-									  .catch( error => {
-										  console.error( "Error during initLibraries:", error );
-									  } );
-				   } )
-				   .catch( error => {
-					   console.error( "Error during the connection to the database:", error );
-				   } );
+	const db = mongoose.connection;
+	db.on( 'error', console.error.bind( console, 'Database connection error:' ) );
+	console.log( 'Connected to MongoDB database successfully.' );
+	initLibraries().then( () => {
+		console.log( "initLibraries completed." );
+	} )
+		.catch( error => {
+			console.error( "Error during initLibraries:", error );
+		} );
+} )
+	.catch( error => {
+		console.error( "Error during the connection to the database:", error );
+	} );
+
+module.exports = {
+	connectToDatabase,
+	initLibraries
+}

@@ -29,6 +29,7 @@ app.use(express.json())
 var cors = require('cors');
 global.logconsole = (process.env.DYMER_LOGGER == undefined) ? false : process.env.DYMER_LOGGER;
 app.use(cors());
+
 /*app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -125,6 +126,7 @@ app.get('/uuid', util.checkIsPortalUser, (req, res) => {
     ret.setMessages("uuid");
     return res.send(ret);
 });
+
 app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Entities']
 
@@ -150,6 +152,7 @@ app.get('/logtypes', async(req, res) => {
     ret.setMessages("logtypes");
     return res.send(ret);
 });
+
 app.post('/setlogconfig', (req, res) => {
     // #swagger.tags = ['Entities']
 
@@ -159,6 +162,7 @@ app.post('/setlogconfig', (req, res) => {
     ret.setData({ consoleactive: req.body.consoleactive });
     return res.send(ret);
 });
+
 app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Entities']
 
@@ -173,14 +177,14 @@ app.get('/checkservice', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     let infosize = logger.filesize("info");
     let errorsize = logger.filesize("error");
-  let regex = /(?<!^).(?!$)/g;
-let infomserv = JSON.parse(JSON.stringify(global.gConfig));
-if(infomserv.services.entity.hasOwnProperty('cache')){
-    if(infomserv.services.entity.cache.hasOwnProperty('password'))
-        infomserv.services.entity.cache.password = (infomserv.services.entity.cache.password).replace(regex, '*'); 
-    if(infomserv.services.entity.cache.hasOwnProperty('user'))
-        infomserv.services.entity.cache.user = (infomserv.services.entity.cache.user).replace(regex, '*'); 
-}
+    let regex = /(?<!^).(?!$)/g;
+    let infomserv = JSON.parse(JSON.stringify(global.gConfig));
+    if (infomserv.services.entity.hasOwnProperty('cache')) {
+        if (infomserv.services.entity.cache.hasOwnProperty('password'))
+            infomserv.services.entity.cache.password = (infomserv.services.entity.cache.password).replace(regex, '*');
+        if (infomserv.services.entity.cache.hasOwnProperty('user'))
+            infomserv.services.entity.cache.user = (infomserv.services.entity.cache.user).replace(regex, '*');
+    }
     ret.setData({
         info: {
             size: infosize

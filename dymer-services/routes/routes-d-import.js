@@ -13,6 +13,7 @@ require('./mongodb.js');
 const axios = require('axios');
 const fs = require('fs');
 var router = express.Router();
+const cheerio = require('cheerio');
 //const cron = require("node-cron");
 //const schedule = require('node-schedule');
 //https://www.npmjs.com/package/cron-job-manager
@@ -2079,4 +2080,82 @@ router.get('/fromdymer_original/:id', util.checkIsAdmin, (req, res) => {
         }
     })
 });
+
+router.get('/test', (req, res) => {
+
+    console.log("ciao antonino");
+});
+
+router.get('/scrap/:url', (req, res) => {
+
+    var ret = new jsonResponse();
+    var urlreq = req.params.url;
+    console.log("urlreq da endpoint",urlreq);
+    console.log("req del servizio scrap",req);
+
+    var url=req.params.url;
+    scrapingDih(url).then(data => {
+        console.log("********************************* scrapingDih *****************************");
+
+        return res.send(data);
+    })
+        .catch(error => {
+            console.error("ERROR | " + nameFile + " | get/scrap/:id | get ", error);
+            logger.error(nameFile + ' | get/scrap/:id | get ' + error);
+            ret.setSuccess(false);
+            ret.setMessages("ax error");
+            return res.send(ret);
+        });
+});
+
+function getBeneficiaries($) {
+    const table = $('table');
+    const records = [];
+    const rows = table.find('tr').slice(1);
+    const headers = table.find('th').map((i, el) => $(el).text().trim()).get();
+
+    rows.each((i, row) => {
+        const record = {};
+
+        $(row).find('td').each((j, cell) => {
+            record[headers[j]] = $(cell).text().trim();
+        });
+        records.push(record);
+    });
+    return records;
+}
+
+async function scrapingDih(url) {
+    try {
+        const response = await axios.get(url);
+        const $ = cheerio.load(response.data);
+
+        let dihInfo = []
+        logger.info(nameFile + '| get/scrap | Scraping started...');
+
+        const title = $('.ecl-page-header__title').text();
+        const edihTitle = $('.field--name-field-title').text();
+        const description = $('div.ecl p').text();
+        const information = {
+            website: $('.field--name-field-website').text(),
+            email: $('.field--name-field-email').text()
+        };
+        const contractualRepresentatives = [$('.field--name-field-contractual-contact-name').text(), $('.field--name-field-contractual-contact-phone').text(), $('.field--name-field-contractual-contact-email').text()]
+        const coordinatorAddress = [$('.field--name-field-co-location').text()]
+        const beneficiaries = getBeneficiaries($)
+
+        dihInfo.push({
+            title: title,
+            description: description,
+            edihTitle: edihTitle,
+            information: information,
+            representatives: {contractualRepresentatives, coordinatorAddress},
+            beneficiaries
+        });
+        logger.info(nameFile + '| get/scrap | Scraping ended...');
+    } catch (error) {
+        throw new Error('Errore durante lo scraping:', error);
+    }
+}
+
 module.exports = router;

@@ -27,11 +27,11 @@
             },
             "opnsearch": {
                 "user": {
-                    "d_cid": 20097,
+                    "d_cid": 37504,
                     "d_uid": 5,
-                    "d_gid": 20121,
+                    "d_gid": 37623,
                     "d_mail": "test@liferay.com",
-                    "d_pwd": "********"
+                    "d_pwd": "test"
                 }
             },
             "entity": {
