@@ -2091,7 +2091,7 @@ router.get('/scrap/:url', (req, res) => {
     var ret = new jsonResponse();
     var urlreq = req.params.url;
     console.log("urlreq da endpoint",urlreq);
-    console.log("req del servizio scrap",req);
+    
 
     var url=req.params.url;
     scrapingDih(url).then(data => {
@@ -2153,6 +2153,7 @@ async function scrapingDih(url) {
             beneficiaries
         });
         logger.info(nameFile + '| get/scrap | Scraping ended...');
+	     return dihInfo;
     } catch (error) {
         throw new Error('Errore durante lo scraping:', error);
     }
