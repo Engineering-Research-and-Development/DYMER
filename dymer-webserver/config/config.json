@@ -64,7 +64,14 @@
                 "context-path": "",
                 "adminUser": "admin",
                 "adminPass": "dymer",
-                "idp": []
+                "idp": [],
+                 "library":{
+                    "type": "mongodb",
+                    "protocol": "http",
+                    "ip": "mongodb",
+                    "port": 27017,
+                    "index_ref": "dservice"
+                }
             },
             "entity": {
                 "protocol": "http",
