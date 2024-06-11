@@ -17,7 +17,6 @@ router.use(bodyParser.urlencoded({ extended: true }));
 const logger = require('./dymerlogger');
 const Model = mongoose.model("Form");
 
-//const mongoURI = util.mongoUrlForm();
 var db;
 var gridFSBucket;
 var storage;
@@ -59,7 +58,6 @@ mongoose
         logger.error(nameFile + ` | Error connecting to mongo! Database name: "${mongoURI}" ` + err);
     });
 
-
 router.get('/mongostate', (req, res) => {
     let ret = new jsonResponse();
     let dbState = [{
@@ -90,16 +88,6 @@ router.get('/mongostate', (req, res) => {
     ret.setSuccess(true);
     return res.send(ret);
 });
-
-/*
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- */
 
 var getfilesArrays = function(er) {
     return new Promise(function(resolve, reject) {
@@ -161,16 +149,6 @@ var recFile = function(file_id) {
     });
 }
 
-/*
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- */
-
 router.get('/dettagliomodel', [util.checkIsDymerUser], (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -188,6 +166,7 @@ router.get('/dettagliomodel', [util.checkIsDymerUser], (req, res) => {
         logger.error(nameFile + ' | get/dettagliomodel | queryFind : ' + err);
     });
 });
+
 router.get('/', [util.checkIsDymerUser], (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -404,6 +383,7 @@ router.post('/update', util.checkIsAdmin, function(req, res) {
         );
     });
 });
+
 router.post('/updatestructure', util.checkIsAdmin, function(req, res) {
     var ret = new jsonResponse();
     upload(req, res, function(err) {
@@ -460,8 +440,8 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
         var element = req.files[0];
         var element1 = req.files[1];
         logger.info(nameFile + '| post/updateAsset | data :' + JSON.stringify(data));
-        //  console.log('element data', data);
-        //console.log('element', req.files[0]);
+        // console.log('element data', data);
+        // console.log('element', req.files[0]);
         // console.log('element1', req.files[1]);
         var myfilter = { "_id": mongoose.Types.ObjectId(data.pageId) };
         var bulk = Model.collection.initializeOrderedBulkOp();
@@ -470,11 +450,7 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
                                          "$set":  { "properties.changed": new Date().toISOString()}
                                       });
         bulk.find(myfilter).updateOne({ "$push": { "files": mongoose.Types.ObjectId(element.id) } });
-        /* bulk.find(myfilter).updateOne([{ "$pull": { "files": mongoose.Types.ObjectId(data.assetId) } },
-             { "$push": { "files": mongoose.Types.ObjectId(element.id) } }, 
-             { "$pull": { "files": mongoose.Types.ObjectId(data.assetId) } }, 
-             { "$push": { "files": mongoose.Types.ObjectId(element1.id) } }
-         ]);*/
+
         bulk.execute(function(err, result) {
             if (err) {
                 ret.setSuccess(false);

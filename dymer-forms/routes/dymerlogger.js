@@ -37,7 +37,6 @@ var info = winston.createLogger({
     transports: infoLog
 });
 
-
 /*
  transports: [
         new(winston.transports.File)({ filename: './logs/info.log', level: 'info' }),
@@ -58,6 +57,7 @@ var warn = winston.createLogger({
         new(winston.transports.File)({ filename: './logs/warn.log', level: 'warn' })
     ]
 });
+
 /*transports: [
     new (winston.transports.File)({ filename: './logs/warn.log', level: 'warn' }),
     new (winston.transports.Console)({ level: 'warn' })
@@ -76,6 +76,7 @@ var error = winston.createLogger({
         new(winston.transports.File)({ filename: './logs/error.log', level: 'error' })
     ]
 });
+
 /*
    transports: [
         new(winston.transports.File)({ filename: './logs/error.log', level: 'error' }),
@@ -122,22 +123,26 @@ exports.setlogconsole = function(typefile) {
     fsize = (fsize > 0) ? (fsize / (1024 * 1024)).toFixed(2) : fsize;
     return fsize + " M";
 };
+
 exports.filesize = function(typefile) {
     let typefilepath = './logs/' + typefile + '.log';
     let fsize = (fs.statSync(typefilepath)).size;
     fsize = (fsize > 0) ? (fsize / (1024 * 1024)).toFixed(2) : fsize;
     return fsize + " M";
 };
+
 exports.flushfile = function(typefile) {
     let typefilepath = './logs/' + typefile + '.log';
     fs.writeFile(typefilepath, '', function() { console.log('flushed ' + typefilepath) })
 };
+
 exports.flushAllfile = function() {
     let typefilepath1 = './logs/info.log';
     fs.writeFile(typefilepath1, '', function(typefilepath) { console.log('flushed' + typefilepath1) })
     let typefilepath2 = './logs/error.log';
     fs.writeFile(typefilepath2, '', function(typefilepath) { console.log('flushed ' + typefilepath2) })
 };
+
 module.exports = exports;
 /*module.exports = winston.createLogger({
     format: winston.format.combine(

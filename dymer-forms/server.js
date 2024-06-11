@@ -13,19 +13,8 @@ var cookieParser = require('cookie-parser');
 require("./config/config.js");
 const nameFile = path.basename(__filename);
 const logger = require('./routes/dymerlogger');
-/*app.all('/', function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  next();
-});*/
 const portExpress = global.configService.port;
 const contextPath = util.getContextPath('form');
-
-/*app.all('/', function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  next();
-});*/
 
 var routes = require('./routes/routes-v1');
 var publicRoutes = require('./routes/publicfiles');
@@ -33,7 +22,8 @@ app.use(express.json())
     //app.use(cors());
 app.use(cookieParser());
 app.use(function(req, res, next) {
-    /* res.header("Access-Control-Allow-Origin", "*");
+    /*
+     res.header("Access-Control-Allow-Origin", "*");
      res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
      res.header("Access-Control-Allow-Headers", "X-Requested-With,Content-Type,Cache-Control");*/
     if (req.method === 'OPTIONS') {
@@ -56,15 +46,14 @@ function detectPermission(req, res, next) {
      console.log("req.method", req.method);
      console.log("req.cookies", req.cookies);
      console.log("req.session", req.session);*/
-    //console.log("req.header", req.headers);
+    // console.log("req.header", req.headers);
     // let cookie = req.cookies['ilmiocookie2'];
     // console.log("cookieMIO", req.headers);
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser;
-//     console.log('hdymeruser', hdymeruser);
+    // console.log('hdymeruser', hdymeruser);
     var dymeruser;
     try {
-
         if (hdymeruser == undefined)
             dymeruser = JSON.parse(Buffer.from(req.cookies["lll"], 'base64').toString());
         else
@@ -80,7 +69,7 @@ function detectPermission(req, res, next) {
     var urs_uid = dymeruser.id;
     var urs_gid = dymeruser.gid;
     logger.info(nameFile + ' | detectPermission | dymeruser:' + JSON.stringify(dymeruser));
-    //  console.log(nameFile + ' | detectPermission | dymeruser:', JSON.stringify(dymeruser));
+    // console.log(nameFile + ' | detectPermission | dymeruser:', JSON.stringify(dymeruser));
     /*  console.log("req.cookies", req.cookies);
       const authHeader = req.headers.authorization;
       console.log("super authHeader", authHeader); //lll
@@ -172,7 +161,7 @@ function detectPermission(req, res, next) {
         }
         queryString = "?role[]=" + roles.join("&role[]=");
         // var url = 'http://localhost:5050/api/v1/perm/entityrole/';
-        //    url = 'http://kms_services:5050/api/v1/perm/entityrole/';
+        //     url = 'http://kms_services:5050/api/v1/perm/entityrole/';
         var url = util.getServiceUrl("dservice") + "/api/v1/perm/entityrole/";
         //  console.log('queryString', queryString);
         //  console.log('req.query.act', req.query.act);
@@ -211,6 +200,7 @@ function detectPermission(req, res, next) {
             });
     }
 }
+
 app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     var filetype = req.params.filetype;
@@ -226,6 +216,7 @@ app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
     //console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
     return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
 });
+
 app.get('/logtypes', async(req, res) => {
     var ret = new jsonResponse();
     ret.setSuccess(true);
@@ -234,6 +225,7 @@ app.get('/logtypes', async(req, res) => {
     ret.setMessages("logtypes");
     return res.send(ret);
 });
+
 app.post('/setlogconfig', (req, res) => {
     var ret = new jsonResponse();
     logger.ts_infologger(req.body.consoleactive);
@@ -266,9 +258,11 @@ app.get('/checkservice', util.checkIsAdmin, (req, res) => {
 app.use('/api/v1/form/uploads/', publicRoutes
         // #swagger.tags = ['Models']
 );
+
 app.use('/api/v1/form', detectPermission, routes
         // #swagger.tags = ['Models']
 );
+
 app.get('/*', (req, res) => {
     // #swagger.tags = ['Models']
 
@@ -280,7 +274,6 @@ app.get('/*', (req, res) => {
     ret.setSuccess(false);
     return res.send(ret);
 });
-//module.exports = app;
 
 const root = express();
 root.use(contextPath, app);
