@@ -296,8 +296,8 @@ router.post('/fromcsv/:enttype', util.checkIsAdmin, (req, res) => {
             
             var singleEntity = {
                 "instance": {
-                    "index": newentityType,
-                    "type": newentityType
+                    "index": newentityType
+                    //"type": newentityType
                 },
 
                 "data": buildNestedObj(element)
@@ -327,7 +327,7 @@ router.post('/fromcsv/:enttype', util.checkIsAdmin, (req, res) => {
                 }
             }
             */
-            console.log("===============")
+
             console.log(JSON.stringify(singleEntity))
             var extrainfo = {
                 "extrainfo": {

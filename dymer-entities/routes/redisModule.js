@@ -291,7 +291,7 @@ module.exports = {
     },
     removeRelationsFromCacheById: async function (ids_, isEnable) {
         if (!isEnable) { return false }
-      //  console.log("REDIS | removeRelationsFromCacheById | ids_ ", ids_)
+        //  console.log("REDIS | removeRelationsFromCacheById | ids_ ", ids_)
         logger.info(nameFile + ` | removeRelationsFromCacheById | Deleting relation`)
         try {
             let relToCheck = JSON.parse(await client.hGet(this.relationsKey, "response"))

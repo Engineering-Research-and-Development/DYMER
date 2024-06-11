@@ -6,35 +6,22 @@ const express = require("express");
 //process.env.TYPE_SERV = "entity";
 require("./config/config.js");
 const util = require("./utility");
-//const path = require("path");
-//var elastic = require('elasticsearch');  
-//const bodyParser = require("body-parser");
 const app = express();
 const portExpress = global.configService.port; //4646;
-//const axios = require("axios");
 const path = require('path');
 const nameFile = path.basename(__filename);
 const logger = require('./routes/dymerlogger');
 const contextPath = util.getContextPath('entity');
 
-/*app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));*/
 var routes = require('./routes/routes-v2');
-//var routestest = require('./routes/routestest');
 var publicRoutes = require('./routes/publicfiles');
-//app.use("/uploads", express.static(path.join(__dirname, 'uploads')));
-//app.use(express.static(__dirname+'/uploads'));
+
 const bodyParser = require("body-parser");
 app.use(express.json())
 var cors = require('cors');
 global.logconsole = (process.env.DYMER_LOGGER == undefined) ? false : process.env.DYMER_LOGGER;
 app.use(cors());
 
-/*app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-}); */
 function detectPermission(req, res, next) {
     /* console.log("controllo", );
      console.log("req.ip", req.ip);
@@ -118,7 +105,6 @@ function detectPermission(req, res, next) {
 
 app.get('/uuid', util.checkIsPortalUser, (req, res) => {
     // #swagger.tags = ['Entities']
-
     var ret = new jsonResponse();
     const uuid = util.getDymerUuid();
     ret.setData({ 'uuid': uuid });
@@ -206,7 +192,7 @@ app.use('/api/v1/entity/uploads/', publicRoutes
 app.use('/api/v1/entity', routes
         // #swagger.tags = ['Entities']
 );
-//app.use('/api/endpointtest', routestest);
+
 app.get('/', (req, res) => {
     // #swagger.tags = ['Entities']
 
