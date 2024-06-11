@@ -2,43 +2,52 @@ const path = require("path");
 const nameFile = path.basename(__filename);
 const logger = require('./routes/dymerlogger');
 var jsonResponse = require('./jsonResponse');
+
 exports.getContextPath = function(typeServ) {
     let cpath = global.gConfig.services[typeServ]["context-path"];
     if (cpath == undefined)
         cpath = "";
     return cpath;
 };
+
 exports.getServiceUrl = function(typeServ) {
     let url = global.gConfig.services[typeServ].protocol + "://" + global.gConfig.services[typeServ].ip + ':' + global.gConfig.services[typeServ].port;
     // url += this.getContextPath(typeServ);
     return url;
 };
+
 exports.getbasehUrl = function() {
     let url = global.configService.repository.protocol + "://" + global.configService.repository.ip + ':' + global.configService.repository.port;
     //  console.log('url1', url);
     return url;
 };
+
 exports.mongoUrlFiles = function(el) {
     let url = "mongodb://" + global.configService.repository.files.ip + ':' + global.configService.repository.files.port + "/" + global.configService.repository.files.index_ref;
     return url;
 };
+
 exports.elastichUrl = function(el) {
     let url = global.configService.repository.entity.protocol + "://" + global.configService.repository.entity.ip + ':' + global.configService.repository.entity.port + "/" + el.index + "/" + el.type;
     //  console.log('url2', url);
     return url;
 };
+
 exports.mongoUrlBase = function() {
     let url = "mongodb://" + global.configService.repository.ip + ':' + global.configService.repository.port + "/";
     return url;
 };
+
 exports.mongoUrl = function(el) {
     let url = "mongodb://" + global.configService.repository.ip + ':' + global.configService.repository.port + "/" + global.configService.repository.index_ref;
     return url;
 };
+
 exports.mongoUrlEntitiesBridge = function() {
     let url = "mongodb://" + global.configService.repository.entitiesbridge.ip + ':' + global.configService.repository.entitiesbridge.port + "/" + global.configService.repository.entitiesbridge.index_ref;
     return url;
 };
+
 exports.getServiceConfig = function(typeServ) {
     let cnf = global.gConfig.services[typeServ];
     return cnf;
@@ -93,6 +102,7 @@ exports.getAllQuery = function(req) {
     console.log("obj ", obj)
     return obj;
 }
+
 exports.convertBodyQuery = function(req) {
     var obj = {}
     if (!isEmpty(req.body)) {
@@ -117,9 +127,11 @@ exports.convertBodyParams = function(req) {
     }
     return obj;
 }
+
 exports.replaceAll = function(str, cerca, sostituisci) {
     return str.split(cerca).join(sostituisci);
 }
+
 exports.stringAsKey = function(obj, arrkey, element) {
     var key = arrkey[0];
     if (arrkey.length == 1) {
@@ -131,6 +143,7 @@ exports.stringAsKey = function(obj, arrkey, element) {
         return this.stringAsKey(obj[key], arrkey, element);
     }
 }
+
 exports.checkIsDymerUser = function(req, res, next) {
     const hdymeruser = req.headers.dymeruser;
     if (hdymeruser == undefined) {
@@ -145,6 +158,7 @@ exports.checkIsDymerUser = function(req, res, next) {
         next();
     }
 }
+
 exports.checkIsAdmin = function(req, res, next) {
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
@@ -180,6 +194,7 @@ exports.checkIsPortalUser = function(req, res, next) {
         return res.send(ret);
     }
 }
+
 exports.getDymerUser = function(req, res, next) {
     const hdymeruser = req.headers.dymeruser;
     if (hdymeruser == undefined) {

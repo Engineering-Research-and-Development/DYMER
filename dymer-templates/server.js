@@ -14,11 +14,6 @@ var routes = require('./routes/routes-v1');
 var publicRoutes = require('./routes/publicfiles');
 const contextPath = util.getContextPath('template');
 
-/*app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});*/
 app.use(express.json())
 app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
 	// #swagger.tags = ['Templates']
@@ -39,6 +34,7 @@ app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
 	//console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
 	return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
 });
+
 app.get('/logtypes', async (req, res) => {
 	// #swagger.tags = ['Templates']
 
@@ -49,6 +45,7 @@ app.get('/logtypes', async (req, res) => {
 	ret.setMessages("logtypes");
 	return res.send(ret);
 });
+
 app.post('/setlogconfig', (req, res) => {
 	// #swagger.tags = ['Templates']
 
@@ -58,6 +55,7 @@ app.post('/setlogconfig', (req, res) => {
 	ret.setData({consoleactive: req.body.consoleactive});
 	return res.send(ret);
 });
+
 app.get('/checkservice', util.checkIsAdmin, (req, res) => {
 	// #swagger.tags = ['Templates']
 
@@ -78,13 +76,16 @@ app.get('/checkservice', util.checkIsAdmin, (req, res) => {
 	ret.setSuccess(true);
 	return res.send(ret);
 });
+
 app.use('/api/v1/template/uploads/', publicRoutes
         // #swagger.tags = ['Templates']
 );
+
 app.use('/api/v1/template', routes
 		// #swagger.tags = ['Templates']
 
 );
+
 app.get('/*', (req, res) => {
 	// #swagger.tags = ['Templates']
 
