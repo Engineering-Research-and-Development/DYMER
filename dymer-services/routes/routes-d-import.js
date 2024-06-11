@@ -2081,11 +2081,6 @@ router.get('/fromdymer_original/:id', util.checkIsAdmin, (req, res) => {
     })
 });
 
-router.get('/test', (req, res) => {
-
-    console.log("ciao antonino");
-});
-
 router.get('/scrap/:url', (req, res) => {
 
     var ret = new jsonResponse();
@@ -2095,8 +2090,6 @@ router.get('/scrap/:url', (req, res) => {
 
     var url=req.params.url;
     scrapingDih(url).then(data => {
-        console.log("********************************* scrapingDih *****************************");
-
         return res.send(data);
     })
         .catch(error => {

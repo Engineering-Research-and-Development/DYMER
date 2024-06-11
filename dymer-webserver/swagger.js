@@ -5,9 +5,16 @@ const util = require( "./utility" );
 const gblConfigService = global.configService;
 const host = gblConfigService.ip + ":" + gblConfigService.port;	//TODO check if port exist or not
 const contextPath = util.getContextPath( 'webserver' );
-//TODO Luca: external host in config.json (ex: swagger.host) NO
 const serverUrl = gblConfigService.protocol + "://" + host + contextPath
-//const serverUrl = "http://localhost";//TODO use parametric values
+//const serverUrl = "http://localhost";
+/*
+1. set serverUrl to domain name or IP, serverURl isn't container name ex: http://localhost
+2. run swagger with right serverUrl
+3. in local env run node swagger.js
+4. push swagger_webserver.json
+5. start dymer-webserver
+*/
+
 const doc = {
 	info     : {
 		version     : "1.0.0",
