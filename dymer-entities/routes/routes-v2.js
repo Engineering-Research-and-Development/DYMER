@@ -3769,7 +3769,10 @@ router.post('/:enttype', function(req, res) {
                                 }
                                 var respResult = resp.result;
                                 ret.setMessages("Entity " + respResult + " successfully");
-                                ret.addData(resp);
+			        ret.addData(resp);
+			        /*MG - Creazione organizzazione in LR - Inizio*/
+                                ret.addData(data);
+                                /*MG - Creazione organizzazione in LR - Fine*/
                                 //   console.log('new ent ', resp);
                                 var elId = resp["_id"];
                                 logger.info(nameFile + '| /:enttype | create | dymeruser.id, params:' + dymeruser.id + ' , ' + JSON.stringify(params));
@@ -4291,6 +4294,9 @@ router.put('/:id', async (req, res) => {
                                     await CacheRelation(datasetRelation)
                                 }
                             }
+			    /*MG - Associazione utente all'organizzazione in LR - Inizio*/
+                            ret.addData(data);
+                            /*MG - Associazione utente all'organizzazione in LR - Fine*/
                             return res.send(ret);
                         }).catch(function(err) {
                             console.error("ERROR | " + nameFile + '| /:id | put | id: ', id, err);
