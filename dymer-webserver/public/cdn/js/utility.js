@@ -3623,8 +3623,6 @@ actionPostMultipartForm:POST di multipart/form-data
 function actionPostMultipartForm(type, el, datapost, senderForm, callback, callerForm, useGritter, callbackEstraData) {
     var typeEnt = type.split("/");
     var posturl = getendpointnested(typeEnt[0], 'post');
-    //console.log('==>actionPostMultipartForm posturl', posturl);
-
     if (typeEnt.length > 1)
         posturl += "/" + typeEnt[1];
     var temp_config_call = {
@@ -3688,10 +3686,12 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
         if (callerForm != undefined)
             senderForm = callerForm;
         if (callback != undefined) {
-            //TODO chiedere a franco il codice inserito massimo
-            //window[callback]((ret.data[1].title),(ret.data[0]._id));
-            callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret, callbackEstraData);
-        } else {
+            /*MG - Creazione organizzazione in LR - Inizio*/
+            //callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret, callbackEstraData);
+            window[callback]((ret.data[1].title),(ret.data[0]._id));
+        } 
+        /*
+        else {
             if (senderForm == undefined && el != undefined) {
                 resetContainer(senderForm[0]);
             }
@@ -3711,12 +3711,34 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
             }
             return ret;
         }
+        */
+        if (senderForm == undefined && el != undefined) {
+            resetContainer(senderForm[0]);
+        }
+        if (useGritter) {
+            if (senderForm != undefined) {
+                resetContainer(senderForm[0]);
+                useAlert(senderForm[0], gr_title, gr_text, success);
+                setTimeout(function() {
+                    $('#entityAdd').modal('hide');
+                    $('#entityEdit .modal-body .contbody').empty();
+                    $('#entityAdd .modal-body').empty();
+                    reloadLatestRenderedList();
+                }, 1000);
+            } else {
+                useGritterTool(gr_title, gr_text);
+            }
+        }
+        return ret;
+        /*MG - Creazione organizzazione in LR - Fine*/
     } else {
         if (callback != undefined) {
-            //TODO chiedere a franco il codice inserito massimo
-            //window[callback]((ret.data[1].title),(ret.data[0]._id));
-            callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret, callbackEstraData);
-        } else {
+            /*MG - Creazione organizzazione in LR - Inizio*/
+            //callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret, callbackEstraData);
+            window[callback]((ret.data[1].title),(ret.data[0]._id));
+        } 
+        /*
+        else {
             if (useGritter) {
                 if (senderForm != undefined)
                     useAlert(senderForm[0], gr_title, gr_text, success);
@@ -3724,6 +3746,14 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
                     useGritterTool(gr_title, gr_text, "error");
             }
         }
+        */
+        if (useGritter) {
+            if (senderForm != undefined)
+                useAlert(senderForm[0], gr_title, gr_text, success);
+            else
+                useGritterTool(gr_title, gr_text, "error");
+        }
+         /*MG - Creazione organizzazione in LR - Fine*/
     }
     return ret;
 }
@@ -3831,11 +3861,9 @@ const actionPostMultipartForm_Promise = function(type, el, datapost, senderForm,
 }
 
 function actionPutMultipartForm(type, el, datapost, senderForm, callback, callerForm, useGritter) {
-
     var posturl = getendpointnested(type + ".id", 'put');
     var elid = $("#entityEdit").attr('data-identityedit');
     posturl = posturl.replace(':id', elid);
-    //console.log("==>actionPutMultipartForm posturl ",posturl);
     var temp_config_call = {
         type: "PUT",
         url: posturl,
@@ -3889,8 +3917,12 @@ function actionPutMultipartForm(type, el, datapost, senderForm, callback, caller
         if (callerForm != undefined)
             senderForm = callerForm;
         if (callback != undefined) {
-            callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret);
-        } else {
+            /*MG - Associazione utente all'organizzazione in LR - Inizio*/
+            //callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret);
+            window[callback]((ret.data[0]));
+        } 
+        /*
+        else {
             if (senderForm == undefined && el != undefined) {
                 resetContainer("#entityEdit");
             }
@@ -3912,6 +3944,28 @@ function actionPutMultipartForm(type, el, datapost, senderForm, callback, caller
             }, 1000);
             return ret;
         }
+        */
+        if (senderForm == undefined && el != undefined) {
+            resetContainer("#entityEdit");
+        }
+        if (useGritter) {
+            useAlert("#entityEdit", gr_title, gr_text, success);
+        }
+        setTimeout(function() {
+            $('#entityEdit').modal('hide');
+            if (actualTemplateType == "fullcontent")
+                reloadEntityEdited(actualItem);
+            if (actualTemplateType == "datatable") {
+                setTimeout(function() {
+                    var tmp_conf = kmsconf;
+                    // resetDymerStart();
+                    //  generateMapDT(tmp_conf);
+                    refreshMapDT(tmp_conf);
+                }, 150);
+            }
+        }, 1000);
+        return ret;
+        /*MG - Associazione utente all'organizzazione in LR - Fine*/
     } else {
         if (useGritter)
             useAlert("#entityEdit", gr_title, gr_text, success);
