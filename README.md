@@ -183,7 +183,7 @@ The application image doesn't contain any data, so for the use of DYMER features
 
 ## Contributors
 
-
+* [Francesco Stefanelli](https://github.com/franzies) 
 * [Marco Bernandino Romano](https://github.com/marco-romano-eng) 
 * [Marko Stojanovic](https://github.com/marest94) 
 
