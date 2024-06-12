@@ -12,8 +12,6 @@ const SESSION_LIFETIME = 3600 * 1000 * 2;
 const SESSION_NAME = 'dymersid';
 const SESSION_SECRET = 'keyboard cat';
 const users = [];
-//require("../config/config.js");
-//router.use(proxy(global.gConfig.services.entity.ip_port));
 
 router.use(cookieParser());
 router.use(session({
@@ -28,12 +26,12 @@ router.use(session({
                     secure: true*/
     }
 }));
+
 router.use('*', async(req, res, next) => {
     // console.log('FORMMM Session: ', req.session);
-    //  console.log('FORMMM Cookies: ', req.cookies)
+    // console.log('FORMMM Cookies: ', req.cookies)
     next();
 })
-
 
 const jsonPlaceholderProxy = createProxyMiddleware({
     target: util.getServiceUrl("form"),
@@ -41,9 +39,9 @@ const jsonPlaceholderProxy = createProxyMiddleware({
     ws: true,
     onProxyReq: (proxyReq, req) => {
 
-        //   console.log("proxyReq");
-        //    console.log('UUUUUUUU: ', req.path, req.session)
-        //    console.log('Cookies: ', req.cookies)
+        // console.log("proxyReq");
+        // console.log('UUUUUUUU: ', req.path, req.session)
+        // console.log('Cookies: ', req.cookies)
     },
     pathRewrite: function(path, req) {
         path = path.replace(util.getContextPath('webserver'), util.getContextPath('form'));

@@ -3,15 +3,11 @@
 var jsonResponse = require('../jsonResponse');
 var express = require('express');
 var router = express.Router();
-//var elasticsearch = require('elasticsearch');
 const multer = require('multer');
 const bodyParser = require("body-parser");
 const path = require('path');
-//const mongoose = require("mongoose");
-//var extend = require('extend');
-//var router = express.Router();
-//var GridFsStorage = require("multer-gridfs-storage");
 const axios = require('axios');
+
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
@@ -22,16 +18,16 @@ router.post('/authenticate',async function (req, res) {
     
     var _username = global.configService['adminUser'];
     var _password = global.configService['adminPass'];
-   // var _users = global.configService['users'] || [];
+    // var _users = global.configService['users'] || [];
     var url_dservice = util.getServiceUrl("dservice") + '/api/v1/duser/checklogin'; // Get micro-service endpoint
     
     //console.log("==>url_dservice ", url_dservice);
 
-    /*  let listuser= await axios.get(url_dservice, {  }) 
+    /* let listuser= await axios.get(url_dservice, {  })
       _users=listuser.data.data;*/
     
-   // console.log("listuser",listuser.data);
-   // console.log(_users);
+    // console.log("listuser",listuser.data);
+    // console.log(_users);
     var loggedUser = {
         isGravatarEnabled: false,
         authorization_decision: '',
@@ -43,8 +39,8 @@ router.post('/authenticate',async function (req, res) {
         email: '',
         username: ''
     };
-   // user = _users.find(usr => usr.email === username && usr.password === password );
-   // if ((!user) && (username !== _username || password !== _password)) {
+    // user = _users.find(usr => usr.email === username && usr.password === password );
+    // if ((!user) && (username !== _username || password !== _password)) {
     
     if (username === _username && password === _password) {
         loggedUser.roles = [{ role: 'app-admin' }]
@@ -73,9 +69,9 @@ router.post('/authenticate',async function (req, res) {
     let base64DYMisi = new Buffer(JSON.stringify(obj_isi)).toString("base64")
     let dr_value = new Buffer(JSON.stringify(obj_isi.roles)).toString("base64");
     var url_dservice = util.getServiceUrl("dservice") + '/api/v1/perm/permbyroles'; // Get micro-service endpoint
-   console.log(' loggedUser.roles', loggedUser.roles);
-   let lsrole=[]
-   loggedUser.roles.forEach(element => {
+    console.log(' loggedUser.roles', loggedUser.roles);
+    let lsrole=[]
+    loggedUser.roles.forEach(element => {
     lsrole.push(element.role)
 });
     let response_perm = await axios.get(url_dservice, { params: { role: lsrole } })
@@ -96,13 +92,13 @@ router.post('/authenticate', function(req, res) {
     var _password = global.configService['adminPass'];
     //console.log('_username', _username, username);
     // console.log('_username', username);
-   // if (_username == undefined || _password == undefined) {
-  //       _username = "admin";
-  //       _password = "dymer";
+    // if (_username == undefined || _password == undefined) {
+    //       _username = "admin";
+    //       _password = "dymer";
 
-  //   }
-  //   console.log('_username', username == _username);
- //    console.log('_password', password == _username);
+    // }
+    // console.log('_username', username == _username);
+    // console.log('_password', password == _username);
     if (username == _username && password == _password) {
         res.sendStatus(200);
     } else {

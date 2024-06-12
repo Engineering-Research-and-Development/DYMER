@@ -23,16 +23,11 @@ angular.module('configuratorCtrl', [])
             $temp.remove();
         }
 
-
-
-
-
         /* var $viewtype = $('#viewtype');
         $viewtype.on('change', function() {
                 var dataView_= $('#viewtype option:selected').attr('data-view');
             $("#label").val(dataView_);
         });    
- 
 
         var $modeltoAdd = $('#modeltoAdd');
         $modeltoAdd.on('change', function() {

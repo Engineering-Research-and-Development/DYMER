@@ -1,6 +1,5 @@
 // requires
 const _ = require('lodash');
-//require('dotenv').config();
 // module variables
 const config = require('./config.json');
 const defaultConfig = config.development;

@@ -19,8 +19,6 @@ const SESSION_LIFETIME = 3600 * 1000 * 2;
 const SESSION_NAME = 'dymersid';
 const SESSION_SECRET = 'keyboard cat';
 const users = [];
-//require("../config/config.js");
-//router.use(proxy(global.gConfig.services.entity.ip_port));
 const util = require("../utility");
 router.use(cookieParser());
 router.use(session({
@@ -36,13 +34,6 @@ router.use(session({
     }
 }));
 
-//var upload = multer({ storage: multer.memoryStorage() }).any();
-//console.log(" util.getServiceUrl", util.getServiceUrl("entity"));
-/*router.get('*', (req, res, next) => {
-    // console.log("router.get");
-    next();
-    //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
-});*/
 router.get('*', (req, res, next) => {
     console.log("dymer-webserver | entity.js | router.get * ");
     // console.log("router.get");
@@ -66,6 +57,7 @@ router.post('*', (req, res, next) => {
     console.log("dymer-webserver | entity.js | router.post * ");
     next();
 });
+
 /*router.post('*', upload.any(), (req, res, next) => {
     let callData = util.getAllQuery(req);
 
@@ -126,6 +118,7 @@ var test = function(proxyReq, req, res) {
 
         next();
     });*/
+
 router.use((req, res, next) => {
     console.log("dymer-webserver | entity.js | router.use");
     const { userId } = req.session;
@@ -147,6 +140,7 @@ const redirectLogin = (req, res, next) => {
         next();
     }
 }
+
 router.use('*', redirectLogin, async(req, res, next) => {
     console.log("dymer-webserver | entity.js | * ");
     //console.log("session", req.session);
@@ -158,8 +152,6 @@ router.use('*', redirectLogin, async(req, res, next) => {
      req.session.count += 1;*/
     req.session.cicci = "sese";
     // respond with the session object
-
-
 
 
     /* console.log('----------');
@@ -263,9 +255,9 @@ const jsonPlaceholderProxy = createProxyMiddleware({
     ws: true,
     onProxyReq: (proxyReq, req) => {
 
-        //    console.log("proxyReq");
-        //   console.log('KKKKKKKKKK: ', req.url, req.session)
-        //     console.log('Cookies: ', req.cookies)
+        // console.log("proxyReq");
+        // console.log('KKKKKKKKKK: ', req.url, req.session)
+        // console.log('Cookies: ', req.cookies)
     },
     onProxyRes(proxyRes, req, res) {
         // console.log("onProxyRes", res);
@@ -279,13 +271,13 @@ const jsonPlaceholderProxy = createProxyMiddleware({
         res.cookie("ilmiocookie2", updc, { expire: 360000 + Date.now() }); //setto correttamente un cookie
     },
     pathRewrite: function(path, req, res) {
-        //       let callData = util.getAllQuery(req);
-        //   console.log("AAAAAreq", req.url);
+        // let callData = util.getAllQuery(req);
+        // console.log("AAAAAreq", req.url);
         //if (req.url == "/api/entities/api/v1/entity/_search")
-        //     console.log("AAAAAreq2", callData);
-        //  res.cookie("ilmio", 'value', { expire: 360000 + Date.now() });
-        //  console.log("req.url 2", req.url);
-        //   console.log("path 1", path);
+        // console.log("AAAAAreq2", callData);
+        // res.cookie("ilmio", 'value', { expire: 360000 + Date.now() });
+        // console.log("req.url 2", req.url);
+        // console.log("path 1", path);
         path = path.replace(util.getContextPath('webserver'), util.getContextPath('entity'));
         // path = path.replace(global.gConfig.services["webserver"]["context-path"], global.gConfig.services["entity"]["context-path"]);
         path = path.replace('/api/entities', '');
@@ -297,8 +289,6 @@ const jsonPlaceholderProxy = createProxyMiddleware({
 router.use(
     jsonPlaceholderProxy
 );
-
-
 
 module.exports = router;
 /*

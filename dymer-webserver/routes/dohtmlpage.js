@@ -12,20 +12,14 @@ const axios = require('axios');
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
-
 router.post('/dohtmlpage', function(req, res) {
     
-    
-      var page = req.body.page;
-    
-   
-     
+     var page = req.body.page;
+
      var fileName =  "public/cdn/js/iframe/"+req.body.config.modeltoAdd+'_'+req.body.dview+'.html';
      var stream = fs.createWriteStream(fileName);
      
      stream.once('open', function(fd) {
-                 
-     
                 if ( stream.end(page)) {  
                       res.sendStatus(200); 
                     
@@ -37,9 +31,6 @@ router.post('/dohtmlpage', function(req, res) {
                     res.send('Wrong dopage');
                 }
      });
-   
-        
-    
 });
 
 module.exports = router;

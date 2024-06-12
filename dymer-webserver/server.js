@@ -134,6 +134,7 @@ app.get('/openLog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {
     //console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
     return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
 });
+
 app.get('/checkservice', [loadUserInfo, util.checkIsPortalUser], (req, res) => {
     // #swagger.tags = ['Webserver']
 
@@ -158,10 +159,12 @@ app.get('/checkservice', [loadUserInfo, util.checkIsPortalUser], (req, res) => {
     ret.setSuccess(true);
     return res.send(ret);
 });
+
 app.use(express.static(__dirname + '/public'));
 //app.use(express.static(__dirname + global.gConfig.services.webserver["context-path"] + 'public'));
 //app.use(express.static(global.gConfig.services.webserver["context-path"] + 'public'));
 //app.use('/public', express.static('public'));
+
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -201,8 +204,6 @@ app.use(function(req, res, next) {
 app.use(cors());
 app.set('trust proxy', true);
 
-
-// 
 app.use("/public/", express.static(path.join(__dirname.replace(contextPath, ""), "public/")));
 app.use("/app/", express.static(path.join(__dirname.replace(contextPath, ""), "app/")));
 app.use("/public/", publicRoutes);
@@ -243,20 +244,18 @@ app.get('/api2/retriveinfoidpadmin', (req, res, next) => {
 
         res.send({ objuser });
     }
-    //   console.log("---------FINE-------------");
     // res.send(req.session.passport.user);
 
 });
 app.get('/api2/retriveinfoidp', (req, res, next) => {
     // #swagger.tags = ['Webserver']
 
-    //   console.log("--------INIZIO retriveinfoIDP--------------");
-    //   console.log("retriveinfo", req.session);
-    //   console.log("retriveinfo req.isAuthenticated()", req.isAuthenticated());
+    // console.log("retriveinfo", req.session);
+    // console.log("retriveinfo req.isAuthenticated()", req.isAuthenticated());
     const authHeader = req.headers.authorization;
 
     var pp = jwt.decode(req.session.passport.user.access_token);
-    //   console.log("retriveinfo pp", pp);
+    // console.log("retriveinfo pp", pp);
     //var pp = jwt.decode(JSON.parse(token));
     if (pp != undefined) {
 
@@ -286,7 +285,6 @@ app.get('/api2/retriveinfoidp', (req, res, next) => {
         let base64DYMisi = new Buffer(JSON.stringify(obj_isi)).toString("base64")
             //  console.log("retriveinfo objuser", objuser);
 
-
         var objtoSend = { "DYM": base64DYM, "DYMisi": base64DYMisi }
         objtoSend.d_uid = pp.email;
         objtoSend.d_appuid = pp.sub;
@@ -294,10 +292,8 @@ app.get('/api2/retriveinfoidp', (req, res, next) => {
         res.send(objtoSend);
 
     } else {
-
         res.send({ objuser });
     }
-    //   console.log("---------FINE-------------");
     // res.send(req.session.passport.user);
 
 });
@@ -342,7 +338,7 @@ app.get('/info/:key?', (req, res, next) => {
     // var pjson = require('./package.json');
     var key = req.params.key;
     
-  //  let infodymer = { "version": global.gConfig.dymer.version };
+    // let infodymer = { "version": global.gConfig.dymer.version };
     let infodymer =  global.gConfig.dymer ;
     let htmlsend_hd =
         '<!DOCTYPE html>' +
@@ -422,19 +418,19 @@ function loadUserInfo(req, res, next) {
     cookie = req.cookies;
 
     // console.log('TESTSESSION', req.session.cc, req.session.cc == undefined);
-    //   console.log('TESTSESSION req ', req);
-    //  var isLocal = (req.connection.localAddress === req.connection.remoteAddress);
-    //  console.log('TESTSESSION isLocal ', isLocal);
+    // console.log('TESTSESSION req ', req);
+    // var isLocal = (req.connection.localAddress === req.connection.remoteAddress);
+    // console.log('TESTSESSION isLocal ', isLocal);
     // console.log('TESTSESSION req referer', req);
     // console.log('TESTSESSION req referer', req.headers);
 
     // console.log('TESTSESSION req referer', req.headers.referer);
     // console.log('TESTSESSION req req.headers.authorization', req.headers.authorization);
     // console.log('TESTSESSION req req.headers.Authorization', req.headers.Authorization);
-    //  console.log('TESTSESSION req dservice', util.getServiceUrl("dservice"));
-    //  console.log('TESTSESSION  req.protocol', req.protocol);
-    //console.log('TESTSESSION req host', req.get('host'));
-    //logger.info(nameFile + ' | loadUserInfo : req host, originalUrl: ' + req.get('host') + " , " + req.originalUrl);
+    // console.log('TESTSESSION req dservice', util.getServiceUrl("dservice"));
+    // console.log('TESTSESSION  req.protocol', req.protocol);
+    // console.log('TESTSESSION req host', req.get('host'));
+    // logger.info(nameFile + ' | loadUserInfo : req host, originalUrl: ' + req.get('host') + " , " + req.originalUrl);
     // logger.info(nameFile + ' | loadUserInfo : req headers' + JSON.stringify(req.headers) + " , " + req.url);
 
     var authuserUrl = util.getServiceUrl("dservice") + "/api/v1/authconfig/userinfo";
@@ -451,19 +447,19 @@ function loadUserInfo(req, res, next) {
     if (req.query.tkdym != undefined)
         dymtoken = req.query.tkdym;
     // console.log('loadUserInfo req.query.tkdymat', req.query.tkdymat);
-    //  console.log('loadUserInfo req.query.tkdym', req.query.tkdym);
+    // console.log('loadUserInfo req.query.tkdym', req.query.tkdym);
 
-    //console.log('loadUserInfo authuserUrl', authuserUrl);
+    // console.log('loadUserInfo authuserUrl', authuserUrl);
     // console.log('loadUserInfo dymtoken', dymtoken);
-    //logger.info(nameFile + ' | loadUserInfo : dymtoken' + JSON.stringify(dymtoken));
-    //console.log('loadUserInfo dymtokenAT', dymtokenAT);
+    // logger.info(nameFile + ' | loadUserInfo : dymtoken' + JSON.stringify(dymtoken));
+    //  console.log('loadUserInfo dymtokenAT', dymtokenAT);
     var idsadm = false;
     if (req.cookies["lll"] != undefined) {
         dymtoken = req.cookies["lll"];
         idsadm = true;
     }
     // console.log('TESTSESSION req dymtoken', dymtoken);
-    //if (token == undefined || token == 'null')
+    //  if (token == undefined || token == 'null')
 
     var referer = req.headers.referer;
     //console.log('loadUserInfo referer', referer);
@@ -506,7 +502,7 @@ function loadUserInfo(req, res, next) {
         }
     };
 
-    //console.log('Config ===> ', config);
+    //console.log(nameFile + ' | config: ', config);
 
     axios(config)
         .then(function(response) {
@@ -546,11 +542,12 @@ app.use("/api/entities/", loadUserInfo, entityRoutes);
 //m 2021_20_20 app.use("/api/private/dservice/", ensureLoggedInOpen, dserviceRoutes);
 app.use("/api/dservice/", loadUserInfo, dserviceRoutes);
 app.use("/api/system/", loadUserInfo, system);
+
 app.post("/api/test/", loadUserInfo, (req, res, next) => {
     // #swagger.tags = ['Webserver']
+
     console.log("test");
     next();
-    //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
 });
 //app.use("/api/auth/", dauthRoutes);
 
@@ -666,12 +663,8 @@ app.get('*', (req, res) => {
         }*/
     res.send(listdata);
     // }
-    //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
-    // res.sendFile(global.gConfig.services.webserver["context-path"] + '/public/app/views/index.html');
 });
-//global.gConfig.services.webserver["context-path"]
 
-//app.use(contextPath, router)
 const root = express();
 root.use(contextPath, app);
 if (util.ishttps('webserver')) {
