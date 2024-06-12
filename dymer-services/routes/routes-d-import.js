@@ -304,11 +304,12 @@ router.post('/fromcsv/:enttype', util.checkIsAdmin, (req, res) => {
             };
             
             singleEntity.data.properties = propert_
-            
-            if (rel_id != undefined)
-                singleEntity.data.relation = { dih: [{ to: rel_id }] };
-
-            /* custom code for dih4ai
+            /* Code for relation from Service to DIH - TO TEST */
+	    if(newentityType.toLocaleLowerCase() == "service") {
+           		 if (rel_id != undefined)
+                		singleEntity.data.relation = { dih: [{ to: rel_id }] };
+	     }
+            /* custom code for DIH4INDUSTRY - Mandatory */
             if(newentityType.toLocaleLowerCase() == "dih") {
                 const initiativesArray = singleEntity.data.Initiatives?.replace(/\r/g, '').split(",").map(el => { return {"to": el}})
                 const projectArray = singleEntity.data.Project?.replace(/\r/g, '').split(",").map(el => { return {"to": el}})
@@ -326,7 +327,7 @@ router.post('/fromcsv/:enttype', util.checkIsAdmin, (req, res) => {
                     singleEntity.data.relation.project.push(prj);
                 }
             }
-            */
+            
 
             console.log(JSON.stringify(singleEntity))
             var extrainfo = {
