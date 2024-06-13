@@ -46,6 +46,15 @@ router.get('/:id', async(req, res) => {
     return res.json(ret)
 });
 
+router.get('/title/:title', async(req, res) => {
+    let title = req.params.title;
+    var ret = new jsonResponse();
+    let els = await mongoose.connection.db.collection("vocab").findOne({ "title": title });
+    ret.setMessages("List");
+    ret.setData(els);
+    return res.json(ret)
+});
+/*MG END 13/06 */
 router.post('/_search', async(req, res) => {
     let id = req.body.id
     let objiD = mongoose.Types.ObjectId(id)
