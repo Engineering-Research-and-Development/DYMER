@@ -3,26 +3,20 @@
 <head>
     <title>Dymer List</title>
     <script>
-        var d_uid = 0; //user id
-        var d_gid = 0; //group id
-        //uncomment to disable import bootstrap & jquery
-        /*var dymerconf={
-			notImport:["bootstrap","jquery"]
-        };*/
-        var jsonDymerConfig = {
-            query: {
-                "instance": {
-                    "index": "geopoint",
-                    "type": "geopoint"
-                }
-            },
+        var dymerQueries = [{"bool": {"must": [{"term": {"_index": "dih"}	}]}}];
+        var dymerconf = {
+            notImport : [ "" ]
+        };
+
+        var jsonConfig = {
+            query: { 'query': { 'query' : dymerQueries[0]}},
             endpoint: 'entity.search',
             viewtype: 'teaserlist',
             target: {
                 teaserlist: {
                     id: "#cont-MyList",
                     action: "html",
-                    reload: false
+                    reload:false
                 },
                 fullcontent: {
                     id: "#cont-MyList",
@@ -32,22 +26,35 @@
         };
 
         function mainDymerView() {
-            drawEntities(jsonDymerConfig);
+            drawEntities(jsonConfig);
+            var index = 'dih';
+            loadModelListToModal($('#cont-addentity'), index);
         }
     </script>
-    <script id="dymerurl" src="http://localhost:8080/public/cdn/js/dymer.viewer.js"></script>
+    <script id="dymerurl" src="http://localhost/public/cdn/js/dymer.viewer.js"></script>
+
 </head>
 
 <body class="container">
-    <div class="row">
-        <div class="col-12  ">
-            <br>
-            <span class="btn btn-mini btn-info " onclick="drawEntities(jsonDymerConfig)">My List</span>
-            <br><br>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Dymer Toolbar">
+            <div class="btn-group" role="group" aria-label="First group">
+                <button id="primodfil" type="button" class="btn btn-outline-secondary" onclick="drawEntities(jsonConfig)"><i class="fa fa-home" aria-hidden="true"></i> list</button>
+
+            </div>
+            <div class="input-group" id="cont-addentity">
+            </div>
         </div>
+
     </div>
-    <div id="cont-MyList">
-    </div>
+</div>
+
+
+<div id="cont-MyList">
+</div>
 </body>
 
 </html>
