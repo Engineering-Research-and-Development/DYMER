@@ -140,6 +140,7 @@ angular.module('taxCtrl', [])
             newPageModal.modal("hide");
             useGritterTool("Vocabulary", "deleted with success")
         };
+        
         $scope.createVocabulary = function(frm) {
             // rendering name and description form
             console.log('frm', frm);
