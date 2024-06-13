@@ -50,17 +50,17 @@
         "pump-promise": "1.0.0",
         "qs": "6.11.2",
         "redis": "4.6.11",
-		"bson": "6.2.0",
-		"cron-job-manager": "2.3.1",
-		"flatnest": "1.0.1",
-		"node-cron": "3.0.3",
-		"node-schedule": "2.1.1",
-		"passport-keycloak-oauth2-oidc": "1.0.5",
+	"bson": "6.2.0",
+        "cron-job-manager": "2.3.1",
+	"flatnest": "1.0.1",
+	"node-cron": "3.0.3",
+	"node-schedule": "2.1.1",
+	"passport-keycloak-oauth2-oidc": "1.0.5",
         "passport-local": "1.0.0",
-		"swagger-autogen": "2.23.7",
+	"swagger-autogen": "2.23.7",
         "swagger-ui-express": "5.0.0",
         "winston": "3.11.0",
-		"connect-ensure-login": "0.1.1",
+	"connect-ensure-login": "0.1.1",
         "cheerio": "1.0.0-rc.12"
     },
     "scripts": {
@@ -68,6 +68,9 @@
         "start": "npm install && node server.js",
         "dev": "nodemon server.js",
         "swagger-autogen": "node swagger.js"
+    },
+     "nodemonConfig": {
+        "ignore": ["public/cdn/*.css", "public/cdn/*.js"]
     }
     
 }

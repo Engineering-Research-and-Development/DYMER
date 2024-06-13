@@ -237,10 +237,3 @@ exports.getDymerUser2 = function(req, res, next) {
     }*/
     return "test";
 }
-
-const initCustomLibraries = async function (){
-    await custumLibraries.connectToDatabase();
-    await custumLibraries.initLibraries();
-}
-
-initCustomLibraries();

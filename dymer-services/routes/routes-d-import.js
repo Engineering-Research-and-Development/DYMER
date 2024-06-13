@@ -302,17 +302,19 @@ router.post('/fromcsv/:enttype', util.checkIsAdmin, (req, res) => {
 
                 "data": buildNestedObj(element)
             };
+
+            console.log("==>singleEntity ", singleEntity);
             
             singleEntity.data.properties = propert_
             /* Code for relation from Service to DIH - TO TEST */
-	    if(newentityType.toLocaleLowerCase() == "service") {
-           		 if (rel_id != undefined)
-                		singleEntity.data.relation = { dih: [{ to: rel_id }] };
-	     }
+            if(newentityType.toLocaleLowerCase() == "service") {
+                     if (rel_id != undefined)
+                            singleEntity.data.relation = { dih: [{ to: rel_id }] };
+             }
             /* custom code for DIH4INDUSTRY - Mandatory */
             if(newentityType.toLocaleLowerCase() == "dih") {
-                const initiativesArray = singleEntity.data.Initiatives?.replace(/\r/g, '').split(",").map(el => { return {"to": el}})
-                const projectArray = singleEntity.data.Project?.replace(/\r/g, '').split(",").map(el => { return {"to": el}})
+                const initiativesArray = singleEntity.data.initiatives?.replace(/\r/g, '').split(",").map(el => { return {"to": el}})
+                const projectArray = singleEntity.data.project?.replace(/\r/g, '').split(",").map(el => { return {"to": el}})
 
                 // initialize if I need
                 singleEntity.data.relation = singleEntity.data.relation || {};

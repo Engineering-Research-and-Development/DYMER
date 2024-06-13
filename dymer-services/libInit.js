@@ -4,24 +4,19 @@ const dataToInsert = require( './config/coreLibraries.json' );
 //TODO copy to the master
 var util = require('./utilityLib');
 //const mongoURI = util.mongoUrl()
-const mongoURILib = util.mongoUrlLibInit()
+const mongoURILib = util.mongoUrlLibInit(); //mongodb://localhost:27017/dservice
 
 const connectToDatabase = () => {
+	//console.log("libInit.js | connectToDatabase");
 	return mongoose.connect( mongoURILib, {
 		useNewUrlParser : true, useUnifiedTopology : true
 	} );
 };
 
-//const dbConnectionString = 'mongodb://localhost:27017/dservice';
-/*const connectToDatabase = () => {
-	return mongoose.connect( mongoURI, {
-		useNewUrlParser : true, useUnifiedTopology : true
-	} );
-};*/
-
 const Libraries = require( './models/permission/Libraries' );
 
 const initLibraries = async () => {
+	//console.log("libInit.js | initLibraries");
 	try {
 		//Stats
 		const totStartLibs = await Libraries.countDocuments();
@@ -64,6 +59,7 @@ const initLibraries = async () => {
 };
 
 connectToDatabase().then( () => {
+	//console.log("libInit.js | connectToDatabase && initLibraries");
 	const db = mongoose.connection;
 	db.on( 'error', console.error.bind( console, 'Database connection error:' ) );
 	console.log( 'Connected to MongoDB database successfully.' );
@@ -79,6 +75,5 @@ connectToDatabase().then( () => {
 	} );
 
 module.exports = {
-	connectToDatabase,
-	initLibraries
+	connectToDatabase
 }
