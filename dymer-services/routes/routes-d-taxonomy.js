@@ -36,6 +36,16 @@ router.get('/', async(req, res) => {
     ret.setData(els);
     return res.json(ret)
 });
+router.get('/:id', async(req, res) => {
+    let newid = req.params.id;
+    var ret = new jsonResponse();
+    let objiD = mongoose.Types.ObjectId(newid)
+    let els = await mongoose.connection.db.collection("vocab").findOne({ "_id": objiD });
+    ret.setMessages("List");
+    ret.setData(els);
+    return res.json(ret)
+});
+
 router.post('/_search', async(req, res) => {
     let id = req.body.id
     let objiD = mongoose.Types.ObjectId(id)
