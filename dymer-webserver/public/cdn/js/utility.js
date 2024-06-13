@@ -18,12 +18,12 @@ function resetDymerStart() {
 const kmsconfig = {
     cdn: cdnurl,
     endpoints: [{
-            type: "form",
-            endpoint: serverUrl + "/api/forms/api/v1/form",
-            post: {
-                create: ""
-            }
-        },
+        type: "form",
+        endpoint: serverUrl + "/api/forms/api/v1/form",
+        post: {
+            create: ""
+        }
+    },
         {
             type: "entity",
             endpoint: serverUrl + "/api/entities/api/v1/entity",
@@ -168,7 +168,7 @@ function check_dymer_validform(senderForm) { //aaaaa
         $(form).find(":invalid").first().focus();
         event.preventDefault()
         event.stopPropagation()
-            //return false;
+        //return false;
     } else {
         valid = true;
         valid = customvalid;
@@ -429,42 +429,43 @@ function reindexRepeatable(matchname) {
 function replaceAll(str, cerca, sostituisci) {
     return str.split(cerca).join(sostituisci);
 }
+
 //----------START Dynamic loader---------------
 var removeTempImport = function(attr) {
-        return new Promise(function(resolve, reject) {
-            document.querySelectorAll(`[${attr}]`).forEach(async function(e, i) {
-                var panel_link = e.getAttribute(attr);
-                let onremovefct = "onremove" + panel_link;
-                //console.log("invocata onremovefct panel_link--", panel_link);
-                //console.log("invocata onremovefct onremovefct--", actualTemplateType);
-                //console.log("invocata onremovefct onremovefct--", onremovefct, typeof window[onremovefct] === 'function');
-                if (panel_link != actualTemplateType) {
+    return new Promise(function(resolve, reject) {
+        document.querySelectorAll(`[${attr}]`).forEach(async function(e, i) {
+            var panel_link = e.getAttribute(attr);
+            let onremovefct = "onremove" + panel_link;
+            //console.log("invocata onremovefct panel_link--", panel_link);
+            //console.log("invocata onremovefct onremovefct--", actualTemplateType);
+            //console.log("invocata onremovefct onremovefct--", onremovefct, typeof window[onremovefct] === 'function');
+            if (panel_link != actualTemplateType) {
 
-                    if (typeof window[onremovefct] === 'function') {
-                        let rrs = await window[onremovefct]();
-                        //console.log("invocata onremovefct per", panel_link, onremovefct);
-                    }
-                    e.parentNode.removeChild(e);
+                if (typeof window[onremovefct] === 'function') {
+                    let rrs = await window[onremovefct]();
+                    //console.log("invocata onremovefct per", panel_link, onremovefct);
                 }
+                e.parentNode.removeChild(e);
+            }
 
-            });
-            resolve("ok");
         });
-    }
-    /*
-    var removeTempImport = function(attr) {
-        return new Promise(function(resolve, reject) {
-            document.querySelectorAll(`[${attr}]`).forEach(function(e, i) {
-                var panel_link = e.getAttribute(attr);
-                if (panel_link != actualTemplateType){
-                    ///kkkk
-                     e.parentNode.removeChild(e);
-                }
-                   
-            });
-            resolve("ok");
+        resolve("ok");
+    });
+}
+/*
+var removeTempImport = function(attr) {
+    return new Promise(function(resolve, reject) {
+        document.querySelectorAll(`[${attr}]`).forEach(function(e, i) {
+            var panel_link = e.getAttribute(attr);
+            if (panel_link != actualTemplateType){
+                ///kkkk
+                 e.parentNode.removeChild(e);
+            }
+
         });
-    } */
+        resolve("ok");
+    });
+} */
 async function prePopulateFormEdit_Promise(item) {
     if (typeof dymprepopulate === 'function') {
         let rrs = await dymprepopulate(item);
@@ -472,14 +473,14 @@ async function prePopulateFormEdit_Promise(item) {
         return rrs;
     } else {
         return item;
-       /* return new Promise(function(resolve, reject) {
-             console.log("non esiste dymprepopulate");
-            setTimeout(function() {
-                 console.log("aspetto 5 sec");
-                resolve(item);
+        /* return new Promise(function(resolve, reject) {
+              console.log("non esiste dymprepopulate");
+             setTimeout(function() {
+                  console.log("aspetto 5 sec");
+                 resolve(item);
 
-            }, 5000);
-        });*/
+             }, 5000);
+         });*/
     }
 }
 async function postPopulatedFormEdit_Promise(item) {
@@ -511,9 +512,13 @@ class Elfile {
     }
 }
 class ElTemplate {
+    //constructor(_index, _type) {
     constructor(_index, _type) {
+        //console.log("====>ElTemplate constructor");
+        //constructor(_index) {
         this._index = _index;
-        this._type = _type;
+        //this._type = _type;
+        this._type = _index;
         this.viewtype = {
             fullcontent: "",
             teaserlist: "",
@@ -527,7 +532,10 @@ class ElTemplate {
             teasermap: []
         }
     }
+
     loadAllTemplate() {
+        //console.log("==>ElTemplate loadAllTemplate");
+        //console.log("dymer-webserver | loadAllTemplate");
         var _this = this;
         var sourceUrl = getendpoint('template');
         var temp_config_call = {
@@ -535,13 +543,19 @@ class ElTemplate {
             type: 'GET',
             addDataBody: false
         };
+        //console.log("temp_config_call ", temp_config_call);
         var ajax_temp_call = new Ajaxcall(temp_config_call);
         ajax_temp_call.flush();
-        var tempQuery = { "query": { "query": { "instance._index": this._index, "instance._type": this._type } } };
+        //TODO check
+        //var tempQuery = { "query": { "query": { "instance._index": this._index, "instance._type": this._type } } };
+        var tempQuery = { "query": { "query": { "instance._index": this._index, "instance._type": this._index } } };
+        //var tempQuery = { "query": { "query": { "instance._index": this._index } } };
+
         ajax_temp_call.addparams(tempQuery);
         var ret = ajax_temp_call.send();
         //	var appendfiles = new Array();
         if (ret.success) {
+            //console.log("==> ret.data ", ret.data);
             (ret.data).forEach(function(el, i) {
                 var dom_to_render = undefined;
                 var t_ar = [];
@@ -552,6 +566,7 @@ class ElTemplate {
                     //MArco da valutare
                     //console.log("fl",fl);
                     var lkpath = indport + "content/" + fl._id;
+                    //console.log("==>lkpath ",lkpath);
                     var splmime = (fl.contentType).split("/");
                     var ftype = splmime[1];
                     if (ftype == "html")
@@ -559,23 +574,27 @@ class ElTemplate {
                     else {
                         ftype = (ftype == "css") ? "link" : ftype;
                         if (ftype != "octet-stream"){
-let eltopush={ domtype: ftype, filename: lkpath, extrattr: [],data:{} ,name:fl.filename};
-                         
-                             if(fl.filename=="language.json")
-                             eltopush.data.language=fl.data;
-                             t_ar.push(eltopush); 
+                            let eltopush={ domtype: ftype, filename: lkpath, extrattr: [],data:{} ,name:fl.filename};
+
+                            if(fl.filename=="language.json")
+                                eltopush.data.language=fl.data;
+                            t_ar.push(eltopush);
 
                         }
-                           
+
                     }
+                    //console.log("==>t_ar ", t_ar);
                 });
                 var ret2 = dom_to_render;
                 for (var s = 0; s < el.viewtype.length; s++) {
                     var rt = (el.viewtype[s].rendertype).slice();
                     _this.setTemplate(rt, ret2);
+                    //console.log("==>rt ", rt);
+                    //console.log("==>ret2 ", ret2);
                     for (var j = 0; j < t_ar.length; j++) {
                         (t_ar[j]).extrattr.push({ key: 'tftemp', value: rt });
                     }
+                    //console.log("==>setAppendfiles  t_ar ", rt, t_ar);
                     _this.setAppendfiles(rt, t_ar);
                 }
 
@@ -584,6 +603,7 @@ let eltopush={ domtype: ftype, filename: lkpath, extrattr: [],data:{} ,name:fl.f
     }
     setTemplate(type, scriptTemplate) {
         var _this = this;
+        //console.log("scriptTemplate ", scriptTemplate)
         _this.viewtype[type] = scriptTemplate;
         return true;
     }
@@ -674,7 +694,7 @@ async function onloadFiles2(arr) {
 
 
 async function onloadFiles(arr) {
-    
+
     let tk = localStorage.getItem('DYMAT');
     let tk_extra = localStorage.getItem('DYM_EXTRA');
     let toperm = "";
@@ -687,7 +707,7 @@ async function onloadFiles(arr) {
         var obj = arr[0];
         arr.shift();
         if(obj.domtype=="json")
-        return onloadFiles(arr);
+            return onloadFiles(arr);
         var attr = "";
         var script = null;
         //  var filename = obj.filename + "?dmts=1";
@@ -740,71 +760,106 @@ async function onloadFiles(arr) {
         return true;
 }
 //-----------END Dynamic loader---------------
-//-----------------START FORM-----------------
-function loadRequireForm() {
-    var ckaddimport = [];
-    if (typeof dymerconf !== 'undefined')
-        ckaddimport = dymerconf.notImport;
-    var arr = [];
-    var domtype = "link";
-    var filename = "";
-    var callback = null;
-    var useonload = false;
-    var group = "mandatory";
-    group = "bootstrap";
-    filename = kmsconfig.cdn + "css/lib/bootstrap/4.1.3/bootstrap.min.css";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "font-awesome";
-    filename = kmsconfig.cdn + "css/lib/font-awesome/4.7/font-awesome.min.css";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "mandatory";
-    filename = kmsconfig.cdn + "css/dymer.base.css";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    domtype = "script";
-    callback = null;
-    useonload = true;
-    group = "jquery";
-    filename = kmsconfig.cdn + "js/lib/jquery/jquery-3.3.1.min.js";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "mandatory";
-    filename = kmsconfig.cdn + "js/lib/jquery/jquery.serializejson.js";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "bootstrap";
-    filename = kmsconfig.cdn + "js/lib/bootstrap/4.1.3/bootstrap.min.js";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile("link", filename, callback, useonload, group));
 
-    group = "summernote";
-    if (!(ckaddimport.indexOf(group) > -1)) {
-        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.css";
-        arr.push(new Elfile("link", filename, callback, useonload, group));
-        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.js";
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
+//-----------------START FORM-----------------
+async function loadRequireForm() {
+    let ckaddimport = [];
+    if ( typeof dymerconf !== 'undefined' ) {
+        ckaddimport = dymerconf.notImport;
     }
-    filename = kmsconfig.cdn + "js/ajaxcall.js";
-    var mycallback = function() { // Method which will display type of Animal
-        try {
-            /*	config_postForm = {
-                    url: serviceFormUrl,
-                    processData: false,
-                    enctype: "multipart/form-data; boundary=----------------------------4ebf00fbcf09",
-                    contentType: false,
-                    cache: false
-                };
-                ajaxcall_postForm = new Ajaxcall(config_postForm);*/
-            mainDymerModel();
-        } catch (e) {
-            console.error(e);
-        }
-    };
-    group = "mandatory";
-    arr.push(new Elfile(domtype, filename, mycallback, useonload, group));
-    onloadFiles(arr);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    let arr = [];
+
+    // Load libraries from the database
+    try {
+        const response = await fetch( serverUrl + '/api/dservice/api/v1/library/' );
+        const libraries = await response.json();
+
+        libraries.filter( ( { loadtype, activated } ) => loadtype === 'form' && activated ).forEach( library => {
+
+
+
+
+
+            const { domtype, filename, callback, useonload, group, name } = library;
+
+            // Valuta la callback solo se non è nulla (attenzione: eval può comportare rischi di sicurezza)
+            const evalCallback = callback !== null ? eval( `${ callback }` ) : null;
+
+
+
+
+
+
+            if ( ckaddimport.indexOf( group ) <= -1 ) {
+                arr.push( new Elfile( domtype, kmsconfig.cdn + filename, evalCallback, useonload, group ) );
+                // console.log( `Add ${ library.name } at arr array:` )
+            }
+
+        } )
+
+
+
+
+
+    } catch ( error ) {
+        console.error( 'Error fetching and loading libraries:', error );
+
+
+
+
+    }
+
+    await onloadFiles( arr );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 function getbaseEntityConfig(basedat) {
@@ -894,12 +949,12 @@ const hookReleationForm_Promise = function(item) {
 }
 
 function populateHookRelation(x, y, z, w, k, a, b, arObj2, rel) {
-   //mr rel fix
-  // console.log('rel',rel); 
-   //console.log('arObj2',arObj2);
+    //mr rel fix
+    // console.log('rel',rel);
+    //console.log('arObj2',arObj2);
     var templ_data = flatEsArray(arObj2.data);
     arObj2.data = templ_data.arr
-    //console.log('templ_data',arObj2);
+    //console.log('==>populateHookRelation templ_data',arObj2);
     listRelationForm[rel] = arObj2.data;
     $('.senderForm [data-torelation="' + rel + '"]').each(function(inde) {
         var esxtraAttr = "";
@@ -954,24 +1009,24 @@ function populateHookRelation(x, y, z, w, k, a, b, arObj2, rel) {
 }
 var listTaxonomyForm = {};
 const hookTaxonomy_Promise = function(item) {
-        return new Promise(function(resolve, reject) {
-            var loadedList = {};
-            listTaxonomyForm = loadedList;
-            $('.senderForm [data-totaxonomy]').each(async function(index) {
-                var taxID = $(this).attr('data-totaxonomy');
-                if (loadedList[taxID] == undefined) {
+    return new Promise(function(resolve, reject) {
+        var loadedList = {};
+        listTaxonomyForm = loadedList;
+        $('.senderForm [data-totaxonomy]').each(async function(index) {
+            var taxID = $(this).attr('data-totaxonomy');
+            if (loadedList[taxID] == undefined) {
 
-                    var datapost = {
-                        id: taxID
-                    };
+                var datapost = {
+                    id: taxID
+                };
 
-                    await actionPostMultipartForm_Promise("taxonomy.search", undefined, datapost, undefined, populateHookTaxonomy, undefined, false, taxID);
-                }
-            });
-            resolve();
+                await actionPostMultipartForm_Promise("taxonomy.search", undefined, datapost, undefined, populateHookTaxonomy, undefined, false, taxID);
+            }
         });
-    }
-    /***********/
+        resolve();
+    });
+}
+/***********/
 function populateHookTaxonomy(x, y, z, w, k, a, b, arObj2, tax) {
     listTaxonomyForm[tax] = arObj2.data;
     $('.senderForm [data-totaxonomy="' + tax + '"]').each(function(inde) {
@@ -1032,7 +1087,7 @@ function populateHookTaxonomy(x, y, z, w, k, a, b, arObj2, tax) {
                 sel.append($("<option>").attr('value', value.value).text(value.locales.en.value));
 
                 if (value.nodes.length != 0) {
-                    // sel.append($("<optgroup>"));                  
+                    // sel.append($("<optgroup>"));
                     for (internalValue of value.nodes) {
                         sel.append($("<option>").attr('value', internalValue.value).text("\u00A0" + "\u00A0" + internalValue.locales.en.value));
                     }
@@ -1107,15 +1162,16 @@ function loadFilterModel(index, tagFilterObj) {
             var singleEl = "";
             if ($(this).attr("data-torelation") != undefined) {
                 var rel = $(this).attr('data-torelation');
+                //console.log('==> loadFilterModel data-torelation ',rel);
                 var esxtraAttr = "";
                 var datapost = {
                     instance: { "index": rel },
                     qoptions: { relations: false }
                 };
                 var listToselect = actionPostMultipartForm("entity.search", undefined, datapost, undefined, undefined, undefined, false, undefined);
-                 //mr rel fix
-                 var templ_data = flatEsArray(listToselect.data);
-                 listToselect.data = templ_data.arr;
+                //mr rel fix
+                var templ_data = flatEsArray(listToselect.data);
+                listToselect.data = templ_data.arr;
                 var inde = 0;
                 var ismulti = ($(this).attr('searchable-multiple') == "true") ? true : false;
                 var $sel = $('<select class="form-control span12 col-12"  searchable-multiple="' + ismulti + '"  searchable-override="data[relationdymer][' + rel + ']" searchable="" searchable-label="' + $(this).attr('searchable-label') + '" name="data[relation][' + rel + '][' + inde + '][to]"  ' + esxtraAttr + '>').appendTo($(this));
@@ -1502,11 +1558,11 @@ async function ldFormFiles2(id) {
     let rs = await removeTempImport('tftemp').then(async function() {
         //  console.log("inizio caricamento file");
         // return onloadFiles((listLoadedAdm[id].tftemp).slice());
-        let onl2=onloadFiles2((listLoadedAdm[id].tftemp).slice()); 
+        let onl2=onloadFiles2((listLoadedAdm[id].tftemp).slice());
         if (typeof afterLoadForm !== "undefined") {
-        setTimeout(function() {
+            setTimeout(function() {
                 afterLoadForm(); //marco after
-        }, 3000);  }
+            }, 3000);  }
         return onl2;
     });
     //  console.log("ritorno ldFormFiles2");
@@ -1566,7 +1622,7 @@ function actionEventPostMultipartForm(type, el, senderForm, callbackfunction, ca
      var complete = check_required(senderForm);
      if (!complete){
          $('#p_p_id'+pnamespace).hideLoader();return complete;
-     }	
+     }
      if (!checkForm){
          $('#p_p_id'+pnamespace).hideLoader();
          return checkForm;
@@ -1575,7 +1631,7 @@ function actionEventPostMultipartForm(type, el, senderForm, callbackfunction, ca
     //	setCheck(senderForm);
     ajax_temp_call.flush();
     ajax_temp_call.addcontainer_ids(senderForm);
-    //var personalData = new Object(); 
+    //var personalData = new Object();
     //personalData[ "p1"] = "v1";
     //var beforeSend={"beforeSend":"beforeSendEntity"};
     //ajaxcall_postForm.addparams(personalData);
@@ -1605,290 +1661,451 @@ function actionEventPostMultipartForm(type, el, senderForm, callbackfunction, ca
     return false;
 }
 //-----------------END FORM-----------------
-//-----------------START VIEW---------------
-function loadRequireView() {
-    var ckaddimport = [];
-    if (typeof dymerconf !== 'undefined')
+
+// -----------------START VIEW---------------
+async function loadRequireView() {
+    let ckaddimport = [];
+    if ( typeof dymerconf !== 'undefined' ) {
         ckaddimport = dymerconf.notImport;
-    var domtype = "link";
-    var filename = "";
-    var callback = null;
-    var useonload = false;
-    var group = "mandatory";
-    var arr = [];
-    //	console.log('kmsconfig.cdn test', kmsconfig.cdn);
-    group = "bootstrap";
-    filename = kmsconfig.cdn + "css/lib/bootstrap/4.1.3/bootstrap.min.css";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    //filename = "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css";
-    group = "bootstrap-select";
-    filename = kmsconfig.cdn + "css/lib/bootstrap-select/bootstrap-select.css";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "font-awesome";
-    filename = kmsconfig.cdn + "css/lib/font-awesome/4.7/font-awesome.min.css";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "mandatory";
-    filename = kmsconfig.cdn + "css/dymer.base.css";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    filename = kmsconfig.cdn + "css/bootstrap-dymertagsinput.css";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    domtype = "script";
-    callback = null;
-    useonload = true;
-    group = "jquery";
-    if (!(ckaddimport.indexOf(group) > -1)) {
-        filename = kmsconfig.cdn + "js/lib/jquery/jquery-3.3.1.min.js";
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
-    group = "popper";
-    filename = kmsconfig.cdn + "js/lib/jquery/popper.min.js";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    
-    group = "mandatory";
-    filename = kmsconfig.cdn + "js/dymer.oauth.js";
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "serializejson";
-    filename = kmsconfig.cdn + "js/lib/jquery/jquery.serializejson.js";
-    if (!(ckaddimport.indexOf(group) > -1))
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "ajaxcall";
-    filename = kmsconfig.cdn + "js/ajaxcall.js";
-    if (!(ckaddimport.indexOf(group) > -1))
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "bootstrap";
-    filename = kmsconfig.cdn + "js/lib/bootstrap/4.1.3/bootstrap.min.js";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "mandatory";
-    filename = kmsconfig.cdn + "js/lib/bootstrap/4.1.3/bootstrap-notify.js";
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "mandatory";
-    filename = kmsconfig.cdn + "js/handlebars.min.js";
-    arr.push(new Elfile(domtype, filename, callback, useonload));
-    filename = kmsconfig.cdn + "js/bootstrap-dymertagsinput.js";
-    arr.push(new Elfile(domtype, filename, callback, false));
-    group = "bootstrap";
-    //filename = 'https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js';
-    filename = kmsconfig.cdn + 'js/lib/bootstrap/4.1.3/bootstrap.bundle.min.js';
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload));
-    //filename = 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js';
-    group = "bootstrap-select";
-    filename = kmsconfig.cdn + 'js/lib/bootstrap-select/bootstrap-select.min.js';
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload));
-    group = "summernote";
-    if (!(ckaddimport.indexOf(group) > -1)) {
-        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.css";
-        arr.push(new Elfile("link", filename, callback, useonload, group));
-        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.js";
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    }
 
-    group = "mandatory";
-    /*filename = kmsconfig.cdn + "js/validate-forms.js";
-    arr.push(new Elfile(domtype, filename, mycallback, useonload));*/
-    filename = kmsconfig.cdn + "js/handlebarshook.js";
+    let arr = [];
 
-    var mycallback = function() { // Method which will display type of Animal
 
-        document.cookie = "DYMisi=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
-        var temp_config_call = {
-            url: csd + "/api2/retriveinfo",
-            type: 'POST',
-            addDataBody: false
-        };
-        var ajax_temp_call = new Ajaxcall(temp_config_call);
-        ajax_temp_call.flush();
-        var ret = ajax_temp_call.send();
-        for (const [key, value] of Object.entries(ret)) {
-            if (key == "DYMisi")
-                document.cookie = "DYMisi=" + value;
-            else {
-                localStorage.removeItem(key);
-                localStorage.setItem(key, value);
+
+
+    // Load libraries from the database
+    try {
+        const response = await fetch( serverUrl + '/api/dservice/api/v1/library/' );
+        const libraries = await response.json();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        libraries.filter( ( { loadtype, activated } ) => loadtype === 'view' && activated ).forEach( library => {
+
+            const { domtype, filename, callback, useonload, group, name } = library;
+
+
+            // Valuta la callback solo se non è nulla (attenzione: eval può comportare rischi di sicurezza)
+            const evalCallback = callback !== null ? eval( `${ callback }` ) : null;
+
+            if ( ckaddimport.indexOf( group ) <= -1 ) {
+                arr.push( new Elfile( domtype, kmsconfig.cdn + filename, evalCallback, useonload, group ) );
+                // console.log( `Add ${ library.name } at arr array:` )
+
+
+
+
+
+
+
+
+
+
+
+
             }
-        }
-        mainDymerView();
-    };
-    arr.push(new Elfile(domtype, filename, mycallback, useonload));
-    /* useonload = false;
-     */
-    onloadFiles(arr);
-    //loadAllJsCss();
+
+        } )
+
+    } catch ( error ) {
+        console.error( 'Error fetching and loading libraries:', error );
+    }
+
+    await onloadFiles( arr );
+
 }
 //-----------------END VIEW---------------
-//-----------------SART MAP-----------------
-function loadRequireMap() {
-    var domtype = "link";
-    var filename = "";
-    var callback = null;
-    var useonload = false;
-    var arr = [];
-    var ckaddimport = [];
-    if (typeof dymerconf !== 'undefined')
-        ckaddimport = dymerconf.notImport;
-    var group = "mandatory";
-    group = "bootstrap";
-    filename = kmsconfig.cdn + "css/lib/bootstrap/4.1.3/bootstrap.min.css";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    //filename = "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css";
-    group = "bootstrap-select";
-    filename = kmsconfig.cdn + "css/lib/bootstrap-select/bootstrap-select.css";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "font-awesome";
-    filename = kmsconfig.cdn + "css/lib/font-awesome/4.7/font-awesome.min.css";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "mandatory";
-    filename = kmsconfig.cdn + "leaflet/leaflet.css";
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    filename = kmsconfig.cdn + "leaflet/plugin/toolbar/leaflet.toolbar.css";
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "jquery.dataTables";
-    if (!(ckaddimport.indexOf(group) > -1))
-        filename = kmsconfig.cdn + "css/lib/datatables/jquery.dataTables.min.css";
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    filename = kmsconfig.cdn + "leaflet/plugin/markercluster/MarkerCluster.Default.css";
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    filename = kmsconfig.cdn + "leaflet/plugin/fullscreen/Control.FullScreen.css";
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    filename = kmsconfig.cdn + "leaflet/plugin/sidebar/L.Control.Sidebar.css";
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    filename = kmsconfig.cdn + "css/kms.view.map.css";
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    filename = kmsconfig.cdn + "css/bootstrap-dymertagsinput.css";
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "mandatory";
-    filename = kmsconfig.cdn + "css/dymer.base.css";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    filename = kmsconfig.cdn + "leaflet/leaflet.awesome-markers.css";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    domtype = "script";
-    callback = null;
-    useonload = true;
-    group = "jquery";
-    filename = kmsconfig.cdn + "js/lib/jquery/jquery-3.3.1.min.js";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "mandatory";
-    //Marco filename = kmsconfig.cdn + "js/dymer.oauth.js";
-    //Marco arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    // filename = kmsconfig.cdn + "js/utility.js";
-    // arr.push(new Elfile(domtype, filename, callback, useonload, group)); //controllare carico in altra
-    filename = kmsconfig.cdn + "js/bootstrap-dymertagsinput.js";
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "serializejson";
-     filename = kmsconfig.cdn + "js/lib/jquery/jquery.serializejson.js";
-     if (!(ckaddimport.indexOf(group) > -1))
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "ajaxcall";
-    filename = kmsconfig.cdn + "js/ajaxcall.js";
-    if (!(ckaddimport.indexOf(group) > -1))
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    filename = kmsconfig.cdn + "leaflet/leaflet-src.js";
-    //filename =  "http://unpkg.com/leaflet@1.3.1/dist/leaflet.js";
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    filename = kmsconfig.cdn + "leaflet/leaflet.awesome-markers.js";
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
 
-    group = "jquery.dataTables";
-    if (!(ckaddimport.indexOf(group) > -1)) {
-        filename = kmsconfig.cdn + "js/lib/datatables/jquery.dataTables.min.js";
-        // filename = "https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js";
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-        //filename = 'https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js';
-        filename = kmsconfig.cdn + 'js/lib/buttons/buttons.print.min.js';
-        arr.push(new Elfile(domtype, filename, callback, true, group));
-        //filename = 'https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js';
-        filename = kmsconfig.cdn + 'js/lib/datatables/dataTables.buttons.min.js';
-        arr.push(new Elfile(domtype, filename, callback, true, group));
-        //filename = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js';
-        filename = kmsconfig.cdn + 'js/lib/jszip.min.js';
-        arr.push(new Elfile(domtype, filename, callback, false, group));
-        //filename = 'https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css';
-        filename = kmsconfig.cdn + 'css/lib/datatables/dataTables.bootstrap4.min.css';
-        arr.push(new Elfile("link", filename, callback, false, group));
-        //filename = 'https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js';
-        filename = kmsconfig.cdn + 'js/lib/datatables/dataTables.bootstrap4.min.js';
-        arr.push(new Elfile(domtype, filename, callback, false, group));
-        filename = kmsconfig.cdn + "js/lib/pdfmake.min.js";
-        arr.push(new Elfile(domtype, filename, callback, true, group));
-        filename = kmsconfig.cdn + "js/lib/vfs_fonts.js";
-        arr.push(new Elfile(domtype, filename, callback, true, group));
-        //filename = 'https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js';
-        filename = kmsconfig.cdn + 'js/lib/buttons/buttons.html5.min.js';
-        arr.push(new Elfile(domtype, filename, callback, false, group));
+//-----------------SART MAP-----------------
+async function loadRequireMap() {
+
+
+
+
+
+    let ckaddimport = [];
+    if ( typeof dymerconf !== 'undefined' ) {
+        ckaddimport = dymerconf.notImport;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
-    filename = kmsconfig.cdn + "leaflet/plugin/fullscreen/Control.FullScreen.js";
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    group = "popper";
-    filename = kmsconfig.cdn + "js/lib/jquery/popper.min.js";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    filename = kmsconfig.cdn + "js/lib/bootstrap/4.1.3/bootstrap.min.js";
-    group = "bootstrap";
-    if (!(ckaddimport.indexOf(group) > -1))
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    //filename = kmsconfig.cdn + "js/kms.view.js";
-    //arr.push(new Elfile(domtype, filename, callback, useonload));
-    group = "summernote";
-    if (!(ckaddimport.indexOf(group) > -1)) {
-        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.css";
-        arr.push(new Elfile("link", filename, callback, useonload, group));
-        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.js";
-        arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    }
-    group = "mandatory";
-    filename = kmsconfig.cdn + "leaflet/plugin/toolbar/leaflet.toolbar.js";
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    filename = kmsconfig.cdn + "leaflet/plugin/sidebar/L.Control.Sidebar.js";
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    //filename = 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js';
-    group = "bootstrap-select";
-    filename = kmsconfig.cdn + 'js/lib/bootstrap-select/bootstrap-select.min.js';
-    arr.push(new Elfile(domtype, filename, mycallback, useonload));
-    group = "mandatory";
-    filename = kmsconfig.cdn + "js/handlebars.min.js";
-    arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    filename = kmsconfig.cdn + "js/handlebarshook.js";
-    arr.push(new Elfile(domtype, filename, callback, useonload));
-    filename = kmsconfig.cdn + "leaflet/plugin/markercluster/leaflet.markercluster.js";;
-    var mycallback = function() { // Method which will display type of Animal
-        var temp_config_call = {
-            url: csd + "/api2/retriveinfo",
-            type: 'POST',
-            addDataBody: false
-        };
-        var ajax_temp_call = new Ajaxcall(temp_config_call);
-        ajax_temp_call.flush();
-        var ret = ajax_temp_call.send();
-        for (const [key, value] of Object.entries(ret)) {
-            if (key == "DYMisi")
-                document.cookie = "DYMisi=" + value;
-            else {
-                localStorage.removeItem(key);
-                localStorage.setItem(key, value);
+
+    let arr = [];
+
+    // Load libraries from the database
+    try {
+        const response = await fetch( serverUrl + '/api/dservice/api/v1/library/' );
+        const libraries = await response.json();
+
+        libraries.filter( ( { loadtype, activated } ) => loadtype === 'map' && activated ).forEach( library => {
+
+
+
+
+
+
+
+
+
+
+
+
+            const { domtype, filename, callback, useonload, group, name } = library;
+
+            // Valuta la callback solo se non è nulla (attenzione: eval può comportare rischi di sicurezza)
+            const evalCallback = callback !== null ? eval( `${ callback }` ) : null;
+
+
+
+
+
+
+
+
+
+
+
+
+            if ( ckaddimport.indexOf( group ) <= -1 ) {
+                arr.push( new Elfile( domtype, kmsconfig.cdn + filename, evalCallback, useonload, group ) );
+                //console.log( `Add ${ library.name } at arr array:` )
+
+
+
+
+
+
+
+
+
+
+
+
+
             }
-        }
-        mainMapOnLoad();
-    };
-    arr.push(new Elfile(domtype, filename, mycallback, useonload, group));
-    onloadFiles(arr);
-    //loadAllJsCss();
+
+        } )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    } catch ( error ) {
+        console.error( 'Error fetching and loading libraries:', error );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+
+    await onloadFiles( arr );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 //-----------------END MAP------------------
 //-----------------SART ENTITY--------------
+
 
 function resetMapFiltered() {
     reloadMarker(undefined).then(function(ars) {
@@ -1967,7 +2184,7 @@ function loadEntitiesTemplate(conf) {
                 reload = (kmsconf.target.list.reload != undefined) ? kmsconf.target.list.reload : false;
     }
     if (reload) { //reload
-        //console.log("kmsconf.query", kmsconf.query);
+        //console.log("===>kmsconf.query", kmsconf.query);
         var ret = actionPostMultipartForm(kmsconf.endpoint, undefined, kmsconf.query, undefined, undefined, undefined, false);
         var templ_data = flatEsArray(ret.data);
         kmsdataset = templ_data.arr;
@@ -1976,6 +2193,7 @@ function loadEntitiesTemplate(conf) {
 }
 
 function drawEntities(conf) {
+    //console.log("===================> conf ", conf);
     loadEntitiesTemplate(conf);
     kmsrenderEl(kmsdataset, kmsconf.viewtype);
 }
@@ -1984,13 +2202,13 @@ function getrendRole(perm) {
     var owner = "";
     if (perm.edit || perm.delete) {
         if (perm.isowner)
-        return '<i class="fa fa-user icon-action" title="Owner" ></i>';
-          if (perm.isadmin)
-          return '<i class="fa fa-user-circle icon-action" title="Admin" ></i>';
-          if (perm.iscurator)
-          return '<i class="fa fa-user-circle-o icon-action" title="Editor" ></i>';
-         
-          return '<i class="fa fa-user-o icon-action" title="co-editor"  ></i>';
+            return '<i class="fa fa-user icon-action" title="Owner" ></i>';
+        if (perm.isadmin)
+            return '<i class="fa fa-user-circle icon-action" title="Admin" ></i>';
+        if (perm.iscurator)
+            return '<i class="fa fa-user-circle-o icon-action" title="Editor" ></i>';
+
+        return '<i class="fa fa-user-o icon-action" title="co-editor"  ></i>';
     }
     return owner;
 }
@@ -2103,7 +2321,7 @@ function checkPermission(actualItem, act) {
     let d_gid = localStorage.getItem("d_gid");
     let d_rl = localStorage.getItem("d_rl");
     let d_lp =  JSON.parse(atob( localStorage.getItem("d_lp")));
-    console.log("d_lp",d_lp);
+    //console.log("d_lp",d_lp);
     var entPerm = {
         isowner: false,
         view: false,
@@ -2170,13 +2388,13 @@ function checkPermission(actualItem, act) {
         entPerm.view = true;
         entPerm.delete = true;
         entPerm.iscurator =true;
-        
+
     }
     if( entPerm.iscurator ){
-       
-         return entPerm;
+
+        return entPerm;
     }
-  
+
     if (typeof actualItem.properties.grant != 'undefined') {
         var entGrant = actualItem.properties.grant;
         if (entGrant.hasOwnProperty("update"))
@@ -2201,14 +2419,14 @@ function checkPermission(actualItem, act) {
         // }*/
 
     }
-    
+
     if (d_uid != entOwner.uid && d_gid == entOwner.gid && !is_spr) {
         entPerm.view = true;
         entPerm.edit = false;
         entPerm.delete = false;
         return entPerm;
     }
-    
+
     return entPerm;
 }
 
@@ -2218,38 +2436,38 @@ function checkSatus(actualItem, hookCheckSatusconf) {
     var statusDiv = "";
     switch (actualItem.properties.status) {
         case '1':
-            {
-                if (hookCheckSatusconf == undefined) {} else {
-                    if (hookCheckSatusconf.allstatus == true) {
-                        statusDiv = 'PUBLISHED';
-                        if (hookCheckSatusconf.style == 'text') {} else
-                            statusDiv = '<div class="span12 col-12 alert alert-info" style="text-align:center" > <b>' + statusDiv + '</b> </div>';
-                    }
-                }
-                break;
-            }
-        case '2':
-            {
-                statusDiv = 'UNPUBLISHED';
-                if (hookCheckSatusconf == undefined) {
-                    statusDiv = '<div class="span12 col-12 alert alert-info" style="text-align:center" > <b>' + statusDiv + '</b> </div>';
-                } else {
+        {
+            if (hookCheckSatusconf == undefined) {} else {
+                if (hookCheckSatusconf.allstatus == true) {
+                    statusDiv = 'PUBLISHED';
                     if (hookCheckSatusconf.style == 'text') {} else
                         statusDiv = '<div class="span12 col-12 alert alert-info" style="text-align:center" > <b>' + statusDiv + '</b> </div>';
                 }
-                break;
             }
+            break;
+        }
+        case '2':
+        {
+            statusDiv = 'UNPUBLISHED';
+            if (hookCheckSatusconf == undefined) {
+                statusDiv = '<div class="span12 col-12 alert alert-info" style="text-align:center" > <b>' + statusDiv + '</b> </div>';
+            } else {
+                if (hookCheckSatusconf.style == 'text') {} else
+                    statusDiv = '<div class="span12 col-12 alert alert-info" style="text-align:center" > <b>' + statusDiv + '</b> </div>';
+            }
+            break;
+        }
         case '3':
-            {
-                statusDiv = 'DRAFT';
-                if (hookCheckSatusconf == undefined) {
+        {
+            statusDiv = 'DRAFT';
+            if (hookCheckSatusconf == undefined) {
+                statusDiv = '<div class="span12 col-12 alert alert-info" style="text-align:center"> <b>' + statusDiv + '</b> </div>';
+            } else {
+                if (hookCheckSatusconf.style == 'text') {} else
                     statusDiv = '<div class="span12 col-12 alert alert-info" style="text-align:center"> <b>' + statusDiv + '</b> </div>';
-                } else {
-                    if (hookCheckSatusconf.style == 'text') {} else
-                        statusDiv = '<div class="span12 col-12 alert alert-info" style="text-align:center"> <b>' + statusDiv + '</b> </div>';
-                }
-                break;
             }
+            break;
+        }
         default:
             break;
     }
@@ -2280,7 +2498,7 @@ function checkVisibility(actualItem, rendConf) {
 }
 
 function kmsrenderEl(ar, rendertype) {
-   /* $('body').showLoader(); */
+    $('body').showLoader();
     var target = kmsconf.target;
     actualTemplateType = rendertype;
     dymphases.setSubPhase('view', true, '', rendertype);
@@ -2311,7 +2529,12 @@ function kmsrenderEl(ar, rendertype) {
         }
         (ar).forEach(function(item, i) {
             // item.cdnpath = baseurlcd;
-            var tmpl = item._index + "@" + item._type;
+            //TODO check
+            //var tmpl = item._index + "@" + item._type;
+            var tmpl = item._index + "@" + item._index;
+
+            //var tmpl = item._index;
+
             types.indexOf(tmpl) === -1 ? types.push(tmpl) : "";
         });
         if (rendertype == 'fullcontent' || types.length == 1) {
@@ -2320,7 +2543,11 @@ function kmsrenderEl(ar, rendertype) {
                 checkbreadcrumb(item);
             else
                 $("#dymer_breadcrumb span").not(':first').remove();
-            var tmpl = (rendertype == 'fullcontent') ? item._index + "@" + item._type : item[0]._index + "@" + item[0]._type;
+            //TODO check
+            //var tmpl = (rendertype == 'fullcontent') ? item._index + "@" + item._type : item[0]._index + "@" + item[0]._type;
+            var tmpl = (rendertype == 'fullcontent') ? item._index + "@" + item._index : item[0]._index + "@" + item[0]._index;
+            //var tmpl = (rendertype == 'fullcontent') ? item._index : item[0]._index;
+
             //   tmpl = item._index + "@" + item._type;
             var typetemplateToRender = (rendertype == 'fullcontent') ? 'fullcontent' : kmsconf.viewtype;
             var mytemplate = templateslist[tmpl]['viewtype'][typetemplateToRender];
@@ -2328,7 +2555,13 @@ function kmsrenderEl(ar, rendertype) {
             if (!$.trim(mytemplate).length) {
                 var itemToEdit = item;
                 var sourceUrl = getendpoint('form');
-                var datapost = { "query": { "instance._index": itemToEdit._index, "instance._type": itemToEdit._type }, "act": "update" };
+                //TODO check
+                //var datapost = { "query": { "instance._index": itemToEdit._index, "instance._type": itemToEdit._type }, "act": "update" };
+
+                var datapost = { "query": { "instance._index": itemToEdit._index, "instance._type": itemToEdit._index }, "act": "update" };
+
+                //var datapost = { "query": { "instance._index": itemToEdit._index }, "act": "update" };
+
                 var temp_config_call = {
                     url: sourceUrl,
                     type: 'GET',
@@ -2379,7 +2612,11 @@ function kmsrenderEl(ar, rendertype) {
                 $(targetId).empty();
             action = "append";
             (ar).forEach(function(item, i) {
-                var tmpl = item._index + "@" + item._type;
+                //TODO check
+
+                //var tmpl = item._index + "@" + item._type;
+                var tmpl = item._index + "@" + item._index;
+                //var tmpl = item._index;
                 var typetemplateToRender = 'fullcontent'; // (rendertype == 'fullcontent') ? 'fullcontent' : kmsconf.viewtype;
                 typetemplateToRender = 'teaser'; // (rendertype == 'fullcontent') ? 'fullcontent' : kmsconf.viewtype;
                 var mytemplate = templateslist[tmpl]['viewtype'][typetemplateToRender];
@@ -2399,7 +2636,11 @@ function kmsrenderEl(ar, rendertype) {
 function getModelEntity(el) {
     var itemToEdit = el;
     var sourceUrl = getendpoint('form');
-    var datapost = { "query": { "instance._index": itemToEdit._index, "instance._type": itemToEdit._type }, "act": "update" };
+    //TODO check
+    //var datapost = { "query": { "instance._index": itemToEdit._index, "instance._type": itemToEdit._type }, "act": "update" };
+    var datapost = { "query": { "instance._index": itemToEdit._index, "instance._type": itemToEdit._index }, "act": "update" };
+    //var datapost = { "query": { "instance._index": itemToEdit._index}, "act": "update" };
+
     var temp_config_call = {
         url: sourceUrl,
         type: 'GET',
@@ -2423,7 +2664,7 @@ function getModelEntity(el) {
     }
 }
 
-// function editEntity(id) { 
+// function editEntity(id) {
 //const editEntity = async function(id) {
 async function editEntity(id) {
     var itemToEdit = actualItem;
@@ -2436,7 +2677,7 @@ async function editEntity(id) {
     }
     const perm = checkPermission(actualItem, 'update');
     var sourceUrl = getendpoint('form');
-    var datapost = { "query": { "instance._index": itemToEdit._index, "instance._type": itemToEdit._type }, "act": "update" };
+    var datapost = { "query": { "instance._index": itemToEdit._index }, "act": "update" };
     var indport = sourceUrl + "/";
     var temp_config_call = {
         url: sourceUrl,
@@ -2538,7 +2779,7 @@ async function editEntity(id) {
                 await hookTaxonomy_Promise(itemToEdit);
                 dymphases.setSubPhase("edit", true, "duplicaterepeatable");
                 await duplicateRepeatable_Promise('#entityEdit', itemToEdit); //.then(function() { console.log("duplicated"); });
-                // setTimeout(function() { 
+                // setTimeout(function() {
                 //  hookReleationForm(itemToEdit);
                 // duplicateRepeatable('#entityEdit', itemToEdit);
                 // }, 10000);
@@ -2546,21 +2787,27 @@ async function editEntity(id) {
 
                 dymphases.setSubPhase("edit", true, "prepopulateform");
                 let resprepopulate_ = await prePopulateFormEdit_Promise(itemToEdit);
-               
-              //console.log("resprepopulate",resprepopulate_);
+
+                //console.log("resprepopulate",resprepopulate_);
                 //console.log("resprepopulate", resprepopulate);let filterpos = ($(this).data('filterpos') == undefined) ? 0 : $(this).data('filterpos');
                 var itemToEdit_ = Object.assign({}, itemToEdit);
                 /*  setTimeout(function() {
                       $('#entityEdit .selectpicker').selectpicker();
                       console.log("vado a modificare");
                       populateFormEdit('#entityEdit', itemToEdit, undefined, undefined, itemToEdit_);
-                      
+
                       $('#entityEdit .modal-body').hideLoader();
-  
-  
+
+
                   }, 2000);*/
 
-                $('#entityEdit .selectpicker').selectpicker();
+                //FRANCO TODO: se esiste la classe selectpicker allora $('#entityEdit .selectpicker').selectpicker();
+                //console.log("==>TODO: check if selectpicker exists ",itemToEdit);
+                /*if (xxx.hasClass('selectpicker')) {
+                    console.log("==>itemToEdit.hasClass(selectpicker)");
+                    $('#entityEdit .selectpicker').selectpicker();
+                }*/
+
                 // console.log("vado a modificare");
                 //  populateFormEdit('#entityEdit', itemToEdit, undefined, undefined, itemToEdit_);
                 dymphases.setSubPhase("edit", true, "populateform");
@@ -2571,7 +2818,7 @@ async function editEntity(id) {
                 dymphases.setSubPhase("edit", true, "dympostpopulated");
                 await postPopulatedFormEdit_Promise(itemToEdit);
                 dymphases.setSubPhase("edit", true, "editForm");
-                
+
                 /*  setTimeout(function() {
                       $('#entityEdit').trackChanges();
                   }, 7000);*/
@@ -2651,12 +2898,14 @@ function duplicateRepeatable(frm, item, basename) {
     var value = item.relations;
     if (value != undefined) {
         for (var i = 0; i < value.length; i++) {
-            if (listRelation[value[i]._type] == undefined)
-                listRelation[value[i]._type] = [];
-            listRelation[value[i]._type].push(value[i]._id);
+            //TODO check
+            if (listRelation[value[i]._index] == undefined)
+                listRelation[value[i]._index] = [];
+            listRelation[value[i]._index].push(value[i]._id);
         }
         $(frm + ' .repeatable [data-torelation]').each(function(index) {
             var rel_type = $(this).attr('data-torelation');
+            //console.log('==> duplicateRepeatable data-torelation ',rel_type);
             if (listRelation[rel_type] != undefined) {
                 var currenteDomElement = $(this).closest('.relationcontgrp.repeatable');
                 for (var i = 1; i < listRelation[rel_type].length; i++) {
@@ -2712,12 +2961,14 @@ const duplicateRepeatable_Promise = function(frm, item, basename) {
         var value = item.relations;
         if (value != undefined) {
             for (var i = 0; i < value.length; i++) {
-                if (listRelation[value[i]._type] == undefined)
-                    listRelation[value[i]._type] = [];
-                listRelation[value[i]._type].push(value[i]._id);
+                //TODO check
+                if (listRelation[value[i]._index] == undefined)
+                    listRelation[value[i]._index] = [];
+                listRelation[value[i]._index].push(value[i]._id);
             }
             $(frm + ' .repeatable [data-torelation]').each(function(index) {
                 var rel_type = $(this).attr('data-torelation');
+                //console.log('==> duplicateRepeatable_Promise data-torelation ',rel_type);
                 if (listRelation[rel_type] != undefined) {
                     var currenteDomElement = $(this).closest('.relationcontgrp.repeatable');
                     for (var i = 1; i < listRelation[rel_type].length; i++) {
@@ -2811,11 +3062,16 @@ function populateFormEdit(frm, item, basename, wasarr, origitem) {
             //   console.log("elPop", elPop);
             //   console.log("elPop.hasClass('selectpicker')", elPop.hasClass('selectpicker'));
             if (key == 'relations') {
+                //console.log("key == relations");
                 let listRelation = {};
+                //AVENDO ELIMINATO IL TYPE NON HA SENSO ESEGUIRE
+                //console.log("value.length ", value.length);
                 for (var i = 0; i < value.length; i++) {
-                    if (listRelation[value[i]._type] == undefined)
-                        listRelation[value[i]._type] = [];
-                    listRelation[value[i]._type].push(value[i]._id);
+                    //console.log("value["+i+"] ", value[i]);
+                    //TODO check
+                    if (listRelation[value[i]._index] == undefined)
+                        listRelation[value[i]._index] = [];
+                    listRelation[value[i]._index].push(value[i]._id);
                 }
                 /*  Object.keys(listRelation).forEach(function(k) {
                       var r_list = listRelation[k];
@@ -2824,8 +3080,10 @@ function populateFormEdit(frm, item, basename, wasarr, origitem) {
                           $(frm + vs).val(r_list[i]).attr("oldval", r_list[i]);
                       }
                   });*/
+                //console.log("listRelation ", listRelation);
                 Object.keys(listRelation).forEach(function(k) {
                     var r_list = listRelation[k];
+
                     let vs = '[name="data[relation][' + k + '][0][to]"]';
                     var relElement = $(vs);
                     if (relElement.hasClass('selectpicker')) {
@@ -2949,10 +3207,12 @@ async function populateFormEdit_await(frm, item, basename, wasarr, origitem) {
                 //   console.log("elPop.hasClass('selectpicker')", elPop.hasClass('selectpicker'));
                 if (key == 'relations') {
                     let listRelation = {};
+                    let testListRelation = {};
                     for (var i = 0; i < value.length; i++) {
-                        if (listRelation[value[i]._type] == undefined)
-                            listRelation[value[i]._type] = [];
-                        listRelation[value[i]._type].push(value[i]._id);
+                        // TODO CHECK
+                        if (listRelation[value[i]._index] == undefined)
+                            listRelation[value[i]._index] = [];
+                        listRelation[value[i]._index].push(value[i]._id);
                     }
                     /*  Object.keys(listRelation).forEach(function(k) {
                           var r_list = listRelation[k];
@@ -2961,12 +3221,14 @@ async function populateFormEdit_await(frm, item, basename, wasarr, origitem) {
                               $(frm + vs).val(r_list[i]).attr("oldval", r_list[i]);
                           }
                       });*/
+
                     Object.keys(listRelation).forEach(function(k) {
+                        //console.log("nome relation k ", k);
                         var r_list = listRelation[k];
                         let vs = '[name="data[relation][' + k + '][0][to]"]';
                         var relElement = $(vs);
                         if (relElement.hasClass('selectpicker')) {
-
+                            //console.log("hasClass  selectpicker");
                             // $(frm + " " + vs).val(r_list);
                             $(frm + " " + vs).selectpicker('val', r_list);
                         } else {
@@ -3053,7 +3315,7 @@ async function populateFormEdit_await(frm, item, basename, wasarr, origitem) {
                     }
                 }
             }
-            //console.log("attessssssooooo ultimo");
+        //console.log("attessssssooooo ultimo");
     } catch (error) {
         console.error(error);
     }
@@ -3080,10 +3342,13 @@ const populateFormEdit_Promise = function(frm, item, basename, wasarr) {
                 var elPop = $(frm + ' [name="data' + actualK + '"]' + extrelPop);
                 if (key == 'relations') {
                     var listRelation = {};
+                    //console.log("value");
                     for (var i = 0; i < value.length; i++) {
-                        if (listRelation[value[i]._type] == undefined)
-                            listRelation[value[i]._type] = [];
-                        listRelation[value[i]._type].push(value[i]._id);
+                        //TODO Check
+                        if (listRelation[value[i]._index] == undefined)
+                            listRelation[value[i]._index] = [];
+                        listRelation[value[i]._index].push(value[i]._id);
+                        //console.log("value ",value[i]);
                     }
                     Object.keys(listRelation).forEach(function(k) {
                         var r_list = listRelation[k];
@@ -3343,6 +3608,7 @@ function checkbreadcrumb(arObj, fnct, linklabel) {
         $('#dymer_breadcrumb span').hide();
 }
 //-----------------END ENTITY--------------
+
 //-----------------START GLOBAL------------
 /*
 actionPostMultipartForm:POST di multipart/form-data
@@ -3420,8 +3686,12 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
         if (callerForm != undefined)
             senderForm = callerForm;
         if (callback != undefined) {
-            callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret, callbackEstraData);
-        } else {
+            /*MG - Creazione organizzazione in LR - Inizio*/
+            //callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret, callbackEstraData);
+            window[callback]((ret.data[1].title),(ret.data[0]._id));
+        } 
+        /*
+        else {
             if (senderForm == undefined && el != undefined) {
                 resetContainer(senderForm[0]);
             }
@@ -3441,10 +3711,34 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
             }
             return ret;
         }
+        */
+        if (senderForm == undefined && el != undefined) {
+            resetContainer(senderForm[0]);
+        }
+        if (useGritter) {
+            if (senderForm != undefined) {
+                resetContainer(senderForm[0]);
+                useAlert(senderForm[0], gr_title, gr_text, success);
+                setTimeout(function() {
+                    $('#entityAdd').modal('hide');
+                    $('#entityEdit .modal-body .contbody').empty();
+                    $('#entityAdd .modal-body').empty();
+                    reloadLatestRenderedList();
+                }, 1000);
+            } else {
+                useGritterTool(gr_title, gr_text);
+            }
+        }
+        return ret;
+        /*MG - Creazione organizzazione in LR - Fine*/
     } else {
         if (callback != undefined) {
-            callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret, callbackEstraData);
-        } else {
+            /*MG - Creazione organizzazione in LR - Inizio*/
+            //callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret, callbackEstraData);
+            window[callback]((ret.data[1].title),(ret.data[0]._id));
+        } 
+        /*
+        else {
             if (useGritter) {
                 if (senderForm != undefined)
                     useAlert(senderForm[0], gr_title, gr_text, success);
@@ -3452,6 +3746,14 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
                     useGritterTool(gr_title, gr_text, "error");
             }
         }
+        */
+        if (useGritter) {
+            if (senderForm != undefined)
+                useAlert(senderForm[0], gr_title, gr_text, success);
+            else
+                useGritterTool(gr_title, gr_text, "error");
+        }
+         /*MG - Creazione organizzazione in LR - Fine*/
     }
     return ret;
 }
@@ -3615,8 +3917,12 @@ function actionPutMultipartForm(type, el, datapost, senderForm, callback, caller
         if (callerForm != undefined)
             senderForm = callerForm;
         if (callback != undefined) {
-            callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret);
-        } else {
+            /*MG - Associazione utente all'organizzazione in LR - Inizio*/
+            //callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret);
+            window[callback]((ret.data[0]));
+        } 
+        /*
+        else {
             if (senderForm == undefined && el != undefined) {
                 resetContainer("#entityEdit");
             }
@@ -3638,6 +3944,28 @@ function actionPutMultipartForm(type, el, datapost, senderForm, callback, caller
             }, 1000);
             return ret;
         }
+        */
+        if (senderForm == undefined && el != undefined) {
+            resetContainer("#entityEdit");
+        }
+        if (useGritter) {
+            useAlert("#entityEdit", gr_title, gr_text, success);
+        }
+        setTimeout(function() {
+            $('#entityEdit').modal('hide');
+            if (actualTemplateType == "fullcontent")
+                reloadEntityEdited(actualItem);
+            if (actualTemplateType == "datatable") {
+                setTimeout(function() {
+                    var tmp_conf = kmsconf;
+                    // resetDymerStart();
+                    //  generateMapDT(tmp_conf);
+                    refreshMapDT(tmp_conf);
+                }, 150);
+            }
+        }, 1000);
+        return ret;
+        /*MG - Associazione utente all'organizzazione in LR - Fine*/
     } else {
         if (useGritter)
             useAlert("#entityEdit", gr_title, gr_text, success);
@@ -3754,11 +4082,11 @@ function showAddEntityBindReload() {
         $('#entityAdd').find("[onclick^='actionPostMultipartForm']").attr('onclick', actToAppend);
         if ($('#entityAdd').find(".summernote").length > 0)
             $('#entityAdd').find(".summernote").summernote({ dialogsInBody: true });
-            try {
-        $('.selectpicker').selectpicker();
-    } catch(e) {
-        
-      }
+        try {
+            $('.selectpicker').selectpicker();
+        } catch(e) {
+
+        }
     }, 1000);
 }
 
@@ -3881,6 +4209,7 @@ function manageTamplateList(ar) {
             templateslist[k] = ar[k];
         }
     }
+    //console.log("==> templateslist ", templateslist);
     for (var k in templateslist) {
         templateslist[k].loadAllTemplate();
     }
@@ -3903,10 +4232,21 @@ function flatEsArray(arr, templates) {
         for (var key in source) {
             arr[i][key] = source[key];
         }
+        //TODO check
+        /*
         if (!templates.hasOwnProperty(el._index + '@' + el._type)) {
             var temp_templ = new ElTemplate(el._index, el._type);
             templates[el._index + '@' + el._type] = temp_templ;
+        }*/
+        if (!templates.hasOwnProperty(el._index + '@' + el._index)) {
+            var temp_templ = new ElTemplate(el._index, el._index);
+            templates[el._index + '@' + el._index] = temp_templ;
         }
+        /*console.log("==> templateslist flatEsArray ", templateslist);
+        if (!templates.hasOwnProperty(el._index)) {
+            var temp_templ = new ElTemplate(el._index);
+            templates[el._index] = temp_templ;
+        }*/
     }
     return {
         arr,
@@ -3932,7 +4272,11 @@ let getKmsTemplateMap = function(ar, rendertype) {
     var promise = new Promise(function(resolve, reject) {
         removeTempImport("tftemp").then(function() {
             var item = ar[0];
-            var tmpl = item._index + "@" + item._type;
+            //TODO check
+
+            //var tmpl = item._index + "@" + item._type;
+            var tmpl = item._index + "@" + item._index;
+            //var tmpl = item._index;
             var mytemplate = templateslist[tmpl]["viewtype"][rendertype];
             if (mytemplate == "") {
                 rendertype = "teaserlist";
@@ -4002,9 +4346,16 @@ function extractStrElast(allindex) {
         /*if (key == 'geopoint')
             tempSchema = allindex[key].mappings['webcontent'].properties;
         else*/
+        /*console.log('allindex');
+        console.log(allindex[key]);
+        console.log(key);*/
         if (allindex[key].mappings[key] == undefined)
-            tempSchema = allindex[key].mappings["_doc"].properties;
+            //tempSchema = allindex[key].mappings["_doc"].properties;
+            //TODO check: sembra caricare la entity corretta in opennsearch config
+            //tempSchema = allindex[key].mappings["_doc"].properties; old elastic
+            tempSchema = allindex[key];
         else
+            //TODO controlla se va eliminato key da mappings
             tempSchema = allindex[key].mappings[key].properties;
         reCextractStrElast(tempSchema, lista, key);
     }
@@ -4331,31 +4682,31 @@ function mergeDeep(...objects) {
 function dymerphases(options) {
     let _this = this;
     let defaultProperties = {
-            "type": "", //view/create/edit/delete
-            "modal": {
-                "active": false,
-                "type": "" //edit/create/delete
-            },
-            "edit": {
-                "active": false,
-                "subphase": ""
-            },
-            "view": {
-                "active": false,
-                "phase": "",
-                "subphase": "",
-                "type": "" //full/list/map? 
-            },
-            "create": {
-                "active": false,
-                "subphase": ""
-            },
-            "delete": {
-                "active": false,
-                "subphase": ""
-            }
+        "type": "", //view/create/edit/delete
+        "modal": {
+            "active": false,
+            "type": "" //edit/create/delete
+        },
+        "edit": {
+            "active": false,
+            "subphase": ""
+        },
+        "view": {
+            "active": false,
+            "phase": "",
+            "subphase": "",
+            "type": "" //full/list/map?
+        },
+        "create": {
+            "active": false,
+            "subphase": ""
+        },
+        "delete": {
+            "active": false,
+            "subphase": ""
         }
-        //options = {...defaultOptions, ...options };
+    }
+    //options = {...defaultOptions, ...options };
     options = (options == undefined || options == null) ? {} : options;
     let properties = mergeDeep(defaultProperties, options);
     this.init = function() { //console.log('tpbase', properties)
@@ -4385,7 +4736,7 @@ function dymerphases(options) {
         return properties[properties.type].subphase;
     }
     this.setSubPhase = function(type, active, subphase, typephase) {
-       // console.log('setSubPhase',type, active, subphase, typephase);
+        // console.log('setSubPhase',type, active, subphase, typephase);
         properties.type = type; //view/create/edit/delete
         properties[type].active = active;
         properties[type].subphase = subphase;
@@ -4425,9 +4776,9 @@ function dymerphases(options) {
         return properties.view.subphase;
     }
     this.getViewtType = function() {
-            return properties.view.type;
-        }
-        /*
+        return properties.view.type;
+    }
+    /*
 this.setEditPhase = function(phase, active) {
 properties.edit.active = active;
 properties.edit.phase = phase;
@@ -4444,16 +4795,16 @@ this.getEditPhase = function() {
 return properties.edit.phase;
 }
 this.activeEditPhase = function (phase ) {
-this.setEditPhase(phase,true); 
+this.setEditPhase(phase,true);
 }
- 
+
 this.setViewPhase = function(phase, active, type) {
 properties.view.active = active;
 properties.view.phase = phase;
 properties.view.phase = type;
 properties.phase="view";
 }
- 
+
 this.disableViewPhase = function() {
 properties.view.active = false;
 properties.view.phase = "";
@@ -4477,24 +4828,24 @@ return properties.phase;
 function dymerSearch(options) {
     let _this = this;
     let defaultOptions = {
-            "conditionQuery": "AND",
-            "groupfilterclass": "span12 col-12",
-            "addfreesearch": false,
-            "showFilterBtn": false,
-            "showAdvOptionBtn": false,
-            "translations": {
-                und: {
-                    freesearch: {
-                        label: "Search",
-                        placeholder: "Enter any term"
-                    },
-                    submit: {
-                        text: "SEARCH"
-                    }
+        "conditionQuery": "AND",
+        "groupfilterclass": "span12 col-12",
+        "addfreesearch": false,
+        "showFilterBtn": false,
+        "showAdvOptionBtn": false,
+        "translations": {
+            und: {
+                freesearch: {
+                    label: "Search",
+                    placeholder: "Enter any term"
+                },
+                submit: {
+                    text: "SEARCH"
                 }
             }
         }
-        //options = {...defaultOptions, ...options };
+    }
+    //options = {...defaultOptions, ...options };
     options = mergeDeep(defaultOptions, options);
     this.init = function() {
         //   console.log('options', options);
@@ -4543,7 +4894,7 @@ function dymerSearch(options) {
              slides[index].style = "display:none";
              slides[index].className += " too-slide-single-slide too-slide-fade";
          });
- 
+
          this.goToSlide(0)
          this.prepareControls();
          this.orderElement();*/
@@ -4639,10 +4990,10 @@ function dymerSearch(options) {
                         let datapost = {
                             instance: { "index": rel },
                             qoptions: { relations: false }
-                        }; 
+                        };
                         let listToselect = actionPostMultipartForm("entity.search", undefined, datapost, undefined, undefined, undefined, false, undefined);
                         let inde = 0;
-                          //mr rel fix
+                        //mr rel fix
                         var templ_data = flatEsArray(listToselect.data);
                         listToselect.data = templ_data.arr;
                         let ismulti = ($(this).attr('searchable-multiple') == "true") ? "multiple" : 'data-max-options="1"';
@@ -4660,7 +5011,7 @@ function dymerSearch(options) {
                         /*if (usePlaceholder)
                             $sel.append($('<option value="" disabled selected>').attr('value', "").text($(this).attr('searchable-label')));*/
                         $.each(listToselect.data, function(ind, value) {
-                            // $sel.append($("<option>").attr('value', value._id).text(value.title)); 
+                            // $sel.append($("<option>").attr('value', value._id).text(value.title));
                             // $sel.append($("<option>").attr('data-tokens', value._id).attr('value', value.title).text(value.title));
                             $sel.append($("<option>").attr('value', value._id).text(value.title));
                         });

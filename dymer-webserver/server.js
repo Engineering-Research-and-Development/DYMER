@@ -302,7 +302,7 @@ app.post('/api2/retriveinfo', loadUserInfo, async (req, res, next) => {
     //console.log('hdymeruser2',hdymeruser);
     res.clearCookie("DYMisi");
     res.cookie("dymercookie", 'value', {expire: 360000 + Date.now()});
-
+    res.cookie("dymerdoc", hdymeruser, {expire: 360000 + Date.now()});
     //   console.log("retriveinfo req.isAuthenticated()", req.isAuthenticated());
     const authHeader = req.headers.authorization;
     var obj_isi = {};
@@ -495,7 +495,7 @@ function loadUserInfo(req, res, next) {
 
     axios(config)
         .then(function (response) {
-           // console.log('dymeruserAA', response.data.data);
+            console.log('dymeruserAA', response.data.data);
             req.headers["dymeruser"] = new Buffer(JSON.stringify(response.data.data)).toString("base64");
             //if (req.headers["reqfrom"] == undefined || req.headers["reqfrom"] == 'undefined')
             if (req.headers["reqfrom"] == undefined)

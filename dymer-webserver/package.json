@@ -11,6 +11,9 @@
         "dev": "nodemon server.js",
         "swagger-autogen": "node swagger.js"
     },
+    "nodemonConfig": {
+        "ignore": ["public/cdn/*.css", "public/cdn/*.js"]
+    },
     "dependencies": {
         "angular": "1.8.2",
         "angular-file-upload": "2.6.1",

@@ -200,6 +200,11 @@ function config($routeProvider, $locationProvider) {
             controller  : "swaggerController",
             permission: ["app-admin" ]
         } )
+            .when( site_prefix + "/library", {
+                templateUrl : site_prefix + "/public/app/views/pages/demos/library.html",
+                controller  : "libraryController",
+                permission  : [ "app-admin" ]
+            } )
         /*   .when(site_prefix + "/authenticate", {
                templateUrl: site_prefix + "/authenticate"
            })*/

@@ -10,6 +10,7 @@ const path = require("path");
 const nameFile = path.basename(__filename);
 const logger = require('./routes/dymerlogger');
 const http = require('http');
+const custumLibraries = require('./libInit');
 
 exports.getContextPath = function(typeServ) {
     let cpath = global.gConfig.services[typeServ]["context-path"];
@@ -50,6 +51,8 @@ exports.mongoUrlEntitiesBridge = function() {
 };
 exports.getServiceConfig = function(typeServ) {
     let cnf = global.gConfig.services[typeServ];
+    //console.log("typeServ ",typeServ);
+    //console.log("cnf ",cnf);
     return cnf;
 };
 
@@ -157,12 +160,13 @@ exports.checkIsDymerUser = function(req, res, next) {
 exports.checkIsAdmin = function(req, res, next) {
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
-    //console.log("dymeruser", dymeruser);
+    //console.log("==> checkIsAdmin dymeruser:", dymeruser);
     if ((dymeruser.roles.indexOf("app-admin") > -1)) {
+        console.log(nameFile + ' | checkIsAdmin | Yes permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
         logger.info(nameFile + ' | checkIsAdmin | Yes permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
         next();
     } else {
-        //console.log('checkIsAdmin | No permission:', dymeruser.id, req.originalUrl, req.method, req.url);
+        console.log('checkIsAdmin | No permission:', dymeruser.id, req.originalUrl, req.method, req.url);
         logger.info(nameFile + ' | checkIsAdmin | No permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
         var ret = new jsonResponse();
         ret.setMessages("Sorry, something went wrong: you don't have permission or your authentication has expired");
@@ -171,6 +175,28 @@ exports.checkIsAdmin = function(req, res, next) {
         return res.send(ret);
     }
 }
+
+exports.checkIsAdminRun = function(req, res, next) {
+    const hdymeruser = req.headers.dymeruser;
+    const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+    //console.log("==> checkIsAdmin dymeruser:", dymeruser);
+    if ((dymeruser.roles.indexOf("app-admin") > -1)) {
+        //console.log("==>ruolo app-admin");
+        req.dymeruser = dymeruser;
+        console.log(nameFile + ' | checkIsAdmin | Yes permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
+        logger.info(nameFile + ' | checkIsAdmin | Yes permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
+        next();
+    } else {
+        console.log('checkIsAdmin | No permission:', dymeruser.id, req.originalUrl, req.method, req.url);
+        logger.info(nameFile + ' | checkIsAdmin | No permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
+        var ret = new jsonResponse();
+        ret.setMessages("Sorry, something went wrong: you don't have permission or your authentication has expired");
+        // res.status(200);
+        ret.setSuccess(false);
+        return res.send(ret);
+    }
+}
+
 exports.checkIsPortalUser = function(req, res, next) {
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
@@ -191,9 +217,23 @@ exports.checkIsPortalUser = function(req, res, next) {
 exports.getDymerUser = function(req, res, next) {
     const hdymeruser = req.headers.dymeruser;
     if (hdymeruser == undefined) {
+        //console.log("==> getDymerUser hdymeruser is undefined");
         return null;
     } else {
         const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+        //console.log("==> getDymerUser dymeruser:", dymeruser);
         return dymeruser;
     }
+}
+exports.getDymerUser2 = function(req, res, next) {
+    /*const hdymeruser = req.headers.dymeruser;
+    if (hdymeruser == undefined) {
+        console.log("==> getDymerUser hdymeruser is undefined");
+        return "test"";
+    } else {
+        const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+        console.log("==> getDymerUser dymeruser:", dymeruser);
+        return "test2"";
+    }*/
+    return "test";
 }

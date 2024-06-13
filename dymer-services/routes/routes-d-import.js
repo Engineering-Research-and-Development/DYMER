@@ -331,12 +331,14 @@ router.post('/fromcsv/:enttype', util.checkIsAdmin,(req, res) => {
             
             singleEntity.data.properties = propert_
            console.log(singleEntity.data.properties)
-            if (rel_id != undefined)
-                singleEntity.data.relation = { dih: [{ to: rel_id }] };
+           if(newentityType.toLocaleLowerCase() == "service") {
+                if (rel_id != undefined)
+                   singleEntity.data.relation = { dih: [{ to: rel_id }] };
+            }
 
 			  if(newentityType.toLocaleLowerCase() == "dih") {
-                const initiativesArray = singleEntity.data.Initiatives?.replace(/\r/g, '').split(",").map(el => { return {"to": el}})
-                const projectArray = singleEntity.data.Project?.replace(/\r/g, '').split(",").map(el => { return {"to": el}})
+                const initiativesArray = singleEntity.data.initiatives?.replace(/\r/g, '').split(",").map(el => { return {"to": el}})
+                const projectArray = singleEntity.data.project?.replace(/\r/g, '').split(",").map(el => { return {"to": el}})
 
                 // initialize if I need
                 singleEntity.data.relation = singleEntity.data.relation || {};
@@ -789,48 +791,45 @@ function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action, fileurl) {
 }
 
 
-/*Funzione di import MODEL/TEMPLATES - Inizio*/
-function modelTemplatesImport(formTemplate, sourcepath, userinfo_objJsonB64_admin, extrainfo_objJsonB64_admin, originalrelquery, newentityType){
-    var api = '/api/'+ formTemplate + 's/api/v1/' + formTemplate;
-    //var api = '/api/v1/' + formTemplate;
+/*MG - Funzione di import MODEL e TEMPLATES - Inizio*/
+function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_objJsonB64_admin, extrainfo_objJsonB64_admin, originalrelquery, newentityType){
+    let localApiUrl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + '/api/' + formTemplate + 's/api/v1/' + formTemplate + "/";
+    let externalApiUrl = sourcepath +'/api/' + formTemplate + 's/api/v1/' + formTemplate + "/";
     /*Verifico se i moduli da importare sono già presenti nella destinazione*/
-    console.log(util.getServiceUrl(formTemplate) + api);
-    var pt_internal = util.getServiceUrl('webserver') + util.getContextPath('webserver') + api;
-    var modulesIds = [];
-    var titleId = {};
-    var formdata_admin = new FormData();
-    var postData = new FormData();
-    var config = {
+    let modulesIds = [];
+    let titleId = {};
+    let formdata_admin = new FormData();
+    let postData = new FormData();
+    let config = {
         method: 'GET',
-        url: pt_internal,
+        url: localApiUrl,
         params: { "query": { "instance._index": { "$eq": newentityType } } },
-         headers: {
+        headers: {
             ...formdata_admin.getHeaders(),
             'dymeruser': userinfo_objJsonB64_admin,
-          //  "Referer": "http://localhost/",
+            'Referer': 'http://localhost/',
             'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
             'extrainfo': `${extrainfo_objJsonB64_admin}`,
         } 
     };
     axios(config).then(response => {
         /*Se sono presenti ne acquisisco id e titolo*/
-        console.log("response",response.data.data);
         response.data.data.forEach(data => {
-            if (data.instance[0]._index == newentityType){
+            //if (data.instance[0]._index == newentityType){
                 console.log("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - " + formTemplate + " Id", data._id);
                 titleId.id = data._id;
                 titleId.title = data.title;
+                titleId.changed = data.properties.changed;
                 modulesIds.push(titleId);
                 titleId = {};
-            }
+            //}
         }); 
     });
-   // return true
     /*Recupero i moduli dalla sorgente*/
     config = {
         method: 'GET',
-        url: sourcepath + api,
-        params: { "query": { "instance._index": { "$eq": originalrelquery } } },
+        url: externalApiUrl,
+        params: { "query": { "instance._index": { "$eq": originalrelquery } }  },
         headers: {
             ...formdata_admin.getHeaders(),
             'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
@@ -844,15 +843,15 @@ function modelTemplatesImport(formTemplate, sourcepath, userinfo_objJsonB64_admi
                     if (element.contentType == "text/html"){
                         /*Se i moduli HTML sono già presenti nella destinazione, li elimino*/
                         if (modulesIds.length > 0){
-                            modulesIds.forEach(titleId => {
-                                if (data.title == titleId.title){ 
+                            modulesIds.forEach(titleId => {    
+                                if (data.title == titleId.title && (data.properties.changed > titleId.changed || forceimport)){ 
                                     var config = {
                                         method: 'delete',
-                                        url: util.getServiceUrl(formTemplate) + api + "/"+ titleId.id,
+                                        url: localApiUrl + titleId.id,
                                         headers: {
                                             ...postData.getHeaders(),
                                             'dymeruser': userinfo_objJsonB64_admin,
-                                            //"Referer": "http://localhost/",
+                                            "Referer": "http://localhost/",
                                             'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
                                             'extrainfo': `${extrainfo_objJsonB64_admin}`,
                                         }
@@ -864,11 +863,11 @@ function modelTemplatesImport(formTemplate, sourcepath, userinfo_objJsonB64_admi
                                             if (element.contentType != "text/html"){
                                                 var config = {
                                                     method: 'delete',
-                                                    url: util.getServiceUrl(formTemplate) + api + "/"+ titleId.id,
+                                                    url: localApiUrl + titleId.id,
                                                     headers: {
                                                         ...postData.getHeaders(),
                                                         'dymeruser': userinfo_objJsonB64_admin,
-                                                       // "Referer": "http://localhost/",
+                                                        "Referer": "http://localhost/",
                                                         'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
                                                         'extrainfo': `${extrainfo_objJsonB64_admin}`,
                                                     }
@@ -885,92 +884,105 @@ function modelTemplatesImport(formTemplate, sourcepath, userinfo_objJsonB64_admi
                                     .catch(error => {
                                         console.error("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - HTML DELETE - error ===>", error);
                                     })       
-                                }      
+                                    /*Creazione HTML, JS e CSS*/
+                                    createModules(formTemplate, userinfo_objJsonB64_admin, extrainfo_objJsonB64_admin, 
+                                                  originalrelquery, newentityType, data, element, localApiUrl);
+                                }   
                             });
+                        }else{
+                            /*Creazione HTML, JS e CSS*/
+                            createModules(formTemplate, userinfo_objJsonB64_admin, extrainfo_objJsonB64_admin, 
+                                          originalrelquery, newentityType, data, element, localApiUrl);
                         }
-                        /*Creazione HTML*/
-                        var infoData = "";
-                        data.name = data.title;
-                        infoData = data;
-                        infoData.instance._index = newentityType;
-                        infoData.instance._type = newentityType;
-                        delete delete infoData._id;
-                        postData = new FormData();
-                        appendFormdata(postData, { "data": infoData});
-                        element.data = element.data.replace(new RegExp(originalrelquery, 'g'), newentityType);
-                        postData.append('data[file]', element.data, element.filename, { type: element.contentType });
-                        config = {
-                            method: 'post',
-                            url: util.getServiceUrl(formTemplate) + api,
-                            headers: {
-                                ...postData.getHeaders(),
-                                'dymeruser': userinfo_objJsonB64_admin,
-                               // "Referer": "http://localhost/",
-                                'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
-                                'extrainfo': `${extrainfo_objJsonB64_admin}`,
-                            },
-                            data: postData
-                        };
-                        axios(config).then(response1 => {
-                            console.log("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - HTML - response ===>", response1);   
-                            /*Recupero gli id dei moduli appena creati*/
-                            config = {
-                                method: 'GET',
-                                url: util.getServiceUrl(formTemplate) + api,
-                                headers: {
-                                    ...formdata_admin.getHeaders(),
-                                    'dymeruser': userinfo_objJsonB64_admin,
-                                    //"Referer": "http://localhost/",
-                                    'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
-                                    'extrainfo': `${extrainfo_objJsonB64_admin}`,
-                                }
-                            };
-                            axios(config).then(response2 => {
-                                console.log("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - Read " + formTemplate + " Id - response ===>", response2);
-                                data.files.forEach(element => {
-                                    /*Aggiungo js e css*/
-                                    postData = new FormData();
-                                    response2.data.data.forEach(data1 => {
-                                        if (element.contentType != "text/html" && data1.title == data.title){
-                                            infoData.pageId = data1._id;
-                                            appendFormdata(postData, { "data": infoData});
-                                            postData.append('data[file]', element.data, element.filename, { type: element.contentType });
-                                            config = {
-                                                method: 'post',
-                                                url: util.getServiceUrl(formTemplate) + api + "/addAsset",
-                                                headers: {
-                                                    ...postData.getHeaders(),
-                                                    'dymeruser': userinfo_objJsonB64_admin,
-                                                    //"Referer": "http://localhost/",
-                                                    'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
-                                                    'extrainfo': `${extrainfo_objJsonB64_admin}`,
-                                                },
-                                                data: postData
-                                            };
-                                            axios(config).then(response3 => {
-                                                console.log("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - " +element.contentType+" response ===>", response3);
-                                            })   
-                                            .catch(error => {
-                                                console.error("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - " +element.contentType+" error ===>", error);
-                                            })
-                                        }
-                                    });
-                                });
-                            })      
-                            .catch(error => {
-                                console.error("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - Read Id - error ===>", error);
-                            })
-                        })      
-                        .catch(error => {
-                                console.error("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - HTML - error ===>", error);
-                        })     
                     }
                 });
             }
         });      
     });   
 } 
-/*Funzione di import MODEL/TEMPLATES - Fine*/
+
+/*Creazione HTML, JS e CSS*/
+function createModules(formTemplate, userinfo_objJsonB64_admin, extrainfo_objJsonB64_admin, 
+                       originalrelquery, newentityType, data, element, localApiUrl){
+    /*Creazione HTML*/
+    var infoData = "";
+    data.name = data.title;
+    infoData = data;
+    infoData.instance._index = newentityType;
+    infoData.instance._type = newentityType;
+    delete delete infoData._id;
+    var formdata_admin = new FormData();
+    var postData = new FormData();
+    appendFormdata(postData, { "data": infoData});
+    element.data = element.data.replace(new RegExp(originalrelquery, 'g'), newentityType);
+    postData.append('data[file]', element.data, element.filename, { type: element.contentType });
+    config = {
+        method: 'post',
+        url: localApiUrl,
+        headers: {
+            ...postData.getHeaders(),
+            'dymeruser': userinfo_objJsonB64_admin,
+            "Referer": "http://localhost/",
+            'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
+            'extrainfo': `${extrainfo_objJsonB64_admin}`,
+        },
+        data: postData
+    };
+    axios(config).then(response1 => {
+        console.log("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - HTML - response ===>", response1);   
+        /*Recupero gli id dei moduli appena creati*/
+        config = {
+            method: 'GET',
+            url: localApiUrl,
+            headers: {
+                ...formdata_admin.getHeaders(),
+                'dymeruser': userinfo_objJsonB64_admin,
+                "Referer": "http://localhost/",
+                'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
+                'extrainfo': `${extrainfo_objJsonB64_admin}`,
+            }
+        };
+        axios(config).then(response2 => {
+            console.log("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - Read " + formTemplate + " Id - response ===>", response2);
+            data.files.forEach(element => {
+                /*Aggiungo js e css*/
+                postData = new FormData();
+                response2.data.data.forEach(data1 => {
+                    if (element.contentType != "text/html" && data1.title == data.title){
+                        infoData.pageId = data1._id;
+                        appendFormdata(postData, { "data": infoData});
+                        postData.append('data[file]', element.data, element.filename, { type: element.contentType });
+                        config = {
+                            method: 'post',
+                            url: localApiUrl + "addAsset",
+                            headers: {
+                                ...postData.getHeaders(),
+                                'dymeruser': userinfo_objJsonB64_admin,
+                                "Referer": "http://localhost/",
+                                'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
+                                'extrainfo': `${extrainfo_objJsonB64_admin}`,
+                            },
+                            data: postData
+                        };
+                        axios(config).then(response3 => {
+                            console.log("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - " +element.contentType+" response ===>", response3);
+                        })   
+                        .catch(error => {
+                            console.error("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - " +element.contentType+" error ===>", error);
+                        })
+                    }
+                });
+            });
+        })      
+        .catch(error => {
+            console.error("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - Read Id - error ===>", error);
+        })
+    })      
+    .catch(error => {
+            console.error("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - HTML - error ===>", error);
+    })  
+}
+/*MG - Funzione di import MODEL e TEMPLATES - Fine*/
 
 async function latLongFromCountry(list, el) {
     return new Promise((resolve, reject) => {
@@ -1286,6 +1298,9 @@ router.get('/generateuser', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     return res.send(ret);
 });
+
+
+
 router.get('/updategid/:entype/:gid/:forceall?', util.checkIsAdmin, (req, res) => {
     logger.info(nameFile + '| get/updategid');
     var entype = req.params.entype;
@@ -1451,6 +1466,7 @@ router.get('/updategid/:entype/:gid/:forceall?', util.checkIsAdmin, (req, res) =
 // '/api/dservice/api/v1/import/fromdymer'
 
 router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
+
     var ret = new jsonResponse();
     var id = req.params.id;
     var myfilter = { "_id": id };
@@ -1466,6 +1482,8 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
         let importentities = (crnrule.importentities == undefined) ? false : crnrule.importentities;
         let importmodel = (crnrule.importmodel == undefined) ? false : crnrule.importmodel;
         let importtemplates = (crnrule.importtemplates == undefined) ? false : crnrule.importtemplates;
+        let forceimportmodel = (crnrule.forceimportmodel == undefined) ? false : crnrule.forceimportmodel;
+        let forceimporttemplates = (crnrule.forceimporttemplates == undefined) ? false : crnrule.forceimporttemplates;
         let importRelations = (crnrule.importrelation == undefined) ? false : crnrule.importrelation;
         let listRelationsImports = (crnrule.typerelations == undefined || crnrule.typerelations == "") ? [] : crnrule.typerelations.split(",");
         let sameid = (crnrule.sameid == undefined) ? false : crnrule.sameid;
@@ -1557,6 +1575,8 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
                     url: pt_internal,
                     headers: {
                         ...formdata_admin.getHeaders(),
+                        'dymeruser': userinfo_objJsonB64_admin,
+                        'Referer': 'http://localhost/',
                         'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
                         'extrainfo': `${extrainfo_objJsonB64_admin}`,
                     },
@@ -1693,16 +1713,18 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
                             }
                         });
 
+                        /*MG - Gestione import di MODEL e TEMPLATES - Inizio*/
                         if (importmodel){
-                            modelTemplatesImport("form", crnrule.sourcepath, userinfo_objJsonB64_admin, extrainfo_objJsonB64_admin, originalrelquery, newentityType);
+                            modelTemplatesImport("form", forceimportmodel, crnrule.sourcepath, userinfo_objJsonB64_admin, extrainfo_objJsonB64_admin, originalrelquery, newentityType);
                         }
                         if (importtemplates){
-                            modelTemplatesImport("template", crnrule.sourcepath, userinfo_objJsonB64_admin, extrainfo_objJsonB64_admin, originalrelquery, newentityType);
+                            modelTemplatesImport("template", forceimporttemplates, crnrule.sourcepath, userinfo_objJsonB64_admin, extrainfo_objJsonB64_admin, originalrelquery, newentityType);
                         }
+                        /*MG - Gestione import di MODEL e TEMPLATES - Fine*/
 
-                        /*Import delle ENTITIES*/
+                        /*MG - Import delle ENTITIES - Inizio*/
                         if (importentities){
-                            /*Verifica della CONDITION*/
+                            /*MG - Verifica della CONDITION - Inizio*/
                             if (crnrule.condition != undefined) {
                                 var mfunc = crnrule['condition'];
                                 try {
@@ -1743,6 +1765,7 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
                                     }, 3500 * (index + 1));
                                 });
                             }
+                            /*MG - Verifica della CONDITION - Fine*/
                         }
                        /* listTopost.forEach(function(obj, index) {
                             setTimeout(function() {
@@ -1760,6 +1783,7 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
                                 postMyDataAndFiles(obj.data, newentityType, obj.DYM, obj.DYM_EXTRA, "put", fileurl);
                             }, 3500 * (index + 1));
                         }); */
+                        /*MG - Import delle ENTITIES - Fine*/
                     })
                     .catch(error => {
                         console.error("ERROR | " + nameFile + " | Cron Job Import  | post ", error);
@@ -2035,4 +2059,51 @@ router.get('/fromdymer_original/:id', util.checkIsAdmin, (req, res) => {
         }
     })
 });
+
+
+router.get('/scrap/:url', util.checkIsAdmin, (req, res) => {
+
+    var ret = new jsonResponse();
+    var url = req.params.url;
+    scrapeTableToJson(url).then(data => {
+        console.log("DATI TABELLA")
+        console.log(data); // Stampa l'array JSON
+        return res.send(data);
+    })
+    .catch(error => {
+        console.error("ERROR | " + nameFile + " | get/scrap/:id | post ", error);
+        logger.error(nameFile + ' | get/scrap/:id | post ' + error);
+        ret.setSuccess(false);
+        ret.setMessages("ax error");
+        return res.send(ret);
+    });
+});
+
+async function scrapeTableToJson(url) {
+    try {
+        const response = await axios.get(url);
+        const $ = cheerio.load(response.data);
+        const table = $('table');
+
+        const records = [];
+        const rows = table.find('tr').slice(1);
+
+        const headers = table.find('th').map((i, el) => $(el).text().trim()).get();
+
+        rows.each((i, row) => {
+            const record = {};
+
+            $(row).find('td').each((j, cell) => {
+                record[headers[j]] = $(cell).text().trim();
+            });
+
+            records.push(record);
+        });
+
+        return JSON.stringify(records, null, 2);
+    } catch (error) {
+        console.error('Errore durante lo scraping:', error);
+    }
+}
+
 module.exports = router;

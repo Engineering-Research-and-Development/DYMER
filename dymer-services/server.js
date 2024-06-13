@@ -34,6 +34,7 @@ var routes_dymer_workflow = require('./routes/routes-d-workflow');
 var routes_dymer_usermap = require('./routes/routes-d-usermap');
 var routes_dymer_taxonomy = require('./routes/routes-d-taxonomy');
 var routes_dymer_import = require('./routes/routes-d-import');
+var routes_dymer_library = require('./routes/routes-d-library');
 //var routes_dymer_importsocs = require('./routes/routes-d-import_socs');
 //var routes_dymer_importhb = require('./routes/routes-d-import_hb');
 var routes_dymer_permission = require('./routes/routes-d-perm');
@@ -82,6 +83,7 @@ app.use('/api/v1/usermap', routes_dymer_usermap
 app.use('/api/v1/import', routes_dymer_import
 // #swagger.tags = ['Services']
 );
+app.use(util.getContextPath('dservice') + '/api/v1/library', routes_dymer_library);
 //app.use('/api/v1/import_socs', routes_dymer_importsocs);
 //app.use('/api/v1/import_hb', routes_dymer_importhb);
 app.use('/api/v1/perm', routes_dymer_permission
