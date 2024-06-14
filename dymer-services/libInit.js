@@ -13,7 +13,7 @@ const connectToDatabase = () => {
 	} );
 };
 
-const Libraries = require( './models/permission/Libraries' );
+const Libraries = require( './models/permission/DymerLibraries' );
 
 const initLibraries = async () => {
 	//console.log("libInit.js | initLibraries");

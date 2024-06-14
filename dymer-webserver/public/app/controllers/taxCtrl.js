@@ -140,9 +140,11 @@ angular.module('taxCtrl', [])
             newPageModal.modal("hide");
             useGritterTool("Vocabulary", "deleted with success")
         };
+        
         $scope.createVocabulary = function(frm) {
             // rendering name and description form
             console.log('frm', frm);
+            console.log('$scope', $scope);
             var serviceurl = baseContextPath + '/api/dservice/api/v1/taxonomy';
             $http({
                 url: serviceurl,
@@ -152,10 +154,78 @@ angular.module('taxCtrl', [])
                 $scope.vocabularies.push(ret.data.data)
                 useGritterTool("Vocabulary", "new vocabulary with success")
                 console.log(ret.data.data)
+                /*MG - Inizio*/
+                $scope.form.title = "";
+                $scope.form.description = "";
+                /*MG - Fine*/
             }).catch((err) => {
                 console.log(err)
             });
         };
+
+        /*MG - Implementazione import di un vocabolario - INIZIO*/ 
+        $scope.importVocabulary = function(frm) {
+            /*Elimino il vocabolario,se esiste già*/
+            $http({
+                url: baseContextPath + '/api/dservice/api/v1/taxonomy/title/'+frm.title,
+                method: "GET",
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            }).then(function(vocabulary) {
+                if (vocabulary.data.data != null){ 
+                    $http({
+                        url: baseContextPath + '/api/dservice/api/v1/taxonomy/' + vocabulary.data.data._id,
+                        method: "DELETE"
+                    }).then(function(del) {
+                        console.log("Eliminazione vocabolario esistente in locale ===> ", del);
+                    }).catch((err) => {
+                        console.log(err)
+                    })
+                }
+            });
+
+            /*Acquisisco il vocabolario dalla sorgente*/
+            $http({
+                url: frm.sourcePath + '/api/dservice/api/v1/taxonomy/title/'+frm.title,
+                method: "GET",
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            }).then(function(vocabulary) {
+                if (vocabulary.data.data != null){ 
+                    console.log('Vocabolario da importare ===> ', vocabulary.data.data);
+                    found = true;
+                    voc = {};
+                    voc.title = vocabulary.data.data.title;
+                    voc.description = vocabulary.data.data.description;
+                    /*Creo il vocabolario vuoto*/
+                    $http({
+                        url: baseContextPath + '/api/dservice/api/v1/taxonomy',
+                        method: "POST",
+                        data: voc
+                    }).then(function(ins) {
+                        /*Aggiungo tutti i vocaboli*/
+                        $http({
+                            url: baseContextPath + '/api/dservice/api/v1/taxonomy',
+                            method: "PUT",
+                            data: {
+                                id: ins.data.data._id,
+                                data: vocabulary.data.data.nodes
+                            }
+                        }).then(function(upd) {
+                            useGritterTool("Vocabulary", "import with success");
+                        }).catch((err) => {
+                            console.log(err)
+                        })
+                    }).catch((err) => {
+                        console.log(err);
+                    });
+                }else{
+                    useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>There is no vocabulary !</b>", "Check the title !" , "danger");  
+                };
+            }).catch((err) => {
+                console.log(err);
+                useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>Error during import. Try Again !</b>", "Check the source path !", "danger");
+            });
+        };
+        /*MG - Implementazione import di un vocabolario - FINE*/ 
 
         $scope.selectedVocab = -1;
         $scope.selectVocab = function(index, obj) {

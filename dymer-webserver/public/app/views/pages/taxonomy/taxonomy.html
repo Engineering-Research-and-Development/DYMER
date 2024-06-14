@@ -33,136 +33,174 @@
     </ol>
 
 </script>
-<div class="col-md-12">
-    <div class="card ">
-        <div class="card-header ">
-            <h5 class="card-title">Taxonomy</h5>
-            <div class="card-category">
-                manage vocabulary
-            </div>
-        </div>
-        <div class="card-body ">
-            <div class="row">
-                <div class="col-12 text-right">
-                    <span ng-click="actionShowHideAddVocab()" class="btn btn-info"> <i class="fa fa-plus-square-o"></i>
-                        Add New Vocabulary </span>
-                </div>
-            </div>
-            <div class="row" ng-show="showAddVocab">
-                <div class="col-12">
 
-                    <div>
-                        <form ng-submit="createVocabulary(form)">
-                            <label>Vocabulary Name</label>
-                            <input type="text" required class="form-control " ng-model="form.title">
-                            <label>Description</label>
-                            <textarea class="form-control " ng-model="form.description"></textarea>
-                            <!-- 
-                            <input type="checkbox" ng-model="form.bindservice"><label> Bind to external service</label>-->
-                            <div class="row text-right ">
-                                <div class="col-12 ">
-                                    <input class="btn btn-info " type="submit" value="Save Vocabulary">
-
+<!-- MG - Implementazione import di un vocabolario - INIZIO -->
+<div class="row">
+    <div class="col-md-12">
+        <ul class="nav nav-tabs nav-justified navtab-noborder">
+            <li class="nav-item">
+                <a class="nav-link  " ng-class="{active:tab===1}" aria-current="page" ng-click="tab = tab==1 ? a : 1">
+                    <h5 class="card-title text-warning"><i class="nc-icon nc-tile-56 text-warning"></i> Manage Vocabulary</h5>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link  " ng-class="{active:tab===2}" aria-current="page" ng-click="tab = tab==2 ? a : 2">
+                    <h5 class="card-title text-success"><i class="nc-icon nc-layout-11 text-success"></i> Import Vocabulary</h5>
+                </a>
+            </li>
+        </ul>
+        <div class="card " style="border-top-left-radius: 0px;border-top-right-radius: 0px;">
+            <div class="card-body   " ng-show="tab === 1">
+                <div class=" ">
+                    <div class="col-md-12">
+                        <div class="card ">
+                            <div class="card-body ">
+                                <div class="row">
+                                    <div class="col-12 text-right">
+                                        <span ng-click="actionShowHideAddVocab()" class="btn btn-info"> <i class="fa fa-plus-square-o"></i>
+                                            Add New Vocabulary </span>
+                                    </div>
+                                </div>
+                                <div class="row" ng-show="showAddVocab">
+                                    <div class="col-12">
+                                        <div>
+                                            <form ng-submit="createVocabulary(form)">
+                                                <label>Vocabulary Name</label>
+                                                <input type="text" required class="form-control " ng-model="form.title">
+                                                <label>Description</label>
+                                                <textarea required class="form-control " ng-model="form.description"></textarea>
+                                                <!-- 
+                                                <input type="checkbox" ng-model="form.bindservice"><label> Bind to external service</label>-->
+                                                <div class="row text-right ">
+                                                    <div class="col-12 ">
+                                                        <input class="btn btn-info " type="submit" value="Save Vocabulary">
+                    
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h5 class="card-title">Vocabularies</h5>
+                                        <ul class="nav nav-pills nav-fill">
+                                            <li class="nav-item" ng-repeat="singlvoc in vocabularies" ng-click="selectVocab($index,singlvoc)">
+                                                <a class="nav-link  " ng-class="{active: $index == selectedVocab}" href="#">
+                                                    <!--MG - INIZIO-->
+                                                    <i class="fa fa-book" aria-hidden="true"></i>
+                                                     {{singlvoc.title}} - {{singlvoc.description}}  
+                                                    <!--MG - FINE--> 
+                                                </a>
+                                            </li>
+                                        </ul>
+                                        <div class="alert alert-info" role="alert" ng-show="!vocabularies.length">
+                                            No data Available
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" ng-class="{'d-none': selectedVocab == -1}" ng-model="selectedVocab">
+                                    <div class="col-12 text-right">
+        
+                                        <span class="  btn btn-info btn-sm" ng-click="openModal('insertSubItem')"><span
+                                                class="fa fa-plus"></span></span>
+                                        <div class="col-12 text-left">
+                                            <div ui-tree id="tree-root">
+                                                <ol ui-tree-nodes ng-model="data">
+                                                    <li ng-repeat="node in data" ui-tree-node ng-include="'nodes_renderer.html'"></li>
+                                                </ol>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 text-right">
+                                            <input class="btn btn-info " ng-click="saveUpdateVocab(selectedVocab)" value="Save vocabulary">
+                                            <!-- <input class="btn btn-danger " ng-click="deleteVocab(selectedVocab)" value="Delete vocabulary"> -->
+                                            <input class="btn btn-danger " ng-click="openModal('deleteVocabulary')" value="Delete vocabulary">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer ">
+                                    <hr />
+                                    <div class="stats"><i class="fa fa-history"></i> Updated 12/05/2019</div>
                                 </div>
                             </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <hr>
-            <div class="row">
-                <div class="col-12">
-                    <h5 class="card-title">Vocabularies</h5>
-                    <ul class="nav nav-pills nav-fill">
-                        <li class="nav-item" ng-repeat="singlvoc in vocabularies" ng-click="selectVocab($index,singlvoc)">
-                            <a class="nav-link  " ng-class="{active: $index == selectedVocab}" href="#"><i
-                                    class="fa fa-book" aria-hidden="true"></i> {{singlvoc.title}}</a>
-                        </li>
-                    </ul>
-
-                    <div class="alert alert-info" role="alert" ng-show="!vocabularies.length">
-                        No data Available
-                    </div>
-                </div>
-            </div>
-            <div class="row" ng-class="{'d-none': selectedVocab == -1}" ng-model="selectedVocab">
-
-                <div class="col-12 text-right">
-
-                    <span class="  btn btn-info btn-sm" ng-click="openModal('insertSubItem')"><span
-                            class="fa fa-plus"></span></span>
-                    <div class="col-12 text-left">
-
-                        <div ui-tree id="tree-root">
-                            <ol ui-tree-nodes ng-model="data">
-                                <li ng-repeat="node in data" ui-tree-node ng-include="'nodes_renderer.html'"></li>
-                            </ol>
                         </div>
-                    </div>
-
-                    <div class="col-12 text-right">
-                        <input class="btn btn-info " ng-click="saveUpdateVocab(selectedVocab)" value="Save vocabulary">
-                        <!-- <input class="btn btn-danger " ng-click="deleteVocab(selectedVocab)" value="Delete vocabulary"> -->
-                        <input class="btn btn-danger " ng-click="openModal('deleteVocabulary')" value="Delete vocabulary">
-
-                    </div>
-                </div>
-            </div>
-
-
-
-            <div class="card-footer ">
-                <hr />
-                <div class="stats"><i class="fa fa-history"></i> Updated 12/05/2019</div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="insertSubItem" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <form>
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <p class="modal-title text-primary"> Insert New Element</p>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true"><small><i class="la la-close"></i></small></span>
-                        </button>
-                    </div>
-                    <input type="hidden" ng-model="newelvocab.id">
-                    <div class="modal-body text">
-                        <!---->
-
-                        <div class="row">
-                            <div class="col-2 d-flex flex-wrap align-items-center">
-                                <div class="text-primary">Node Key</div><img style="margin: 0 auto;">
+                        <div class="modal fade" id="insertSubItem" tabindex="-1" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <form>
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <p class="modal-title text-primary"> Insert New Element</p>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true"><small><i class="la la-close"></i></small></span>
+                                            </button>
+                                        </div>
+                                        <input type="hidden" ng-model="newelvocab.id">
+                                        <div class="modal-body text">
+                                            <!---->
+                                            <div class="row">
+                                                <div class="col-2 d-flex flex-wrap align-items-center">
+                                                    <div class="text-primary">Node Key</div><img style="margin: 0 auto;">
+                                                </div>
+                                                <div class="col-6" style="padding: 5px 0;"><input required type=" text " placeholder="Insert node key here" class="form-control" ng-model="newelvocab.value" /></div>
+                                            </div>
+                                            <hr>
+                                            <!---->
+                                            <div class="row">
+                                                <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/en.png"></div>
+                                                <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" style="margin: 0 auto;" ng-model="newelvocab.locales.en.value" /></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/it.png" class="align-middle"></div>
+                                                <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" ng-model="newelvocab.locales.it.value" /></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/fr.png"></div>
+                                                <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" ng-model="newelvocab.locales.fr.value" /></div>
+                                            </div>
+                                            <div class="modal-footer ">
+                                                <button class="btn btn-primary btn-sm " type="submit " ng-click="insertvocab(newelvocab) "><i class="la la-check "></i> Save</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                    
                             </div>
-                            <div class="col-6" style="padding: 5px 0;"><input required type=" text " placeholder="Insert node key here" class="form-control" ng-model="newelvocab.value" /></div>
-                        </div>
-                        <hr>
-                        <!---->
-
-                        <div class="row">
-                            <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/en.png"></div>
-                            <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" style="margin: 0 auto;" ng-model="newelvocab.locales.en.value" /></div>
-                        </div>
-                        <div class="row">
-                            <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/it.png" class="align-middle"></div>
-                            <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" ng-model="newelvocab.locales.it.value" /></div>
-                        </div>
-                        <div class="row">
-                            <div class="col-2 d-flex flex-wrap align-items-center"><img style="margin: 0 auto;" src="../assets/img/flag/fr.png"></div>
-                            <div class="col-6" style="padding: 5px 0;"><input required type=" text " class="form-control" ng-model="newelvocab.locales.fr.value" /></div>
-                        </div>
-
-                        <div class="modal-footer ">
-                            <button class="btn btn-primary btn-sm " type="submit " ng-click="insertvocab(newelvocab) "><i class="la la-check "></i> Save</button>
                         </div>
                     </div>
                 </div>
-            </form>
-
-        </div>
-    </div>
-</div>
+            </div>
+            <div class="card-body   " ng-show="tab === 2">
+                <div class=" ">
+                    <div class="col-md-12">
+                        <div class="card ">
+                            <div class="card-body ">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div>
+                                            <form ng-submit="importVocabulary(form)">
+                                                <label>Source path</label>
+                                                <input type="text" required class="form-control " ng-model="form.sourcePath">
+                                                <label>Title</label>
+                                                <input type="text" required class="form-control " ng-model="form.title">
+                                                <div class="row text-right ">
+                                                    <div class="col-12 ">
+                                                        <input class="btn btn-info " type="submit" value="Import">
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>   
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>                            
+        </div>        
+    </div>        
+</div>        
+<!-- MG - Implementazione import di un vocabolario - FINE -->
 
 <div class="modal fade" id="updateSubItem" tabindex="-1" role="dialog" data-backdrop="static">
     <div class="modal-dialog" role="document">
