@@ -11,6 +11,7 @@ const nameFile = path.basename(__filename);
 const logger = require('./routes/dymerlogger');
 const http = require('http');
 const custumLibraries = require('./libInit')
+const crypto = require("crypto")
 
 exports.getContextPath = function(typeServ) {
     let cpath = global.gConfig.services[typeServ]["context-path"];
@@ -197,6 +198,30 @@ exports.getDymerUser = function(req, res, next) {
         const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
         return dymeruser;
     }
+}
+
+exports.encrypt = function (secretKey, password) {
+    let hash = crypto.createHash('sha1')
+
+    let digest = hash.update(secretKey).digest().subarray(0, 16)
+    const cipher = crypto.createCipheriv("aes-128-ecb", digest, null);
+
+    let encryptedText = cipher.update(password, "utf-8", "hex");
+    encryptedText += cipher.final("hex");
+
+    return encryptedText
+}
+
+exports.decrypt = function(secretKey, encryptedText) {
+    let hash = crypto.createHash('sha1');
+    let digest = hash.update(secretKey).digest().subarray(0, 16);
+
+    const decipher = crypto.createDecipheriv("aes-128-ecb", digest, null);
+
+    let decryptedText = decipher.update(encryptedText, "hex", "utf-8");
+    decryptedText += decipher.final("utf-8");
+
+    return decryptedText;
 }
 
 const initCustomLibraries = async function (){
