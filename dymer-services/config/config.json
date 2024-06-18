@@ -25,15 +25,6 @@
                 "ip": "kms_webserver",
                 "port": 8080
             },
-            "opnsearch": {
-                "user": {
-                    "d_cid": 20097,
-                    "d_uid": 5,
-                    "d_gid": 20121,
-                    "d_mail": "test@liferay.com",
-                    "d_pwd": "test"
-                }
-            },
             "entity": {
                 "protocol": "http",
                 "ip": "kms_entities",
@@ -83,16 +74,7 @@
                 "ip": "localhost",
                 "port": 8080
             },
-            "opnsearch": {
-                "user": {
-                    "d_cid": 20097,
-                    "d_uid": 5,
-                    "d_gid": 20121,
-                    "d_mail": "test@liferay.com",
-                    "d_pwd": "********"
-                }
-            },
-	    "entity": {
+            "entity": {
                 "protocol": "http",
                 "ip": "localhost",
                 "port": 1358

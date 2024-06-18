@@ -120,7 +120,7 @@ var test = function(proxyReq, req, res) {
     });*/
 
 router.use((req, res, next) => {
-    console.log("dymer-webserver | entity.js | router.use");
+    //console.log("dymer-webserver | entity.js | router.use");
     const { userId } = req.session;
     if (userId) {
         //  console.log('userId', userId);
@@ -133,7 +133,7 @@ router.use((req, res, next) => {
 
 const redirectLogin = (req, res, next) => {
     if (!req.session.userId) {
-        console.log("dymer-webserver | entity.js | redirectLogin: no logged");
+        //console.log("dymer-webserver | entity.js | redirectLogin: no logged");
         next();
     } else {
         console.log("dymer-webserver | entity.js | redirectLogin: is logged");
@@ -142,9 +142,9 @@ const redirectLogin = (req, res, next) => {
 }
 
 router.use('*', redirectLogin, async(req, res, next) => {
-    console.log("dymer-webserver | entity.js | * ");
+    //console.log("dymer-webserver | entity.js | * ");
     //console.log("session", req.session);
-    console.log('SessionID: ', req.sessionID);
+    //console.log('SessionID: ', req.sessionID);
     /* const { userId } = req.session;
      if (!req.session.count) {
          req.session.count = 0;
