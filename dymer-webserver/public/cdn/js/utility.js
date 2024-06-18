@@ -768,38 +768,6 @@ async function loadRequireForm() {
         ckaddimport = dymerconf.notImport;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     let arr = [];
 
     // Load libraries from the database
@@ -808,20 +776,10 @@ async function loadRequireForm() {
         const libraries = await response.json();
 
         libraries.filter( ( { loadtype, activated } ) => loadtype === 'form' && activated ).forEach( library => {
-
-
-
-
-
             const { domtype, filename, callback, useonload, group, name } = library;
 
             // Valuta la callback solo se non è nulla (attenzione: eval può comportare rischi di sicurezza)
             const evalCallback = callback !== null ? eval( `${ callback }` ) : null;
-
-
-
-
-
 
             if ( ckaddimport.indexOf( group ) <= -1 ) {
                 arr.push( new Elfile( domtype, kmsconfig.cdn + filename, evalCallback, useonload, group ) );
@@ -830,36 +788,11 @@ async function loadRequireForm() {
 
         } )
 
-
-
-
-
     } catch ( error ) {
         console.error( 'Error fetching and loading libraries:', error );
-
-
-
-
     }
 
     await onloadFiles( arr );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 function getbaseEntityConfig(basedat) {
