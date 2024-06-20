@@ -200,4 +200,61 @@ angular.module('openSearchCtrl', [])
                     });
             }
         }
+
+        $scope.opnUser = {
+            "_id": "",
+            "d_cid": "",
+            "d_uid": "",
+            "d_gid": "",
+            "d_mail": "",
+            "d_pwd": "",
+            "d_isEncrypted": false
+        }
+
+        $http.get(baseContextPath + '/api/dservice/api/v1/opn/users', {}).then(function(retE) {
+            var listusers = retE.data.data;
+            listusers.forEach(el => {
+                $scope.opnUser._id = el._id
+                $scope.opnUser.d_cid = el.d_cid
+                $scope.opnUser.d_uid = el.d_uid
+                $scope.opnUser.d_gid = el.d_gid
+                $scope.opnUser.d_mail = el.d_mail
+                $scope.opnUser.d_pwd = el.d_pwd
+                $scope.opnUser.d_isEncrypted = el.d_isEncrypted
+
+                $scope.actualuser = {...$scope.opnUser}
+                console.log("actualuser: ", $scope.actualuser)
+            })
+        });
+
+        $scope.openUserConfig = function () {
+            const dataPost = $scope.opnUser;
+            if(dataPost?.d_pwd != $scope.actualuser?.d_pwd) {
+                dataPost.d_isEncrypted = false
+            }
+            $http({
+                method: 'POST',
+                url: baseContextPath + '/api/dservice/api/v1/opn/setuser',
+                data: {user: dataPost}
+            }).then(function successCallback(response) {
+                    response.data.data.forEach(el => {
+                        console.log(el)
+                        $scope.opnUser._id = el._id;
+                        $scope.opnUser.d_isEncrypted = el.d_isEncrypted
+                    });
+                    if (response.data.success) {
+                        useGritterTool("<b><i class='fa fa-map-signs'></i> Openness Search User</b>", "[" + $scope.opnUser.d_mail +
+                            "] " + response.data.message);
+                    } else {
+                        useGritterTool("<b><i class='fa fa-map-signs'></i> Openness Search User</b>", response.data.message, "danger");
+                    }
+                },
+                function errorCallback(response) {
+                    console.log("Error. while created user Try Again!", response);
+                    useGritterTool("<b><i class='fa fa-map-signs  '></i> Openness Search User</b>", "we are sorry but an error has occurred", "danger");
+
+                });
+        }
+
+        
     });
