@@ -1,5 +1,5 @@
 angular.module('taxCtrl', [])
-    .controller('taxController', function($scope, $http, $window, $rootScope) {
+    .controller('taxController', function($scope, $http, $window, $rootScope, multipartForm) {
         var baseContextPath = $rootScope.globals.contextpath;
 
         var newPageModal;
@@ -164,7 +164,7 @@ angular.module('taxCtrl', [])
         };
 
         /*MG - Implementazione import di un vocabolario - INIZIO*/ 
-        $scope.importVocabulary = function(frm) {
+        $scope.importVocabularyFromREST = function(frm) {
             /*Elimino il vocabolario,se esiste già*/
             $http({
                 url: baseContextPath + '/api/dservice/api/v1/taxonomy/title/'+frm.title,
@@ -191,7 +191,6 @@ angular.module('taxCtrl', [])
             }).then(function(vocabulary) {
                 if (vocabulary.data.data != null){ 
                     console.log('Vocabolario da importare ===> ', vocabulary.data.data);
-                    found = true;
                     voc = {};
                     voc.title = vocabulary.data.data.title;
                     voc.description = vocabulary.data.data.description;
@@ -225,6 +224,122 @@ angular.module('taxCtrl', [])
                 useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>Error during import. Try Again !</b>", "Check the source path !", "danger");
             });
         };
+
+        $scope.importVocabularyFromCSV = async function (frm) {
+            var csvFile = $scope.csvFile;
+            let separator = ",";
+            let url = baseContextPath + '/api/dservice/api/v1/import/test-csv';													
+            let data = {
+                file: csvFile
+            }
+            /*Acquisisco il CSV*/
+            $scope.csvRecords = await multipartForm.post(url, data);
+            let csvRecords = $scope.csvRecords.data;
+            /*Recupero i nomi dei campi*/
+            let fieldNames = csvRecords[0].replace(/["]/g, "").split(separator); 
+            /*Individuo la posizione del vocabolario*/
+            let index = fieldNames.indexOf(frm.title);
+            let vocabulary = [];
+            for (let _record of csvRecords) { 
+                /*Elimino i doppi apici all'inizio e alla fine di ogni riga, in modo da lasciarli solo negli eventuali gruppi di elementi (che possono comprendere quindi non solo il vocabolario)*/
+                _record = _record.replace('/["](\d+)((?:(?!["]\d).)+)/', "");
+                /*Individuo e separo i gruppi di elementi, che iniziano e finiscono per doppi apici e, in ciascuno, sostituisco la virgola con _*/
+                _record = _record.replace(/"[^"]+"/g, function(v) { 
+                    return v.replace(/,/g, '_').split(separator);
+                });
+                _record = _record.split(separator);
+                /*Acquisisco il vocabolario, individuato dall'indice, cioè dalla posizione del campo corrispondente al titolo inserito nell'interfaccia*/
+                if (_record[index] && _record[index] != ""){ 
+                    /*Distinguo i singoli vocaboli e li ripulisco dai doppi apici e dagli spazi all'inizio e alla fine*/
+                    _record = _record[index].split("_");
+                    for (let r of _record) { 
+                        r = r.replace(/["]/g, "");
+                        r = r.replace(/^\s+/g, '');                     
+                        r = r.replace(/\s+$/, '');
+                        vocabulary.push(r); 
+                    }
+                }   
+            }
+            vocabulary.shift();
+            vocabulary =  vocabulary.filter((item,index) => vocabulary.indexOf(item) === index);
+            /*Elimino il vocabolario,se esiste già*/
+            $http({
+                url: baseContextPath + '/api/dservice/api/v1/taxonomy/title/'+frm.title,
+                method: "GET",
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            }).then(function(vocab) {
+                if (vocab.data.data != null){ 
+                    $http({
+                        url: baseContextPath + '/api/dservice/api/v1/taxonomy/' + vocab.data.data._id,
+                        method: "DELETE"
+                    }).then(function(del) {
+                        console.log("Eliminazione vocabolario esistente in locale ===> ", del);
+                        updateVocabulary(vocabulary, frm);
+                    }).catch((err) => {
+                        console.log(err)
+                    })
+                }else{
+                    updateVocabulary(vocabulary, frm);
+                }
+            });
+        };
+        function updateVocabulary(vocabulary, frm){
+            /*Acquisisco il vocabolario dalla sorgente*/
+            if (vocabulary.length > 0){ 
+                console.log('Vocabolario da importare ===> ', vocabulary);
+                voc = {};
+                voc.title = frm.title;
+                voc.description = frm.description;
+                /*Creo il vocabolario vuoto*/
+                $http({
+                    url: baseContextPath + '/api/dservice/api/v1/taxonomy',
+                    method: "POST",
+                    data: voc
+                }).then(function(ins) {
+                    /*Creo i nodi*/
+                    let nodes  = [];
+                    let node = {};
+                    let en = {};
+                    let it = {};
+                    let fr = {};
+                    let locales = {}; 
+                    for (let element of vocabulary) { 
+                        node.id = ins.data.data._id;
+                        node.value = element;
+                        en.value = element;
+                        it.value = element; 
+                        fr.value = element;  
+                        locales.en = en;
+                        locales.it = it;
+                        locales.fr = fr;
+                        node.locales = locales;
+                        nodes.push(node);
+                        en = {};
+                        it = {};
+                        fr = {};
+                        locales = {};;
+                        node = {};
+                    }
+                    /*Aggiungo tutti i vocaboli*/
+                    $http({
+                        url: baseContextPath + '/api/dservice/api/v1/taxonomy',
+                        method: "PUT",
+                        data: {
+                            id: ins.data.data._id,
+                            data: nodes
+                        }
+                    }).then(function(upd) {
+                        useGritterTool("Vocabulary", "import with success");
+                    }).catch((err) => {
+                        console.log(err)
+                    })
+                }).catch((err) => {
+                    console.log(err);
+                });
+            }else{
+                useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>There is no vocabulary !</b>", "Check the title !" , "danger");  
+            };
+        }
         /*MG - Implementazione import di un vocabolario - FINE*/ 
 
         $scope.selectedVocab = -1;
