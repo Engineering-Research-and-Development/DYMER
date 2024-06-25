@@ -35,7 +35,7 @@ router.use(session({
 }));
 
 router.get('*', (req, res, next) => {
-    console.log("dymer-webserver | entity.js | router.get * ");
+    //console.log("dymer-webserver | entity.js | router.get * ");
     // console.log("router.get");
     next();
     //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
@@ -54,7 +54,7 @@ router.get('*', (req, res, next) => {
 });*/
 
 router.post('*', (req, res, next) => {
-    console.log("dymer-webserver | entity.js | router.post * ");
+    //console.log("dymer-webserver | entity.js | router.post * ");
     next();
 });
 
@@ -223,7 +223,7 @@ router.use('*', redirectLogin, async(req, res, next) => {
 })
 
 const retriveInfoTk = (t, res) => {
-    console.log('dymer-webserver | entity.js | retriveInfoTk ', JSON.stringify(decoded));
+    //console.log('dymer-webserver | entity.js | retriveInfoTk ', JSON.stringify(decoded));
     var decoded = jwt.decode(t);
     //console.log('R ENT  sessionPPPP', JSON.stringify(decoded));
     if (decoded != null) {

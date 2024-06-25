@@ -716,12 +716,13 @@ function postAssettOpenness(typeaction, obj, rule, extraInfo) {
     OpnUserModel.find().then(el => {
         let user = el[0]
         let openSearchUser = {
-            cid: user["cid"],
-            gid: user["gid"],
-            uid: user["uid"],
+            cid: user["d_cid"],
+            gid: user["d_gid"],
+            uid: user["d_uid"],
             email: user["d_mail"],
             password: util.decrypt("", user["d_pwd"])
         }
+        console.log("===>openSearchUser ", openSearchUser);
     //console.log(nameFile + ' | postAssettOpenness | extraInfo', JSON.stringify(extraInfo));
     
     var queryFind = { 'servicetype': typeaction };
@@ -741,23 +742,32 @@ function postAssettOpenness(typeaction, obj, rule, extraInfo) {
                 
                 //TODO check
                 //var companyId = (extraInfo != undefined) ? extraInfo.companyId : opnConfUtil.user.d_gid;
-                
+
+
                 var companyId = (extraInfo != undefined) ? extraInfo.companyId : openSearchUser.cid;
+                //Dymer Admin could not asset resource in Liferay, decomment to change this behaviour
+                /*if (companyId=="dymer"){
+                    companyId=openSearchUser.cid;
+                }*/
                 var userId = (extraInfo != undefined) ? extraInfo.userId : openSearchUser.uid;
 
                 // var groupId = (obj._source.properties.owner.uid == "admin@dymer.it") ? opnConfUtil.user.d_gid : obj._source.properties.owner.gid;
                 // var emailAddress = (obj._source.properties.owner.uid == "admin@dymer.it") ? opnConfUtil.user.d_mail : obj._source.properties.owner.uid;             
-
+                console.log("==>obj._source.properties.owner.uid ", obj._source.properties.owner.uid);
                 var groupId = (obj._source.properties.owner.uid == "admin@dymer.it") ? openSearchUser.gid : extraInfo.groupId;
+                //Dymer Admin could not asset resource in Liferay, decomment to change this behaviour
+                /*if(groupId=='1'){
+                    groupId = openSearchUser.gid;
+                }*/
                 var emailAddress = (obj._source.properties.owner.uid == "admin@dymer.it") ? openSearchUser.email : extraInfo.emailAddress;
-   
-                
+                console.log("---------------------------");
                 console.log("userId ", userId);
                 console.log("groupId ", groupId);
                 console.log("emailAddress ", emailAddress);
                 console.log("companyId ", companyId);
+                console.log("---------------------------");
                 if (isNaN(companyId)){
-                    companyId = opnConfUtil.user.d_cid;
+                    companyId = openSearchUser.cid;
                     console.log("==>companyId from config.json: ", companyId);
                 }
 

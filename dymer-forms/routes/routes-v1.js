@@ -218,6 +218,7 @@ router.get('/content/:entype/:fileid', function(req, res, next) {
 
 router.post('/', util.checkIsAdmin, function(req, res) {
     var ret = new jsonResponse();
+    console.log("==>POST / TEST ");
     upload(req, res, function(err) {
         if (err) {
             console.error("ERROR | " + nameFile + ' | post | upload  : ', err);

@@ -140,23 +140,24 @@ app.get('/checkservice', util.checkIsAdmin, (req, res) => {
     let infosize = logger.filesize("info");
     let errorsize = logger.filesize("error");
     let regex = /(?<!^).(?!$)/g;
-let infomserv = JSON.parse(JSON.stringify(global.gConfig));
-infomserv.services.opnsearch.user.d_mail = (infomserv.services.opnsearch.user.d_mail).replace(regex, '*');
-infomserv.services.opnsearch.user.d_pwd  = (infomserv.services.opnsearch.user.d_pwd).replace(regex, '*');
+    let infomserv = JSON.parse(JSON.stringify(global.gConfig));
+    //infomserv.services.opnsearch.user.d_mail = (infomserv.services.opnsearch.user.d_mail).replace(regex, '*');
+    //infomserv.services.opnsearch.user.d_pwd  = (infomserv.services.opnsearch.user.d_pwd).replace(regex, '*');
     ret.setData({
         info: {
             size: infosize
         },
         error: {
             size: errorsize
-        },
-        infomicroservice: infomserv
+        }
+        //infomicroservice: infomserv
     });
     ret.setMessages("Service is up");
     res.status(200);
     ret.setSuccess(true);
     return res.send(ret);
 });
+
 app.get("/*", (req, res) => {
     var ret = new jsonResponse();
     logger.error(nameFile + ' | /* Api error 404  :' + req.path);
