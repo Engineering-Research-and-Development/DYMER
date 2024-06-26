@@ -149,8 +149,8 @@ app.get('/checkservice', util.checkIsAdmin, (req, res) => {
         },
         error: {
             size: errorsize
-        }
-        //infomicroservice: infomserv
+        },
+        infomicroservice: infomserv
     });
     ret.setMessages("Service is up");
     res.status(200);
