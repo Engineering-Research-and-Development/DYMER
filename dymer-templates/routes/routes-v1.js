@@ -161,6 +161,8 @@ router.get('/', (req, res) => {
     console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
     logger.info(nameFile + '  | get  | queryFind:' + JSON.stringify(queryFind));
     Template.find(queryFind, {}).collation({ locale: "en" }).sort({ title: +1 }).then((templates) => {
+    //TODO upgrade to "mongoose": "8.4.1",
+    //Template.find(queryFind, {}).collation({ locale: "en" }).sort({ title: +1 }).exec().then((templates) => {
         //Template.find(queryFind).then((templates) => {
         // console.log('dat', JSON.stringify(templates));
         var actions = templates.map(getfilesArrays);
@@ -169,7 +171,7 @@ router.get('/', (req, res) => {
             //console.log("dymer-templates | route-v1.js | templates list: ", dat);
             ret.setMessages("List");
             ret.setData(dat);
-            //  console.log('dat', JSON.stringify(dat));
+            //console.log('==>dat ', JSON.stringify(dat));
             return res.send(ret);
         })
     }).catch(function(err) {
@@ -188,6 +190,8 @@ router.get('/content/:fileid', function(req, res, next) {
         return;
     }
     recFile(mongoose.Types.ObjectId(file_id))
+    //TODO upgrade mongoose 8
+    //recFile(mongoose.Types.ObjectId(file_id)).exec()
         .then(function(result) {
             //console.log(nameFile + ' | get/content/:fileid |  fileid :', result);
             //logger.info(nameFile + '  | get/content/:fileid |  fileid :' + JSON.stringify(queryFind));

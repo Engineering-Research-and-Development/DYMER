@@ -1904,7 +1904,7 @@ router.get('/', (req, res) => {
     logger.info(nameFile + '| GET | params:' + JSON.stringify(params));
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
-    //console.log(nameFile + '| GET | dymeruser:', JSON.stringify(dymeruser));
+    console.log(nameFile + '| GET | dymeruser:', JSON.stringify(dymeruser));
     logger.info(nameFile + '| GET | dymeruser:' + JSON.stringify(dymeruser));
     client.search(params, function(err, resp, status) {
         if (err) {
@@ -2236,7 +2236,7 @@ router.post('/redisroleupdate', async (req, res) => {
 })
 
 router.post('/_search', (req, res) => {
-    //console.log('route-v2.js | _search');
+    console.log('route-v2.js | _search');
     //console.log('_search logger', process.env.DYMER_LOGGER);
     let origin=req.get('origin');
     var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
@@ -2518,7 +2518,7 @@ router.post('/_search', (req, res) => {
             console.log('Elastic params for query search ', JSON.stringify(params));
             client.search(params).then(function(resp) {
                 
-                //console.log('==>' + nameFile + '|_search| client.search ', resp);
+                console.log('==>' + nameFile + '|_search| client.search ', resp);
                                 
                 if (err) {
                     console.error("ERROR | " + nameFile + '|_search| search:', err);

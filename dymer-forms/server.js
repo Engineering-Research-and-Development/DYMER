@@ -51,7 +51,7 @@ function detectPermission(req, res, next) {
     // console.log("cookieMIO", req.headers);
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser;
-    // console.log('hdymeruser', hdymeruser);
+    console.log('hdymeruser', hdymeruser);
     var dymeruser;
     try {
         if (hdymeruser == undefined)
