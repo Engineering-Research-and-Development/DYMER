@@ -2,6 +2,7 @@ var templateslist, kmsdataset, kmsconf, actualItem, actualTemplateType;
 var dymodalmode = "";
 var dymphases = new dymerphases();
 
+
 function resetDymerStart() {
     templateslist = undefined;
     kmsdataset = undefined;
@@ -2181,6 +2182,31 @@ function getModelEntity(el) {
 
 // function editEntity(id) {
 //const editEntity = async function(id) {
+async function exportPDFEntity(id) {
+    console.log("Exporting PDF: ", id)
+
+    let entireHTML = document.documentElement.outerHTML;
+
+    let $tempContainer = $('<div>').html(entireHTML);
+
+    $tempContainer.find('#primodfil').remove();
+    $tempContainer.find('#addEntityBtn').remove();
+    $tempContainer.find('#entityStatus').remove();
+    $tempContainer.find('#deleteBtn').remove();
+    $tempContainer.find('#editBtn').remove();
+    $tempContainer.find('#exportBtn').remove();
+
+    entireHTML = $tempContainer.html();
+
+    html2pdf(entireHTML, {
+        margin:       1,
+        filename:     `${id}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    });
+}
+
 async function editEntity(id) {
     var itemToEdit = actualItem;
     if (actualTemplateType == "teaserlist" || actualTemplateType == "datatable") {
