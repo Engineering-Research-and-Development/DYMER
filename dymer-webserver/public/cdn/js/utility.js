@@ -2604,7 +2604,7 @@ async function exportPDFEntity(id,title,dviewtype) {
 
     //let entireHTML = document.documentElement.outerHTML;
     var entireHTML;
-    let domain= location.hosthame;
+    var domain= location.hostname;
     if(dviewtype=="dymermap"){
          entireHTML=$('#cont-MyEnt').html();
     }else{
