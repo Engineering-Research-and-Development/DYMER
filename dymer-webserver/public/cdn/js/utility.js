@@ -2608,7 +2608,7 @@ async function exportPDFEntity(id,title) {
 
     dviewtype
 
-    if (typeof obj.dviewtype !== 'undefined') {
+    if (typeof dviewtype !== 'undefined') {
         if(dviewtype=="dymermap"){
             entireHTML=$('#cont-MyEnt').html();
        }else{
