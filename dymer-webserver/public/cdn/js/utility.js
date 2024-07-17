@@ -2599,12 +2599,17 @@ function getModelEntity(el) {
 
 
 
-async function exportPDFEntity(id,title,domain) {
+async function exportPDFEntity(id,title,dviewtype) {
     console.log("Exporting PDF: ", id)
 
     //let entireHTML = document.documentElement.outerHTML;
-    let entireHTML=$('#cont-MyList').html();
-
+    var entireHTML;
+    let domain= location.hosthame;
+    if(dviewtype=="dymermap"){
+         entireHTML=$('#cont-MyEnt').html();
+    }else{
+         entireHTML=$('#cont-MyList').html();
+    }
     let $tempContainer = $('<div>').html(entireHTML);
 
     $tempContainer.find('#primodfil').remove();
