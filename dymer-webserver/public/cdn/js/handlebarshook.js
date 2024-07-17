@@ -233,7 +233,7 @@ Handlebars.registerHelper('EntityStatusPdf', function(obj, hookCheckSatusconf, o
     var args = [],
         options = arguments[arguments.length - 1];
     if (hookCheckSatusconf != undefined) {
-        if (hookCheckSatusconf.name == "EntityStatus")
+        if (hookCheckSatusconf.name == "EntityStatusPdf")
             hookCheckSatusconf = undefined;
     }
      
