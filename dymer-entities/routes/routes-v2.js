@@ -3674,6 +3674,8 @@ router.post('/:enttype', function(req, res) {
                         let elIndex = instance.index;
                         let elDymerUuid = instance.id;
                         let data = callData.data;
+
+                        console.log("==>data ", JSON.stringify(data));
                         //External
                         var globalData = req.body;
                         var trq = Object.assign({}, req);

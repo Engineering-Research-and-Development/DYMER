@@ -2,6 +2,7 @@ var templateslist, kmsdataset, kmsconf, actualItem, actualTemplateType;
 var dymodalmode = "";
 var dymphases = new dymerphases();
 
+
 function resetDymerStart() {
     templateslist = undefined;
     kmsdataset = undefined;
@@ -444,9 +445,13 @@ var removeTempImport = function(attr) {
                 if (typeof window[onremovefct] === 'function') {
                     let rrs = await window[onremovefct]();
                     //console.log("invocata onremovefct per", panel_link, onremovefct);
+
+
                 }
                 e.parentNode.removeChild(e);
             }
+
+
 
         });
         resolve("ok");
@@ -461,6 +466,8 @@ var removeTempImport = function(attr) {
                 ///kkkk
                  e.parentNode.removeChild(e);
             }
+
+
 
         });
         resolve("ok");
@@ -1022,6 +1029,8 @@ const hookTaxonomy_Promise = function(item) {
 
                 await actionPostMultipartForm_Promise("taxonomy.search", undefined, datapost, undefined, populateHookTaxonomy, undefined, false, taxID);
             }
+
+
         });
         resolve();
     });
@@ -2442,7 +2451,9 @@ function checkSatus(actualItem, hookCheckSatusconf) {
                     statusDiv = 'PUBLISHED';
                     if (hookCheckSatusconf.style == 'text') {} else
                         statusDiv = '<div class="span12 col-12 alert alert-info" style="text-align:center" > <b>' + statusDiv + '</b> </div>';
+
                 }
+
             }
             break;
         }
@@ -2454,6 +2465,11 @@ function checkSatus(actualItem, hookCheckSatusconf) {
             } else {
                 if (hookCheckSatusconf.style == 'text') {} else
                     statusDiv = '<div class="span12 col-12 alert alert-info" style="text-align:center" > <b>' + statusDiv + '</b> </div>';
+
+
+
+
+
             }
             break;
         }
@@ -2465,6 +2481,11 @@ function checkSatus(actualItem, hookCheckSatusconf) {
             } else {
                 if (hookCheckSatusconf.style == 'text') {} else
                     statusDiv = '<div class="span12 col-12 alert alert-info" style="text-align:center"> <b>' + statusDiv + '</b> </div>';
+
+
+
+
+
             }
             break;
         }
@@ -2666,6 +2687,54 @@ function getModelEntity(el) {
 
 // function editEntity(id) {
 //const editEntity = async function(id) {
+async function exportPDFEntity(id) {
+    console.log("Exporting PDF: ", id)
+
+    let entireHTML = document.documentElement.outerHTML;
+
+    let $tempContainer = $('<div>').html(entireHTML);
+
+    $tempContainer.find('#primodfil').remove();
+    $tempContainer.find('#addEntityBtn').remove();
+    $tempContainer.find('#entityStatus').remove();
+    $tempContainer.find('#deleteBtn').remove();
+    $tempContainer.find('#editBtn').remove();
+    $tempContainer.find('#exportBtn').remove();
+
+    entireHTML = $tempContainer.html();
+
+    html2pdf(entireHTML, {
+        margin:       1,
+        filename:     `${id}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 async function editEntity(id) {
     var itemToEdit = actualItem;
     if (actualTemplateType == "teaserlist" || actualTemplateType == "datatable") {
@@ -3689,7 +3758,7 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
             /*MG - Creazione organizzazione in LR - Inizio*/
             //callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret, callbackEstraData);
             window[callback]((ret.data[1].title),(ret.data[0]._id));
-        } 
+        }
         /*
         else {
             if (senderForm == undefined && el != undefined) {
@@ -3736,7 +3805,7 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
             /*MG - Creazione organizzazione in LR - Inizio*/
             //callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret, callbackEstraData);
             window[callback]((ret.data[1].title),(ret.data[0]._id));
-        } 
+        }
         /*
         else {
             if (useGritter) {
@@ -3753,7 +3822,7 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
             else
                 useGritterTool(gr_title, gr_text, "error");
         }
-         /*MG - Creazione organizzazione in LR - Fine*/
+        /*MG - Creazione organizzazione in LR - Fine*/
     }
     return ret;
 }
@@ -3920,7 +3989,7 @@ function actionPutMultipartForm(type, el, datapost, senderForm, callback, caller
             /*MG - Associazione utente all'organizzazione in LR - Inizio*/
             //callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret);
             window[callback]((ret.data[0]));
-        } 
+        }
         /*
         else {
             if (senderForm == undefined && el != undefined) {
@@ -4704,6 +4773,7 @@ function dymerphases(options) {
         "delete": {
             "active": false,
             "subphase": ""
+
         }
     }
     //options = {...defaultOptions, ...options };
@@ -4841,6 +4911,7 @@ function dymerSearch(options) {
                 },
                 submit: {
                     text: "SEARCH"
+
                 }
             }
         }
