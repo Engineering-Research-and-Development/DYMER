@@ -2599,10 +2599,11 @@ function getModelEntity(el) {
 
 
 
-async function exportPDFEntity(id) {
+async function exportPDFEntity(id,title,domain) {
     console.log("Exporting PDF: ", id)
 
-    let entireHTML = document.documentElement.outerHTML;
+    //let entireHTML = document.documentElement.outerHTML;
+    let entireHTML=$('#cont-MyList').html();
 
     let $tempContainer = $('<div>').html(entireHTML);
 
@@ -2617,7 +2618,7 @@ async function exportPDFEntity(id) {
 
     html2pdf(entireHTML, {
         margin:       1,
-        filename:     `${id}.pdf`,
+        filename:     `${domain}-${title}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2 },
         jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
