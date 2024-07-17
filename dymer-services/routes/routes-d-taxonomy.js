@@ -37,10 +37,9 @@ router.get('/', async(req, res) => {
     return res.json(ret)
 });
 
-
-
+/*FS - MG - Implmentazione import di un vocabolario - INIZIO*/ 
 router.get('/:id', async(req, res) => {
-    let newid = req.params.id
+    let newid = req.params.id;
     var ret = new jsonResponse();
     let objiD = mongoose.Types.ObjectId(newid)
     let els = await mongoose.connection.db.collection("vocab").findOne({ "_id": objiD });
@@ -48,8 +47,6 @@ router.get('/:id', async(req, res) => {
     ret.setData(els);
     return res.json(ret)
 });
-
-
 
 router.get('/title/:title', async(req, res) => {
     let title = req.params.title;
@@ -59,7 +56,7 @@ router.get('/title/:title', async(req, res) => {
     ret.setData(els);
     return res.json(ret)
 });
-
+/*FS - MG - Implmentazione import di un vocabolario - FINE*/ 
 
 router.post('/_search', async(req, res) => {
     let id = req.body.id
