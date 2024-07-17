@@ -2633,6 +2633,8 @@ async function exportPDFEntity(id,title) {
 
     html2pdf(entireHTML, {
         margin:       1,
+        enableLinks:  true,
+        pagebreak:{mode: ['css', 'legacy']},
         filename:     `${domain}-${title}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2 },
