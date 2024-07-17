@@ -2599,17 +2599,27 @@ function getModelEntity(el) {
 
 
 
-async function exportPDFEntity(id,title,dviewtype) {
+async function exportPDFEntity(id,title) {
     console.log("Exporting PDF: ", id)
 
     //let entireHTML = document.documentElement.outerHTML;
     var entireHTML;
     var domain= location.hostname;
-    if(dviewtype=="dymermap"){
-         entireHTML=$('#cont-MyEnt').html();
+
+    dviewtype
+
+    if (typeof obj.dviewtype !== 'undefined') {
+        if(dviewtype=="dymermap"){
+            entireHTML=$('#cont-MyEnt').html();
+       }else{
+            entireHTML=$('#cont-MyList').html();
+       }
     }else{
-         entireHTML=$('#cont-MyList').html();
+         
+        entireHTML=$('#cont-RenderForm').html();
     }
+
+     
     let $tempContainer = $('<div>').html(entireHTML);
 
     $tempContainer.find('#primodfil').remove();
