@@ -374,7 +374,7 @@ app.get('/info/:key?', (req, res, next) => {
         '<br> version ' + infodymer.version +
         '<br> <small style="color: #8c8985;"> updated date ' + infodymer.updated  + '</small></div>' +
         '<div class="text-center col-12 p-2">' +
-        '<span style=" font-size: 12px;">&#169; 2022, Powered by <a href="https://www.eng.it/" target="_blank">' + '<img src="https://www.eng.it/resources/images/logo%20eng.png" style="width: 20px;bottom: 3px;position: relative; "> Engineering</a>' + '</span>' +
+        '<span style=" font-size: 12px;">&#169; 2024, Powered by <a href="https://www.eng.it/" target="_blank">' + '<img src="https://www.eng.it/resources/images/logo%20eng.png" style="width: 20px;bottom: 3px;position: relative; "> Engineering</a>' + '</span>' +
         '</div>' +
         '</div>' +
         '</div>' +
