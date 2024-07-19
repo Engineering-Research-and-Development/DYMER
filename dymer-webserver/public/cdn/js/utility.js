@@ -2687,11 +2687,27 @@ function getModelEntity(el) {
 
 // function editEntity(id) {
 //const editEntity = async function(id) {
-async function exportPDFEntity(id) {
+async function exportPDFEntity(id,title) {
     console.log("Exporting PDF: ", id)
 
-    let entireHTML = document.documentElement.outerHTML;
+    //let entireHTML = document.documentElement.outerHTML;
+    var entireHTML;
+    var domain= location.hostname;
 
+    dviewtype
+
+    if (typeof dviewtype !== 'undefined') {
+        if(dviewtype=="dymermap"){
+            entireHTML=$('#cont-MyEnt').html();
+       }else{
+            entireHTML=$('#cont-MyList').html();
+       }
+    }else{
+         
+        entireHTML=$('#cont-RenderForm').html();
+    }
+
+     
     let $tempContainer = $('<div>').html(entireHTML);
 
     $tempContainer.find('#primodfil').remove();
@@ -2705,7 +2721,9 @@ async function exportPDFEntity(id) {
 
     html2pdf(entireHTML, {
         margin:       1,
-        filename:     `${id}.pdf`,
+        enableLinks:  true,
+        pagebreak:{mode: ['css', 'legacy']},
+        filename:     `${domain}-${title}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2 },
         jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
