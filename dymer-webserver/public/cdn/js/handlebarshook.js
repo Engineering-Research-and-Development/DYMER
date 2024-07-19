@@ -281,7 +281,7 @@ Handlebars.registerHelper('AddView', function(obj, hookCheckSatusconf, obj2) {
     //fix per add su tutti gli item di cataloghi esistenti
     var count = (obj.viewsCounter===undefined) ? 0 : obj.viewsCounter;
 
-    ret = '<a class=" " aria-hidden="true" href="#" id="viewCount"><i class="fa fa-eye" aria-hidden="true"></i>'+count+'</a>';
+    ret = '<a class=" " aria-hidden="true" href="#" id="viewCount"><i class="fa fa-eye" aria-hidden="true"></i> '+count+'</a>';
     return ret;
 });
 
