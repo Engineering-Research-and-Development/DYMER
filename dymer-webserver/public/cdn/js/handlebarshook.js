@@ -228,7 +228,47 @@ Handlebars.registerHelper('EntityStatus', function(obj, hookCheckSatusconf, obj2
     return ret;
 });
 
+Handlebars.registerHelper('EntityStatusPdf', function(obj, hookCheckSatusconf, obj2) {
+    var ret = '';
+    var args = [],
+        options = arguments[arguments.length - 1];
+    if (hookCheckSatusconf != undefined) {
+        if (hookCheckSatusconf.name == "EntityStatusPdf")
+            hookCheckSatusconf = undefined;
+    }
+     
+    var perm = checkPermission(obj);
+    var status = checkSatus(obj, hookCheckSatusconf);
+    var visibility = checkVisibility(obj);
+    var getrole = getrendRole(perm);
+    var editBtn = '';
+    var owner = getrole;
 
+    //  console.log('options perm', perm);
+
+    if (perm.delete || perm.edit) {
+        if (actualTemplateType == 'fullcontent') {
+            editBtn += '<div class="col-12 text-right" >';
+            if (perm.delete)
+                editBtn += '<span id="deleteBtn" class="text-danger  " style="cursor:pointer" onclick="deleteEntity(\'' + obj._id + '\', \'' + obj._index + '\'  )"><i class="fa fa-trash" aria-hidden="true"></i> Delete </span>   ';
+            if (perm.edit) {
+                  editBtn += '&nbsp;&nbsp;<span id="editBtn" class="text-info  " style="cursor:pointer" onclick="editEntity(\'' + obj._id + '\')"><i class="fa fa-pencil" aria-hidden="true"></i> Edit </span>   ';
+            }
+            editBtn += '&nbsp;&nbsp;<span id="exportBtn" class="text-warning  " style="cursor:pointer" onclick="exportPDFEntity(\'' + obj._id + '\',\'' + obj.title + '\')"> <b> <i class="fa fa-download" aria-hidden="true"></i></b> <span> PDF Export </span> </span>';
+            editBtn += '</div>';
+
+        }
+
+    }
+
+    
+    if (owner != '' || visibility != '')
+        owner = '<div id="entityStatus" class="col-12 text-right">' + owner + "&nbsp;" + visibility + '</div>';
+    ret = status + owner + editBtn;
+
+    
+    return ret;
+});
 Handlebars.registerHelper('EntityStatusTwo', function(obj, hookCheckSatusconf, obj2) {
     var ret = '';
     var args = [],
