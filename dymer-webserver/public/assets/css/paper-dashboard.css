@@ -22,37 +22,7 @@ Licensed under the MIT license - http://opensource.org/licenses/MIT
 
 Copyright (c) 2015 Daniel Eden
 */
-.dropdown-custom {
-    position: relative;
-    display: inline-block;
-    background-color: #FFFFFF;
-    border: 1px solid #DDDDDD;
-    width: 100%;
-    border-radius: 4px;
-    padding: 9px;
-    color: #66615b;
-    line-height: normal;
-    font-size: 14px;
-    -webkit-transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out, background-color 0.3s ease-in-out;
-    -moz-transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out, background-color 0.3s ease-in-out;
-    -o-transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out, background-color 0.3s ease-in-out;
-    -ms-transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out, background-color 0.3s ease-in-out;
-    transition: color 0.3s ease-in-out, border-color 0.3s ease-in-out, background-color 0.3s ease-in-out;
-    -webkit-box-shadow: none;
-    box-shadow: none;
-}
-.dropdown-menu-custom {
-    background-color: #FFFFFF;
-    border: 1px solid #DDDDDD;
-    border-radius: 4px;
-    margin-top: 10px;
-    padding: 9px;
-}
 
-.dropdown-multiselect {
-    right: 0;
-  }
-  
 .animated {
     -webkit-animation-duration: 1s;
     animation-duration: 1s;
@@ -655,7 +625,7 @@ fieldset[disabled] .navbar .navbar-nav>a.btn.active {
 }
 
 .btn-primary {
-    background-color: #51cbce;
+    background-color: #3d85c6;
     color: #FFFFFF;
 }
 
@@ -670,7 +640,7 @@ fieldset[disabled] .navbar .navbar-nav>a.btn.active {
 .show>.btn-primary.dropdown-toggle,
 .show>.btn-primary.dropdown-toggle:focus,
 .show>.btn-primary.dropdown-toggle:hover {
-    background-color: #34b5b8 !important;
+    background-color: #2d6497 !important;
     color: #FFFFFF !important;
     box-shadow: none !important;
 }
@@ -703,26 +673,26 @@ fieldset[disabled] .btn-primary:focus,
 fieldset[disabled] .btn-primary.focus,
 fieldset[disabled] .btn-primary:active,
 fieldset[disabled] .btn-primary.active {
-    background-color: #51cbce;
-    border-color: #51cbce;
+    background-color: #3d85c6;
+    border-color: #3d85c6;
 }
 
 .btn-primary.btn-simple {
-    color: #51cbce;
-    border-color: #51cbce;
+    color: #3d85c6;
+    border-color: #3d85c6;
 }
 
 .btn-primary.btn-simple:hover,
 .btn-primary.btn-simple:focus,
 .btn-primary.btn-simple:active {
     background-color: transparent;
-    color: #34b5b8;
-    border-color: #34b5b8;
+    color: #2d6497;
+    border-color: #2d6497;
     box-shadow: none;
 }
 
 .btn-primary.btn-link {
-    color: #51cbce;
+    color: #3d85c6;
 }
 
 .btn-primary.btn-link:hover,
@@ -730,7 +700,7 @@ fieldset[disabled] .btn-primary.active {
 .btn-primary.btn-link:active,
 .btn-primary.btn-link:active:focus {
     background-color: transparent;
-    color: #34b5b8;
+    color: #2d6497;
     text-decoration: none;
     box-shadow: none;
 }
@@ -817,7 +787,7 @@ fieldset[disabled] .btn-success.active {
 }
 
 .btn-info {
-    background-color: #51bcda;
+    background-color: #3d85c6;
     color: #FFFFFF;
 }
 
@@ -865,13 +835,13 @@ fieldset[disabled] .btn-info:focus,
 fieldset[disabled] .btn-info.focus,
 fieldset[disabled] .btn-info:active,
 fieldset[disabled] .btn-info.active {
-    background-color: #51bcda;
-    border-color: #51bcda;
+    background-color: #3d85c6;
+    border-color: #3d85c6;
 }
 
 .btn-info.btn-simple {
-    color: #51bcda;
-    border-color: #51bcda;
+    color: #3d85c6;
+    border-color: #3d85c6;
 }
 
 .btn-info.btn-simple:hover,
@@ -884,7 +854,7 @@ fieldset[disabled] .btn-info.active {
 }
 
 .btn-info.btn-link {
-    color: #51bcda;
+    color: #3d85c6;
 }
 
 .btn-info.btn-link:hover,
@@ -1121,8 +1091,8 @@ fieldset[disabled] .btn-outline-default.active {
 
 .btn-outline-primary {
     background: transparent;
-    border: 2px solid #51cbce !important;
-    color: #51cbce;
+    border: 2px solid #fbbb5c !important;
+    color: #3d85c6;
     opacity: 1;
     filter: alpha(opacity=100);
 }
@@ -1133,9 +1103,9 @@ fieldset[disabled] .btn-outline-default.active {
 .btn-outline-primary:focus:active,
 .btn-outline-primary.active,
 .open>.btn-outline-primary.dropdown-toggle {
-    background-color: #51cbce !important;
+    background-color: #3d85c6 !important;
     color: rgba(255, 255, 255, 0.8) !important;
-    border-color: #51cbce !important;
+    border-color: #3d85c6 !important;
 }
 
 .btn-outline-primary:hover .caret,
@@ -1176,7 +1146,7 @@ fieldset[disabled] .btn-outline-primary.focus,
 fieldset[disabled] .btn-outline-primary:active,
 fieldset[disabled] .btn-outline-primary.active {
     background-color: transparent !important;
-    border-color: #51cbce !important;
+    border-color: #3d85c6 !important;
 }
 
 .btn-outline-success {
@@ -1241,8 +1211,8 @@ fieldset[disabled] .btn-outline-success.active {
 
 .btn-outline-info {
     background: transparent;
-    border: 2px solid #51bcda !important;
-    color: #51bcda;
+    border: 2px solid #3d85c6 !important;
+    color: #3d85c6;
     opacity: 1;
     filter: alpha(opacity=100);
 }
@@ -1253,9 +1223,9 @@ fieldset[disabled] .btn-outline-success.active {
 .btn-outline-info:focus:active,
 .btn-outline-info.active,
 .open>.btn-outline-info.dropdown-toggle {
-    background-color: #51bcda !important;
+    background-color: #3d85c6 !important;
     color: rgba(255, 255, 255, 0.8) !important;
-    border-color: #51bcda !important;
+    border-color: #3d85c6 !important;
 }
 
 .btn-outline-info:hover .caret,
@@ -1296,7 +1266,7 @@ fieldset[disabled] .btn-outline-info.focus,
 fieldset[disabled] .btn-outline-info:active,
 fieldset[disabled] .btn-outline-info.active {
     background-color: transparent !important;
-    border-color: #51bcda !important;
+    border-color: #3d85c6 !important;
 }
 
 .btn-outline-warning {
@@ -1487,7 +1457,7 @@ fieldset[disabled] .btn-outline-neutral.active {
 
 .btn-neutral {
     background-color: #FFFFFF;
-    color: #51cbce;
+    color: #3d85c6;
     color: #66615B;
 }
 
@@ -1551,7 +1521,7 @@ fieldset[disabled] .btn-neutral.active {
 }
 
 .btn-neutral.btn-info {
-    color: #51bcda !important;
+    color: #3d85c6 !important;
 }
 
 .btn-neutral.btn-info:hover,
@@ -1604,13 +1574,13 @@ fieldset[disabled] .btn-neutral.active {
 .show>.btn-neutral.dropdown-toggle:focus,
 .show>.btn-neutral.dropdown-toggle:hover {
     background-color: #FFFFFF !important;
-    color: #34b5b8 !important;
+    color: #2d6497 !important;
     box-shadow: none !important;
 }
 
 .btn-neutral:hover,
 .btn-neutral:focus {
-    color: #34b5b8 !important;
+    color: #2d6497 !important;
 }
 
 .btn-neutral:hover:not(.nav-link),
@@ -1784,7 +1754,7 @@ fieldset[disabled] .btn-link.active {
 }
 
 .btn-group .btn:focus {
-    background-color: #51bcda !important;
+    background-color: #3d85c6 !important;
 }
 
 .btn-round {
@@ -2341,12 +2311,12 @@ h6 {
 }
 
 a {
-    color: #51cbce;
+    color: #3d85c6;
 }
 
 a:hover,
 a:focus {
-    color: #51cbce;
+    color: #3d85c6;
 }
 
 h1,
@@ -2449,13 +2419,13 @@ p.description {
 .text-primary,
 a.text-primary:focus,
 a.text-primary:hover {
-    color: #51cbce !important;
+    color: #3d85c6 !important;
 }
 
 .text-info,
 a.text-info:focus,
 a.text-info:hover {
-    color: #51bcda !important;
+    color: #3d85c6 !important;
 }
 
 .text-success,
@@ -2497,12 +2467,12 @@ a.text-gray:hover {
 }
 
 .blockquote.blockquote-primary {
-    border-color: #51cbce;
-    color: #51cbce;
+    border-color: #3d85c6;
+    color: #3d85c6;
 }
 
 .blockquote.blockquote-primary small {
-    color: #51cbce;
+    color: #3d85c6;
 }
 
 .blockquote.blockquote-danger {
@@ -2668,13 +2638,13 @@ a[data-toggle="collapse"][aria-expanded="true"] .caret,
 }
 
 .badge.badge-primary {
-    border-color: #51cbce;
-    background-color: #51cbce;
+    border-color: #3d85c6;
+    background-color: #3d85c6;
 }
 
 .badge.badge-info {
-    border-color: #51bcda;
-    background-color: #51bcda;
+    border-color: #3d85c6;
+    background-color: #3d85c6;
 }
 
 .badge.badge-success {
@@ -3103,7 +3073,7 @@ a[data-toggle="collapse"][aria-expanded="true"] .caret,
 .navbar.navbar-transparent .nav-item .nav-link:not(.btn):hover,
 .navbar.navbar-transparent .nav-item .nav-link:not(.btn):focus:hover,
 .navbar.navbar-transparent .nav-item .nav-link:not(.btn):active {
-    color: #51cbce;
+    color: #3d85c6;
 }
 
 .navbar.bg-white a:not(.dropdown-item):not(.btn) {
@@ -3123,7 +3093,7 @@ a[data-toggle="collapse"][aria-expanded="true"] .caret,
 .navbar.bg-white .nav-item .nav-link:not(.btn):focus,
 .navbar.bg-white .nav-item .nav-link:not(.btn):hover,
 .navbar.bg-white .nav-item .nav-link:not(.btn):active {
-    color: #51bcda;
+    color: #3d85c6;
 }
 
 .navbar.bg-white .logo-container {
@@ -3139,11 +3109,11 @@ a[data-toggle="collapse"][aria-expanded="true"] .caret,
 }
 
 .bg-primary {
-    background-color: #51cbce !important;
+    background-color: #3d85c6 !important;
 }
 
 .bg-info {
-    background-color: #51bcda !important;
+    background-color: #3d85c6 !important;
 }
 
 .bg-success {
@@ -4974,7 +4944,7 @@ License - nucleoapp.com/license/
 .off-canvas-sidebar[data-active-color="primary"] .nav li.active>a[data-toggle="collapse"] i,
 .off-canvas-sidebar[data-active-color="primary"] .nav li.active>a[data-toggle="collapse"]~div>ul>li.active .sidebar-mini-icon,
 .off-canvas-sidebar[data-active-color="primary"] .nav li.active>a[data-toggle="collapse"]~div>ul>li.active>a {
-    color: #51cbce;
+    color: #3d85c6;
     opacity: 1;
 }
 
@@ -4990,7 +4960,7 @@ License - nucleoapp.com/license/
 .off-canvas-sidebar[data-active-color="info"] .nav li.active>a[data-toggle="collapse"] i,
 .off-canvas-sidebar[data-active-color="info"] .nav li.active>a[data-toggle="collapse"]~div>ul>li.active .sidebar-mini-icon,
 .off-canvas-sidebar[data-active-color="info"] .nav li.active>a[data-toggle="collapse"]~div>ul>li.active>a {
-    color: #51bcda;
+    color: #3d85c6;
     opacity: 1;
 }
 
@@ -5273,7 +5243,7 @@ License - nucleoapp.com/license/
 }
 
 .fixed-plugin .badge-blue {
-    background-color: #51bcda;
+    background-color: #3d85c6;
 }
 
 .fixed-plugin .badge-green {
@@ -5281,7 +5251,7 @@ License - nucleoapp.com/license/
 }
 
 .fixed-plugin .badge-orange {
-    background-color: #51cbce;
+    background-color: #3d85c6;
 }
 
 .fixed-plugin .badge-yellow {
@@ -5515,7 +5485,7 @@ License - nucleoapp.com/license/
 }
 
 .card {
-    border-radius: 12px;
+    /*border-radius: 12px;*/
     box-shadow: 0 6px 10px -4px rgba(0, 0, 0, 0.15);
     background-color: #FFFFFF;
     color: #252422;
@@ -5560,11 +5530,11 @@ License - nucleoapp.com/license/
 }
 
 .card[data-background-color="orange"] {
-    background-color: #51cbce;
+    background-color: #3d85c6;
 }
 
 .card[data-background-color="orange"] .card-header {
-    background-color: #51cbce;
+    background-color: #3d85c6;
 }
 
 .card[data-background-color="orange"] .card-footer .stats {
@@ -5580,7 +5550,7 @@ License - nucleoapp.com/license/
 }
 
 .card[data-background-color="blue"] {
-    background-color: #51bcda;
+    background-color: #3d85c6;
 }
 
 .card[data-background-color="green"] {
