@@ -5378,7 +5378,7 @@ const haspermissionGrantByAction = function(urs, action, entityprop) {
 };
 
 //router.patch('/:id', [testprecall, testprecall2], (req, res) => {
-router.patch('/:id', async(req, res, next) => {
+router.patch('/role/:id', async(req, res, next) => {
     var callDatap = util.getAllQuery(req);
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser

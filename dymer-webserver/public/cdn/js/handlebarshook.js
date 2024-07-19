@@ -271,7 +271,15 @@ Handlebars.registerHelper('EntityStatusPdf', function(obj, hookCheckSatusconf, o
 });
 
 
-
+Handlebars.registerHelper('AddView', function(obj, hookCheckSatusconf, obj2) {
+    var ret = '';
+    if (hookCheckSatusconf != undefined) {
+        if (hookCheckSatusconf.name == "AddView")
+            hookCheckSatusconf = undefined;
+    }
+    ret = '<li><a class="fa fa-eye" aria-hidden="true">'+obj.viewsCounter+'</a></li>';
+    return ret;
+});
 
 
 

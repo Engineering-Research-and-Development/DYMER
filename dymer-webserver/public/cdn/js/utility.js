@@ -5613,3 +5613,44 @@ function showDatasetContainer() {
         }
     }
 }
+
+
+/*AC - Gestione likes - INIZIO*/
+async function like(id) {
+    console.log("Ti piace elemento ", id)
+    const sourceUrl = getendpoint("entity") + "/" + "like-test"
+    console.log("Indirizzo: ", sourceUrl)
+
+    let datapost = {"element": id, "email": ""}
+    let temp_config_call = {
+        url: sourceUrl,
+        type: 'PATCH',
+        contentType: "application/json",
+        addDataBody: true
+    };
+    console.log(temp_config_call)
+    let ajax_temp_call = new Ajaxcall(temp_config_call);    // inviare anche l'email dell'utente -> controllo che non sia guest né admin
+    ajax_temp_call.addparams(datapost)
+    let ret = ajax_temp_call.send();
+
+    console.log("response ", ret)
+}
+/*AC - Gestione likes - FINE*/
+
+/*MG - Gestione visualizzazioni - INIZIO*/
+async function addView(id) {
+    const sourceUrl = getendpoint("entity") + "/" + "addView";
+    let datapost = {"id": id}
+    let temp_config_call = {
+        url: sourceUrl,
+        type: 'PATCH',
+        contentType: "application/json",
+        addDataBody: true
+    };
+    let ajax_temp_call = new Ajaxcall(temp_config_call);
+    ajax_temp_call.addparams(datapost);
+    let callRet = ajax_temp_call.send();
+}
+/*MG - Gestione visualizzazioni - FINE*/
+
+
