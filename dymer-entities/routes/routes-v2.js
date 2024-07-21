@@ -5964,6 +5964,7 @@ router.patch("/addView", (req, res) => {
         params["body"].size = 1;
         /*Acquisisco l'entità da aggiornare*/
         client.search(params).then(async function(response) {
+            console.log("first RESPONSE find ID ===> ", response);
             if ((response["hits"].hits).length > 0) {
                 let element = Object.assign({}, response["hits"].hits[0]);
                 /*Incremento il contatore delle visualizzazioni*/
@@ -5978,6 +5979,7 @@ router.patch("/addView", (req, res) => {
                 client.update({
                     id: req.body.id,
                     index: element._index,
+                    type: element._index,
                     body: {
                         doc: data
                     },
