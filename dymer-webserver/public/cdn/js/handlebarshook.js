@@ -271,7 +271,7 @@ Handlebars.registerHelper('EntityStatusPdf', function(obj, hookCheckSatusconf, o
 });
 
 
-Handlebars.registerHelper('AddView', function(obj, hookCheckSatusconf, obj2) {
+Handlebars.registerHelper('EntityView', function(obj, hookCheckSatusconf, obj2) {
     var ret = '';
     
     if (hookCheckSatusconf != undefined) {
