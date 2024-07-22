@@ -287,6 +287,7 @@ Handlebars.registerHelper('EntityView', function(obj, hookCheckSatusconf, obj2) 
 
 Handlebars.registerHelper('EntityLike', function (obj, hookCheckSatusconf) {
     let ret = ''
+    
     let likes = JSON.parse(obj.likes)
     let nLikes = likes.length
     let likeBtn = '';
@@ -294,9 +295,11 @@ Handlebars.registerHelper('EntityLike', function (obj, hookCheckSatusconf) {
     let userDYM = JSON.parse(atob(userDYM64))
 
     let likesList = "";
-    likes.forEach(function (user) {
-        likesList += user + '<br>';
-    });
+    if(likes != undefined) {
+        likes.forEach(function (user) {
+            likesList += user + '<br>';
+        });
+    }
 
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
