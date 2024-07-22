@@ -285,7 +285,31 @@ Handlebars.registerHelper('AddView', function(obj, hookCheckSatusconf, obj2) {
     return ret;
 });
 
+Handlebars.registerHelper('EntityLike', function (obj, hookCheckSatusconf) {
+    let ret = ''
+    let likes = JSON.parse(obj.likes)
+    let nLikes = likes.length
+    let likeBtn = '';
+    let userDYM64 = localStorage.getItem('DYM')
+    let userDYM = JSON.parse(atob(userDYM64))
 
+    let likesList = "";
+    likes.forEach(function (user) {
+        likesList += user + '<br>';
+    });
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+
+    if (likes.includes(userDYM.email)) {
+        likeBtn += '<a href="#"> <span id="likeBtn-' + obj._id + '" class="fa fa-heart" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\', \'' + obj._index + '\', \'' + userDYM.email + '\')"> ' + nLikes + ' </a>'
+    } else {
+        likeBtn += '<a href="#"> <span id="likeBtn-' + obj._id + '" class="fa fa-heart-o" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\', \'' + obj._index + '\', \'' + userDYM.email + '\')"> ' + nLikes + ' </a>'
+    }
+    ret = likeBtn;
+    return ret
+});
 
 Handlebars.registerHelper('EntityStatusTwo', function(obj, hookCheckSatusconf, obj2) {
     var ret = '';

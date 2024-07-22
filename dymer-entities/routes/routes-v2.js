@@ -5827,6 +5827,51 @@ router.delete('/:id',async (req, res) => {
     });
 });
 
+router.patch("/like-entity", async (req, res) => {
+    let ret = new jsonResponse();
+
+    const userEmail = req.body.loggedUser
+    const index = req.body.index
+    const entityId = req.body.element
+
+    try {
+        const entityArray = await getAllEntitiesFromIDS([entityId])
+        let entity = entityArray[0]
+        let likesArray = JSON.parse(entity["_source"]["likes"])
+
+        if (likesArray.indexOf(userEmail) === -1) {
+            likesArray.push(userEmail)
+            ret.setMessages({action: "like", count: likesArray.length, likes: likesArray})
+
+        } else {
+            likesArray.splice(likesArray.indexOf(userEmail), 1);
+            ret.setMessages({action: "dislike", count: likesArray.length, likes: likesArray})
+        }
+
+        await client.update({
+            index: index,
+            type: index,
+            id: entityId,
+            body: {
+                doc: {
+                    likes: JSON.stringify(likesArray)
+                }
+            }
+        })
+
+    } catch (err) {
+        logger.error(nameFile + '| like-entity: ' + err);
+        ret.setMessages("Set Like Error");
+        ret.setSuccess(false);
+        ret.setExtraData({"log": err.stack});
+        return res.send(ret);
+    }
+
+    ret.setSuccess(true)
+    return res.send(ret)
+})
+
+
 //inoltro al microservizio dservice
 function checkServiceHook(EventSource, objSend, extraInfo, req,originalElement) {
     //insert non ho i dati quindi devo fare un get

@@ -5654,3 +5654,61 @@ async function addView(id) {
 /*MG - Gestione visualizzazioni - FINE*/
 
 
+/*********************/
+async function like(entityId, index, loggedUsrMail = "notLogged") {
+
+    if (loggedUsrMail === "guest@dymer.it" || loggedUsrMail === "admin@dymer.it" || loggedUsrMail === "notLogged") {
+        useGritterTool("User not Logged", "Please log in", "danger")
+
+        let redirect_config_call = {
+            url: window.location.hostname
+        }
+        let ajax_redirect_call = new Ajaxcall(redirect_config_call)
+        ajax_redirect_call.send(redirect_config_call);
+
+        return
+    }
+    const sourceUrl = getendpoint("entity") + "/" + "like-entity"
+    let datapost = {"element": entityId, index: index, "loggedUser": loggedUsrMail}
+
+    let temp_config_call = {
+        url: sourceUrl,
+        type: 'PATCH',
+        contentType: "application/json",
+        addDataBody: true
+    };
+
+    console.log(temp_config_call)
+    let ajax_temp_call = new Ajaxcall(temp_config_call);    // inviare anche l'email dell'utente -> controllo che non sia guest né admin
+    ajax_temp_call.addparams(datapost)
+    let ret = ajax_temp_call.send();
+
+    useGritterTool("Like Action\n", ret.message.action, "success")
+
+    let newCounter = Number(ret.message.count)
+    console.log("iniziale counter ", newCounter)
+
+    if (ret.message.action == "dislike") {
+        let newTitle = ret.message.likes.join('<br>')
+        console.log("decremento ", newCounter)
+        $(`#likeBtn-${entityId}`).removeClass('fa fa-heart')
+        $(`#likeBtn-${entityId}`).addClass('fa fa-heart-o')
+        $(`#likeBtn-${entityId}`).html(' ' + newCounter + ' ')
+
+        $(`#likeBtn-${entityId}`).tooltip('dispose');
+        $(`#likeBtn-${entityId}`).attr('title', newTitle);
+        $(`#likeBtn-${entityId}`).tooltip();
+
+
+    } else if (ret.message.action == "like") {
+        let newTitle = ret.message.likes.join('<br>')
+        console.log("incremento ", newCounter)
+        $(`#likeBtn-${entityId}`).removeClass('fa fa-heart-o')
+        $(`#likeBtn-${entityId}`).addClass('fa fa-heart')
+        $(`#likeBtn-${entityId}`).html(' ' + newCounter + ' ')
+
+        $(`#likeBtn-${entityId}`).tooltip('dispose');
+        $(`#likeBtn-${entityId}`).attr('title', newTitle);
+        $(`#likeBtn-${entityId}`).tooltip();
+    }
+}
