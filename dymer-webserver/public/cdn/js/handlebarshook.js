@@ -281,13 +281,13 @@ Handlebars.registerHelper('EntityView', function(obj, hookCheckSatusconf, obj2) 
     //fix per add su tutti gli item di cataloghi esistenti
     var count = (obj.viewsCounter===undefined) ? 0 : obj.viewsCounter;
 
-    ret = '<a class=" " aria-hidden="true" href="#" id="viewCount"><i class="fa fa-eye" aria-hidden="true"></i> '+count+'</a>';
+    ret = '<a class="viewCount" aria-hidden="true" href="#" id="viewCount'+obj._id+'"><i class="fa fa-eye" aria-hidden="true"></i> '+count+'</a>';
     return ret;
 });
 
 Handlebars.registerHelper('EntityLike', function (obj, hookCheckSatusconf) {
     let ret = ''
-    
+
     let likes = JSON.parse(obj.likes)
     let nLikes = likes.length
     let likeBtn = '';
@@ -306,9 +306,9 @@ Handlebars.registerHelper('EntityLike', function (obj, hookCheckSatusconf) {
     })
 
     if (likes.includes(userDYM.email)) {
-        likeBtn += '<a href="#"> <span id="likeBtn-' + obj._id + '" class="fa fa-heart" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\', \'' + obj._index + '\', \'' + userDYM.email + '\')"> ' + nLikes + ' </a>'
+        likeBtn += '<a href="#" class="likeCount" id="viewlike'+obj._id+'"> <span id="likeBtn-' + obj._id + '" class="fa fa-heart active" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\', \'' + obj._index + '\', \'' + userDYM.email + '\')"> ' + nLikes + ' </a>'
     } else {
-        likeBtn += '<a href="#"> <span id="likeBtn-' + obj._id + '" class="fa fa-heart-o" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\', \'' + obj._index + '\', \'' + userDYM.email + '\')"> ' + nLikes + ' </a>'
+        likeBtn += '<a href="#" class="likeCount" id="viewlike'+obj._id+'"> <span id="likeBtn-' + obj._id + '" class="fa fa-heart-o" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\', \'' + obj._index + '\', \'' + userDYM.email + '\')"> ' + nLikes + ' </a>'
     }
     ret = likeBtn;
     return ret
