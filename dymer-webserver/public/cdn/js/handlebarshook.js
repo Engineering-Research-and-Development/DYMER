@@ -278,7 +278,7 @@ Handlebars.registerHelper('EntityView', function(obj, hookCheckSatusconf, obj2) 
     }
     return ret;
 });
-/*MG - Gestione visualizzazioni - FINE*/
+/*MG - Gestione visualizzazioni -FINE*/
 
 Handlebars.registerHelper('EntityStatusTwo', function(obj, hookCheckSatusconf, obj2) {
     var ret = '';

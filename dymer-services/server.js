@@ -105,7 +105,7 @@ app.use('/api/v1/duser', routes_dymer_duser
 
 // AC
 app.use('/api/v1/stats', routes_dymer_stats
-// #swagger.tags = ['Services']
+
 );
 
 app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {

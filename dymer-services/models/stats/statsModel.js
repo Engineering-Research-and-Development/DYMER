@@ -37,5 +37,4 @@ const StatsSchema = new mongoose.Schema({
     {versionKey: false})
 
 const statsModel = mongoose.model("statsModel", StatsSchema);
-
 module.exports = statsModel;

@@ -196,7 +196,6 @@ async function updateViews(idString, ip, email, role, resourceId, type, timestam
 async function createOrUpdateDocument(idString, ip, email, role, resourceId, type, act) {
     try {
         let existingDoc = await statsModel.findOne({email: email, resourceId: idString, act: act});
-
         if (existingDoc) {
             existingDoc.timestamps.push(Date.now());
             return await existingDoc.save();

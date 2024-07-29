@@ -2214,7 +2214,7 @@ async function exportPDFEntity(id) {
     });
 }
 
-/*********************/
+
 async function like(entityId, index, loggedUsrMail = "notLogged") {
 
     if (loggedUsrMail === "guest@dymer.it" || loggedUsrMail === "admin@dymer.it" || loggedUsrMail === "notLogged") {
@@ -2259,10 +2259,10 @@ async function like(entityId, index, loggedUsrMail = "notLogged") {
         $(`#likeBtn-${entityId}`).attr('title', newTitle);
         $(`#likeBtn-${entityId}`).tooltip();
 
-        /*************************/
+
         let mongoUpdateRet = await likeMongoUpdate(entityId, "dislike", loggedUsrMail, "test-TEST", "type-TEST")
         console.log(mongoUpdateRet)
-        /*************************/
+
 
     } else if (ret.message.action == "like") {
         let newTitle = ret.message.likes.join('<br>')
@@ -2275,14 +2275,13 @@ async function like(entityId, index, loggedUsrMail = "notLogged") {
         $(`#likeBtn-${entityId}`).attr('title', newTitle);
         $(`#likeBtn-${entityId}`).tooltip();
 
-        /*************************/
+
         let mongoUpdateRet = await likeMongoUpdate(entityId, "like", loggedUsrMail, "test-TEST", "type-TEST")
         console.log(mongoUpdateRet)
-        /*************************/
+
     }
 }
 
-/*********************/
 // Mongo Update Likes
 async function likeMongoUpdate(entityId, act, email, role, type) {
     const sourceServiceUrl = getendpoint("stats") + "/" + "updatestats"
@@ -2301,9 +2300,7 @@ async function likeMongoUpdate(entityId, act, email, role, type) {
     return await ajax_temp_call.send();
 
 }
-/*********************/
 
-/*********************/
 /*MG - Gestione visualizzazioni - INIZIO*/
 async function addView(id, index) {
     let sourceUrl = getendpoint("entity") + "/" + "addView";
