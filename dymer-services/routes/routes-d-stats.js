@@ -123,7 +123,7 @@ router.put("/updatestats/:id", async function (req, res) {
     const act = req.body.act;
     const ip = req.ip;
     const email = req.body.email;
-    const role = req.body.role;
+    const roles = req.body.roles;
     const resourceId = req.body.resourceId;
     const type = req.body.type;
 
@@ -133,11 +133,11 @@ router.put("/updatestats/:id", async function (req, res) {
         let updatedDocument;
         switch (act) {
             case "views":
-                updatedDocument = await updateViews(idString, ip, email, role, resourceId, type, Date.now());
+                updatedDocument = await updateViews(idString, ip, email, roles, resourceId, type, Date.now());
                 break;
             case "like":
             case "dislike":
-                updatedDocument = await createOrUpdateDocument(idString, ip, email, role, resourceId, type, act);
+                updatedDocument = await createOrUpdateDocument(idString, ip, email, roles, resourceId, type, act);
                 break;
             default:
                 ret.setMessages("Invalid action");
@@ -167,7 +167,7 @@ router.put("/updatestats/:id", async function (req, res) {
     }
 });
 
-async function updateViews(idString, ip, email, role, resourceId, type, timestamp) {
+async function updateViews(idString, ip, email, roles, resourceId, type, timestamp) {
     try {
         let id = mongoose.Types.ObjectId(idString);
         let existingDoc = await statsModel.findOne({_id: id, email: email});
@@ -178,7 +178,7 @@ async function updateViews(idString, ip, email, role, resourceId, type, timestam
         } else {
             let data = {
                 email: email,
-                role: role,
+                roles: roles,
                 ip: ip,
                 resourceId: resourceId,
                 type: type,
@@ -193,7 +193,7 @@ async function updateViews(idString, ip, email, role, resourceId, type, timestam
     }
 }
 
-async function createOrUpdateDocument(idString, ip, email, role, resourceId, type, act) {
+async function createOrUpdateDocument(idString, ip, email, roles, resourceId, type, act) {
     try {
         let existingDoc = await statsModel.findOne({email: email, resourceId: idString, act: act});
         if (existingDoc) {
@@ -202,7 +202,7 @@ async function createOrUpdateDocument(idString, ip, email, role, resourceId, typ
         } else {
             let data = {
                 email: email,
-                role: role,
+                roles: roles,
                 ip: ip,
                 resourceId: idString,//resourceId,
                 type: type,

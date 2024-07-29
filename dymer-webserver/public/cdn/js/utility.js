@@ -2215,7 +2215,7 @@ async function exportPDFEntity(id) {
 }
 
 
-async function like(entityId, index, loggedUsrMail = "notLogged") {
+async function like(entityId, index, loggedUsrMail = "notLogged", roles) {
 
     if (loggedUsrMail === "guest@dymer.it" || loggedUsrMail === "admin@dymer.it" || loggedUsrMail === "notLogged") {
         useGritterTool("User not Logged", "Please log in", "danger")
@@ -2260,7 +2260,7 @@ async function like(entityId, index, loggedUsrMail = "notLogged") {
         $(`#likeBtn-${entityId}`).tooltip();
 
 
-        let mongoUpdateRet = await likeMongoUpdate(entityId, "dislike", loggedUsrMail, "test-TEST", "type-TEST")
+        let mongoUpdateRet = await likeMongoUpdate(entityId, "dislike", loggedUsrMail, roles, "type-TEST")
         console.log(mongoUpdateRet)
 
 
@@ -2276,14 +2276,14 @@ async function like(entityId, index, loggedUsrMail = "notLogged") {
         $(`#likeBtn-${entityId}`).tooltip();
 
 
-        let mongoUpdateRet = await likeMongoUpdate(entityId, "like", loggedUsrMail, "test-TEST", "type-TEST")
+        let mongoUpdateRet = await likeMongoUpdate(entityId, "like", loggedUsrMail, roles, "type-TEST")
         console.log(mongoUpdateRet)
 
     }
 }
 
 // Mongo Update Likes
-async function likeMongoUpdate(entityId, act, email, role, type) {
+async function likeMongoUpdate(entityId, act, email, roles, type) {
     const sourceServiceUrl = getendpoint("stats") + "/" + "updatestats"
 
     let service_config_call = {
@@ -2293,7 +2293,7 @@ async function likeMongoUpdate(entityId, act, email, role, type) {
         addDataBody: true
     };
 
-    let data_service_post = { "act": act, "email": email, "role": role, "resourceId": entityId, "type": type}
+    let data_service_post = { "act": act, "email": email, "roles": roles, "resourceId": entityId, "type": type}
 
     let ajax_temp_call = new Ajaxcall(service_config_call);
     ajax_temp_call.addparams(data_service_post)

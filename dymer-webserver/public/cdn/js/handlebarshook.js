@@ -247,9 +247,9 @@ Handlebars.registerHelper('EntityLike', function (obj, hookCheckSatusconf) {
     })
 
     if (likes.includes(userDYM.email)) {
-        likeBtn += '<a href="#"> <span id="likeBtn-' + obj._id + '" class="fa fa-heart" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\', \'' + obj._index + '\', \'' + userDYM.email + '\')"> ' + nLikes + ' </a>'
+        likeBtn += '<a href="#"> <span id="likeBtn-' + obj._id + '" class="fa fa-heart" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\', \'' + obj._index + '\', \'' + userDYM.email + '\', \'' + userDYM.roles + '\')"> ' + nLikes + ' </a>'
     } else {
-        likeBtn += '<a href="#"> <span id="likeBtn-' + obj._id + '" class="fa fa-heart-o" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\', \'' + obj._index + '\', \'' + userDYM.email + '\')"> ' + nLikes + ' </a>'
+        likeBtn += '<a href="#"> <span id="likeBtn-' + obj._id + '" class="fa fa-heart-o" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\', \'' + obj._index + '\', \'' + userDYM.email + '\', \'' + userDYM.roles + '\')"> ' + nLikes + ' </a>'
     }
     ret = likeBtn;
     return ret
