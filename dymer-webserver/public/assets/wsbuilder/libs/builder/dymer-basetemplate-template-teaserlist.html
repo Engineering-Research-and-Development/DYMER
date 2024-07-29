@@ -9,7 +9,13 @@
             <h1 class="text-info">{{title}}</h1>
         </div>
         <div class="descrellipse">{{description}}</div>
-        <span class="pull-right text-info " style="padding-top: 10px;cursor:pointer" title="{{name}}" onclick="kmsrenderdetail(&quot;{{_id}}&quot;)">
+<!--        <span class="pull-right text-info " style="padding-top: 10px;cursor:pointer" title="{{name}}" onclick="kmsrenderdetail(&quot;{{_id}}&quot;)">-->
+        <!--MG - Gestione visualizzazioni - INIZIO-->
+        <!--
+        <span class="pull-right text-info " style="padding-top: 10px;cursor:pointer" title="{{name}}" onclick="kmsrenderdetail(&quot;{{_id}}&quot;)"></span>
+        -->
+        <span class="pull-right text-info " style="padding-top: 10px;cursor:pointer" title="{{name}}" onclick="kmsrenderdetail(&quot;{{_id}}&quot;);addView(&quot;{{_id}}&quot;, &quot;{{_index}}&quot;);">
+        <!--MG - Gestione visualizzazioni - FINE-->
             View More
         </span>
     </div>

@@ -191,6 +191,7 @@ Handlebars.registerHelper('EntityStatus', function(obj, hookCheckSatusconf, obj2
                 editBtn += '&nbsp;&nbsp;<span id="editBtn" class="text-info  " style="cursor:pointer" onclick="editEntity(\'' + obj._id + '\')"><i class="fa fa-pencil" aria-hidden="true"></i> Edit </span>   ';
             }
             editBtn += '&nbsp;&nbsp;<span id="exportBtn" class="text-warning  " style="cursor:pointer" onclick="exportPDFEntity(\'' + obj._id + '\')"> <b> <i class="fa fa-download" aria-hidden="true"></i></b> <span> PDF Export </span> </span>';
+            editBtn += '&nbsp;&nbsp;<span id="exportBtn" class="text-success  " style="cursor:pointer" onclick="like(\'' + obj._id + '\')"> <b> <i class="fa fa-heart-o" aria-hidden="tru</i></b> <span> Like </span> </span>';
             editBtn += '</div>';
 
         }
@@ -227,7 +228,57 @@ Handlebars.registerHelper('EntityStatus', function(obj, hookCheckSatusconf, obj2
         }*/
     return ret;
 });
+/************** START MODIFICA ******************/
+Handlebars.registerHelper('EntityLike', function (obj, hookCheckSatusconf) {
+    let ret = ''
+    let likes = JSON.parse(obj.likes)
+    let nLikes = likes.length
+    let likeBtn = '';
+    let userDYM64 = localStorage.getItem('DYM')
+    let userDYM = JSON.parse(atob(userDYM64))
 
+    let likesList = "";
+    likes.forEach(function (user) {
+        likesList += user + '<br>';
+    });
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+
+    if (likes.includes(userDYM.email)) {
+        likeBtn += '<a href="#"> <span id="likeBtn-' + obj._id + '" class="fa fa-heart" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\', \'' + obj._index + '\', \'' + userDYM.email + '\')"> ' + nLikes + ' </a>'
+    } else {
+        likeBtn += '<a href="#"> <span id="likeBtn-' + obj._id + '" class="fa fa-heart-o" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\', \'' + obj._index + '\', \'' + userDYM.email + '\')"> ' + nLikes + ' </a>'
+    }
+    ret = likeBtn;
+    return ret
+});
+/*************** END MODIFICA *******************/
+/*MG - Gestione visualizzazioni - INIZIO*/
+Handlebars.registerHelper('EntityView', function(obj, hookCheckSatusconf, obj2) {
+    var ret = '<li><a class="fa fa-eye" aria-hidden="true">'+obj.viewsCounter+'</a></li>';
+    if (hookCheckSatusconf != undefined) {
+        if (hookCheckSatusconf.name == "EntityView"){
+            hookCheckSatusconf = undefined;
+        }else{
+            /*Se il secondo parametro dell'helper è TRUE allora attivo il controllo sul ruolo
+              per fare in modo che solo l'ADMIN possa vedere il contatore*/
+            if (hookCheckSatusconf){
+                var perm = checkPermission(obj);
+                if (perm.isadmin){
+                    return ret;
+                }else{
+                    return '';
+                }
+            }else{
+                return ret;
+            }
+        }
+    }
+    return ret;
+});
+/*MG - Gestione visualizzazioni - FINE*/
 
 Handlebars.registerHelper('EntityStatusTwo', function(obj, hookCheckSatusconf, obj2) {
     var ret = '';
@@ -279,7 +330,7 @@ Handlebars.registerHelper('EntityStatusTwo', function(obj, hookCheckSatusconf, o
 
 
 Handlebars.registerHelper('cdnpath', function(block) {
-    return (kmsconfig.cdn).replace('public/cdn/', "");; //just return global variable value
+    return (kmsconfig.cdn).replace('public/cdn/', ""); //just return global variable value
 });
 
 Handlebars.registerHelper('json', function(context) {

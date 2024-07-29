@@ -2212,7 +2212,7 @@ router.get('/relationstat/', (req, res) => {
     });
 });
 //Marco gestione permessi
-router.get('/allindex/:indexes?', (req, res) => {
+router.get('/allindex/:indexes?',(req, res) => {
     var ret = new jsonResponse();
     let params = {};
     let indexes_ = req.params.indexes ? req.params.indexes.split(",") : ["_all"];
@@ -2228,6 +2228,7 @@ router.get('/allindex/:indexes?', (req, res) => {
             return res.send(ret);
         }
         ret.setMessages("Entity founded successfully");
+        console.log("==>/allindex/:indexes - resp", JSON.stringify(resp));
         ret.setData(resp);
         return res.send(ret);
     });
@@ -4878,7 +4879,8 @@ const haspermissionGrantByAction = function(urs, action, entityprop) {
 };
 
 //router.patch('/:id', [testprecall, testprecall2], (req, res) => {
-router.patch('/:id', async(req, res, next) => {
+// router.patch('/:id', async(req, res, next) => {
+router.patch('/role/:id', async(req, res, next) => {
     var callDatap = util.getAllQuery(req);
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser
@@ -5326,6 +5328,98 @@ router.delete('/:id',async (req, res) => {
         }
     });
 });
+
+router.patch("/like-entity", async (req, res) => {
+    let ret = new jsonResponse();
+
+    const userEmail = req.body.loggedUser
+    const index = req.body.index
+    const entityId = req.body.element
+
+    try {
+        const entityArray = await getAllEntitiesFromIDS([entityId])
+        let entity = entityArray[0]
+        let likesArray = JSON.parse(entity["_source"]["likes"])
+
+        if (likesArray.indexOf(userEmail) === -1) {
+            likesArray.push(userEmail)
+            ret.setMessages({action: "like", count: likesArray.length, likes: likesArray})
+
+        } else {
+            likesArray.splice(likesArray.indexOf(userEmail), 1);
+            ret.setMessages({action: "dislike", count: likesArray.length, likes: likesArray})
+        }
+
+        await client.update({
+            index: index,
+            type: index,
+            id: entityId,
+            body: {
+                doc: {
+                    likes: JSON.stringify(likesArray)
+                }
+            }
+        })
+
+    } catch (err) {
+        logger.error(nameFile + '| like-entity: ' + err);
+        ret.setMessages("Set Like Error");
+        ret.setSuccess(false);
+        ret.setExtraData({"log": err.stack});
+        return res.send(ret);
+    }
+
+    ret.setSuccess(true)
+    return res.send(ret)
+})
+
+/*MG - Gestione visualizzazioni - INIZIO*/
+router.patch("/addView", (req, res) => {
+    let dymeruser = JSON.parse(Buffer.from(req.headers.dymeruser, 'base64').toString('utf-8'));
+    let admin = false;
+    dymeruser.roles.forEach(function(value){
+        admin = dymeruser.roles.some(value => value === 'app-admin');
+    });
+    /*Partecipa all'incremento delle visualizzazioni l'utente NON admin*/
+    if (!admin){
+        let params = {};
+        params["body"] = {
+            "query": {
+                "match": {
+                    "_id": req.body.id
+                }
+            }
+        };
+        params["body"].size = 1;
+        /*Acquisisco l'entità da aggiornare*/
+        client.search(params).then(async function(response) {
+            if ((response["hits"].hits).length > 0) {
+                let element = Object.assign({}, response["hits"].hits[0]);
+                /*Incremento il contatore delle visualizzazioni*/
+                let viewsCounter = 1;
+                if (element._source.viewsCounter && element._source.viewsCounter != null){
+                    element._source.viewsCounter += 1;
+                    viewsCounter = element._source.viewsCounter;
+                }
+                let data = {
+                    viewsCounter : viewsCounter
+                }
+                client.update({
+                    id: req.body.id,
+                    index: element._index,
+                    body: {
+                        doc: data
+                    },
+                    refresh: 'true'
+                }).then(async function(response) {
+                    console.log("ADD VIEW - UPDATE RESPONSE ===> ", response);
+                });
+            }
+        });
+    }
+    return res.send(req.body);
+});
+/*MG - Gestione visualizzazioni - FINE*/
 
 //inoltro al microservizio dservice
 function checkServiceHook(EventSource, objSend, extraInfo, req,originalElement) {
