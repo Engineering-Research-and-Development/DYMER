@@ -274,15 +274,34 @@ Handlebars.registerHelper('EntityStatusPdf', function(obj, hookCheckSatusconf, o
 Handlebars.registerHelper('EntityView', function(obj, hookCheckSatusconf, obj2) {
     var ret = '';
     
-    if (hookCheckSatusconf != undefined) {
-        if (hookCheckSatusconf.name == "AddView")
-            hookCheckSatusconf = undefined;
-    }
-    //fix per add su tutti gli item di cataloghi esistenti
+    
+
+
+
     var count = (obj.viewsCounter===undefined) ? 0 : obj.viewsCounter;
 
     ret = '<a class="viewCount" aria-hidden="true" href="#" id="viewCount'+obj._id+'"><i class="fa fa-eye" aria-hidden="true"></i> '+count+'</a>';
+
+    if (hookCheckSatusconf != undefined) {
+        if (hookCheckSatusconf.name == "EntityView"){
+            hookCheckSatusconf = undefined;
+        }else{
+            /*Se il secondo parametro dell'helper è TRUE allora attivo il controllo sul ruolo
+              per fare in modo che solo l'ADMIN possa vedere il contatore*/
+            if (hookCheckSatusconf){
+                var perm = checkPermission(obj);
+                if (perm.isadmin){
+                    return ret;
+                }else{
+                    return '';
+                }
+            }else{
+                return ret;
+            }
+        }    
+    }
     return ret;
+
 });
 
 Handlebars.registerHelper('EntityLike', function (obj, hookCheckSatusconf) {
