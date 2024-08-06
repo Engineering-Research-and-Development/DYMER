@@ -330,7 +330,7 @@ router.post('/fromcsv/:enttype', util.checkIsAdmin,(req, res) => {
             };
             
             singleEntity.data.properties = propert_
-           console.log(singleEntity.data.properties)
+           //console.log(singleEntity.data.properties)
             if(newentityType.toLocaleLowerCase() == "service") {
                     if (rel_id != undefined)
                     singleEntity.data.relation = { dih: [{ to: rel_id }] };
@@ -361,8 +361,8 @@ router.post('/fromcsv/:enttype', util.checkIsAdmin,(req, res) => {
                     singleEntity.data.relation.project.push(prj);
                 }
             }
-            console.log("===============")
-            console.log(JSON.stringify(singleEntity))												
+            //console.log("===============")
+            //console.log(JSON.stringify(singleEntity))												
             var extrainfo = {
                 "extrainfo": {
                     "companyId": "20097",
@@ -680,6 +680,9 @@ function postMyData(el, index, DYM, DYM_EXTRA) {
     // var posturl = "http://localhost:8080/api/entities/api/v1/entity/" + index;
     var posturl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/" + index;
     var formdata = new FormData();
+    console.log("**************************************el*******************************************");
+    
+    console.log(JSON.stringify(el))
     appendFormdata(formdata, el);
     var config = {
         method: 'post',
