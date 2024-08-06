@@ -331,12 +331,20 @@ router.post('/fromcsv/:enttype', util.checkIsAdmin,(req, res) => {
             
             singleEntity.data.properties = propert_
            console.log(singleEntity.data.properties)
-           if(newentityType.toLocaleLowerCase() == "service") {
-                if (rel_id != undefined)
-                   singleEntity.data.relation = { dih: [{ to: rel_id }] };
+            if(newentityType.toLocaleLowerCase() == "service") {
+                    if (rel_id != undefined)
+                    singleEntity.data.relation = { dih: [{ to: rel_id }] };
             }
 
-			  if(newentityType.toLocaleLowerCase() == "dih") {
+
+
+            if(newentityType.toLocaleLowerCase() == "tefindservice") {
+                if (rel_id != undefined)
+                singleEntity.data.relation = { tefinddih: [{ to: rel_id }] };
+        }
+
+
+		    if(newentityType.toLocaleLowerCase() == "dih") {
                 const initiativesArray = singleEntity.data.initiatives?.replace(/\r/g, '').split(",").map(el => { return {"to": el}})
                 const projectArray = singleEntity.data.project?.replace(/\r/g, '').split(",").map(el => { return {"to": el}})
 
@@ -430,6 +438,29 @@ function buildNestedObj(dottedObj) {
         delete result["representatives"]
         result["representatives"] = [JSON.parse(representatives)]
     }
+
+    if(result["type"]) {
+
+        if(result["type"].split(":").length>0){
+            let representatives = result["type"].split(":");
+            delete result["type"];
+    
+            result["type"] = representatives[0];
+
+        }
+
+
+        if(result["type"].split(";").length>0){
+            let representatives = result["type"].split(";");
+            delete result["type"];
+    
+            result["type"] = representatives[0];
+
+        }
+    }
+
+
+
     /**/
     // if(!result.properties) result.properties = {}
     // if(result.properties?.owner) result.properties.owner = {owner: result.properties.owner}
