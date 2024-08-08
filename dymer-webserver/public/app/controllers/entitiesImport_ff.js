@@ -149,7 +149,7 @@ angular.module('entitiesImportControllers', [])
                     obj[key] = recArray[index]
                 }
                 //*********/
-                if (model == "service") {
+                if (model == "service" || model == "tefindservice") {
                     let dih_index = fieldNames.indexOf("dih")
                     obj["dih"] = recArray[dih_index]
                 }
