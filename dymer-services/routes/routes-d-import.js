@@ -330,7 +330,8 @@ router.post('/fromcsv/:enttype', util.checkIsAdmin,(req, res) => {
             };
             
             singleEntity.data.properties = propert_
-           //console.log(singleEntity.data.properties)
+            //console.log(singleEntity.data.properties)
+             
             if(newentityType.toLocaleLowerCase() == "service") {
                     if (rel_id != undefined)
                     singleEntity.data.relation = { dih: [{ to: rel_id }] };
@@ -395,6 +396,8 @@ router.post('/fromcsv/:enttype', util.checkIsAdmin,(req, res) => {
             let userinfo_objJsonStr = JSON.stringify(userinfo);
             let userinfo_objJsonB64 = Buffer.from(userinfo_objJsonStr).toString("base64");
             var objToPost = { 'data': singleEntity, 'DYM': userinfo_objJsonB64, 'DYM_EXTRA': extrainfo_objJsonB64 };
+           // console.log("===============")
+           // console.log(JSON.stringify(singleEntity))	
             listTopost.push(objToPost);
         });
         listTopost.forEach(function (obj, index) {
@@ -415,6 +418,8 @@ router.post('/fromcsv/:enttype', util.checkIsAdmin,(req, res) => {
 });
 
 function buildNestedObj(dottedObj) {
+    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>dottedObj*********************************************");
+    console.log(JSON.stringify(dottedObj));
     const result = {};
     for (const key in dottedObj) {
       if (dottedObj.hasOwnProperty(key)) {
