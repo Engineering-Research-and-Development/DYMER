@@ -357,14 +357,14 @@ app.get('/info/:key?', (req, res, next) => {
         '<div class="p-5">' + '<div class="row">' +
         '<div class=" col-12">' +
         '<h1 class="h4   mb-4 text-center"  style="color:#023d7d;">Welcome to DYMER</h1>' +
-        '<div class="text-center">' + '<img class="" src="public\cdn\img\dymer-logo.png" style="width: 220px;" title="DYMER LOGO">' + '<div>' +
+        '<div class="text-center">' + '<img class="" src="public\\\cdn\\\img\\\dymer-logo.png" style="width: 220px;" title="DYMER LOGO">' + '<div>' +
         '<br><small style="color: #8c8985;">DYnamic Information ModElling & Rendering</small>' +
         '</div>' +
         '<div class="  	col-12 p-2" style="color: #8c8985;">' +
         // '<br> version ' + infodymer.version +
         '<br> <small style="color: #8c8985;"> updated date ' + infodymer.updated  + '</small></div>' +
         '<div class="text-center col-12 p-2">' +
-        '<span style=" font-size: 12px;">&#169; 2022, Powered by <a href="https://www.eng.it/" target="_blank">' + '<img src="https://www.eng.it/resources/images/logo%20eng.png" style="width: 20px;bottom: 3px;position: relative; "> Engineering</a>' + '</span>' +
+        '<span style=" font-size: 12px;">&#169; 2024, Powered by <a href="https://www.eng.it/" target="_blank">' + '<img src="https://www.eng.it/resources/images/logo%20eng.png" style="width: 20px;bottom: 3px;position: relative; "> Engineering</a>' + '</span>' +
         '</div>' +
         '</div>' +
         '</div>' +
