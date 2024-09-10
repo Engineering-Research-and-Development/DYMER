@@ -160,3 +160,9 @@ exports.getDymerUser = function(req, res, next) {
         return dymeruser;
     }
 }
+
+exports.mongoUrlLib = function(el) {
+    let url = "mongodb://" + global.configService.library.ip + ':' + global.configService.library.port + "/" + global.configService.library.index_ref;
+    console.log("mongoUrlLib ", url);
+    return url;
+};

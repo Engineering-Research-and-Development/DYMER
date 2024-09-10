@@ -14,8 +14,10 @@ const storage = multer.memoryStorage();
 const upload = multer( { storage : storage } );
 
 // Configurazione di Mongoose e connessione al database
+
+const mongoURILib = util.mongoUrlLib();
 try {
-	mongoose.connect('mongodb://localhost:27017/dservice', {
+	mongoose.connect(mongoURILib, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true
 	});
@@ -34,6 +36,10 @@ const librarySchema = new mongoose.Schema({
 });
 
 const Library = mongoose.model('Library', librarySchema);
+console.log("*************** library publicfile",Library);
+
+
+
 
 function bufferToStream( buffer ) {
 	const stream = new Readable();

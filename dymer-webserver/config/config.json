@@ -15,7 +15,15 @@
                 "context-path": "",
                 "adminUser": "admin",
                 "adminPass": "demo2021",
-                "idp": []
+                "idp": [], 
+                "library":{
+                    "type": "mongodb",
+                    "protocol": "http",
+                    "ip": "mongodb",
+                    "port": 27017,
+                    "index_ref": "dservice"
+                },
+                "showAngular": true
             },
             "entity": {
                 "protocol": "http",
@@ -55,7 +63,15 @@
                 "context-path": "",
                 "adminUser": "admin",
                 "adminPass": "",
-                "idp": []
+                "idp": [],
+                "library":{
+                    "type": "mongodb",
+                    "protocol": "http",
+                    "ip": "mongodb",
+                    "port": 27017,
+                    "index_ref": "dservice"
+                },
+                "showAngular": true
             },
             "entity": {
                 "protocol": "http",
