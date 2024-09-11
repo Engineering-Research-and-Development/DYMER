@@ -306,8 +306,12 @@ Handlebars.registerHelper('EntityView', function(obj, hookCheckSatusconf, obj2) 
 
 Handlebars.registerHelper('EntityLike', function (obj, hookCheckSatusconf) {
     let ret = ''
+    let likes=[];
 
-    let likes = JSON.parse(obj.likes)
+    if(obj.likes != undefined) {
+          likes = JSON.parse(obj.likes);
+    }
+     
     let nLikes = likes.length
     let likeBtn = '';
     let userDYM64 = localStorage.getItem('DYM')
