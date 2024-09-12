@@ -5836,8 +5836,16 @@ router.patch("/like-entity", async (req, res) => {
 
     try {
         const entityArray = await getAllEntitiesFromIDS([entityId])
-        let entity = entityArray[0]
-        let likesArray = JSON.parse(entity["_source"]["likes"])
+        let entity = entityArray[0];
+        let likesArray;
+        if(entity["_source"]["likes"] !== undefined){
+
+            likesArray = JSON.parse(entity["_source"]["likes"])
+
+        }else{
+            likesArray=[];
+        }
+        
         console.log("********************* likesArray -->>>>",likesArray);
         if (likesArray.indexOf(userEmail) === -1) {
             likesArray.push(userEmail)
