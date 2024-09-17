@@ -3522,7 +3522,7 @@ function kmsrenderdetail(_id) {
     (kmsdataset).forEach(function(item, i) {
         if (item._id == _id) {
             arObj.push(item);
-            idx=item.index;
+            idx=item._index;
             /*	obj = item;
                 tmpl = item._index + "@" + item._type;
                 mytemplate = templateslist[tmpl]['viewtype'][typetemplateToRender];*/
