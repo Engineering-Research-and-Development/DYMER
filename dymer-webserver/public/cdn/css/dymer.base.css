@@ -832,3 +832,15 @@ table.dataTable tfoot td {
 }
 
 /*end summernote*/
+
+
+.kms-post-meta a{
+    color: #838080;
+    font-size: small;
+    text-decoration: none;
+}
+
+.kms-post-meta a:hover{
+    color: #0e61e3;
+    text-decoration: none;
+}
