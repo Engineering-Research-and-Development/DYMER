@@ -5827,7 +5827,7 @@ router.delete('/:id',async (req, res) => {
     });
 });
 
-router.patch("/like-entity", async (req, res) => {
+router.patch("/entitylike", async (req, res) => {
     let ret = new jsonResponse();
 
     const userEmail = req.body.loggedUser

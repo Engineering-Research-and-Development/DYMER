@@ -3514,6 +3514,7 @@ function kmsrenderdetail(_id) {
     if (retriveIfIsType('map') || retriveIfIsType('dt')) {
         hideDatasetContainer();
     }
+    var idx;
     actualTemplateType = "reset";
     removeTempImport('tftemp');
     var arObj = new Array();
@@ -3521,6 +3522,7 @@ function kmsrenderdetail(_id) {
     (kmsdataset).forEach(function(item, i) {
         if (item._id == _id) {
             arObj.push(item);
+            idx=item.index;
             /*	obj = item;
                 tmpl = item._index + "@" + item._type;
                 mytemplate = templateslist[tmpl]['viewtype'][typetemplateToRender];*/
@@ -3545,6 +3547,8 @@ function kmsrenderdetail(_id) {
     } else {
         kmsrenderEl(arObj, 'fullcontent');
     }
+
+    addView( _id,idx);
 }
 
 function checkbreadcrumb(arObj, fnct, linklabel) {
@@ -5621,73 +5625,7 @@ function showDatasetContainer() {
     }
 }
 
-
-async function like(entityId, index, loggedUsrMail = "notLogged") {
-
-    if (loggedUsrMail === "guest@dymer.it" || loggedUsrMail === "admin@dymer.it" || loggedUsrMail === "notLogged") {
-        useGritterTool("User not Logged", "Please log in", "danger")
-
-        let redirect_config_call = {
-            url: window.location.hostname
-        }
-        let ajax_redirect_call = new Ajaxcall(redirect_config_call)
-        ajax_redirect_call.send(redirect_config_call);
-
-        return
-    }
-    const sourceEntityUrl = getendpoint("entity") + "/" + "like-entity"
-    let datapost = {"element": entityId, index: index, "loggedUser": loggedUsrMail}
-
-    let entity_config_call = {
-        url: sourceEntityUrl,
-        type: 'PATCH',
-        contentType: "application/json",
-        addDataBody: true
-    };
-
-    console.log(entity_config_call)
-    let ajax_temp_call = new Ajaxcall(entity_config_call);
-    ajax_temp_call.addparams(datapost)
-    let ret = ajax_temp_call.send();
-
-    useGritterTool("Like Action\n", ret.message.action, "success")
-
-    let newCounter = Number(ret.message.count)
-    console.log("iniziale counter ", newCounter)
-
-    if (ret.message.action == "dislike") {
-        let newTitle = ret.message.likes.join('<br>')
-        console.log("decremento ", newCounter)
-        $(`#likeBtn-${entityId}`).removeClass('fa fa-heart')
-        $(`#likeBtn-${entityId}`).addClass('fa fa-heart-o')
-        $(`#likeBtn-${entityId}`).html(' ' + newCounter + ' ')
-
-        $(`#likeBtn-${entityId}`).tooltip('dispose');
-        $(`#likeBtn-${entityId}`).attr('title', newTitle);
-        $(`#likeBtn-${entityId}`).tooltip();
-
-        /*************************/
-        let mongoUpdateRet = await likeMongoUpdate(entityId, "dislike", loggedUsrMail, "test-TEST", "type-TEST")
-        console.log(mongoUpdateRet)
-        /*************************/
-
-    } else if (ret.message.action == "like") {
-        let newTitle = ret.message.likes.join('<br>')
-        console.log("incremento ", newCounter)
-        $(`#likeBtn-${entityId}`).removeClass('fa fa-heart-o')
-        $(`#likeBtn-${entityId}`).addClass('fa fa-heart')
-        $(`#likeBtn-${entityId}`).html(' ' + newCounter + ' ')
-
-        $(`#likeBtn-${entityId}`).tooltip('dispose');
-        $(`#likeBtn-${entityId}`).attr('title', newTitle);
-        $(`#likeBtn-${entityId}`).tooltip();
-
-        /*************************/
-        let mongoUpdateRet = await likeMongoUpdate(entityId, "like", loggedUsrMail, "test-TEST", "type-TEST")
-        console.log(mongoUpdateRet)
-        /*************************/
-    }
-}
+ 
 
 // Mongo Update Likes
 async function likeMongoUpdate(entityId, act, email, roles, type) {
@@ -5730,6 +5668,7 @@ async function addView(id, index) {
     let ajax_temp_call = new Ajaxcall(temp_config_call);
     ajax_temp_call.addparams(datapost);
     let addViewCallRet = ajax_temp_call.send();
+     console.log("addView response",addViewCallRet);
     sourceUrl = serverUrl + "/api/dservice/api/v1/stats/savestats";
     datapost = {"resourceId" : id, "type" : index, "act": "views"}
     temp_config_call = {
@@ -5741,6 +5680,7 @@ async function addView(id, index) {
     ajax_temp_call = new Ajaxcall(temp_config_call);
     ajax_temp_call.addparams(datapost);
     let statsCallRet = ajax_temp_call.send();
+    //console.log("savestats response",statsCallRet);
 }
 /*MG - Gestione visualizzazioni - FINE*/
 
@@ -5759,7 +5699,7 @@ async function like(entityId, index, loggedUsrMail = "notLogged", roles) {
 
         return
     }
-    const sourceUrl = getendpoint("entity") + "/" + "like-entity"
+    const sourceUrl = getendpoint("entity") + "/" + "entitylike"
     let datapost = {"element": entityId, index: index, "loggedUser": loggedUsrMail}
 
     let temp_config_call = {
@@ -5769,15 +5709,19 @@ async function like(entityId, index, loggedUsrMail = "notLogged", roles) {
         addDataBody: true
     };
 
-    console.log(temp_config_call)
+   // console.log(temp_config_call)
     let ajax_temp_call = new Ajaxcall(temp_config_call);    // inviare anche l'email dell'utente -> controllo che non sia guest né admin
     ajax_temp_call.addparams(datapost)
     let ret = ajax_temp_call.send();
 
-    useGritterTool("Like Action\n", ret.message.action, "success")
+    if (ret.message.action == "dislike") {
+        useGritterTool("<b><i class='fa fa-thumbs-down'></i> DISLIKE</b>", ret.message.action, "warning")
+    }else{
+        useGritterTool("<b><i class='fa fa-thumbs-up'></i> LIKE</b> ", ret.message.action, "success")
+    }
 
     let newCounter = Number(ret.message.count)
-    console.log("iniziale counter ", newCounter)
+    console.log("inizial counter  ", newCounter)
 
     if (ret.message.action == "dislike") {
         let newTitle = ret.message.likes.join('<br>')
@@ -5791,7 +5735,7 @@ async function like(entityId, index, loggedUsrMail = "notLogged", roles) {
         $(`#likeBtn-${entityId}`).tooltip();
 
 
-        let mongoUpdateRet = await likeMongoUpdate(entityId, "dislike", loggedUsrMail, roles, "type-TEST")
+        let mongoUpdateRet = await likeMongoUpdate(entityId, "dislike", loggedUsrMail, roles, index)
         console.log(mongoUpdateRet)
 
 
@@ -5807,7 +5751,7 @@ async function like(entityId, index, loggedUsrMail = "notLogged", roles) {
         $(`#likeBtn-${entityId}`).tooltip();
 
 
-        let mongoUpdateRet = await likeMongoUpdate(entityId, "like", loggedUsrMail, roles, "type-TEST")
+        let mongoUpdateRet = await likeMongoUpdate(entityId, "like", loggedUsrMail, roles, index)
         console.log(mongoUpdateRet)
 
     }
