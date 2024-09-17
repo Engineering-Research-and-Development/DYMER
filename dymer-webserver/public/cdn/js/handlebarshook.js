@@ -273,11 +273,6 @@ Handlebars.registerHelper('EntityStatusPdf', function(obj, hookCheckSatusconf, o
 
 Handlebars.registerHelper('EntityView', function(obj, hookCheckSatusconf, obj2) {
     var ret = '';
-    
-    
-
-
-
     var count = (obj.viewsCounter===undefined) ? 0 : obj.viewsCounter;
 
     ret = '<a class="viewCount" aria-hidden="true" href="#" id="viewCount'+obj._id+'"><i class="fa fa-eye" aria-hidden="true"></i> '+count+'</a>';
@@ -304,14 +299,19 @@ Handlebars.registerHelper('EntityView', function(obj, hookCheckSatusconf, obj2) 
 
 });
 
-Handlebars.registerHelper('EntityLike', function (obj, hookCheckSatusconf) {
+Handlebars.registerHelper('EntityLike', function (obj, iconup,icondown) {
     let ret = ''
     let likes=[];
 
     if(obj.likes != undefined) {
           likes = JSON.parse(obj.likes);
     }
-     
+    if(iconup == undefined){
+        iconup="fa-heart";
+    }
+    if(icondown == undefined){
+        icondown="fa-heart-o";
+    }
     let nLikes = likes.length
     let likeBtn = '';
     let userDYM64 = localStorage.getItem('DYM')
@@ -320,7 +320,7 @@ Handlebars.registerHelper('EntityLike', function (obj, hookCheckSatusconf) {
     let likesList = "";
     if(likes != undefined) {
         likes.forEach(function (user) {
-            likesList += user + '<br>';
+            likesList += user.split("@")[0] + '<br>';
         });
     }
 
@@ -330,9 +330,9 @@ Handlebars.registerHelper('EntityLike', function (obj, hookCheckSatusconf) {
 
     if (likes.includes(userDYM.email)) {
         
-        likeBtn += '<a href="#" class="likeCount" id="viewlike'+obj._id+'"> <span id="likeBtn-' + obj._id + '" class="fa fa-heart active" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\', \'' + obj._index + '\', \'' + userDYM.email + '\', \'' + userDYM.roles + '\')"> ' + nLikes + ' </a>'
+        likeBtn += '<a href="#" class="likeCount" id="viewlike'+obj._id+'"> <span id="likeBtn-' + obj._id + '" class="fa '+iconup+' active" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\', \'' + obj._index + '\', \'' + userDYM.email + '\', \'' + userDYM.roles + '\')"> ' + nLikes + ' </a>'
     } else {
-        likeBtn += '<a href="#" class="likeCount" id="viewlike'+obj._id+'"> <span id="likeBtn-' + obj._id + '" class="fa fa-heart-o" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\', \'' + obj._index + '\', \'' + userDYM.email + '\', \'' + userDYM.roles + '\')"> ' + nLikes + ' </a>'
+        likeBtn += '<a href="#" class="likeCount" id="viewlike'+obj._id+'"> <span id="likeBtn-' + obj._id + '" class="fa '+icondown+'" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\', \'' + obj._index + '\', \'' + userDYM.email + '\', \'' + userDYM.roles + '\')"> ' + nLikes + ' </a>'
     }
     ret = likeBtn;
     return ret
