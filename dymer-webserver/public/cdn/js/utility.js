@@ -5686,7 +5686,7 @@ async function addView(id, index) {
 
 
 /*********************/
-async function like(entityId, index, loggedUsrMail = "notLogged", roles) {
+async function like(entityId, index, loggedUsrMail = "notLogged", roles,iconup,icondown) {
 
     if (loggedUsrMail === "guest@dymer.it" || loggedUsrMail === "admin@dymer.it" || loggedUsrMail === "notLogged") {
         useGritterTool("User not Logged", "Please log in", "danger")
@@ -5726,8 +5726,8 @@ async function like(entityId, index, loggedUsrMail = "notLogged", roles) {
     if (ret.message.action == "dislike") {
         let newTitle = ret.message.likes.join('<br>')
         console.log("decremento ", newCounter)
-        $(`#likeBtn-${entityId}`).removeClass('fa fa-heart')
-        $(`#likeBtn-${entityId}`).addClass('fa fa-heart-o')
+        $(`#likeBtn-${entityId}`).removeClass(icondown)
+        $(`#likeBtn-${entityId}`).addClass(iconup)
         $(`#likeBtn-${entityId}`).html(' ' + newCounter + ' ')
 
         $(`#likeBtn-${entityId}`).tooltip('dispose');
@@ -5742,8 +5742,8 @@ async function like(entityId, index, loggedUsrMail = "notLogged", roles) {
     } else if (ret.message.action == "like") {
         let newTitle = ret.message.likes.join('<br>')
         console.log("incremento ", newCounter)
-        $(`#likeBtn-${entityId}`).removeClass('fa fa-heart-o')
-        $(`#likeBtn-${entityId}`).addClass('fa fa-heart')
+        $(`#likeBtn-${entityId}`).removeClass(icondown)
+        $(`#likeBtn-${entityId}`).addClass(iconup)
         $(`#likeBtn-${entityId}`).html(' ' + newCounter + ' ')
 
         $(`#likeBtn-${entityId}`).tooltip('dispose');
