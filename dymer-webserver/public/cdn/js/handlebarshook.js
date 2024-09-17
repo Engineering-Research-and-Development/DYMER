@@ -299,7 +299,7 @@ Handlebars.registerHelper('EntityView', function(obj, hookCheckSatusconf, obj2) 
 
 });
 
-Handlebars.registerHelper('EntityLike', function (obj, iconup,icondown) {
+Handlebars.registerHelper('EntityLike', function (obj, hookCheckSatusconf,iconup,icondown) {
     let ret = ''
     let likes=[];
 
