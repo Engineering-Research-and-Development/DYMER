@@ -65,16 +65,24 @@ router.post("/savestats", async function (req, res) {
     return res.send(ret);
 });
 
-router.get("/getstats", async function (req, res) {
+router.get("/getstats/:enttype?", async function (req, res) {
     let ret = new jsonResponse();
     const filter = req.query;
+    
+    let enttype = req.params.enttype ? req.params.enttype : "";
+    const hdymeruser = req.headers.dymeruser;
+    const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+ 
+     logger.info(nameFile + '|_search| dymeruser :' + JSON.stringify(dymeruser));
 
+     
     try {
-        const documents = await statsModel.find(filter);
+        let res = await statsModel.findOne({ "type": enttype })
+        //const documents = await statsModel.find(filter);
 
         ret.setSuccess(true)
         ret.setMessages("Entities retrived")
-        ret.addData(documents)
+        ret.addData(res)
 
         return res.status(200).send(ret)
 
