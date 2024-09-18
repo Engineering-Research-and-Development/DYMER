@@ -3524,7 +3524,7 @@ function kmsrenderdetail(_id) {
         if (item._id == _id) {
             arObj.push(item);
             idx=item._index;
-            tit=imte.title;
+            tit=item.title;
             /*	obj = item;
                 tmpl = item._index + "@" + item._type;
                 mytemplate = templateslist[tmpl]['viewtype'][typetemplateToRender];*/
