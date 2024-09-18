@@ -84,7 +84,7 @@ router.get("/getstats/:enttype?", async function (req, res) {
            };
 
 
-        let res = await statsModel.findOne(query, options)
+        let res = await statsModel.findOne(query)
         //const documents = await statsModel.find(filter);
 
         ret.setSuccess(true)
