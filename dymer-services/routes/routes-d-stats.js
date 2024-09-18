@@ -40,6 +40,7 @@ router.post("/savestats", async function (req, res) {
                 data.ip = req.ip;
                 data.timestamps = [Date.now()];
                 data.roles = dymeruser.roles;
+                data.title =req.title;
                 let newObj = new statsModel(data);
                 newObj.email = dymeruser.email;
                 console.log("savestats - newObj ===> ", newObj);

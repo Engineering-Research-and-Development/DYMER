@@ -20,6 +20,10 @@ const StatsSchema = new mongoose.Schema({
             type: String,
             trim: true
         },
+        title: {
+            type: String,
+            trim: false
+        },
         type: {
             type: String,
             trim: true

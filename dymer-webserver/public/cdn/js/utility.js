@@ -3515,6 +3515,7 @@ function kmsrenderdetail(_id) {
         hideDatasetContainer();
     }
     var idx;
+    var tit;
     actualTemplateType = "reset";
     removeTempImport('tftemp');
     var arObj = new Array();
@@ -3523,6 +3524,7 @@ function kmsrenderdetail(_id) {
         if (item._id == _id) {
             arObj.push(item);
             idx=item._index;
+            tit=imte.title;
             /*	obj = item;
                 tmpl = item._index + "@" + item._type;
                 mytemplate = templateslist[tmpl]['viewtype'][typetemplateToRender];*/
@@ -3548,7 +3550,7 @@ function kmsrenderdetail(_id) {
         kmsrenderEl(arObj, 'fullcontent');
     }
 
-    addView( _id,idx);
+    addView( _id,idx,tit);
 }
 
 function checkbreadcrumb(arObj, fnct, linklabel) {
@@ -5656,7 +5658,7 @@ async function likeMongoUpdate(entityId, act, email, roles, type) {
 
 
 /*MG - Gestione visualizzazioni - INIZIO*/
-async function addView(id, index) {
+async function addView(id, index,title) {
     let sourceUrl = getendpoint("entity") + "/" + "addView";
     let datapost = {"id": id}
     let temp_config_call = {
@@ -5670,7 +5672,7 @@ async function addView(id, index) {
     let addViewCallRet = ajax_temp_call.send();
      console.log("addView response",addViewCallRet);
     sourceUrl = serverUrl + "/api/dservice/api/v1/stats/savestats";
-    datapost = {"resourceId" : id, "type" : index, "act": "views"}
+    datapost = {"resourceId" : id, "type" : index, "act": "views","title":title}
     temp_config_call = {
         url: sourceUrl,
         type: 'POST',

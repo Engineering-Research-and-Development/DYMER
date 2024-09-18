@@ -330,9 +330,9 @@ Handlebars.registerHelper('EntityLike', function (obj, hookCheckSatusconf,iconup
 
     if (likes.includes(userDYM.email)) {
         
-        likeBtn += '<a href="#" class="likeCount" id="viewlike'+obj._id+'"> <span id="likeBtn-' + obj._id + '" class="fa '+iconup+' active" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\', \'' + obj._index + '\', \'' + userDYM.email + '\', \'' + userDYM.roles + '\', \'' + iconup + '\', \'' + icondown + '\')"> ' + nLikes + ' </a>'
+        likeBtn += '<a href="#" class="likeCount" id="viewlike'+obj._id+'"> <span id="likeBtn-' + obj._id + '" class="fa '+iconup+' active" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\',\'' + obj.title + '\', \'' + obj._index + '\', \'' + userDYM.email + '\', \'' + userDYM.roles + '\', \'' + iconup + '\', \'' + icondown + '\')"> ' + nLikes + ' </a>'
     } else {
-        likeBtn += '<a href="#" class="likeCount" id="viewlike'+obj._id+'"> <span id="likeBtn-' + obj._id + '" class="fa '+icondown+'" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\', \'' + obj._index + '\', \'' + userDYM.email + '\', \'' + userDYM.roles + '\', \'' + iconup + '\',\'' + icondown + '\')"> ' + nLikes + ' </a>'
+        likeBtn += '<a href="#" class="likeCount" id="viewlike'+obj._id+'"> <span id="likeBtn-' + obj._id + '" class="fa '+icondown+'" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\',\'' + obj.title + '\', \'' + obj._index + '\', \'' + userDYM.email + '\', \'' + userDYM.roles + '\', \'' + iconup + '\',\'' + icondown + '\')"> ' + nLikes + ' </a>'
     }
     ret = likeBtn;
     return ret
