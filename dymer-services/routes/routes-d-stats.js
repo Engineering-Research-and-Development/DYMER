@@ -84,12 +84,12 @@ router.get("/getstats/:enttype?", async function (req, res) {
            };
 
 
-        let res = await statsModel.find(query)
+        let docs = await statsModel.find(query)
         //const documents = await statsModel.find(filter);
 
         ret.setSuccess(true)
         ret.setMessages("Entities retrived")
-        ret.addData(res)
+        ret.addData(docs)
 
         return res.status(200).send(ret)
 
