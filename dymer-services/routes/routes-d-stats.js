@@ -80,6 +80,7 @@ router.get("/getstats/:enttype?", async function (req, res) {
         const query = { "type": enttype };
         const options = {
               sort: { "timestamps": -1 },
+              projection: { _id: 0 },
            };
 
 
