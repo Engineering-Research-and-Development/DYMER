@@ -166,18 +166,35 @@ router.delete("/deletestats/:id", async function (req, res) {
     const id = req.params.id;
 
     let ret = new jsonResponse();
-
+    let enttype = req.params.enttype ? req.params.enttype : "";
+    const hdymeruser = req.headers.dymeruser;
+    const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+ 
     try {
-        if (id === "all") {
-            await statsModel.deleteMany({});
-        } else {
-            await statsModel.findByIdAndDelete(id);
-        }
-        ret.setSuccess(true);
-        ret.setMessages("document(s) deleted");
-        ret.addData();
+        dymeruser.roles.forEach(function (value) {
+            admin = dymeruser.roles.some(value => value === 'app-admin');
+        });
+        if(admin){
 
-        return res.status(200).send(ret);
+            if (id === "all") {
+                await statsModel.deleteMany({});
+            } else {
+                await statsModel.findByIdAndDelete(id);
+            }
+            ret.setSuccess(true);
+            ret.setMessages("document(s) deleted");
+            ret.addData();
+    
+            return res.status(200).send(ret);
+        }else{
+            ret.setSuccess(false);
+            ret.setMessages("NO permission");
+            ret.addData();
+
+
+        }
+        
+         
     } catch (error) {
         console.error("ERROR | " + nameFile + " | delete/getLikes | delete :", err);
         logger.error(nameFile + ' | delete/getLikes | delete : ' + err);
