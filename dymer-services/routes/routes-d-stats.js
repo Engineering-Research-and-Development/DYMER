@@ -106,7 +106,27 @@ router.get("/getstats/:enttype?", async function (req, res) {
     }
 })
 
+
 router.get("/getstats", async function (req, res) {
+    let ret = new jsonResponse();
+    const filter = req.query;
+    try {
+        const documents = await statsModel.find(filter);
+        ret.setSuccess(true)
+        ret.setMessages("Entities retrived")
+        ret.addData(documents)
+        return res.status(200).send(ret)
+    } catch (error) {
+        console.error("ERROR | " + nameFile + " | get/getLikes | get :", err);
+        logger.error(nameFile + ' | get/getLikes | get : ' + err);
+        ret.setMessages("Get error");
+        ret.setSuccess(false);
+        ret.setExtraData({"log": err.stack});
+        return res.send(ret);
+    }
+})
+
+/*router.get("/getstats", async function (req, res) {
     let ret = new jsonResponse();
     const filter = req.query;
     
@@ -138,7 +158,7 @@ router.get("/getstats", async function (req, res) {
     }
 })
 
- 
+ */
 
 
 
