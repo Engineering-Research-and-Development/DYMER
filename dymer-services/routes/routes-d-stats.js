@@ -170,6 +170,8 @@ router.delete("/deletestats/:id", async function (req, res) {
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     console.log("********* --> ",id);
+    logger.info(nameFile + '| /deletestats/:id| id :' + id);
+
     try {
         dymeruser.roles.forEach(function (value) {
             admin = dymeruser.roles.some(value => value === 'app-admin');
