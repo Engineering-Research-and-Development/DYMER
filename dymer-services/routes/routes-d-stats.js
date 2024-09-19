@@ -106,7 +106,7 @@ router.get("/getstats/:enttype?", async function (req, res) {
     }
 })
 
-/*router.get("/getstats", async function (req, res) {
+router.get("/getstats", async function (req, res) {
     let ret = new jsonResponse();
     const filter = req.query;
     
@@ -138,7 +138,7 @@ router.get("/getstats/:enttype?", async function (req, res) {
     }
 })
 
-*/
+ 
 
 
 
