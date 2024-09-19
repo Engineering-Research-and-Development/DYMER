@@ -169,7 +169,7 @@ router.delete("/deletestats/:id", async function (req, res) {
     let enttype = req.params.enttype ? req.params.enttype : "";
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
- 
+    console.log("********* --> ",id);
     try {
         dymeruser.roles.forEach(function (value) {
             admin = dymeruser.roles.some(value => value === 'app-admin');
@@ -179,8 +179,28 @@ router.delete("/deletestats/:id", async function (req, res) {
             if (id === "all") {
                 await statsModel.deleteMany({});
             } else {
-                await statsModel.findByIdAndDelete(id);
+                 
+                var myfilter = { "_id": id };
+                statsModel.findOneAndDelete(myfilter).then((el) => {
+                    ret.setMessages("Element deleted");
+                    return res.send(ret);
+                }).catch((err) => {
+                    if (err) {
+                        console.error("ERROR | " + nameFile + " | delete/statsModel/:id | id :", id, err);
+                        logger.error(nameFile + " | delete/statsModel/:id | id :" + id + " , " + err);
+                        ret.setMessages("Delete Error");
+                        ret.setSuccess(false);
+                        ret.setExtraData({ "log": err.stack });
+                        return res.send(ret);
+                    }
+                })
             }
+
+
+
+
+
+
             ret.setSuccess(true);
             ret.setMessages("document(s) deleted");
             ret.addData();
