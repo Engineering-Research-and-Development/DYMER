@@ -47,6 +47,32 @@ $(document).ready(function() {
     });
 
 
+    $(".form-control").on('focus', function(){
+		var tmpThis = $(this).val();
+		if(tmpThis == '' ) {
+			$(this).parent().addClass("focus-input");
+		}
+		else if(tmpThis !='' ){
+			$(this).parent().addClass("focus-input");
+		}
+	}).on('blur', function(){
+		var tmpThis = $(this).val();
+		if(tmpThis == '' ) {
+			$(this).parent().removeClass("focus-input");
+			$(this).siblings('.wizard-form-error').slideDown("3000");
+		}
+		else if(tmpThis !='' ){
+			$(this).parent().addClass("focus-input");
+			$(this).siblings('.wizard-form-error').slideUp("3000");
+		}
+	});
+
+
+
+
+
+
+
 });
 
 function urlToPromiseZip(url) {

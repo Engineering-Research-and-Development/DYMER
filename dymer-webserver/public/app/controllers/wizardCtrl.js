@@ -295,44 +295,53 @@ angular.module('wizardCtrl', [])
                 useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>ERROR while reading the model html !</b>", "", "danger");
             });
         };
+
+
+        $scope.getFieldByCSV = async function () {
+            console.log("Fields from CSV")
+            let myFile = $scope.myFile
+            let url = baseContextPath + '/api/dservice/api/v1/import/test-csv'
+    
+            let data = {
+                file: myFile
+            }
+            try {
+                let multipartResp = await multipartForm.post(url, data) // call multipart function
+                let csvRecords = multipartResp.data // catch array of records of CSV
+                
+                console.log("getFieldByCSV - CSV ===> ", csvRecords)
+    
+                let fieldHeaders = csvRecords[0].replace(/[^a-zA-Z0-9, ]/g, "").split(",") // array of headers
+                
+                console.log("getFieldByCSV - CSV HEADERS ===> ", fieldHeaders)
+    
+                csvRecords.shift(); // remove headers from CSV records
+                if (fieldHeaders) {
+                    for (let record of csvRecords) {
+                        let cleanedRecord = record.replace(/[^a-zA-Z0-9, ]/g, ""); // clean special symbols
+                        let recElements = cleanedRecord.split(",").map(el => el.trim());
+                        $scope.cloneRepeatable(
+                            recElements[fieldHeaders.indexOf("title")],
+                            recElements[fieldHeaders.indexOf("type")],
+                            JSON.parse(recElements[fieldHeaders.indexOf("required")]),
+                            JSON.parse(recElements[fieldHeaders.indexOf("repeatable")]),
+                            JSON.parse(recElements[fieldHeaders.indexOf("searchable")])
+                        )
+                    }
+                    $scope.wizardObj.modelFields.shift() // remove first empty field
+                    $scope.$apply();
+                }
+            } catch (err) {
+                console.log("getFieldByCSV - Unable retrieve fields form CSV due to ===>", err)
+            }
+        }
+
+
+
+
+
+
     });
 
-    $scope.getFieldByCSV = async function () {
-        console.log("Fields from CSV")
-        let myFile = $scope.myFile
-        let url = baseContextPath + '/api/dservice/api/v1/import/test-csv'
-
-        let data = {
-            file: myFile
-        }
-        try {
-            let multipartResp = await multipartForm.post(url, data) // call multipart function
-            let csvRecords = multipartResp.data // catch array of records of CSV
-            
-            console.log("getFieldByCSV - CSV ===> ", csvRecords)
-
-            let fieldHeaders = csvRecords[0].replace(/[^a-zA-Z0-9, ]/g, "").split(",") // array of headers
-            
-            console.log("getFieldByCSV - CSV HEADERS ===> ", fieldHeaders)
-
-            csvRecords.shift(); // remove headers from CSV records
-            if (fieldHeaders) {
-                for (let record of csvRecords) {
-                    let cleanedRecord = record.replace(/[^a-zA-Z0-9, ]/g, ""); // clean special symbols
-                    let recElements = cleanedRecord.split(",").map(el => el.trim());
-                    $scope.cloneRepeatable(
-                        recElements[fieldHeaders.indexOf("title")],
-                        recElements[fieldHeaders.indexOf("type")],
-                        JSON.parse(recElements[fieldHeaders.indexOf("required")]),
-                        JSON.parse(recElements[fieldHeaders.indexOf("repeatable")]),
-                        JSON.parse(recElements[fieldHeaders.indexOf("searchable")])
-                    )
-                }
-                $scope.wizardObj.modelFields.shift() // remove first empty field
-                $scope.$apply();
-            }
-        } catch (err) {
-            console.log("getFieldByCSV - Unable retrieve fields form CSV due to ===>", err)
-        }
-    }
+     
     /*AC - MG - Wizard - Fine*/
