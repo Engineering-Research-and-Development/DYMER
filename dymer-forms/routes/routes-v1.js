@@ -170,6 +170,54 @@ var recFile = function(file_id) {
  *************************************************************************************************************
  */
 
+// router.get('/modeldetail', [util.checkIsDymerUser], (req, res) => {
+//     var ret = new jsonResponse();
+//     let callData = util.getAllQuery(req);
+//     let queryFind = callData.query;
+//     console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
+//     logger.info(nameFile + '  | get/modeldetail | queryFind:' + JSON.stringify(queryFind));
+//     //let queryFind = (Object.keys(callData.query).length === 0) ? {} : JSON.parse(callData.query);
+//     //let queryFind = (Object.keys(callData.query).length === 0) ? {} : callData.query;
+//     Model.find(queryFind, {}, { title: 1, instance: 1, "structure": 1 }).collation({ locale: "en" }).sort({ title: +1 }).then((Models) => {
+//         ret.setMessages("HTMLTemplate");
+//         ret.setData(Models);
+
+//         const formControlNodes = [];
+//         for (const item of ret.data) {
+//             if (item.structure) {
+//                 const childNodes = item.structure.child || [];
+//                 for (const node of childNodes) {
+//                     if (node.node === "element" && node.attr.class && node.attr.class.includes("form-control") && !node.attr.name.includes("coordinates") && !node.attr.name.includes("initiatives")) {
+//                         formControlNodes.push(node);     
+//                     }
+//                 }
+//             }
+//         }
+//         let templateNodeList = "";
+//         var templateHtml = "";
+
+//         formControlNodes.forEach((node) => {
+//             //console.log(`node: ${node.tag}, name: ${JSON.stringify(node.attr.name)}`);
+            
+//             let name = node.attr.name;
+//             name = convertString(name);
+//             templateNodeList = templateNodeList + `<div class="row"><div class="col-md-12 col-sx-12 col-lg-12"><label>${name}</label>{{ ${name} }} </div></div>`;
+//             //ret.setData(templateNodeList);
+//             templateHtml = `<div data-component-entitystatus="" data-vvveb-disabled="" class="row">
+//     {{{EntityStatus this}}}</div> ${templateNodeList}`;
+//             ret.setData(templateHtml);
+//         });
+
+//         //TODO verificare esistenza del modello
+//         //TODO gestire edit
+//         return res.send(ret.data);
+//     }).catch(function(err) {
+//         console.error("ERROR | " + nameFile + ' | get | queryFind : ', err);
+//         logger.error(nameFile + ' | get/modeldetail | queryFind : ' + err);
+//     });
+// });
+
+
 router.get('/modeldetail', [util.checkIsDymerUser], (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -201,10 +249,10 @@ router.get('/modeldetail', [util.checkIsDymerUser], (req, res) => {
             
             let name = node.attr.name;
             name = convertString(name);
-            templateNodeList = templateNodeList + `<div class="row"><div class="col-md-12 col-sx-12 col-lg-12"><label>${name}</label>{{ ${name} }} </div></div>`;
+            templateNodeList = templateNodeList + `<div class="row"><div class="col-md-12 col-sx-12 col-lg-12"><label>${name}</label>{{ ${name} }} </div></div>\n`;
             //ret.setData(templateNodeList);
             templateHtml = `<div data-component-entitystatus="" data-vvveb-disabled="" class="row">
-    {{{EntityStatus this}}}</div> ${templateNodeList}`;
+                            {{{EntityStatus this}}}</div> ${templateNodeList}\n`;
             ret.setData(templateHtml);
         });
 
@@ -216,6 +264,8 @@ router.get('/modeldetail', [util.checkIsDymerUser], (req, res) => {
         logger.error(nameFile + ' | get/modeldetail | queryFind : ' + err);
     });
 });
+
+
 
 function convertString(input) {
     if (input.startsWith("data[") && input.endsWith("]")) {

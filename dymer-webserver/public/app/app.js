@@ -30,5 +30,6 @@ angular.module("userApp", [
     "angularjs-dropdown-multiselect",
     "swaggerCtrl",
     "fileModel",
-    "libraryCtrl"
+    "libraryCtrl",
+    "wizardCtrl"
 ]);

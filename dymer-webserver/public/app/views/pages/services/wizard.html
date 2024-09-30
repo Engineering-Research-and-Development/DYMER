@@ -1,0 +1,150 @@
+<!-- AC - MG - Wizard - Inizio -->
+<div class="col-md-12">
+    <div class="card ">
+        <div class="card-header ">
+            <h5 class="card-title">Create Model/Template Wizard</h5>
+            <div class="card-category">
+            </div>
+        </div>
+        <div class="card-body ">
+            <section class="wizard-section">
+                <div class="row no-gutters">
+                    <div class="col-lg-8 col-md-8">
+                        <div class="form-wizard">
+                            <form name="wizardForm" ng-submit="submitForm()">
+                                <div class="form-wizard-header">
+                                    <p>Fill all form field to go to the next step</p>
+                                    <ul class="list-unstyled form-wizard-steps clearfix">
+                                        <li ng-class="{'active': currentStep === 1}"><span>1</span></li>
+                                        <li ng-class="{'active': currentStep === 2}"><span>2</span></li>
+                                        <li ng-class="{'active': currentStep === 3}"><span>3</span></li>
+                                    </ul>
+                                </div>
+
+                                <!-- Step 1 -->
+                                <fieldset ng-show="currentStep === 1" class="wizard-fieldset show">
+                                    <h5>DYMER Wizard</h5>
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" placeholder="ModelName*" ng-model="wizardObj.modelName" required>  
+                                        <!--<label for="modelindex" class="wizard-form-text-label">ModelName*</label>-->
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" placeholder="ModelIndex*" ng-model="wizardObj.modelIndex" required>
+                                        <!--<label for="modelindex" class="wizard-form-text-label">ModelIndex*</label>-->
+                                    </div>
+                                    <div class="form-group">
+                                        <textarea class="form-control" placeholder="Description" ng-model="wizardObj.modelDescription"></textarea>
+                                        <!--<label for="description" class="wizard-form-text-label">Description</label>-->
+                                    </div>
+                                    <div class="form-group clearfix">
+                                        <button type="button" class="form-wizard-next-btn float-right" ng-click="nextStep()">Next</button>
+                                    </div>
+                                </fieldset>
+
+                                <!-- Step 2 -->
+                                <fieldset ng-show="currentStep === 2" class="wizard-fieldset show">
+                                    <h5>Model Field Wizard</h5>
+                                    <input type="file" file-model="myFile"/>
+                                    <button type="submit" class="btn btn-primary btn-round" ng-click="getFieldByCSV()"> Get Fields </button>
+                                    <div class="row first-repeatable repeatable" ng-repeat="field in wizardObj.modelFields track by $index">
+                                        <div class="col-lg-3 col-md-3 col-sm-3">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" placeholder="Title*" ng-model="field.title" required>
+                                                <!--<label for="title" class="wizard-form-text-label">Title*</label>-->
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3">
+                                            <div class="form-group">
+                                                <select ng-model="field.type" class="form-control">
+                                                    <option value="text" selected="selected">text</option>
+                                                    <option value="email">email</option>
+                                                    <option value="textarea">textarea</option>
+                                                    <option value="selectlist">selectlist</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            <div class="form-group">
+                                                <div class="wizard-form-radio">
+                                                    <input name="radio-name" id="required" type="checkbox" ng-model="field.required" value="true">
+                                                    <label for="required">Required</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            <div class="form-group">
+                                                <div class="wizard-form-radio">
+                                                    <input name="radio-name" id="required" type="checkbox" ng-model="field.repeatable" value="true">
+                                                    <label for="repetable">Repeatable</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            <div class="form-group">
+                                                <div class="wizard-form-radio">
+                                                    <input name="radio-name" id="required" type="checkbox" ng-model="field.searchable" value="true">
+                                                    <label for="searchable">Searchable</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            <div class="action-br" style="margin-top: 40px;">
+                                                <span class="btn btn-outline-primary btn-sm" ng-click="cloneRepeatable()">+</span>
+                                                <span class="btn btn-outline-danger btn-sm" ng-click="removeRepeatable($index)">-</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group clearfix">
+                                        <button type="button" class="form-wizard-previous-btn float-left" ng-click="previousStep()">Previous</button>
+                                        <button type="button" class="form-wizard-next-btn float-right" ng-click="nextStep()">Next</button>
+                                    </div>
+                                </fieldset>
+
+                                <!-- Step 3 -->
+                                <fieldset ng-show="currentStep === 3" class="wizard-fieldset show">
+                                    <h5>Template Information</h5>
+                                    <fieldset>
+                                        <legend>Choose a View</legend>
+                                        <label>
+                                            <input type="radio" ng-model="wizardObj.previewTemplateType" value="list">
+                                            <span class="content">
+                                        <span class="title">List</span>
+                                        <span class="description">List view</span>
+                                    </span>
+                                        </label>
+                                        <label>
+                                            <input type="radio" ng-model="wizardObj.previewTemplateType" value="card">
+                                            <span class="content">
+                                        <span class="title">Card</span>
+                                        <span class="description">Card view</span>
+                                    </span>
+                                        </label>
+                                        <label>
+                                            <input type="radio" ng-model="wizardObj.previewTemplateType" value="map">
+                                            <span class="content">
+                                        <span class="title">Map</span>
+                                        <span class="description">Map view</span>
+                                    </span>
+                                        </label>
+                                    </fieldset>
+
+                                    <p>Selected: <span class="text">{{wizardObj.previewTemplateType}}</span></p>
+
+                                    <div class="form-group clearfix">
+                                        <button type="button" class="form-wizard-previous-btn float-left" ng-click="previousStep()">Previous</button>
+                                        <button type="submit" class="form-wizard-submit float-right" ng-click="fillTmplNamesAndSubmit()">Submit</button>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div class="card-footer ">
+            <hr/>
+            <div class="stats"><i class="fa fa-history"></i> Updated 30/09/2024</div>
+        </div>
+    </div>
+</div>
+<!-- AC - Wizard - Fine -->

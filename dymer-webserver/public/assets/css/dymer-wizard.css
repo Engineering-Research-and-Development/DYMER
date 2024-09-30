@@ -1,0 +1,453 @@
+body {
+    background-color: #ffffff;
+    color: #444444;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    margin: 0;
+    padding: 0;
+}
+
+.wizard-content-left {
+    background-blend-mode: darken;
+    background-color: rgba(0, 0, 0, 0.45);
+    background-image: url("https://eurescom-dym.6g-ia.eu/public/cdn/img/bg-ver.jpg");
+    background-position: center center;
+    background-size: cover;
+    height: 100vh;
+    padding: 30px;
+}
+
+.wizard-content-left h1 {
+    color: #ffffff;
+    font-size: 38px;
+    font-weight: 600;
+    padding: 12px 20px;
+    text-align: center;
+}
+
+.form-wizard {
+    color: #888888;
+    padding: 30px;
+}
+
+.form-wizard .wizard-form-radio {
+    display: inline-block;
+    margin-left: 5px;
+    position: relative;
+}
+
+.form-wizard .wizard-form-radio input[type="radio"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    -o-appearance: none;
+    appearance: none;
+    background-color: #dddddd;
+    height: 25px;
+    width: 25px;
+    display: inline-block;
+    vertical-align: middle;
+    border-radius: 50%;
+    position: relative;
+    cursor: pointer;
+}
+
+.form-wizard .wizard-form-radio input[type="radio"]:focus {
+    outline: 0;
+}
+
+.form-wizard .wizard-form-radio input[type="radio"]:checked {
+    background-color: #fb1647;
+}
+
+.form-wizard .wizard-form-radio input[type="radio"]:checked::before {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    background-color: #ffffff;
+    border-radius: 50%;
+    left: 1px;
+    right: 0;
+    margin: 0 auto;
+    top: 8px;
+}
+
+.form-wizard .wizard-form-radio input[type="radio"]:checked::after {
+    content: "";
+    display: inline-block;
+    webkit-animation: click-radio-wave 0.65s;
+    -moz-animation: click-radio-wave 0.65s;
+    animation: click-radio-wave 0.65s;
+    background: #000000;
+    content: '';
+    display: block;
+    position: relative;
+    z-index: 100;
+    border-radius: 50%;
+}
+
+.form-wizard .wizard-form-radio input[type="radio"] ~ label {
+    padding-left: 10px;
+    cursor: pointer;
+}
+
+.form-wizard .form-wizard-header {
+    text-align: center;
+}
+
+.form-wizard .form-wizard-next-btn, .form-wizard .form-wizard-previous-btn, .form-wizard .form-wizard-submit {
+    background-color: #3d85c6;
+    color: #ffffff;
+    display: inline-block;
+    min-width: 100px;
+    min-width: 120px;
+    padding: 10px;
+    text-align: center;
+}
+
+.form-wizard .form-wizard-next-btn:hover, .form-wizard .form-wizard-next-btn:focus, .form-wizard .form-wizard-previous-btn:hover, .form-wizard .form-wizard-previous-btn:focus, .form-wizard .form-wizard-submit:hover, .form-wizard .form-wizard-submit:focus {
+    color: #ffffff;
+    opacity: 0.6;
+    text-decoration: none;
+}
+
+.form-wizard .wizard-fieldset {
+    display: none;
+}
+
+.form-wizard .wizard-fieldset.show {
+    display: block;
+}
+
+.form-wizard .wizard-form-error {
+    display: none;
+    background-color: #d70b0b;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    width: 100%;
+}
+
+.form-wizard .form-wizard-previous-btn {
+    background-color: #fb1647;
+}
+
+.form-wizard .form-control {
+    font-weight: 300;
+    height: auto !important;
+    padding: 15px;
+    color: #888888;
+    background-color: #f1f1f1;
+    border: none;
+    padding-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.form-wizard .form-control:focus {
+    box-shadow: none;
+}
+
+.form-wizard .form-group {
+    position: relative;
+    margin: 25px 0;
+}
+
+.form-wizard .wizard-form-text-label {
+    position: absolute;
+    left: 10px;
+    top: 16px;
+    transition: 0.2s linear all;
+}
+
+.form-wizard .focus-input .wizard-form-text-label {
+    color: #3d85c6;
+    top: -18px;
+    transition: 0.2s linear all;
+    font-size: 12px;
+}
+
+.form-wizard .form-wizard-steps {
+    margin: 30px 0;
+}
+
+.form-wizard .form-wizard-steps li {
+    width: 25%;
+    float: left;
+    position: relative;
+}
+
+.form-wizard .form-wizard-steps li::after {
+    background-color: #f3f3f3;
+    content: "";
+    height: 5px;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    border-bottom: 1px solid #dddddd;
+    border-top: 1px solid #dddddd;
+}
+
+.form-wizard .form-wizard-steps li span {
+    background-color: #dddddd;
+    border-radius: 50%;
+    display: inline-block;
+    height: 40px;
+    line-height: 40px;
+    position: relative;
+    text-align: center;
+    width: 40px;
+    z-index: 1;
+}
+
+.form-wizard .form-wizard-steps li:last-child::after {
+    width: 50%;
+}
+
+.form-wizard .form-wizard-steps li.active span, .form-wizard .form-wizard-steps li.activated span {
+    background-color: #3d85c6;
+    color: #ffffff;
+}
+
+.form-wizard .form-wizard-steps li.active::after, .form-wizard .form-wizard-steps li.activated::after {
+    background-color: #3d85c6;
+    left: 50%;
+    width: 50%;
+    border-color: #3d85c6;
+}
+
+/* Per tutti gli step attivi */
+.form-wizard .form-wizard-steps li.active::after,
+.form-wizard .form-wizard-steps li.activated::after {
+    background-color: #3d85c6;
+    left: 50%;
+    width: 50%;
+    border-color: #3d85c6;
+}
+
+/* Per il secondo step attivo o attivato, coloriamo entrambe le braccia */
+.form-wizard .form-wizard-steps li:nth-child(2).active::after,
+.form-wizard .form-wizard-steps li:nth-child(2).activated::after {
+    left: 0;
+    width: 100%;
+}
+
+.form-wizard .form-wizard-steps li.activated::after {
+    width: 100%;
+    border-color: #3d85c6;
+}
+
+.form-wizard .form-wizard-steps li:last-child::after {
+    left: 0;
+}
+
+.form-wizard .wizard-password-eye {
+    position: absolute;
+    right: 32px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+@keyframes click-radio-wave {
+    0% {
+        width: 25px;
+        height: 25px;
+        opacity: 0.35;
+        position: relative;
+    }
+    100% {
+        width: 60px;
+        height: 60px;
+        margin-left: -15px;
+        margin-top: -15px;
+        opacity: 0.0;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .wizard-content-left {
+        height: auto;
+    }
+}
+
+
+/*ADDD*/
+
+/* Effetto quando l'input riceve focus o contiene testo */
+.form-wizard .form-control:focus + label,
+.form-wizard .form-control:not(:placeholder-shown) + label {
+    top: -10px; /* Far fluttuare l'etichetta sopra l'input */
+    left: 10px;
+    font-size: 12px;
+    color: #3d85c6;
+}
+
+/* Rimuovere l'ombra dall'input quando è in focus */
+.form-wizard .form-control:focus {
+    outline: none;
+    box-shadow: none;
+    border: 1px solid #3d85c6;
+}
+
+legend {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+input[type=radio] {
+    position: absolute;
+    border: 0px;
+    clip: rect(0px, 0px, 0px, 0px);
+    height: 1px;
+    width: 1px;
+    margin: -1px;
+    padding: 0px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.content {
+    --content-stroke: 1px;
+    --content-padding: 1.25rem;
+    --content-check-container: 1.5rem;
+    --content-stroke-bg: #ccc;
+    --content-bg: transparent;
+}
+
+/*.content {*/
+/*    position: relative;*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    gap: .75rem;*/
+/*    height: 100%;*/
+/*    padding: var(--content-padding) calc(var(--content-padding) * 2 + var(--content-check-container)) var(--content-padding) var(--content-padding);*/
+/*    background-color: var(--content-bg);*/
+/*    box-shadow: inset 0 0 0 var(--content-stroke) var(--content-stroke-bg);*/
+/*    border-radius: 1.5rem;*/
+/*    transition: background-color .3s ease-in-out, box-shadow .3s ease-in-out;*/
+/*    cursor: pointer;*/
+/*}*/
+
+.content::before {
+    content: "";
+    position: absolute;
+    right: var(--content-padding);
+    width: var(--content-check-container);
+    height: var(--content-check-container);
+    border-radius: 100%;
+    background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMTZweCIgdmlld0JveD0iMCAtOTYwIDk2MCA5NjAiIHdpZHRoPSIxNnB4IiBmaWxsPSIjZmZmIj48cGF0aCBkPSJNMzgyLTI0MCAxNTQtNDY4bDU3LTU3IDE3MSAxNzEgMzY3LTM2NyA1NyA1Ny00MjQgNDI0WiIvPjwvc3ZnPg==) #007bff no-repeat center / calc(var(--content-check-container) / 1.2);
+    transform: scale(.6);
+    opacity: 0;
+    transition: opacity .3s ease-in-out, transform .3s ease-in-out;
+}
+
+.content:hover {
+    --content-stroke-bg: #007bff;
+}
+
+input[type=radio]:focus-visible + .content {
+    outline: 4px solid #007bff80;
+}
+
+input[type=checkbox]:checked + .content {
+    --content-stroke: 2px;
+    --content-stroke-bg: #007bff;
+    --content-bg: #e6f2ff;
+}
+
+input[type=checkbox]:checked + .content::before {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.title {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.content:not(:has(.description)) > .title {
+    margin-bottom: 2rem;
+}
+
+.description {
+    color: #555;
+    margin-bottom: 2rem;
+}
+
+.price {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-top: auto;
+}
+
+.text {
+    font-weight: 600;
+}
+
+/* check */
+.form-wizard .wizard-form-radio input[type="checkbox"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    -o-appearance: none;
+    appearance: none;
+    background-color: #dddddd;
+    height: 25px;
+    width: 25px;
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    cursor: pointer;
+}
+
+.form-wizard .wizard-form-radio input[type="checkbox"]:focus {
+    outline: 0;
+}
+
+.form-wizard .wizard-form-radio input[type="checkbox"]:checked {
+    background-color: #3d85c6;
+}
+
+.form-wizard .wizard-form-radio input[type="checkbox"]:checked::before {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    background-color: #ffffff;
+    border-radius: 50%;
+    left: 1px;
+    right: 0;
+    margin: 0 auto;
+    top: 8px;
+}
+
+.form-wizard .wizard-form-radio input[type="checkbox"]:checked::after {
+    content: "";
+    display: inline-block;
+    webkit-animation: click-radio-wave 0.65s;
+    -moz-animation: click-radio-wave 0.65s;
+    animation: click-radio-wave 0.65s;
+    background: #000000;
+    content: '';
+    display: block;
+    position: relative;
+    z-index: 100;
+    /*border-radius: 50%;*/
+}
+
+.form-wizard .wizard-form-radio input[type="checkbox"] ~ label {
+    padding-left: 10px;
+    cursor: pointer;
+}
+
+/*end check*/
