@@ -20,6 +20,9 @@ angular.module('wizardCtrl', [])
             previewTemplateType: "",
             previewTemplateName: ""
         }
+         $("loadwiz").hide();
+         $("resultwiz").hide();
+          
 
         // Funzioni per la navigazione nel wizard
         $scope.nextStep = function () {
