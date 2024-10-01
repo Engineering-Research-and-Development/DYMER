@@ -249,7 +249,7 @@ angular.module('wizardCtrl', [])
                                                         "_type": $scope.wizardObj.modelIndex
                                                     }],
                                                     file: {
-                                                        originalname: modelName + "_templateTeaserList.html",
+                                                        originalname: resultwizstring + "_templateTeaserList.html",
                                                         src: getTeaserListTemplateHtmlRet.data,
                                                         ctype: "text/html"
                                                     },
@@ -272,7 +272,7 @@ angular.module('wizardCtrl', [])
                                                         useGritterTool("<b><i class='nc-icon nc-vector'></i>Teaser List Template successfully generated. </b>", "");
                                                         $("#loadwiz").hide();
                                                         $("#resultwiz").slideToggle();
-                                                       
+                                                        $(".resultwizstring").html('<h2>Model '+modelName+' and template has been created successfully!!!</h2><br><a class="" href="managemodel" target="_blank"><i class="nc-icon nc-ruler-pencil"></i> <p>Manage Models</p> </a> or <a href="managetemplate" target="_blank"><i class="nc-icon nc-ruler-pencil"></i> <p>Manage Templates</p> </a>')
 
                                                        
                                                         
