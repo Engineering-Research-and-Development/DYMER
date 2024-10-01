@@ -464,3 +464,146 @@ input[type=checkbox]:checked + .contentWiz::before {
 }
 
 /*end check*/
+
+
+.update-text {
+    position: relative;
+    width: 150px;
+    height: 80px;
+    margin: 0 auto;
+    color: white;
+    font-weight: lighter;
+    text-align: center;
+    
+    &:after {
+      content:"Loading Template";
+      animation: change-text 10s ease-in-out 0s infinite normal forwards;
+    }
+  }
+  
+  .web-page {
+    position: relative;
+    width: 150px;
+    height: 80px;
+    margin: 8em auto;
+    animation: spin 4.5s ease-in-out 0s infinite normal forwards;
+    
+    .bar {
+      position: absolute;
+      background-color: white;
+      opacity: 0;
+      transform-origin: 0% 0%;
+      
+      &:nth-child(1) {
+        width: 100%;
+        height: 20px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        animation: rotate-in 4.5s ease-in-out 0s infinite normal forwards;
+        transform: rotate(-40deg);
+      }
+      &:nth-child(2) {
+        width: 8px;
+        height: 100%;
+        top: 18px;
+        animation: rotate-in 4.5s ease-in-out .6s infinite normal forwards;
+        transform: rotate(-40deg);
+        transform-origin: 100% 100%;
+      }
+      &:nth-child(3) {
+        width: 100%;
+        height: 8px;
+        bottom: -25px;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;  
+        animation: rotate-in 4.5s ease-in-out .4s infinite normal forwards;
+        transform: rotate(-40deg);
+        transform-origin: 100% 100%;
+      }
+      &:nth-child(4) {
+        width: 8px;
+        height: 100%;
+        right: 0;
+        top: 18px;
+        animation: rotate-in 4.5s ease-in-out .2s infinite normal forwards;
+        transform: rotate(-40deg);
+        transform-origin: 0% 0%;
+      }
+    }
+    .dot {
+      position: absolute;
+      background-color: black;
+      width: 8px;
+      height: 8px;
+      opacity: 0;
+      
+      &:nth-child(5) {
+        border-radius: 100%;
+        right: 12px;
+        top: 6px;
+        animation: fade-in 4.5s ease-in-out .4s infinite normal forwards;
+      }
+      &:nth-child(6) {
+        border-radius: 100%;
+        right: 24px;
+        top: 6px;
+        animation: fade-in 4.5s ease-in-out .2s infinite normal forwards;
+      }
+      &:nth-child(7) {
+        border-radius: 100%;
+        right: 36px;
+        top: 6px;
+        animation: fade-in 4.5s ease-in-out 0s infinite normal forwards;
+      }
+    }
+  }
+  
+  @keyframes rotate-in {
+    15% {
+      opacity: 1;
+      transform: rotate(0deg);
+    }
+    80% {
+      opacity: 1;
+      transform: rotate(0deg);   
+    }
+    95% {
+      opacity: 0;
+    }
+  }
+  @keyframes spin {
+    50% {
+      transform: rotate(360deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes fade-in {
+    45% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    65% {
+      opacity: 1;
+    }
+    75% {
+      opacity: 0;
+    }
+  }
+  @keyframes change-text {
+    25% {
+      content: "Loading Template.";
+    }
+    50% {
+      content: "Loading Template..";
+    }
+    75% {
+      content: "Loading Template...";
+    }
+    100% {
+      content: "Loading Template....";
+    }
+  }
