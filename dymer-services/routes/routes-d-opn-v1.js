@@ -730,7 +730,7 @@ function postAssettOpenness(typeaction, obj, rule, extraInfo) {
             logger.error(nameFile + ' | postAssettOpenness | find obj,extraInfo: ' + JSON.stringify(obj) + ',' + JSON.stringify(extraInfo) + ',' + err);
             console.error("ERROR | " + nameFile + " | postAssettOpenness | find : ", err);
         })
-    }).catch((e) => {
+    }).catch((error) => {
         console.error("ERROR | " + nameFile + " | dym.dymerentry/OpenSearch User ", error);
         logger.error(nameFile + " | dym.dymerentry/OpenSearch User " + error);
         ret.setMessages("Get OpenSearch User Error");
