@@ -69,6 +69,34 @@ $(document).ready(function() {
 
 
 
+    document.addEventListener('DOMContentLoaded', () => {
+        const output = document.querySelector('.text');
+      
+        const handleCheck = (event) => {
+          output.textContent = event.target.value;
+        };
+      
+        const handleSelection = (event) => {
+          if (!event.defaultPrevented && event.detail > 1) {
+            event.preventDefault();
+          }
+        };
+      
+        document.addEventListener('change', (event) => {
+          if (event.target.matches('input[type="radio"]')) {
+            handleCheck(event);
+          }
+        });
+      
+        document.addEventListener('mousedown', (event) => {
+          const label = event.target.closest('label');
+          if (label) {
+            handleSelection(event);
+          }
+        });
+      });
+
+
 
 
 

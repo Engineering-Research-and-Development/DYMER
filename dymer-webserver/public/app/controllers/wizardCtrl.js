@@ -97,16 +97,16 @@ angular.module('wizardCtrl', [])
                         searchable = 'searchable-override="data['+title+']" searchable-label="'+title+'" searchable-element="true"'
                     }
                     if (this.type == "string" || this.type == "text"){
-                        newFields+= '<div class="form-group '+repeatable+'"><label class="kms-title-label">'+this.title+'</label><input type="text" dymer-model-element="" class="form-control col-12 span12" '+searchable+' name="data['+title+']" '+required+'></div>';
+                        newFields+= '<div class="form-group '+repeatable+'"><label class="kms-title-label">'+this.title+'</label><input type="text" dymer-model-element="" class="form-control col-12 span12" '+searchable+' name="data['+title+']" '+required+'></div>\n';
                     }
                     if (this.type == "textarea"){
-                        newFields+= '<div class="form-group '+repeatable+'"><label class="kms-title-label">'+this.title+'</label><textarea type="textarea" dymer-model-element="" class="form-control  col-12 span12" '+searchable+' name="data['+title+']" '+required+'></textarea></div>';
+                        newFields+= '<div class="form-group '+repeatable+'"><label class="kms-title-label">'+this.title+'</label><textarea type="textarea" dymer-model-element="" class="form-control  col-12 span12" '+searchable+' name="data['+title+']" '+required+'></textarea></div>\n';
                     }
                     if (this.type == "selectlist"){
-                        newFields+= '<div class="form-group '+repeatable+'"><label class="kms-title-label">'+this.title+'</label><select class="form-select" dymer-model-element="" '+searchable+' name="data['+title+']" '+required+'></select></div>';
+                        newFields+= '<div class="form-group '+repeatable+'"><label class="kms-title-label">'+this.title+'</label><select class="form-select" dymer-model-element="" '+searchable+' name="data['+title+']" '+required+'></select></div>\n';
                     }
                     if (this.type == "email"){
-                        newFields+= '<div class="form-group '+repeatable+'"><label class="kms-title-label">'+this.title+'</label><input type="email" dymer-model-element="" class="form-control col-12 span12" '+searchable+' name="data['+title+']" '+required+'></div>';
+                        newFields+= '<div class="form-group '+repeatable+'"><label class="kms-title-label">'+this.title+'</label><input type="email" dymer-model-element="" class="form-control col-12 span12" '+searchable+' name="data['+title+']" '+required+'></div>\n';
                     }
                 });
                 modelTemplate = replaceAll(modelTemplate, "{{newFields}}", newFields);

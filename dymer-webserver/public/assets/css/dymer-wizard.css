@@ -285,7 +285,7 @@ body {
 /* Effetto quando l'input riceve focus o contiene testo */
 .form-wizard .form-control:focus + label,
 .form-wizard .form-control:not(:placeholder-shown) + label {
-    top: -10px; /* Far fluttuare l'etichetta sopra l'input */
+    top: -14px; /* Far fluttuare l'etichetta sopra l'input */
     left: 10px;
     font-size: 12px;
     color: #3d85c6;
