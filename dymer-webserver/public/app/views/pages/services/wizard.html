@@ -25,15 +25,15 @@
                                 <fieldset ng-show="currentStep === 1" class="wizard-fieldset show">
                                     <h5>DYMER Wizard</h5>
                                     <div class="form-group">
-                                        <input type="text" class="form-control wizard-required"   ng-model="wizardObj.modelName" required>  
+                                        <input type="text" class="form-control wizard-required"  placeholder="" ng-model="wizardObj.modelName" required>  
                                         <label for="modelindex" class="wizard-form-text-label">ModelName*</label> 
                                     </div>
                                     <div class="form-group">
-                                        <input type="text" class="form-control wizard-required"   ng-model="wizardObj.modelIndex" required>
+                                        <input type="text" class="form-control wizard-required"   placeholder="" ng-model="wizardObj.modelIndex" required>
                                          <label for="modelindex" class="wizard-form-text-label">ModelIndex*</label> 
                                     </div>
                                     <div class="form-group">
-                                        <textarea class="form-control "   ng-model="wizardObj.modelDescription"></textarea>
+                                        <textarea class="form-control "  placeholder="" ng-model="wizardObj.modelDescription"></textarea>
                                         <label for="description" class="wizard-form-text-label">Description</label> 
                                     </div>
                                     <div class="form-group clearfix">
@@ -63,7 +63,7 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <div class="col-lg-1 col-md-1 col-sm-1">
                                             <div class="form-group">
                                                 <div class="wizard-form-radio">
                                                     <input name="radio-name" id="required" type="checkbox" ng-model="field.required" value="true">
@@ -71,7 +71,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <div class="col-lg-1 col-md-1 col-sm-1">
                                             <div class="form-group">
                                                 <div class="wizard-form-radio">
                                                     <input name="radio-name" id="required" type="checkbox" ng-model="field.repeatable" value="true">
@@ -79,7 +79,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <div class="col-lg-1 col-md-1 col-sm-1">
                                             <div class="form-group">
                                                 <div class="wizard-form-radio">
                                                     <input name="radio-name" id="required" type="checkbox" ng-model="field.searchable" value="true">
@@ -87,7 +87,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <div class="col-lg-3 col-md-3 col-sm-3">
                                             <div class="action-br" style="margin-top: 40px;">
                                                 <span class="btn btn-outline-primary btn-sm" ng-click="cloneRepeatable()">+</span>
                                                 <span class="btn btn-outline-danger btn-sm" ng-click="removeRepeatable($index)">-</span>
