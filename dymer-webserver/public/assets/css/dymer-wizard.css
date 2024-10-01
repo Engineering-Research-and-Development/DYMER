@@ -1,22 +1,4 @@
-body {
-    background-color: #ffffff;
-    color: #444444;
-    font-family: 'Roboto', sans-serif;
-    font-size: 16px;
-    font-weight: 300;
-    margin: 0;
-    padding: 0;
-}
-
-.wizard-content-left {
-    background-blend-mode: darken;
-    background-color: rgba(0, 0, 0, 0.45);
-    background-image: url("https://eurescom-dym.6g-ia.eu/public/cdn/img/bg-ver.jpg");
-    background-position: center center;
-    background-size: cover;
-    height: 100vh;
-    padding: 30px;
-}
+ 
 
 .wizard-content-left h1 {
     color: #ffffff;
