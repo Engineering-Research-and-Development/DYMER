@@ -270,10 +270,11 @@ angular.module('wizardCtrl', [])
                                                 }).then((postTeaserListTemplateRet) => {
                                                         console.log("fillTmplNamesAndSubmit - Creazione del template Teaser List eseguita con successo ====>", postTeaserListTemplateRet);
                                                         useGritterTool("<b><i class='nc-icon nc-vector'></i>Teaser List Template successfully generated. </b>", "");
-                                                        $("#resultwiz").slideToggle();
-                                                        startConfetti();
-
                                                         $("#loadwiz").hide();
+                                                        $("#resultwiz").slideToggle();
+                                                       
+
+                                                       
                                                         
                                                 }).catch((postTeaserListTemplateErr) => {
                                                         console.log("fillTmplNamesAndSubmit - ERRORE nella creazione del template Teaser List ====>", postTeaserListTemplateErr);
