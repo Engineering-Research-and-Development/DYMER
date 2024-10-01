@@ -6,96 +6,96 @@ function activeLeftMenu(el) {
 
 
 function startConfetti(){
-
-    var text = document.getElementById("text")
-    text.textContent="Start deploy";
-    text.className="text hidden";
-     
-    var icon = document.getElementById("icon")
-    icon.className="fa-solid fa-spinner animate-spin";
     
-    var button = document.getElementById("button-conf")
-    button.className = "loading"
-    const rect = button.getBoundingClientRect();
-    const center = {
-        x: rect.left + rect.width / 2,
-        y: rect.top + rect.height / 2
-    };
-    const origin = {
-        x: center.x / window.innerWidth,
-        y: center.y / window.innerHeight
-    };  
-    
-    // Canvas && confetti settings
-    var myCanvas = document.createElement('canvas');
-    document.body.appendChild(myCanvas);
-    const defaults = {
-      disableForReducedMotion: true
-    };
-    var colors = ['#757AE9', '#28224B', '#EBF4FF'];
-    var myConfetti = confetti.create(myCanvas, {});
-      
-    // Confetti function to be more realistic
-    function fire(particleRatio, opts) {
-      confetti(
-        Object.assign({}, defaults, opts, {
-          particleCount: Math.floor(100 * particleRatio)
-        })
-      );
-    }
-    // Finished state confetti
-    setTimeout(() => {
-     icon.className="";
-     button.className = "success"
-     fire(0.25, {
-        spread: 26,
-        startVelocity: 10,
-        origin,
-        colors,
-      });
-      fire(0.2, {
-        spread: 60,
-        startVelocity: 20,
-        origin,
-        colors,
-      });
-      fire(0.35, {
-        spread: 100,
-        startVelocity: 15,
-        decay: 0.91,
-        origin,
-        colors,
-      });
-      fire(0.1, {
-        spread: 120,
-        startVelocity: 10,
-        decay: 0.92,
-        origin,
-        colors,
-      });
-      fire(0.1, {
-        spread: 120,
-        startVelocity: 20,
-        origin,
-        colors,
-      })
-    
-    }, "3000")
-    // Finished state text
-    setTimeout(() => { 
-      text.textContent="Finished";
-      text.className="text";
-      icon.className="fa-solid fa-check";
-    }, 3500)
-    // Reset animation
-    setTimeout(() => { 
-      text.textContent="Start deploy";
-      icon.className="fa-solid fa-play";
-      button.className = ""
-      }, 6000)
-    }
 
-
+        var text = document.getElementById("text")
+        text.textContent="Start deploy";
+        text.className="text hidden";
+         
+        var icon = document.getElementById("icon")
+        icon.className="fa-solid fa-spinner animate-spin";
+        
+        var button = document.getElementById("button-conf")
+        button.className = "loading"
+        const rect = button.getBoundingClientRect();
+        const center = {
+            x: rect.left + rect.width / 2,
+            y: rect.top + rect.height / 2
+        };
+        const origin = {
+            x: center.x / window.innerWidth,
+            y: center.y / window.innerHeight
+        };  
+        
+        // Canvas && confetti settings
+        var myCanvas = document.createElement('canvas');
+        document.body.appendChild(myCanvas);
+        const defaults = {
+          disableForReducedMotion: true
+        };
+        var colors = ['#757AE9', '#28224B', '#EBF4FF'];
+        var myConfetti = confetti.create(myCanvas, {});
+          
+        // Confetti function to be more realistic
+        function fire(particleRatio, opts) {
+          confetti(
+            Object.assign({}, defaults, opts, {
+              particleCount: Math.floor(100 * particleRatio)
+            })
+          );
+        }
+        // Finished state confetti
+        setTimeout(() => {
+         icon.className="";
+         button.className = "success"
+         fire(0.25, {
+            spread: 26,
+            startVelocity: 10,
+            origin,
+            colors,
+          });
+          fire(0.2, {
+            spread: 60,
+            startVelocity: 20,
+            origin,
+            colors,
+          });
+          fire(0.35, {
+            spread: 100,
+            startVelocity: 15,
+            decay: 0.91,
+            origin,
+            colors,
+          });
+          fire(0.1, {
+            spread: 120,
+            startVelocity: 10,
+            decay: 0.92,
+            origin,
+            colors,
+          });
+          fire(0.1, {
+            spread: 120,
+            startVelocity: 20,
+            origin,
+            colors,
+          })
+        
+        }, "3000")
+        // Finished state text
+        setTimeout(() => { 
+          text.textContent="Finished";
+          text.className="text";
+          icon.className="fa-solid fa-check";
+        }, 3500)
+        // Reset animation
+        setTimeout(() => { 
+          text.textContent="Start deploy";
+          icon.className="fa-solid fa-play";
+          button.className = ""
+          }, 6000)
+  
+}
  
 
 $(document).ready(function() {
@@ -190,8 +190,9 @@ $(document).ready(function() {
             handleSelection(event);
           }
         });
-      });
+ });
 
+});
 
 
 
