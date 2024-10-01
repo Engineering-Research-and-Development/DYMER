@@ -821,7 +821,9 @@ input[type=checkbox]:checked + .contentWiz::before {
     align-items: center;
 }
 
-
+#resultwizstring{
+    text-align: center;
+}
  
 
   .check-container {

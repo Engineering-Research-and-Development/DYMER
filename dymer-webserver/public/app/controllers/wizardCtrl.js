@@ -257,7 +257,7 @@ angular.module('wizardCtrl', [])
                                                         "_type": $scope.wizardObj.modelIndex
                                                     }],
                                                     file: {
-                                                        originalname: resultwizstring + "_templateTeaserList.html",
+                                                        originalname: modelName + "_templateTeaserList.html",
                                                         src: getTeaserListTemplateHtmlRet.data,
                                                         ctype: "text/html"
                                                     },
