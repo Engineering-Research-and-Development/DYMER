@@ -446,44 +446,7 @@ input[type=checkbox]:checked + .contentWiz::before {
 }
 
 /*end check*/
-.loading {
-    height: 150px;
-    width: 150px;
-    position: relative;
-    border-radius: 50%;
-    background: linear-gradient(to right, #f3904f, #3d85c6);
-    -webkit-animation: rotate 0.75s infinite linear;
-            animation: rotate 0.75s infinite linear;
-  }
-  .loading:after {
-    content: "";
-    height: 140px;
-    width: 140px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    background: #FFF;
-  }
-  
-  @-webkit-keyframes rotate {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-  
-  @keyframes rotate {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
+ 
 
 
 
@@ -492,7 +455,48 @@ input[type=checkbox]:checked + .contentWiz::before {
 
   #loadwiz{
 
-    .chrome {
+    .loading {
+        height: 150px;
+        width: 150px;
+        position: relative;
+        border-radius: 50%;
+        background: linear-gradient(to right, #f3904f, #3d85c6);
+        -webkit-animation: rotate 0.75s infinite linear;
+                animation: rotate 0.75s infinite linear;
+      }
+      .loading:after {
+        content: "";
+        height: 140px;
+        width: 140px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        background: #FFF;
+      }
+      
+      @-webkit-keyframes rotate {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      
+      @keyframes rotate {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+
+
+    /* .chrome {
         width: 85vw;
         height: calc(85vw/1.777);
         border-radius: 4px;
@@ -695,7 +699,7 @@ input[type=checkbox]:checked + .contentWiz::before {
         height: calc(50vw/4);
         -webkit-animation-delay: 5.3s;
                 animation-delay: 5.3s;
-      }
+      } */
 
 
 

@@ -20,8 +20,8 @@ angular.module('wizardCtrl', [])
             previewTemplateType: "",
             previewTemplateName: ""
         }
-         $("loadwiz").hide();
-         $("resultwiz").hide();
+         $("#loadwiz").hide();
+         $("#resultwiz").hide();
           
 
         // Funzioni per la navigazione nel wizard
