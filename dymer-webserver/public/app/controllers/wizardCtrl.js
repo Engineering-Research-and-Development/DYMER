@@ -3,6 +3,8 @@ angular.module('wizardCtrl', [])
     .controller('wizardController', function ($scope, $http, $rootScope) {
         var baseContextPath = $rootScope.globals.contextpath;
         $scope.currentStep = 1;
+        $scope.activated="";
+        $scope.activated1="";
         $scope.wizardObj = {
             modelName: "",
             modelIndex: "",
@@ -28,6 +30,12 @@ angular.module('wizardCtrl', [])
         $scope.nextStep = function () {
             if ($scope.currentStep < 3) {
                 $scope.currentStep++;
+            }
+            if($scope.currentStep ==2 ){
+                $scope.activated="activated";
+            }
+            if($scope.currentStep1 ==3 ){
+                $scope.activated1="activated";
             }
             console.log("wizard obj: ", $scope.wizardObj)
         };
