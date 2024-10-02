@@ -109,18 +109,29 @@
                                                 <label for="title" class="wizard-form-text-label">Title*</label> 
                                             </div>
                                         </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-3">
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
                                             <div class="form-group">
                                                 <select ng-model="field.type" class="form-control">
-                                                    <option value="text" selected="selected">text</option>
-                                                    <option value="email">email</option>
-                                                    <option value="textarea">textarea</option>
-                                                    <option value="selectlist">selectlist</option>
-                                                    <option value="file">File Generico (es. PDF, DOC, YML)</option>
+                                                    <option value="text" selected="selected">Text</option>
+                                                    <option value="email">Email</option>
+                                                    <option value="date">Date</option>
+                                                    <option value="number">Number</option>
+                                                    <option value="textarea">Textarea</option>
+                                                    <option value="selectlist">Select List</option>
+                                                    <option value="file">Generic File (ex. PDF, DOC, YML)</option>
                                                     <option value="image">Image (png,jpg)</option>
                                                 </select>
                                             </div>
                                         </div>
+
+                                        <div class="col-lg-1 col-md-1 col-sm-1">
+                                            <div class="form-group">
+                                                <select ng-model="field.tax" class="form-control" id="taxid">
+                                                    <option value="-" selected="selected">Select One</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
                                         <div class="col-lg-1 col-md-1 col-sm-1">
                                             <div class="form-group">
                                                 <div class="wizard-form-radio">
@@ -145,7 +156,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-lg-3 col-md-3 col-sm-3">
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
                                             <div class="action-br" style="margin-top: 40px;">
                                                 <span class="btn btn-outline-primary btn-sm" ng-click="cloneRepeatable()">+</span>
                                                 <span class="btn btn-outline-danger btn-sm" ng-click="removeRepeatable($index)">-</span>

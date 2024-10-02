@@ -345,64 +345,15 @@
     transition: background-color .3s ease-in-out, box-shadow .3s ease-in-out;
     cursor: pointer;
 }
-/*    position: relative;*/
-/*    display: flex;*/
-/*    flex-direction: column;*/
-/*    gap: .75rem;*/
-/*    height: 100%;*/
-/*    padding: var(--content-padding) calc(var(--content-padding) * 2 + var(--content-check-container)) var(--content-padding) var(--content-padding);*/
-/*    background-color: var(--content-bg);*/
-/*    box-shadow: inset 0 0 0 var(--content-stroke) var(--content-stroke-bg);*/
-/*    border-radius: 1.5rem;*/
-/*    transition: background-color .3s ease-in-out, box-shadow .3s ease-in-out;*/
-/*    cursor: pointer;*/
-/*}*/
+ 
 
-.contentWiz::before {
-    content: "";
-    position: absolute;
-    right: var(--content-padding);
-    width: var(--content-check-container);
-    height: var(--content-check-container);
-    border-radius: 100%;
-    background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMTZweCIgdmlld0JveD0iMCAtOTYwIDk2MCA5NjAiIHdpZHRoPSIxNnB4IiBmaWxsPSIjZmZmIj48cGF0aCBkPSJNMzgyLTI0MCAxNTQtNDY4bDU3LTU3IDE3MSAxNzEgMzY3LTM2NyA1NyA1Ny00MjQgNDI0WiIvPjwvc3ZnPg==) #007bff no-repeat center / calc(var(--content-check-container) / 1.2);
-    transform: scale(.6);
-    opacity: 0;
-    transition: opacity .3s ease-in-out, transform .3s ease-in-out;
-}
+ 
 
-.contentWiz:hover {
-    --content-stroke-bg: #007bff;
-}
+ 
+ 
+ 
 
-.form-wizard input[type=radio]:focus-visible + .contentWiz {
-    outline: 4px solid #007bff80;
-}
-
-.form-wizard input[type=checkbox]:checked + .contentWiz{
-    --content-stroke: 2px;
-    --content-stroke-bg: #007bff;
-    --content-bg: #e6f2ff;
-}
-
-.form-wizard input[type=checkbox]:checked + .contentWiz::before {
-    opacity: 1;
-    transform: scale(1);
-}
-
-.title {
-    font-size: 1.2rem;
-    font-weight: 500;
-}
-
-.contentWiz:not(:has(.description)) > .title {
-    margin-bottom: 2rem;
-}
-
-.description {
-    color: #555;
-    margin-bottom: 2rem;
-}
+ 
   
 /* check */
 .form-wizard .wizard-form-radio input[type="checkbox"] {
