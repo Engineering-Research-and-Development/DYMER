@@ -1,6 +1,6 @@
 /*AC - MG - Wizard - Inizio*/
 angular.module('wizardCtrl', [])
-    .controller('wizardController', function ($scope, $http, $rootScope) {
+    .controller('wizardController', function ($scope, $http, $rootScope,multipartForm) {
         var baseContextPath = $rootScope.globals.contextpath;
         $scope.currentStep = 1;
         $scope.activated="";
@@ -239,58 +239,72 @@ angular.module('wizardCtrl', [])
                                                     useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>ERROR while creating Full Content template !</b>", "", "danger");
                                             })
 
-                                            /*Acquisico l'html del template Teaser List*/
+	                                        let templateType = "";
+                                            let templateName = "";
+                                            if ($scope.wizardObj.previewTemplateType =="card"){
+                                                templateType = "teaser";
+                                                templateName = "Card";
+                                            }
+                                            if ($scope.wizardObj.previewTemplateType =="list"){
+                                                templateType = "teaserlist";
+                                                templateName = "List";
+                                            }
+                                            if ($scope.wizardObj.previewTemplateType =="map"){
+                                                templateType = "teasermap";
+                                                templateName = "Map";
+                                            }  							 		 
+                                           /*Acquisico l'html del template selezionato*/
                                             $http({
-                                                url: "public/assets/wsbuilder/libs/builder/dymer-basetemplate-template-teaserlist.html",
+                                                url: "public/assets/wsbuilder/libs/builder/dymer-basetemplate-template-"+templateType+'.html',
                                                 method: "GET",
                                                 data: {}
-                                            }).then(function (getTeaserListTemplateHtmlRet) {
+                                            }).then(function (getTemplateHtmlRet) {
 
-                                                /*Eseguo la creazione del template Teaser List*/
-                                                let teaserListTemplateData = {
-                                                    title: $scope.wizardObj.modelName+'_templateTeaserList',
+                                                /*Eseguo la creazione del template selezionato*/
+                                                let templateData = {
+                                                    title: $scope.wizardObj.modelName+'_template'+templateName,
                                                     description: $scope.wizardObj.modelDescription,
-                                                    name: modelName+'_templateTeaserList',
+                                                    name: modelName+'_template'+templateName,
                                                     author: "Dymer Administrator",
                                                     instance: [{
                                                         "_index": $scope.wizardObj.modelIndex,
                                                         "_type": $scope.wizardObj.modelIndex
                                                     }],
                                                     file: {
-                                                        originalname: modelName + "_templateTeaserList.html",
-                                                        src: getTeaserListTemplateHtmlRet.data,
+                                                        originalname: modelName + '_template'+templateName+'.html',
+                                                        src: getTemplateHtmlRet.data,
                                                         ctype: "text/html"
                                                     },
                                                     posturl: "",
-                                                    viewtype:[{"rendertype":"teaserlist"}]
+                                                    viewtype:[{"rendertype":templateType}]
                                                 };
-                                                let postTeaserListTemplateData = new FormData();
-                                                delete delete teaserListTemplateData.file;
-                                                appendFormdata(postTeaserListTemplateData, {"data": teaserListTemplateData});
-                                                postTeaserListTemplateData.append('data[file]', new File([new Blob([getTeaserListTemplateHtmlRet.data])], modelName + "_templateTeaserList" + ".html", {type: "text/html"}));
+                                                let postTemplateData = new FormData();
+                                                delete delete templateData.file;
+                                                appendFormdata(postTemplateData, {"data": templateData});
+                                                postTemplateData.append('data[file]', new File([new Blob([getTemplateHtmlRet.data])], modelName + "_template"+templateName + ".html", {type: "text/html"}));
                                                 $http({
                                                     url: baseContextPath + 'api/templates/api/v1/template/',
                                                     method: "POST",
                                                     headers: {
                                                         'Content-Type': undefined
                                                     },
-                                                    data: postTeaserListTemplateData
-                                                }).then((postTeaserListTemplateRet) => {
-                                                        console.log("fillTmplNamesAndSubmit - Creazione del template Teaser List eseguita con successo ====>", postTeaserListTemplateRet);
-                                                        useGritterTool("<b><i class='nc-icon nc-vector'></i>Teaser List Template successfully generated. </b>", "");
+                                                    data: postTemplateData
+                                                }).then((postTemplateRet) => {
+                                                        console.log("fillTmplNamesAndSubmit - Creazione del template "+templateName+" eseguita con successo ====>", postTemplateRet);
+                                                        useGritterTool("<b><i class='nc-icon nc-vector'></i> "+templateName+" Template successfully generated. </b>", "");
                                                         $("#loadwiz").hide();
                                                         $("#resultwiz").slideToggle();
-                                                        $("#resultwizstring").append('<h2>Model '+modelName+' and template has been created successfully!!!</h2><br><a class="btn bt-outline-info" href="managemodel" target="_blank"><i class="nc-icon nc-ruler-pencil"></i> <p>Manage Models</p> </a> or <a href="managetemplate" target="_blank" class="btn bt-outline-info"><i class="nc-icon nc-ruler-pencil"></i> <p>Manage Templates</p> </a>')
+                                                        $("#resultwizstring").append('<h2>Model '+modelName+' and template has been created successfully!!!</h2><br><a class="btn bt-outline-info" href="managemodel" target="_blank"><i class="nc-icon nc-ruler-pencil"></i> <p>Manage Models</p> </a> or <a href="managetemplate" target="_blank" class="btn bt-outline-info"><i class="nc-icon nc-ruler-pencil"></i> <p>Manage Templates</p> </a>');  
 
-                                                       
-                                                        
-                                                }).catch((postTeaserListTemplateErr) => {
-                                                        console.log("fillTmplNamesAndSubmit - ERRORE nella creazione del template Teaser List ====>", postTeaserListTemplateErr);
-                                                        useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>ERROR while creating Teaser List template !</b>", "", "danger");
+													   
+														
+                                                }).catch((postTemplateErr) => {
+                                                        console.log("fillTmplNamesAndSubmit - ERRORE nella creazione del template "+templateName+" ====>", postTemplateErr);
+                                                        useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>ERROR while creating "+templateName+" template !</b>", "", "danger");
                                                 })
-                                            }).catch(function (getTeaserListTemplateHtmlErr) {
-                                                console.log("fillTmplNamesAndSubmit - ERRORE nell'acquisizione dell'html del template Teaser List ===>", getTeaserListTemplateHtmlErr);
-                                                useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>ERROR while reading the html of the Teaser List template !</b>", "", "danger");
+                                            }).catch(function (getTemplateHtmlErr) {
+                                                console.log("fillTmplNamesAndSubmit - ERRORE nell'acquisizione dell'html del template "+templateName+ " ===>", getTemplateHtmlErr);
+                                                useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>ERROR while reading the html of the "+templateName+" template !</b>", "", "danger");
                                             });
                                         }).catch(function (getFullContentTemplateHtmlErr) {
                                             console.log("fillTmplNamesAndSubmit - ERRORE nella lettura del mdoello e nell'aggiornamento dell'html del template full content con i campi dymer-model-element ===>", getFullContentTemplateHtmlErr);

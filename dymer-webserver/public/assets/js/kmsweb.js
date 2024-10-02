@@ -3,99 +3,6 @@ function activeLeftMenu(el) {
     el.addClass("active");
 }
 
-
-
-function startConfetti(){
-    
-
-        var text = document.getElementById("text")
-        text.textContent="Start deploy";
-        text.className="text hidden";
-         
-        var icon = document.getElementById("icon")
-        icon.className="fa-solid fa-spinner animate-spin";
-        
-        var button = document.getElementById("button-conf")
-        button.className = "loading"
-        const rect = button.getBoundingClientRect();
-        const center = {
-            x: rect.left + rect.width / 2,
-            y: rect.top + rect.height / 2
-        };
-        const origin = {
-            x: center.x / window.innerWidth,
-            y: center.y / window.innerHeight
-        };  
-        
-        // Canvas && confetti settings
-        var myCanvas = document.createElement('canvas');
-        document.body.appendChild(myCanvas);
-        const defaults = {
-          disableForReducedMotion: true
-        };
-        var colors = ['#757AE9', '#28224B', '#EBF4FF'];
-        var myConfetti = confetti.create(myCanvas, {});
-          
-        // Confetti function to be more realistic
-        function fire(particleRatio, opts) {
-          confetti(
-            Object.assign({}, defaults, opts, {
-              particleCount: Math.floor(100 * particleRatio)
-            })
-          );
-        }
-        // Finished state confetti
-        setTimeout(() => {
-         icon.className="";
-         button.className = "success"
-         fire(0.25, {
-            spread: 26,
-            startVelocity: 10,
-            origin,
-            colors,
-          });
-          fire(0.2, {
-            spread: 60,
-            startVelocity: 20,
-            origin,
-            colors,
-          });
-          fire(0.35, {
-            spread: 100,
-            startVelocity: 15,
-            decay: 0.91,
-            origin,
-            colors,
-          });
-          fire(0.1, {
-            spread: 120,
-            startVelocity: 10,
-            decay: 0.92,
-            origin,
-            colors,
-          });
-          fire(0.1, {
-            spread: 120,
-            startVelocity: 20,
-            origin,
-            colors,
-          })
-        
-        }, "3000")
-        // Finished state text
-        setTimeout(() => { 
-          text.textContent="Finished";
-          text.className="text";
-          icon.className="fa-solid fa-check";
-        }, 3500)
-        // Reset animation
-        setTimeout(() => { 
-          text.textContent="Start deploy";
-          icon.className="fa-solid fa-play";
-          button.className = ""
-          }, 6000)
-  
-}
  
 
 $(document).ready(function() {
@@ -143,6 +50,88 @@ $(document).ready(function() {
     });
 
 
+    $('.form-wizard-next-btn').click(function() {
+		var parentFieldset = $(this).parents('.wizard-fieldset');
+		var currentActiveStep = $(this).parents('.form-wizard').find('.form-wizard-steps .active');
+		var next = $(this);
+		var nextWizardStep = true;
+		parentFieldset.find('.wizard-required').each(function(){
+			var thisValue = $(this).val();
+
+			if( thisValue == "") {
+				$(this).siblings(".wizard-form-error").slideDown();
+				nextWizardStep = false;
+			}
+			else {
+				$(this).siblings(".wizard-form-error").slideUp();
+			}
+		});
+		if( nextWizardStep) {
+			next.parents('.wizard-fieldset').removeClass("show","400");
+			currentActiveStep.removeClass('active').addClass('activated').next().addClass('active',"400");
+			next.parents('.wizard-fieldset').next('.wizard-fieldset').addClass("show","400");
+			$(document).find('.wizard-fieldset').each(function(){
+				if($(this).hasClass('show')){
+					var formAtrr = $(this).attr('data-tab-content');
+					$(document).find('.form-wizard-steps .form-wizard-step-item').each(function(){
+						if($(this).attr('data-attr') == formAtrr){
+							$(this).addClass('active');
+							var innerWidth = jQuery(this).innerWidth();
+							var position = jQuery(this).position();
+							$(document).find('.form-wizard-step-move').css({"left": position.left, "width": innerWidth});
+						}else{
+							$(this).removeClass('active');
+						}
+					});
+				}
+			});
+		}
+	});
+
+    $('.form-wizard-previous-btn').click(function() {
+		var counter = parseInt($(".wizard-counter").text());;
+		var prev =$(this);
+		var currentActiveStep = $(this).parents('.form-wizard').find('.form-wizard-steps .active');
+		prev.parents('.wizard-fieldset').removeClass("show","400");
+		prev.parents('.wizard-fieldset').prev('.wizard-fieldset').addClass("show","400");
+		currentActiveStep.removeClass('active').prev().removeClass('activated').addClass('active',"400");
+		$(document).find('.wizard-fieldset').each(function(){
+			if($(this).hasClass('show')){
+				var formAtrr = $(this).attr('data-tab-content');
+				$(document).find('.form-wizard-steps .form-wizard-step-item').each(function(){
+					if($(this).attr('data-attr') == formAtrr){
+						$(this).addClass('active');
+						var innerWidth = $(this).innerWidth();
+						var position = $(this).position();
+						$(document).find('.form-wizard-step-move').css({"left": position.left, "width": innerWidth});
+					}else{
+						$(this).removeClass('active');
+					}
+				});
+			}
+		});
+	});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     $(".form-control").on('focus', function(){
 		var tmpThis = $(this).val();
 		if(tmpThis == '' ) {
@@ -163,7 +152,25 @@ $(document).ready(function() {
 		}
 	});
 
-
+    $(".form-control").on('focus', function(){
+		var tmpThis = jQuery(this).val();
+		if(tmpThis == '' ) {
+			$(this).parent().addClass("focus-input");
+		}
+		else if(tmpThis !='' ){
+			$(this).parent().addClass("focus-input");
+		}
+	}).on('blur', function(){
+		var tmpThis = $(this).val();
+		if(tmpThis == '' ) {
+			$(this).parent().removeClass("focus-input");
+			$(this).siblings('.wizard-form-error').slideDown("3000");
+		}
+		else if(tmpThis !='' ){
+			$(this).parent().addClass("focus-input");
+			$(this).siblings('.wizard-form-error').slideUp("3000");
+		}
+	});
 
     document.addEventListener('DOMContentLoaded', () => {
         const output = document.querySelector('.text');
