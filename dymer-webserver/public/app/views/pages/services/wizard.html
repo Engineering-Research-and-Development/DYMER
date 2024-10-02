@@ -69,7 +69,9 @@
 
                                 <!-- Step 1 -->
                                 <fieldset ng-show="currentStep === 1" class="wizard-fieldset show">
-                                    <h5>DYMER Wizard</h5>
+                                    <h5 class="personal">DYMER Wizard</h5>
+                                    <p class="personalInfo">create your model in this section, choose the name and index</p>
+
                                     <div class="form-group">
                                         <input type="text" class="form-control wizard-required"  placeholder="" ng-model="wizardObj.modelName" required>  
                                         <label for="modelindex" class="wizard-form-text-label">ModelName*</label> 
@@ -89,9 +91,17 @@
 
                                 <!-- Step 2 -->
                                 <fieldset ng-show="currentStep === 2" class="wizard-fieldset show">
-                                    <h5>Model Field Wizard</h5>
-                                    <input type="file" file-model="myFile"/>
-                                    <button type="submit" class="btn btn-primary btn-round" ng-click="getFieldByCSV()"> Get Fields </button>
+                                    <h5 class="personal">Model Field Wizard</h5>
+                                    <p class="personalInfo">Enter all your model fields in this section. Upload them from a CSV or enter them manually with the available mask</p>
+
+                                     <div class="csvContainer">
+                                        <input type="file" file-model="myFile"/>
+                                        <button type="submit" class="btn btn-primary btn-round" ng-click="getFieldByCSV()"> Get Fields </button>
+    
+
+                                     </div>   
+                                     
+
                                     <div class="row first-repeatable repeatable" ng-repeat="field in wizardObj.modelFields track by $index">
                                         <div class="col-lg-3 col-md-3 col-sm-3">
                                             <div class="form-group">
@@ -106,6 +116,8 @@
                                                     <option value="email">email</option>
                                                     <option value="textarea">textarea</option>
                                                     <option value="selectlist">selectlist</option>
+                                                    <option value="file">File Generico (es. PDF, DOC, YML)</option>
+                                                    <option value="image">Image (png,jpg)</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -148,15 +160,54 @@
 
                                 <!-- Step 3 -->
                                 <fieldset ng-show="currentStep === 3" class="wizard-fieldset show">
-                                    <h5>Template Information</h5>
-                                    <fieldset>
+                                    
+                                    <h5 class="personal">Template Information Wizard</h5>
+                                    <p class="personalInfo">In this section you can choose the type of list template </p>
+
+
+                                    <fieldset class="templateView">
                                         <legend>Choose a View</legend>
-                                        <label>
+                                        <div class="checkBoxesParent">
+                                            <div class="checkBoxContainer">
+                                              <div class="checkBoxInfo">
+                                                <input type="radio" class="addon" ng-model="wizardObj.previewTemplateType" value="list" id="first">
+                                                <div class="about">
+                                                  <label for="first" class="addTitle">List</label>
+                                                  <p class="random">List view</p>
+                                                </div>
+                                              </div>
+                                              <p data-price="1" class="addOnPrice"> <i class="nc-icon nc-tile-56"></i></p>
+                                            </div>
+                              
+                                            <div class="checkBoxContainer">
+                                              <div class="checkBoxInfo">
+                                                <input type="radio" class="addon" ng-model="wizardObj.previewTemplateType" value="card" id="second">
+                                                <div class="about">
+                                                  <label for="second" class="addTitle">Card</label>
+                                                  <p class="random">Card view</p>
+                                                </div>
+                                              </div>
+                                              <p data-price="2" class="addOnPrice"><i class="nc-icon nc-layout-11"></i> </p>
+                                            </div>
+                              
+                                            <div class="checkBoxContainer">
+                                              <div class="checkBoxInfo">
+                                                <input type="radio" class="addon" ng-model="wizardObj.previewTemplateType" value="map" id="third">
+                                                <div class="about">
+                                                  <label for="third" class="addTitle">Map</label>
+                                                  <p class="random">Map view</p>
+                                                </div>
+                                              </div>
+                                              <p data-price="2" class="addOnPrice"> <i class="nc-icon nc-world-2"></i></p>
+                                            </div>
+                              
+                                          </div>
+                                        <!-- <label>
                                             <input type="radio" ng-model="wizardObj.previewTemplateType" value="list">
                                             <span class="contentWiz">
                                         <span class="title">List</span>
                                         <span class="description">List view</span>
-                                    </span>
+                                       </span>
                                         </label>
                                         <label>
                                             <input type="radio" ng-model="wizardObj.previewTemplateType" value="card">
@@ -171,7 +222,7 @@
                                         <span class="title">Map</span>
                                         <span class="description">Map view</span>
                                     </span>
-                                        </label>
+                                        </label> -->
                                     </fieldset>
 
                                     <p>Selected: <span class="text">{{wizardObj.previewTemplateType}}</span></p>

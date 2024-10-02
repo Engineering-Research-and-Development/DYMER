@@ -1,4 +1,30 @@
- 
+:root {
+    --marineBlue: hsl(213, 96%, 18%);
+    --purplishBlue: hsl(243, 100%, 62%);
+    --pastelBlue: hsl(228, 100%, 84%);
+    --lightBlue: hsl(206, 94%, 87%);
+    --strawberryRed: hsl(354, 84%, 57%);
+    --coolGray: hsl(231, 11%, 70%);
+    --lightGray: hsl(229, 24%, 87%);
+    --magnolia: hsl(217, 100%, 97%);
+    --alabaster: hsl(231, 100%, 99%);
+    --white: hsl(0, 0%, 100%);
+}
+
+.personal {
+    font-size: 36px;
+    font-weight: 700;
+    font-variant: normal;
+    margin-bottom: 8px;
+    color: var(--marineBlue);
+}
+
+.personalInfo {
+    color: var(--coolGray);
+    font-size: 14px;
+    font-weight: 450;
+}
+
 
 .wizard-content-left h1 {
     color: #ffffff;
@@ -120,10 +146,10 @@
 }
 
 .form-wizard .form-control {
-    font-weight: 300;
+     
     height: auto !important;
     padding: 15px;
-    color: #888888;
+    color: #000;
     background-color: #f1f1f1;
     border: none;
     padding-top: 20px;
@@ -712,4 +738,58 @@
         }
     }
 
- 
+    .checkBoxesParent {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .checkBoxContainer {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        border-radius: 8px;
+        border: 1.875px solid var(--lightGray);
+        cursor: pointer;
+    }
+
+    .checkBoxInfo {
+        display: flex;
+        gap: 24px;
+        cursor: pointer;
+    }
+    .addOnPrice {
+        color: var(--purplishBlue);
+        font-weight: 600;
+    }
+    .checkBoxContainer.cardBorder {
+        border: 1.875px solid var(--purplishBlue);
+        background-color: var(--alabaster);
+      }
+    .checkBoxInfo input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        vertical-align: middle;
+        cursor: pointer;
+        accent-color: var(--purplishBlue);
+        margin-top: 8px;
+        border: 1.875px solid var(--lightGray) !important;
+    }
+
+    .addTitle {
+        font-weight: 700;
+        color: var(--marineBlue);
+    }
+    .checkBoxInfo p {
+        margin: 0;
+        margin-block: 4px;
+        align-items: center;
+    }
+    .random {
+        font-size: 14px;
+        color: var(--coolGray);
+        font-weight: 500;
+    }
