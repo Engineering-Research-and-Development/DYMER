@@ -280,7 +280,7 @@ angular.module('wizardCtrl', [])
                                                         useGritterTool("<b><i class='nc-icon nc-vector'></i>Teaser List Template successfully generated. </b>", "");
                                                         $("#loadwiz").hide();
                                                         $("#resultwiz").slideToggle();
-                                                        $("#resultwizstring").append('<h2>Model '+modelName+' and template has been created successfully!!!</h2><br><a class="" href="managemodel" target="_blank"><i class="nc-icon nc-ruler-pencil"></i> <p>Manage Models</p> </a> or <a href="managetemplate" target="_blank"><i class="nc-icon nc-ruler-pencil"></i> <p>Manage Templates</p> </a>')
+                                                        $("#resultwizstring").append('<h2>Model '+modelName+' and template has been created successfully!!!</h2><br><a class="btn bt-outline-info" href="managemodel" target="_blank"><i class="nc-icon nc-ruler-pencil"></i> <p>Manage Models</p> </a> or <a href="managetemplate" target="_blank" class="btn bt-outline-info"><i class="nc-icon nc-ruler-pencil"></i> <p>Manage Templates</p> </a>')
 
                                                        
                                                         
