@@ -112,6 +112,7 @@
                                         <div class="col-lg-2 col-md-2 col-sm-2">
                                             <div class="form-group">
                                                 <select ng-model="field.type" class="form-control">
+                                                   <optgroup label="Base Field">
                                                     <option value="text" selected="selected">Text</option>
                                                     <option value="email">Email</option>
                                                     <option value="date">Date</option>
@@ -120,6 +121,16 @@
                                                     <option value="selectlist">Select List</option>
                                                     <option value="file">Generic File (eg. PDF, DOC, YML)</option>
                                                     <option value="image">Image (png,jpg)</option>
+                                                   </optgroup>  
+                                                    
+                                                   <optgroup label="DYMER Field">
+
+                                                    <option value="taxonomy">DYMER Taxonomy</option>
+                                                    <option value="relation">DYMER Relation</option>
+                                                    <option value="geo">DYMER Geopoint</option>
+
+                                                   </optgroup>
+                                                   
                                                 </select>
                                             </div>
                                         </div>
