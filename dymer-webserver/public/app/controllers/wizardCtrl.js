@@ -110,21 +110,21 @@ angular.module('wizardCtrl', [])
                         searchable = 'searchable-override="data['+title+']" searchable-label="'+title+'" searchable-element="true"'
                     }
                     if (this.type == "string" || this.type == "text"){
-                        newFields+= '<div class="form-group '+repeatable+'"><label class="kms-title-label">'+this.title+'</label><input type="text" dymer-model-element="" class="form-control col-12 span12" '+searchable+' name="data['+title+']" '+required+'></div>\n';
+                        newFields+= '<div class="form-group '+repeatable+'">\n<label class="kms-title-label">'+this.title+'</label>\n<input type="text" dymer-model-element="" class="form-control col-12 span12" '+searchable+' name="data['+title+']" '+required+'>\n</div>\n';
                     }
                     if (this.type == "textarea"){
-                        newFields+= '<div class="form-group '+repeatable+'"><label class="kms-title-label">'+this.title+'</label><textarea type="textarea" dymer-model-element="" class="form-control  col-12 span12" '+searchable+' name="data['+title+']" '+required+'></textarea></div>\n';
+                        newFields+= '<div class="form-group '+repeatable+'">\n<label class="kms-title-label">'+this.title+'</label>\n<textarea type="textarea" dymer-model-element="" class="form-control  col-12 span12" '+searchable+' name="data['+title+']" '+required+'></textarea>\n</div>\n';
                     }
                     if (this.type == "selectlist"){
-                        newFields+= '<div class="form-group '+repeatable+'"><label class="kms-title-label">'+this.title+'</label><select class="form-select" dymer-model-element="" '+searchable+' name="data['+title+']" '+required+'></select></div>\n';
+                        newFields+= '<div class="form-group '+repeatable+'">\n<label class="kms-title-label">'+this.title+'</label>\n<select class="form-control col-12 span12" dymer-model-element="" '+searchable+' name="data['+title+']" '+required+'></select>\n</div>\n';
                     }
                     if (this.type == "email"){
-                        newFields+= '<div class="form-group '+repeatable+'"><label class="kms-title-label">'+this.title+'</label><input type="email" dymer-model-element="" class="form-control col-12 span12" '+searchable+' name="data['+title+']" '+required+'></div>\n';
+                        newFields+= '<div class="form-group '+repeatable+'">\n<label class="kms-title-label">'+this.title+'</label>\n<input type="email" dymer-model-element="" class="form-control col-12 span12" '+searchable+' name="data['+title+']" '+required+'>\n</div>\n';
                     }
 
                     if (this.type == "taxonomy"){
                        // newFields+= '<div class="form-group '+repeatable+'"><label class="kms-title-label">'+this.title+'</label><input type="email" dymer-model-element="" class="form-control col-12 span12" '+searchable+' name="data['+title+']" '+required+'></div>\n';
-                       newFields+= ' <div class="form-group"> <label for="description" class="kms-title-label">'+this.title+'</label>  <small class="form-text text-muted"><b>**</b></small>\n<div>\n<div data-component-kmstaxonomy="" name="data[taxonomy]" '+required+'  class="form-group dymertaxonomy" data-totaxonomy="'+idTAX+'" data-max-options="10" style="height:3px" searchable-element="true" searchable-multiple="true" multiple="multiple" searchable-label="'+title+'"></div> </div><div>\n';
+                       newFields+= ' <div class="form-group">\n <label for="description" class="kms-title-label">'+this.title+'</label>\n  <small class="form-text text-muted"><b>**</b></small>\n<div>\n<div data-component-kmstaxonomy="" name="data[taxonomy]" '+required+'  class="form-group dymertaxonomy" data-totaxonomy="'+idTAX+'" data-max-options="10" style="height:3px" searchable-element="true" searchable-multiple="true" multiple="multiple" searchable-label="'+title+'">\n</div> \n</div>\n<div>\n';
                                       }
 
                 });
