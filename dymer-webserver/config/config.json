@@ -67,7 +67,7 @@
                 "library":{
                     "type": "mongodb",
                     "protocol": "http",
-                    "ip": "localhost",
+                    "ip": "mongodb",
                     "port": 27017,
                     "index_ref": "dservice"
                 },
