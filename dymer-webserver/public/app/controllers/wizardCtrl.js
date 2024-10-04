@@ -130,21 +130,14 @@ angular.module('wizardCtrl', [])
                         newFields += '<div class="form-group ' + repeatable + '"><label class="kms-title-label">' + this.title + '</label><textarea type="textarea" dymer-model-element="" class="form-control  col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '></textarea></div>\n';
                     }
                     if (this.type == "selectlist") {
-<<<<<<< HEAD
                         newFields += '<div class="form-group ' + repeatable + '"><label class="kms-title-label">' + this.title + '</label><select class="form-control" dymer-model-element="" ' + searchable + ' name="data[' + title + ']" ' + required + '></select></div>\n';
-=======
-                        newFields += '<div class="form-group ' + repeatable + '"><label class="kms-title-label">' + this.title + '</label><select class="form-select" dymer-model-element="" ' + searchable + ' name="data[' + title + ']" ' + required + '></select></div>\n';
->>>>>>> 62beaa1eca49998618a2e8fb13afd70c40699af4
                     }
                     if (this.type == "email") {
                         newFields += '<div class="form-group ' + repeatable + '"><label class="kms-title-label">' + this.title + '</label><input type="email" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '></div>\n';
                     }
-
                     if (this.type == "taxonomy") {
-                        // newFields+= '<div class="form-group '+repeatable+'"><label class="kms-title-label">'+this.title+'</label><input type="email" dymer-model-element="" class="form-control col-12 span12" '+searchable+' name="data['+title+']" '+required+'></div>\n';
                         newFields += ' <div class="form-group"> <label for="description" class="kms-title-label">' + this.title + '</label>  <small class="form-text text-muted"><b>**</b></small>\n<div>\n<div data-component-kmstaxonomy="" name="data[taxonomy]" ' + required + '  class="form-group dymertaxonomy" data-totaxonomy="' + idTAX + '" data-max-options="10" style="height:3px" searchable-element="true" searchable-multiple="true" multiple="multiple" searchable-label="' + title + '"></div> </div><div>\n';
                     }
-
                     if (this.type == "relation") {
                         newFields = '<label for="description" class="kms-title-label">Relation</label>' + '<div>' + '<div data-component-kmsrelation class="form-group" contenteditable="false" data-torelation="`${this.relationto}`">' + '<span  contenteditable="false" class="inforelation">Relation</span> <i class="fa fa-code-fork rotandflip inforelation" aria-hidden="true"></i> <span contenteditable="false" class="torelation inforelation">......</span>' + '</div>' + '</div>' + '</div>'
                     }
@@ -395,7 +388,6 @@ angular.module('wizardCtrl', [])
             }
         }
 
-<<<<<<< HEAD
         $scope.getVocabularies = async function () {
             $($scope.wizardObj.modelFields).each(function() {
                 if (this.type == "taxonomy"){
@@ -420,10 +412,4 @@ angular.module('wizardCtrl', [])
             });    
         }
     });
-=======
-
-    });
-
-
->>>>>>> 62beaa1eca49998618a2e8fb13afd70c40699af4
 /*AC - MG - Wizard - Fine*/
