@@ -235,6 +235,7 @@ router.get('/modeldetail', [util.checkIsDymerUser], (req, res) => {
             if (item.structure) {
                 const childNodes = item.structure.child || [];
                 for (const node of childNodes) {
+                    /*TO DO - Check attributo form-control e form-select*/
                     if (node.node === "element" && node.attr.class && node.attr.class.includes("form-control") && !node.attr.name.includes("coordinates") && !node.attr.name.includes("initiatives")) {
                         formControlNodes.push(node);     
                     }
@@ -246,10 +247,15 @@ router.get('/modeldetail', [util.checkIsDymerUser], (req, res) => {
 
         formControlNodes.forEach((node) => {
             //console.log(`node: ${node.tag}, name: ${JSON.stringify(node.attr.name)}`);
-            
             let name = node.attr.name;
+            let tag = node.tag;
+            let type = node.attr.type;
             name = convertString(name);
-            templateNodeList = templateNodeList + `<div class="row"><div class="col-md-12 col-sx-12 col-lg-12"><label>${name}</label>{{ ${name} }} </div></div>\n`;
+            let nodeType = "";
+            if (type){
+                nodeType = 'type ="' + type+ '"'; 
+            }
+            templateNodeList = templateNodeList + `<div class="row"><div class="col-md-12 col-sx-12 col-lg-12"><label>${name}</label><${tag} ${nodeType}>${name}</div></div>\n`;
             //ret.setData(templateNodeList);
             templateHtml = `<div data-component-entitystatus="" data-vvveb-disabled="" class="row">
                             {{{EntityStatus this}}}</div> ${templateNodeList}\n`;
