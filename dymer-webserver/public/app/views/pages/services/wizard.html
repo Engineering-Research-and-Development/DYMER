@@ -94,15 +94,15 @@
                                     <h5 class="personal">Model Field Wizard</h5>
                                     <p class="personalInfo">Enter all your model fields in this section. Upload them from a CSV or enter them manually with the available mask</p>
 
-                                     <div class="row csvContainer">
-                                        <div class="col-lg-10 col-md-10 col-sm-10">
+                                     <div class="row csvContainer justify-content-center">
+                                        <div class="col-lg-3 col-md-3 col-sm-3">
                                             <p class="personalInfo"> Upload a CSV file.</p>
                                             <input type="file" class="form-control " file-model="myFile"/>
                                             <label for="description" class="wizard-form-text-label">File CSV</label> 
                                         </div>
-                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                        <div class="col-lg-3 col-md-3 col-sm-3">
                                             
-                                             <button type="submit" class="btn btn-primary " ng-click="getFieldByCSV()"> Get Fields </button>
+                                             <button style="margin-top: 15%;" type="submit" class="btn btn-primary " ng-click="getFieldByCSV()"> Get Fields </button>
                                         </div>
                                        
                                         
@@ -143,26 +143,20 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-lg-1 col-md-1 col-sm-1" ng-if="field.type == 'taxonomy'">
-                                            <div class="form-group">
+                                        <div class="col-lg-2 col-md-2 col-sm-2"  >
+                                            <div class="form-group" ng-if="field.type == 'taxonomy'">
                                                 <select ng-model="field.tax" class="form-control" id="taxid" >
                                                     <option value="-" selected="selected">Select One</option>
                                                 </select>
                                             </div>
-                                        </div>
 
-                                        <!-- AC Start -->
-                                        <div class="col-lg-2 col-md-2 col-sm-2" ng-if="field.type == 'relation'">
-                                            <div class="form-group">
+                                            <div class="form-group" ng-if="field.type == 'relation'">
                                                 <select ng-model="field.relationto" class="form-control" id="relationid">
-<!--                                                    <option value="no-rel" selected="selected">Select One</option>-->
-                                                    <option ng-repeat="rel in relationalModels" value="{{rel.relationalModelId}}"> {{rel.relationalModelTitle}} </option>
+                                                     <option ng-repeat="rel in relationalModels" value="{{rel.relationalModelId}}"> {{rel.relationalModelTitle}} </option>
                                                 </select>
                                             </div>
                                         </div>
-                                        <!-- AC End -->
-
-                                        <div class="col-lg-1 col-md-1 col-sm-1">
+                                            <div class="col-lg-1 col-md-1 col-sm-1">
                                             <div class="form-group">
                                                 <div class="wizard-form-radio">
                                                     <input name="radio-name" id="required" type="checkbox" ng-model="field.required" value="true">

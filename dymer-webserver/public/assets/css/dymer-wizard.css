@@ -43,6 +43,8 @@
     display: inline-block;
     margin-left: 5px;
     position: relative;
+    text-align:center;
+    margin-top: 5px;
 }
 
 .form-wizard .wizard-form-radio input[type="radio"] {
@@ -408,8 +410,7 @@
 }
 
 .form-wizard .wizard-form-radio input[type="checkbox"] ~ label {
-    padding-left: 10px;
-    cursor: pointer;
+      cursor: pointer;
 }
 
 /*end check*/
