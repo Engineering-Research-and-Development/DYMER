@@ -13,6 +13,7 @@ angular.module('wizardCtrl', [])
                 {
                     title: "",
                     type: "text",
+                    tax: "Select One",
                     required: false,
                     repeatable: false,
                     searchable: false,
@@ -65,10 +66,11 @@ angular.module('wizardCtrl', [])
         };
 
         // Funzioni per i campi ripetibili (opzionale)
-        $scope.cloneRepeatable = function (title, type, required, repeatable, searchable) {
+        $scope.cloneRepeatable = function (title, type, tax, required, repeatable, searchable) {
             let newField = {
                 title: title ? title : "",
                 type: type ? type : "text",
+                tax: tax ? tax : "Select One",
                 required: required ? required : false,
                 repeatable: repeatable ? repeatable : false,
                 searchable: searchable ? searchable : false
