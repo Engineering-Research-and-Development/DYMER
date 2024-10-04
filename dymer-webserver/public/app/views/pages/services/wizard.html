@@ -85,7 +85,7 @@
                                         <label for="description" class="wizard-form-text-label">Description</label> 
                                     </div>
                                     <div class="form-group clearfix">
-                                        <button type="button" class="form-wizard-next-btn float-right" ng-click="nextStep()">Next</button>
+                                        <button type="button" class="form-wizard-next-btn float-right btn btn-primary" ng-click="nextStep()">Next</button>
                                     </div>
                                 </fieldset>
 
@@ -94,10 +94,18 @@
                                     <h5 class="personal">Model Field Wizard</h5>
                                     <p class="personalInfo">Enter all your model fields in this section. Upload them from a CSV or enter them manually with the available mask</p>
 
-                                     <div class="csvContainer">
-                                        <input type="file" file-model="myFile"/>
-                                        <button type="submit" class="btn btn-primary btn-round" ng-click="getFieldByCSV()"> Get Fields </button>
-    
+                                     <div class="row csvContainer">
+                                        <div class="col-lg-10 col-md-10 col-sm-10">
+                                            <p class="personalInfo"> Upload a CSV file.</p>
+                                            <input type="file" class="form-control " file-model="myFile"/>
+                                            <label for="description" class="wizard-form-text-label">File CSV</label> 
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            
+                                             <button type="submit" class="btn btn-primary " ng-click="getFieldByCSV()"> Get Fields </button>
+                                        </div>
+                                       
+                                        
 
                                      </div>   
                                      
@@ -186,8 +194,8 @@
                                         </div>
                                     </div>
                                     <div class="form-group clearfix">
-                                        <button type="button" class="form-wizard-previous-btn float-left" ng-click="previousStep()">Previous</button>
-                                        <button type="button" class="form-wizard-next-btn float-right" ng-click="nextStep()">Next</button>
+                                        <button type="button" class="form-wizard-previous-btn float-left btn btn-primary" ng-click="previousStep()">Previous</button>
+                                        <button type="button" class="form-wizard-next-btn float-right btn btn-primary" ng-click="nextStep()">Next</button>
                                     </div>
                                 </fieldset>
 
@@ -198,7 +206,7 @@
                                     <p class="personalInfo">In this section you can choose the type of list template </p>
 
 
-                                    <fieldset class="templateView">
+                                    <!-- <fieldset class="templateView">
                                         <legend>Choose a View</legend>
                                         <div class="checkBoxesParent">
                                             <div class="checkBoxContainer">
@@ -235,34 +243,51 @@
                                             </div>
                               
                                           </div>
-                                        <!-- <label>
-                                            <input type="radio" ng-model="wizardObj.previewTemplateType" value="list">
-                                            <span class="contentWiz">
-                                        <span class="title">List</span>
-                                        <span class="description">List view</span>
-                                       </span>
+                                         
+                                    </fieldset> -->
+
+                                    <div class="radio-buttons">
+                                        <label class="custom-radio">
+                                          <input type="radio" class="addon" ng-model="wizardObj.previewTemplateType" value="list" name="radio" checked="">
+                                          <span class="radio-btn"><i class="las la-check"></i>
+                                            <div class="hobbies-icon">
+                                              <img src="https://img.freepik.com/free-vector/sport-equipment-concept_1284-13034.jpg?size=626&amp;ext=jpg">
+                                              <h3 class="">List</h3>
+                                            </div>
+                                          </span>
                                         </label>
-                                        <label>
-                                            <input type="radio" ng-model="wizardObj.previewTemplateType" value="card">
-                                            <span class="contentWiz">
-                                        <span class="title">Card</span>
-                                        <span class="description">Card view</span>
-                                    </span>
+                                        <label class="custom-radio">
+                                          <input type="radio" class="addon" ng-model="wizardObj.previewTemplateType" value="card" name="radio">
+                                          <span class="radio-btn"><i class="las la-check"></i>
+                                            <div class="hobbies-icon">
+                                                           <img src="https://img.freepik.com/free-vector/hand-drawn-flat-design-poetry-illustration_23-2149279810.jpg?size=626&amp;ext=jpg">
+                                              <h3 class="">Card</h3>
+                                            </div>
+                                          </span>
                                         </label>
-                                        <label>
-                                            <input type="radio" ng-model="wizardObj.previewTemplateType" value="map">
-                                            <span class="contentWiz">
-                                        <span class="title">Map</span>
-                                        <span class="description">Map view</span>
-                                    </span>
-                                        </label> -->
-                                    </fieldset>
+                                        <label class="custom-radio">
+                                          <input type="radio" class="addon" ng-model="wizardObj.previewTemplateType" value="map" name="radio">
+                                          <span class="radio-btn"><i class="las la-check"></i>
+                                            <div class="hobbies-icon">
+                                              <img src="https://img.freepik.com/free-vector/hand-drawn-twerk-illustration_23-2149447957.jpg?size=626&amp;ext=jpg">
+                                              <h3 class="">Map</h3>
+                                            </div>
+                                          </span>
+                                        </label>
+                                        
+                                        
+                                      </div>
+
+
+
+
+
 
                                     <p>Selected: <span class="text">{{wizardObj.previewTemplateType}}</span></p>
 
                                     <div class="form-group clearfix">
-                                        <button type="button" class="form-wizard-previous-btn float-left" ng-click="previousStep()">Previous</button>
-                                        <button type="submit" class="form-wizard-submit float-right" ng-click="fillTmplNamesAndSubmit()">Submit</button>
+                                        <button type="button" class="form-wizard-previous-btn float-left btn btn-primary" ng-click="previousStep()">Previous</button>
+                                        <button type="submit" class="form-wizard-submit float-right btn btn-primary" ng-click="fillTmplNamesAndSubmit()">Submit</button>
                                     </div>
                                 </fieldset>
                             </form>
