@@ -14,12 +14,12 @@
                 "port": 8080,
                 "context-path": "",
                 "adminUser": "admin",
-                "adminPass": "dymer",
+                "adminPass": "demo2021",
                 "idp": [], 
                 "library":{
                     "type": "mongodb",
                     "protocol": "http",
-                    "ip": "localhost",
+                    "ip": "mongodb",
                     "port": 27017,
                     "index_ref": "dservice"
                 },

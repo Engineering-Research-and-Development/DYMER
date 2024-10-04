@@ -16,7 +16,7 @@
                     "port": 6379,
                     "user": "redis",
                     "password": "eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81",
-                    "isEnabled": false
+                    "isEnabled": true
                 },
                 "repository": {
                     "entity": {
