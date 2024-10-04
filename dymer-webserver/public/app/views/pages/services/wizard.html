@@ -135,13 +135,24 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-lg-1 col-md-1 col-sm-1">
+                                        <div class="col-lg-1 col-md-1 col-sm-1" ng-if="field.type == 'taxonomy'">
                                             <div class="form-group">
-                                                <select ng-model="field.tax" class="form-control" id="taxid">
+                                                <select ng-model="field.tax" class="form-control" id="taxid" >
                                                     <option value="-" selected="selected">Select One</option>
                                                 </select>
                                             </div>
                                         </div>
+
+                                        <!-- AC Start -->
+                                        <div class="col-lg-2 col-md-2 col-sm-2" ng-if="field.type == 'relation'">
+                                            <div class="form-group">
+                                                <select ng-model="field.relationto" class="form-control" id="relationid">
+<!--                                                    <option value="no-rel" selected="selected">Select One</option>-->
+                                                    <option ng-repeat="rel in relationalModels" value="{{rel.relationalModelId}}"> {{rel.relationalModelTitle}} </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <!-- AC End -->
 
                                         <div class="col-lg-1 col-md-1 col-sm-1">
                                             <div class="form-group">
