@@ -107,6 +107,7 @@ pre.code label {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+    user-select: none;
     pointer-events: none;
 }
 
@@ -163,10 +164,7 @@ pre.code-jquery code {
 
 
 /*----START CREA FORM----*/
-
-#gjs {}
-
-
+ 
 /*----END CREA FORM----*/
 
 
@@ -335,7 +333,7 @@ pre.code-jquery code {
     padding: 0;
 }
 
-#vvveb-builder #assetsTab {}
+/* #vvveb-builder #assetsTab {} */
 
 #vvveb-builder #assetsTab .nav-item {
     min-width: 160px;
@@ -542,7 +540,7 @@ pre.code-jquery code {
 }
 
 .full_normal_zoom:hover {
-    webkit-transition-duration: 0.5s;
+    -webkit-transition-duration: 0.5s;
     transition-duration: 0.5s;
     -webkit-transform: translateX(-5px);
     transform: translateX(-5px);
@@ -887,7 +885,7 @@ pre.code-jquery code {
     resize: vertical !important;
     max-height: none;
 }
-#vvveb-builder #editAssets-page-modal textarea.form-control, {
+#vvveb-builder #editAssets-page-modal textarea.form-control {
     max-height: none;
 }
 .containerConfig {
@@ -1306,3 +1304,16 @@ margin: 4px 0;*/
     height: 50px;
     
     margin-bottom: 24px;}
+
+    /* Taxonomy css*/
+
+    ul.vocabularies li{
+         flex: none;
+    }
+
+    ul.vocabularies a.nav-link{
+         border: 1px solid #ccc;
+        padding: 15px;
+        margin: 3px;
+    }
+     
