@@ -863,24 +863,24 @@
   color: #3d85c6;
 }
 .drag-area header{
-  font-size: 30px;
+  font-size: 20px;
   font-weight: 500;
   color: #3d85c6;
 }
 .drag-area span{
-  font-size: 25px;
+  font-size: 10px;
   font-weight: 500;
   color: #3d85c6;
   margin: 1px 0 1px 0;
 }
 .drag-area button{
   padding: 10px 25px;
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 500;
   border: none;
   outline: none;
   background: #3d85c6;
-  color: #5256ad;
+  color: #fff;
   border-radius: 5px;
   cursor: pointer;
 }
