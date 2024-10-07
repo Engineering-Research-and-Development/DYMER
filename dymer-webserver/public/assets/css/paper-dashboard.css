@@ -23,6 +23,20 @@ Licensed under the MIT license - http://opensource.org/licenses/MIT
 Copyright (c) 2015 Daniel Eden
 */
 
+
+:root {
+    --background-color-light: #ffffff;
+    --text-color-light: #2c2c2c;
+    --background-color-dark: #121212;
+    --text-color-dark: #ffffff;
+  }
+
+  .dark-mode {
+    background-color: var(--background-color-dark);
+    color: var(--text-color-dark);
+  }
+
+
 .animated {
     -webkit-animation-duration: 1s;
     animation-duration: 1s;
@@ -2499,6 +2513,8 @@ body {
     font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif;
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
+    background-color: var(--background-color-light);
+    color: var(--text-color-light);
 }
 
 .main {
