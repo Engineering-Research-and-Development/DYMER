@@ -14,9 +14,7 @@ const path = require('path');
 const nameFile = path.basename(__filename);
 const mongoose = require("mongoose");
 require("../models/ServiceEntityHooks");
-require("../models/opnSearch/OpnUserModel")
 const HookModel = mongoose.model("ServiceEntityHooks");
-const OpnUserModel = mongoose.model("OpnUserModel");
 require('./mongodb.js');
 var router = express.Router();
 const logger = require('./dymerlogger');
@@ -67,7 +65,7 @@ router.post('/setConfig', util.checkIsAdmin, function(req, res) {
     delete obj.id;
     var mod = new OpnSearchConfig(obj);
     if (id != '' && id != undefined) {
-        var myfilter = {"_id": mongoose.Types.ObjectId(id)};
+        var myfilter = { "_id": mongoose.Types.ObjectId(id) };
         OpnSearchConfig.updateOne(myfilter, obj,
             function(err, raw) {
                 if (err) {
@@ -127,7 +125,7 @@ router.post('/addrule', util.checkIsAdmin, function(req, res) {
     var ret = new jsonResponse();
     var newObj = {
         _index: data.op_index,
-        _type: data.op_index,
+        _type: data.op_type,
         mapping: data.op_mapping,
         sendnotification: data.sendnotification
     }
@@ -191,82 +189,51 @@ router.delete('/rule/:id', util.checkIsAdmin, (req, res) => {
         }
     })
 });
+
 /*MG - Run RULE - Inizio*/ 
-router.get('/run/:id', util.checkIsAdminRun, (req, res) => {
-    OpnUserModel.find().then(el => {
-        let user = el[0]
-        let openSearchUser = {
-            cid: user["cid"],
-            gid: user["gid"],
-            uid: user["uid"],
-            email: user["d_mail"],
-            password: util.decrypt("", user["d_pwd"])
-        }
+router.get('/run/:id', util.checkIsAdmin, (req, res) => {
+    /*Recupero i dati dell'utente Openness dai cookies*/
+    let list = {};
+    let cookieHeader = req.headers?.cookie;
+    cookieHeader.split(`;`).forEach(function(cookie) {
+        let [ name, ...rest] = cookie.split(`=`);
+        name = name?.trim();
+        let value = rest.join(`=`).trim();
+        list[name] = decodeURIComponent(value);
+    });
+    let dymeruser = JSON.parse(Buffer.from(list["DYM"], 'base64').toString('utf-8'));
 
-        /*Recupero i dati dell'utente Openness dai cookies*/
-        console.log("routes-d-opn-v1.js | /run/:id");
-        let dymeruser = req.dymeruser;
-
-        //JSON.parse(Buffer.from(list["lll"], 'base64').toString('utf-8'));
-        //console.log("==>default dymeruser ", dymeruser);
-        let ret = new jsonResponse();
-        /*Id dell'indice selezionato*/
-        let id = req.params.id;
-        let myfilter = {"_id": id};
-
-        /*Acquisisco la regola relativa all'indice*/
-        OpnSearchRule.find(myfilter).then((el) => {
-            /*Acquisisco tutte le entità relative all'indice*/
-            /*
-            let query = {
+    let ret = new jsonResponse();
+    /*Id dell'indice selezionato*/
+    let id = req.params.id;
+    let myfilter = {"_id": id};
+    /*Acquisisco la regola relativa all'indice*/
+    OpnSearchRule.find(myfilter).then((el) => {
+        /*Acquisisco tutte le entità relative all'indice*/
+        let query = {
+            "query": {
                 "query": {
-                    "query": {
-                        "bool": {
-                            "must": [{
-                                "term": {
-                                    "_index": el[0]._index
-                                }
-                            }]
-                        }
-                    }
-                }
-            };*/
-            //The previous query doesn't work in GET this one does
-            let query = {
-                "query": {
-                    "query": {
-                        "bool": {
-                            "must": {
-                                "term": {
-                                    "_index": el[0]._index
-                                }
+                    "bool": {
+                        "must": [{
+                            "term": {
+                                "_index": el[0]._index
                             }
-                        }
+                        }]
                     }
                 }
-            };
-            let formdata_admin = new FormData();
-            appendFormdata(formdata_admin, query);
-        
-            let entityConfig = {
-           
-                method: 'GET',
-                url: util.getServiceUrl('webserver') + util.getContextPath('webserver') + '/api/entities/api/v1/entity/', //url: 'http://192.168.1.58:8080/api/entities/api/v1/entity',
-                params: query,
-                headers: {
-                    ...formdata_admin.getHeaders()
-                }
-
-            };
-        /*
-                console.log("el[0]._index ===>", el[0]._index);
-                console.log("entityConfig ===>", entityConfig);
-                console.log("query ===>", JSON.stringify(query));
-        */
-
+            }
+        };
+        let formdata_admin = new FormData();  
+        appendFormdata(formdata_admin, query);   
+        let entityConfig = {
+            method: 'GET',
+            url: util.getServiceUrl('webserver') + util.getContextPath('webserver') + '/api/entities/api/v1/entity/',
+            params: query,
+            headers: {
+                ...formdata_admin.getHeaders()
+            } 
+        };
         axios(entityConfig).then(response => {
-            console.log("admin response ", response);
-            console.log(nameFile + ' | run/:id | get entities by index ' + el[0]._index);
             logger.info(nameFile + ' | run/:id | get entities by index ' + el[0]._index + ' : ' + 
             response.data.data.map(obj => 
                 (JSON.stringify({id: obj._id, 
@@ -287,9 +254,7 @@ router.get('/run/:id', util.checkIsAdminRun, (req, res) => {
             /*Recupero host, porta e path del servizio di Get Dymer Entries di Openness*/
             OpnSearchConfig.find({ 'servicetype': 'get'}).then((els) => {
                 if (els.length > 0) {
-                    //console.log("==>els", els);
-                    //let credentials = util.getServiceConfig("opnsearch").user.d_mail + ":" + util.getServiceConfig("opnsearch").user.d_pwd;
-                    let credentials = openSearchUser.email + ":" + openSearchUser.password;
+                    let credentials = util.getServiceConfig("opnsearch").user.d_mail + ":" + util.getServiceConfig("opnsearch").user.d_pwd;
                     let dymerConfig = {
                         method: 'GET',
                         url: els[0].configuration.host + ":" + els[0].configuration.port + "/api/jsonws/" + els[0].configuration.path, 
@@ -299,50 +264,144 @@ router.get('/run/:id', util.checkIsAdminRun, (req, res) => {
                             'Authorization': `Basic ` + Buffer.from(credentials, 'utf-8').toString('base64')
                         }
                     };
-                    
-                  /*  axios(entityConfig)
-                        .then((response) => {
-                          console.log("entityConfig ", entityConfig);
-                          console.log("RESPONSE entityConfig ", response);
-                        })
-                        .catch((error) => {
-                          if (error.code === "ECONNABORTED") {
-                            console.log("Request timed out");
-                          } else {
-                            console.log("ERROR entityConfig ",error.message);
-                          }
-                        });*/
-
                     axios(dymerConfig).then(dymerResponse => {
                         dymerentries = dymerResponse.data;
-                        /*Verifico la presenza degli hooks*/
+                        /*Verifo la presenza degli hooks*/
                         let queryFind = {
                             "_index":el[0]._index,
                             "service.serviceType": "openness_search"
                         };
-                        //TODO check
                         HookModel.find(queryFind).then((hooks) => {
                             if (hooks.length > 0){     
                                 (hooks).forEach(hook => {
                                     let extraInfo = {
-                                            companyId: dymeruser.extrainfo.companyId,
-                                            groupId: dymeruser.extrainfo.groupId,
-                                            cms: dymeruser.extrainfo.cms,
-                                            userId: dymeruser.extrainfo.userId,
-                                            emailAddress: dymeruser.email,
-                                            virtualhost: dymeruser.extrainfo.virtualHost
-                                        }                                   
-                                    
-                                    manageFunctions(el[0], response,  dymerentries, hook, extraInfo, dymeruser);
+                                        companyId: dymeruser.extrainfo.companyId,
+                                        groupId: dymeruser.extrainfo.groupId,
+                                        cms: dymeruser.extrainfo.cms,
+                                        userId: dymeruser.extrainfo.userId,
+                                        emailAddress: dymeruser.email,
+                                        virtualhost: dymeruser.extrainfo.virtualHost
+                                    }
+                                    let promises = [];
+                                    let info = {};
+                                    /*Per ogni entità invoco l'operazione contenuta nell'Hook Type, per aggiornare gli assets di Openness*/ 
+                                    response.data.data.forEach(function(rdd, ind) {
+                                        let entityChangedDate = rdd._source.properties.changed;
+                                        let dymerentry = dymerentries.find(value => value.id_ === rdd._id);
+                                        promises.push(new Promise(function(resolve,reject) {
+                                            /*Se l'asset manca e se è previsto l'insert, 
+                                            effettuo l'inserimento dell'asset*/
+                                            setTimeout(function() {
+                                                if (typeof(dymerentry) == "undefined"){
+                                                    if (hook.eventType == "after_insert"){
+                                                        logger.info(nameFile + ' | run/:id | postAssettOpenness for ' + hook.eventType.split("after_")[1] + ' of ' + rdd._id);
+                                                        postAssettOpenness(hook.eventType.split("after_")[1], rdd, el[0], extraInfo);
+                                                        info = {};
+                                                        info.operation = "Insert";
+                                                        info.id = rdd._id;
+                                                        info.title = rdd._source.title;
+                                                        resolve(info);
+                                                    }    
+                                                }else{
+                                                    /*Se l'asset esiste, se è previsto l'update e se la data di modifica dell'entità
+                                                    è più recente di quella dell'asset, aggiorno l'asset*/
+                                                    if (hook.eventType == "after_update"){
+                                                        if (entityChangedDate > dymerentry.modifiedDate){
+                                                            logger.info(nameFile + ' | run/:id | postAssettOpenness for ' + hook.eventType.split("after_")[1] + ' of ' + rdd._id);
+                                                            postAssettOpenness(hook.eventType.split("after_")[1], rdd, el[0], extraInfo);
+                                                            info = {};
+                                                            info.operation = "Update";
+                                                            info.id = rdd._id;
+                                                            info.title = rdd._source.title;
+                                                            
+                                                            resolve(info);
+                                                        }   
+                                                    }
+                                                } 
+                                            }, 1000 * (ind + 1)); 
+                                        }));
+                                    });
+                                    let bulk = OpnSearchRule.collection.initializeOrderedBulkOp();
+                                    promises.forEach(function(promise, index) {
+                                        promise.then((result) => {
+                                            console.log(result);
+                                            logger.info(nameFile + ' | run/:id | ' + result);
+                                            /*Aggiorno OpnSearchRule, inserendo i dati di riepilogo dell'esecuzione*/
+                                            bulk.find({ "_index": el[0]._index }).updateOne({                             
+                                                "$set":  { info: result, changed: new Date().toISOString()}
+                                            });
+                                            bulk.execute(function(error, result) {
+                                                if (error) {
+                                                    console.error(nameFile + ' | run/:id | Error for Update OpnSearchRule | ' + error);
+                                                    logger.error(nameFile + ' | run/:id |  Error for Update OpnSearchRule | ' + error);
+                                                } else {
+                                                    logger.info(nameFile + ' | run/:id | Update OpnSearchRule | ' + result);
+                                                }
+                                            });
+                                        }).catch((error) => {
+                                            console.error(nameFile + ' | run/:id | Error for Insert/Update Operation | ' + error);
+                                            logger.error(nameFile + ' | run/:id | Error for Insert/Update Operation | ' + error);
+                                        })
+                                    });   
+                                    /*Verifico se sono presenti assets in più, rispetto alle entità, 
+                                    ed eventualmente li elimino, se il relativo hook è previsto*/
+                                    promises = [];  
+                                    for (let ind = 0; ind < dymerentries.length; ind++) {
+                                        let entity = response.data.data.find(value => value._id === dymerentries[ind].id_);
+                                        promises.push(new Promise(function(resolve,reject) {
+                                            setTimeout(function() {
+                                                if (typeof(entity) == "undefined"){
+                                                    if (hook.eventType == "after_delete"){
+                                                        let asset = {
+                                                            "emailAddress": dymeruser.email,
+                                                            "companyId": dymeruser.extrainfo.companyId,
+                                                            "index": el[0]._index,
+                                                            "type": el[0]._type,
+                                                            "id": dymerentries[ind].id_,
+                                                            "notify":el[0].sendNotification
+                                                        };
+                                                        let queryFind = { 'servicetype': hook.eventType.split("after_")[1] };
+                                                        OpnSearchConfig.find(queryFind).then((els) => {
+                                                            if (els.length > 0) {
+                                                                logger.info(nameFile + ' | run/:id | callOpennessJsw for delete of ' + dymerentries[ind].id_);
+                                                                callOpennessJsw(els[0], asset);
+                                                                info = {};
+                                                                info.operation = "Delete";
+                                                                info.id = dymerentries[ind].id_;
+                                                                info.title = dymerentries[ind].title;
+                                                                resolve(info);
+                                                            }
+                                                        });
+                                                    }    
+                                                } 
+                                            }, 1000 * (ind + 1)); 
+                                        }));    
+                                    };
+                                    promises.forEach(function(promise, index) {
+                                        promise.then((result) => {
+                                            console.log(result);
+                                            logger.info(nameFile + ' | run/:id | ' + result);
+                                            /*Aggiorno OpnSearchRule, inserendo i dati di riepilogo dell'esecuzione*/
+                                            bulk.find({ "_index": el[0]._index }).updateOne({                             
+                                                "$set":  { info: result, changed: new Date().toISOString()}
+                                            });
+                                            bulk.execute(function(error, result) {
+                                                if (error) {
+                                                    console.error(nameFile + ' | run/:id | Error for Update OpnSearchRule | ' + error);
+                                                    logger.error(nameFile + ' | run/:id |  Error for Update OpnSearchRule | ' + error);
+                                                } else {
+                                                    logger.info(nameFile + ' | run/:id | Update OpnSearchRule | ' + result);
+                                                }
+                                            });
+                                        }).catch((error) => {
+                                            console.error(nameFile + ' | run/:id | Error for Delete Operation | ' + error);
+                                            logger.error(nameFile + ' | run/:id | Error for Delete Operation | ' + error);
+                                        })
+                                    });
                                 });
-                                if (hooks.length < 3){
-                                    ret.setMessages("Start of execution of the Run Rule successful but be careful : one or more hooks are missing !!!");        
-                                }else{
-                                    ret.setMessages("Start of execution of the Run Rule successful");        
-                                }
                                 ret.setSuccess(true);
+                                ret.setMessages("Rule executed successfully");
                                 return res.send(ret);
-
                             }else{
                                 ret.setSuccess(false);
                                 ret.setMessages("No hooks associated with the rule !");
@@ -361,11 +420,7 @@ router.get('/run/:id', util.checkIsAdminRun, (req, res) => {
                     });         
                 }
             });
-       /* }).catch((error) => {
-            
-                console.log("ERROR ",error);*/
-                //error per le credential
-            });
+        });
     }).catch((error) => {
         if (error) {
             console.error("ERROR | " + nameFile + " | run/:id :", id, error);
@@ -376,221 +431,7 @@ router.get('/run/:id', util.checkIsAdminRun, (req, res) => {
             return res.send(ret);
         }
     })
-   }).catch((e) => {
-        console.error("ERROR | " + nameFile + " | dym.dymerentry/OpenSearch User ", error);
-        logger.error(nameFile + " | dym.dymerentry/OpenSearch User " + error);
-        ret.setMessages("Get OpenSearch User Error");
-        ret.setSuccess(false);
-        ret.setExtraData({"log": error.stack});
-        return res.send(ret);
-    })
 });
-async function manageFunctions(el, response,  dymerentries, hook, extraInfo, dymeruser){
-    console.log("routes-d-opn-v1.js | manageFunctions");
-    if (hook.eventType == "after_insert"){
-        await insertFunction(response, el, dymerentries, hook, extraInfo, dymeruser);
-    }
-    if (hook.eventType == "after_update"){
-        await updateFunction(response, el, dymerentries, hook, extraInfo, dymeruser);
-    }
-    if (hook.eventType == "after_delete"){
-        await deleteFunction(response, el, dymerentries, hook, extraInfo, dymeruser);
-        //TODO check await deleteFunction(response, el, dymerentries, hook, dymeruser); ???
-    }
-}
-function insertFunction(response, el, dymerentries, hook, extraInfo, dymeruser){
-    console.log("routes-d-opn-v1.js | insertFunction");
-    let promises = [];
-    let promisesMap = [];
-    let bulk = OpnSearchRule.collection.initializeOrderedBulkOp();
-    return new Promise((res, rej) =>{ 
-        response.data.data.forEach(function(rdd, ind) {
-            promises.push(() => ins(rdd, ind, el, dymerentries, hook, extraInfo, dymeruser));
-        });
-        promisesMap = promises.map(promise => promise());
-        Promise.all(promisesMap).then(function(results) {
-            results = results.filter(value => Object.keys(value).length !== 0);
-            console.log("Results insertFunction ===> ", results);
-            /*Aggiorno OpnSearchRule, inserendo i dati di riepilogo dell'esecuzione*/
-            bulk.find({ "_index": el._index }).updateOne({                             
-                "$set":  { info_insert: results, changed: new Date().toISOString()}
-            });
-            bulk.execute(function(error, result) {
-                if (error) {
-                    console.error(nameFile + ' | run/:id | Error for Update OpnSearchRule | ' + error);
-                    logger.error(nameFile + ' | run/:id |  Error for Update OpnSearchRule | ' + error);
-                } else {
-                    logger.info(nameFile + ' | run/:id | Update OpnSearchRule | ' + result);
-                }
-            });
-            res(promisesMap);
-        });
-    });
-}
-function updateFunction(response, el, dymerentries, hook, extraInfo, dymeruser){
-    console.log("routes-d-opn-v1.js | updateFunction");
-    let promises = [];
-    let promisesMap = [];
-    let bulk = OpnSearchRule.collection.initializeOrderedBulkOp();
-    return new Promise((res, rej) =>{ 
-        response.data.data.forEach(function(rdd, ind) {
-            promises.push(() => upd(rdd, ind, el, dymerentries, hook, extraInfo, dymeruser));
-        });
-        promisesMap = promises.map(promise => promise());
-        Promise.all(promisesMap).then(function(results) {
-            results = results.filter(value => Object.keys(value).length !== 0);
-            console.log("Results updateFunction ===> ", results);
-            /*Aggiorno OpnSearchRule, inserendo i dati di riepilogo dell'esecuzione*/
-            bulk.find({ "_index": el._index }).updateOne({                             
-                "$set":  { info_update: results, changed: new Date().toISOString()}
-            });
-            bulk.execute(function(error, result) {
-                if (error) {
-                    console.error(nameFile + ' | run/:id | Error for Update OpnSearchRule | ' + error);
-                    logger.error(nameFile + ' | run/:id |  Error for Update OpnSearchRule | ' + error);
-                } else {
-                    logger.info(nameFile + ' | run/:id | Update OpnSearchRule | ' + result);
-                }
-            });
-            res(promisesMap);
-        });
-    });
-}
-//TODO check: function deleteFunction(response, el, dymerentries, hook, extraInfo, dymeruser){ ???
-function deleteFunction(response, el, dymerentries, hook, dymeruser) {
-    console.log("routes-d-opn-v1.js | deleteFunction");
-    let promises = [];
-    let promisesMap = [];
-    let bulk = OpnSearchRule.collection.initializeOrderedBulkOp();
-    return new Promise((res, rej) =>{ 
-        dymerentries.forEach(function(dimerentry, ind) {    
-            let entity = response.data.data.find(value => value._id === dimerentry.id_);
-            if (typeof(entity) == "undefined"){
-                promises.push(() => del(ind, el, dimerentry, hook, dymeruser));
-            }
-        }); 
-        promisesMap = promises.map(promise => promise());
-        Promise.all(promisesMap).then(function(results) {
-            results = results.filter(value => Object.keys(value).length !== 0);
-            console.log("Results delete ===> ", results);
-            /*Aggiorno OpnSearchRule, inserendo i dati di riepilogo dell'esecuzione*/
-            bulk.find({ "_index": el._index }).updateOne({                             
-                "$set":  { info_delete: results, changed: new Date().toISOString()}
-            });
-            bulk.execute(function(error, result) {
-                if (error) {
-                    console.error(nameFile + ' | run/:id | Error for Update OpnSearchRule | ' + error);
-                    logger.error(nameFile + ' | run/:id |  Error for Update OpnSearchRule | ' + error);
-                } else {
-                    logger.info(nameFile + ' | run/:id | Update OpnSearchRule | ' + result);
-                }
-            });
-            res(promisesMap);
-        });
-    });
-}
-function ins(rdd, ind, el, dymerentries, hook, extraInfo, dymeruser){
-    console.log("routes-d-opn-v1.js | ins");
-    console.log("==>rdd ", JSON.stringify(rdd));//singola risorsa dymer estratta dalla lista di risorse prensenti sul dymer
-    console.log("==>el ", JSON.stringify(el));//elemento su opnssearchrules mongo
-    console.log("==>dymerentries ", JSON.stringify(dymerentries));//risultato del servizio liferay
-    console.log("==>hook ", JSON.stringify(hook));//tabella hook su mongo
-    
-    let info = {};
-    let dymerentry = dymerentries.find(value => value.id_ === rdd._id);
-    return new Promise(function(resolve,reject) {
-        setTimeout(function() {
-            /*Se l'asset manca e se è previsto l'insert, effettuo l'inserimento dell'asset*/
-            if (typeof(dymerentry) == "undefined"){
-                logger.info(nameFile + ' | run/:id | postAssettOpenness for ' + hook.eventType.split("after_")[1] + ' of ' + rdd._id);
-                postAssettOpenness(hook.eventType.split("after_")[1], rdd, el, extraInfo);
-                info.operation = "Insert";
-                info.username = dymeruser.username;
-                info.id = rdd._id;
-                info.title = rdd._source.title;   
-            }
-            resolve(info); 
-        }, 1000 * (ind + 1)); 
-    });
-}
-function upd(rdd, ind, el, dymerentries, hook, extraInfo, dymeruser){
-    console.log("routes-d-opn-v1.js | upd");
-    let info = {};
-    let entityChangedDate = rdd._source.properties.changed;
-    let dymerentry = dymerentries.find(value => value.id_ === rdd._id);
-    return new Promise(function(resolve,reject) {
-        setTimeout(function() {
-            /*Se l'asset esiste, se è previsto l'update e se la data di modifica dell'entità
-            è più recente di quella dell'asset, aggiorno l'asset*/
-            if (typeof(dymerentry) != "undefined"){
-                //console.log("==>entityChangedDate > dymerentry.modifiedDate");
-                if (entityChangedDate > dymerentry.modifiedDate){
-                    logger.info(nameFile + ' | run/:id | postAssettOpenness for ' + hook.eventType.split("after_")[1] + ' of ' + rdd._id);
-                    postAssettOpenness(hook.eventType.split("after_")[1], rdd, el, extraInfo);
-                    info.operation = "Update";
-                    info.username = dymeruser.username;
-                    info.id = rdd._id;
-                    info.title = rdd._source.title;
-                }   
-            } 
-            resolve(info);
-        }, 1000 * (ind + 1)); 
-    });
-}
-
-function del(ind, el, dymerentry, hook, dymeruser){
-    console.log("routes-d-opn-v1.js | del");
-    let info = {};
-    let openSearchConfig = {};
-/*
-    var opnConfUtil = util.getServiceConfig("opnsearch");
-
-    var companyId = opnConfUtil.user.d_cid;
-    var emailAddress = opnConfUtil.user.d_mail;
-*/
-
-    OpnUserModel.find().then(el => {
-        let user = el[0]
-        let openSearchUser = {
-            cid: user["cid"],
-            gid: user["gid"],
-            uid: user["uid"],
-            email: user["d_mail"],
-            password: util.decrypt("", user["d_pwd"])
-        }
-
-        let asset = {
-            "emailAddress": openSearchUser.email,//"emailAddress": emailAddress,,
-            "companyId": Number(openSearchUser.cid), //Number(dymeruser.extrainfo.companyId),
-            "index": el._index,
-            "type": el._type,
-            "id": dymerentry.id_,
-            "notify": el.sendNotification
-        };
-
-        let queryFind = {'servicetype': hook.eventType.split("after_")[1]};
-        /*Verifico se sono presenti assets in più, rispetto alle entità,
-        ed eventualmente li elimino, se il relativo hook è previsto*/
-        //console.log("==>asset liferay > entity su elastic dymer");
-        return new Promise(function (resolve, reject) {
-            OpnSearchConfig.find(queryFind).then((osc) => {
-                if (osc.length > 0) {
-                    openSearchConfig = osc[0];
-                }
-            });
-            setTimeout(function () {
-                logger.info(nameFile + ' | run/:id | callOpennessJsw for delete of ' + dymerentry.id_);
-                callOpennessJsw(openSearchConfig, asset);
-                info.operation = "Delete";
-                info.username = dymeruser.username;
-                info.id = dymerentry.id_;
-                info.title = dymerentry.title;
-                resolve(info);
-            }, 1000 * (ind + 1));
-        });
-    })
-}
-
 function appendFormdata(FormData, data, name) {
     var name = name || '';
     if (typeof data === 'object') {
@@ -612,7 +453,6 @@ function appendFormdata(FormData, data, name) {
 /*MG - Run RULE - Fine*/ 
 
 router.post('/listener', function(req, res) {
-    console.log("routes-d-opn-v1.js | /listener");
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -621,14 +461,12 @@ router.post('/listener', function(req, res) {
     var eventSource = (data.eventSource).split('_');
     var queryFind = {
         "_index": data.obj._index,
-        "_type": data.obj._index
+        "_type": data.obj._type
     };
-    
     OpnSearchRule.find(queryFind).then((els) => {
         ret.setMessages("List");
         ret.setData(els);
         let singleRule= els[0]
-        
         postAssettOpenness(eventSource[1], data.obj, singleRule, extraInfo);
     }).catch((err) => {
         if (err) {
@@ -642,138 +480,25 @@ router.post('/listener', function(req, res) {
     });
 });
 
-router.get('/users', (req, res) => {
-    var ret = new jsonResponse();
-    let callData = util.getAllQuery(req);
-    let data = callData.data;
-    let queryFind = callData.query;
-    OpnUserModel.find(queryFind).then((els) => {
-        ret.setMessages("List");
-        ret.setData(els);
-        return res.send(ret);
-    }).catch((err) => {
-        if (err) {
-            console.error("ERROR | " + nameFile + " | get/users :", err);
-            logger.error(nameFile + ' | get/users : ' + err);
-            ret.setMessages("Get error");
-            ret.setSuccess(false);
-            ret.setExtraData({"log": err.stack});
-            return res.send(ret);
-        }
-    })
-});
-
-router.post('/setuser', util.checkIsAdmin, function (req, res) {
-    let callData = util.getAllQuery(req);
-    let userRaw = callData.user;
-    let copyUser = {...userRaw};
-    let ret = new jsonResponse();
-
-    let obj = userRaw;
-    let id = obj._id;
-    delete obj._id;
-    let userModel = new OpnUserModel(obj);
-    if (id != '' && id != undefined) {
-        const objId = {"_id": mongoose.Types.ObjectId(id)};
-        OpnUserModel.updateOne(objId, obj,
-            function (err, raw) {
-                if (err) {
-                    ret.setSuccess(false);
-                    console.error("ERROR | " + nameFile + " | post/ | updateOne :", err);
-                    logger.error(nameFile + ' || post/ | updateOne  : ' + err);
-                    ret.setMessages("Model Error");
-                    return res.send(ret);
-                } else {
-                    ret.addData(copyUser);
-                    ret.setMessages("User Updated");
-                    return res.send(ret);
-                }
-            }
-        );
-    } else
-        userModel.save().then((el) => {
-            ret.setMessages("User created successfully");
-            ret.addData(el);
-            return res.send(ret);
-        }).catch((err) => {
-            if (err) {
-                console.error("ERROR | " + nameFile + " | post/ | save :", err);
-                logger.error(nameFile + ' | post/ | save : ' + err);
-                ret.setMessages("Post error");
-                ret.setSuccess(false);
-                ret.setExtraData({"log": err.stack});
-                return res.send(ret);
-            }
-        })
-});
-
 function postAssettOpenness(typeaction, obj, rule, extraInfo) {
-    console.log("routes-d-opn-v1.js | postAssettOpenness");
-    console.log('==>extraInfo', extraInfo);  
-    console.log('==>obj', obj);  
-    //var opnConfUtil = util.getServiceConfig("opnsearch");
-    
-    OpnUserModel.find().then(el => {
-        let user = el[0]
-        let openSearchUser = {
-            cid: user["d_cid"],
-            gid: user["d_gid"],
-            uid: user["d_uid"],
-            email: user["d_mail"],
-            password: util.decrypt("", user["d_pwd"])
-        }
-        console.log("===>openSearchUser ", openSearchUser);
     //console.log(nameFile + ' | postAssettOpenness | extraInfo', JSON.stringify(extraInfo));
-    
+    var opnConfUtil = util.getServiceConfig("opnsearch");
     var queryFind = { 'servicetype': typeaction };
-
     OpnSearchConfig.find(queryFind).then((els) => {
-        console.log('==>els ', els);
+        //console.log('postAssettOpenness els', els);
         if (els.length > 0) {
-
             try {
                 let notify=true;
-
-                //console.log("rule.sendnotification ",rule.sendnotification);
-
                 if(rule.sendnotification===false)
-                    notify = rule.sendnotification;
+                notify= rule.sendnotification ;
                 var el = els[0];
-                
-                //TODO check
-                //var companyId = (extraInfo != undefined) ? extraInfo.companyId : opnConfUtil.user.d_gid;
-
-
-                var companyId = (extraInfo != undefined) ? extraInfo.companyId : openSearchUser.cid;
-                //Dymer Admin could not asset resource in Liferay, decomment to change this behaviour
-                /*if (companyId=="dymer"){
-                    companyId=openSearchUser.cid;
-                }*/
-                var userId = (extraInfo != undefined) ? extraInfo.userId : openSearchUser.uid;
-
+                var companyId = (extraInfo != undefined) ? extraInfo.companyId : opnConfUtil.user.d_gid;
+                var userId = (extraInfo != undefined) ? extraInfo.userId : opnConfUtil.user.d_uid;
                 // var groupId = (obj._source.properties.owner.uid == "admin@dymer.it") ? opnConfUtil.user.d_gid : obj._source.properties.owner.gid;
-                // var emailAddress = (obj._source.properties.owner.uid == "admin@dymer.it") ? opnConfUtil.user.d_mail : obj._source.properties.owner.uid;             
-                console.log("==>obj._source.properties.owner.uid ", obj._source.properties.owner.uid);
-                var groupId = (obj._source.properties.owner.uid == "admin@dymer.it") ? openSearchUser.gid : extraInfo.groupId;
-                //Dymer Admin could not asset resource in Liferay, decomment to change this behaviour
-                /*if(groupId=='1'){
-                    groupId = openSearchUser.gid;
-                }*/
-                var emailAddress = (obj._source.properties.owner.uid == "admin@dymer.it") ? openSearchUser.email : extraInfo.emailAddress;
-                console.log("---------------------------");
-                console.log("userId ", userId);
-                console.log("groupId ", groupId);
-                console.log("emailAddress ", emailAddress);
-                console.log("companyId ", companyId);
-                console.log("---------------------------");
-                if (isNaN(companyId)){
-                    companyId = openSearchUser.cid;
-                    console.log("==>companyId from config.json: ", companyId);
-                }
-
+                // var emailAddress = (obj._source.properties.owner.uid == "admin@dymer.it") ? opnConfUtil.user.d_mail : obj._source.properties.owner.uid;
+                var groupId = (obj._source.properties.owner.uid == "admin@dymer.it") ? opnConfUtil.user.d_gid : extraInfo.groupId;
+                var emailAddress = (obj._source.properties.owner.uid == "admin@dymer.it") ? opnConfUtil.user.d_mail : extraInfo.emailAddress;
                 if (el.servicetype == 'insert' || el.servicetype == 'update') {
-                    console.log("==>insert or update ");
-                    
                     var assetTitle = obj._source[rule.mapping.title];
                     var assetextContent = "";
                     (rule.mapping.extContent).forEach(element => {
@@ -781,9 +506,9 @@ function postAssettOpenness(typeaction, obj, rule, extraInfo) {
                     });
                     assetextContent = assetextContent.substring(0, assetextContent.length - 1);
                     if (obj._source.properties.owner.gid == undefined || obj._source.properties.owner.gid == "")
-                        obj._source.properties.owner.gid = openSearchUser.gid;
+                        obj._source.properties.owner.gid = opnConfUtil.user.d_gid;
                     if (obj._source.properties.owner.uid == undefined || obj._source.properties.owner.uid == "")
-                        obj._source.properties.owner.uid = openSearchUser.uid;
+                        obj._source.properties.owner.uid = opnConfUtil.user.d_uid;
                     let url_base_entity = ""; //https://dym.dih4industry.eu
                     // url_base_entity = obj._source.properties.ipsource;
                     url_base_entity = (el.configuration.dymerpath == undefined) ? "" : el.configuration.dymerpath;
@@ -798,7 +523,7 @@ function postAssettOpenness(typeaction, obj, rule, extraInfo) {
                         "groupId": Number(groupId), //20121
                         "userId": Number(userId),
                         "index": obj._index,
-                        "type": obj._index,
+                        "type": obj._type,
                         "id": obj._id,
                         "url": url_base_entity, //url del dymer
                         "title": assetTitle,
@@ -806,22 +531,20 @@ function postAssettOpenness(typeaction, obj, rule, extraInfo) {
                         "notify":notify
                     };
                     logger.info(nameFile + ' | postAssettOpenness | insert/update Json openness: ' + JSON.stringify(objToAssett));
-                    console.log(nameFile + ' | postAssettOpenness | insert/update Json openness', JSON.stringify(objToAssett));
+                    // console.log(nameFile + ' | postAssettOpenness | insert/update Json openness', JSON.stringify(objToAssett));
                     callOpennessJsw(el, objToAssett);
                 }
                 if (el.servicetype == 'delete') {
-                    
                     var objToAssett = {
                         "emailAddress": emailAddress,
                         "companyId": Number(companyId),
                         "index": obj._index,
-                        "type": obj._index,
+                        "type": obj._type,
                         "id": obj._id,
                         "notify":notify
                     };
-                    //console.log("==>delete objToAssett... ", JSON.stringify(objToAssett));
                     logger.info(nameFile + ' | postAssettOpenness | delete Json openness: ' + JSON.stringify(objToAssett));
-                    console.log(nameFile + ' | postAssettOpenness | delete Json openness', JSON.stringify(objToAssett));
+                    // console.log(nameFile + ' | postAssettOpenness | delete Json openness', JSON.stringify(objToAssett));
                     callOpennessJsw(el, objToAssett);
                 }
             } catch (error) {
@@ -832,51 +555,29 @@ function postAssettOpenness(typeaction, obj, rule, extraInfo) {
 
         logger.error(nameFile + ' | postAssettOpenness | find obj,extraInfo: ' + JSON.stringify(obj) + ',' + JSON.stringify(extraInfo) + ',' + err);
         console.error("ERROR | " + nameFile + " | postAssettOpenness | find : ", err);
-        })
-    }).catch((e) => {
-        console.error("ERROR | " + nameFile + " | dym.dymerentry/OpenSearch User ", error);
-        logger.error(nameFile + " | dym.dymerentry/OpenSearch User " + error);
-        ret.setMessages("Get OpenSearch User Error");
-        ret.setSuccess(false);
-        ret.setExtraData({"log": error.stack});
-        return res.send(ret);
     })
 }
 
 function callOpennessJsw(conf, postObj) {
-    console.log("routes-d-opn-v1.js | callOpennessJsw ");
-    console.log("==> conf ", conf);
-    console.log("==> postObj ", postObj);
-    //var opnConfUtil = util.getServiceConfig("opnsearch");
-
-    OpnUserModel.find().then(el => {
-        let user = el[0]
-        let openSearchUser = {
-            cid: user["cid"],
-            gid: user["gid"],
-            uid: user["uid"],
-            email: user["d_mail"],
-            password: util.decrypt("", user["d_pwd"])
-        }
+    var opnConfUtil = util.getServiceConfig("opnsearch");
     var callurl = conf.configuration.host;
     if (conf.configuration.port != undefined)
         if (conf.configuration.port != '')
             callurl += ":" + conf.configuration.port;
     callurl += "/api/jsonws/invoke";
-    //console.log('chiamata callur X', callurl);
+    // console.log('chiamata callur X', callurl);
     logger.info(nameFile + ' | callOpennessJsw  | chiamata callur X :' + callurl);
     if (conf.configuration.method == "POST") {
         var objPOST = {};
         objPOST[conf.configuration.path] = postObj;
         postObj = objPOST;
         // console.log('with postObj ', postObj);
-        //console.log(nameFile + ' | callOpennessJsw  | with postObj :' + JSON.stringify(postObj));
         logger.info(nameFile + ' | callOpennessJsw  | with postObj :' + JSON.stringify(postObj));
         //   postObj = JSON.stringify(objPOST);
         //    var configqq = { headers: { Cookie: 'JSESSIONID=C9B87F42FCF0BA612F4B59E411E908C5;' } };
-        var creden =  openSearchUser.email + ":" + openSearchUser.password;
-        //console.log(nameFile + ' | callOpennessJsw  | creden:' + opnConfUtil.user.d_mail);
-        logger.info(nameFile + ' | callOpennessJsw  | creden:' + openSearchUser.email);
+        var creden = opnConfUtil.user.d_mail + ":" + opnConfUtil.user.d_pwd;
+        // console.log('creden->', opnConfUtil.user.d_mail);
+        logger.info(nameFile + ' | callOpennessJsw  | creden->:' + opnConfUtil.user.d_mail);
         const buff = Buffer.from(creden, 'utf-8');
         //let buff = new Buffer(creden);
         let authorizationBasic = buff.toString('base64');
@@ -886,7 +587,7 @@ function callOpennessJsw(conf, postObj) {
                 "Authorization": "Basic " + authorizationBasic
             }
         };
-        //console.log('Authorization header-> ', configqq);
+        // console.log('Authorization header-> ', configqq);
         axios.post(callurl, postObj, configqq)
             .then(function(response) {
                 logger.info(nameFile + ' | callOpennessJsw | POST | callurl, postObj, configqq' + callurl + " , " + JSON.stringify(postObj) + " , " + JSON.stringify(configqq));
@@ -903,13 +604,5 @@ function callOpennessJsw(conf, postObj) {
             logger.error(nameFile + ' | callOpennessJsw | GET : ' + error);
         });
     }
-  }).catch((e) => {
-        console.error("ERROR | " + nameFile + " | dym.dymerentry/OpenSearch User ", error);
-        logger.error(nameFile + " | dym.dymerentry/OpenSearch User " + error);
-        ret.setMessages("Get OpenSearch User Error");
-        ret.setSuccess(false);
-        ret.setExtraData({"log": error.stack});
-        return res.send(ret);
-    })
 }
 module.exports = router;
