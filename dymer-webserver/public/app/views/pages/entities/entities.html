@@ -168,7 +168,7 @@ padding: 4px 0;">
                             ng-click="showFilterItem = ! showFilterItem; showentitydet();" aria-hidden="true"></i>
                     </span>
                 </div>
-                <div ng-show="showFilterItem">
+                <div ng-show="showFilterItem" class="filterItemOverflow">
                     <pre>{{detailObj | json }}</pre>
                 </div>
             </div>
