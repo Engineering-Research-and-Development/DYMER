@@ -67,12 +67,12 @@ function genWFAction(action, objToPost, rfrom, rules, origindata, originheader, 
 
     origindata = (origindata == undefined) ? objToPost : origindata;
     var opnConfUtil = util.getServiceConfig("opnsearch");
-    let base_admin = ["francesco.stefanelli@eng.it", "marcobernardino.romano@eng.it"];
+    let base_admin = ["francesco.stefanelli@eng.it"];
     // let wfindexes = ["workflow", "sps", "spd"];
     let wfindexes = ["sps", "spd"];
-    let old_wflevel = origindata._source.wflevel;
-    let new_wflevel = objToPost._source.wflevel;
-    let titleEntity = objToPost._source.title;
+    let old_wflevel = (origindata._index == "repository") ? objToPost._source.wflevelrepo : objToPost._source.wflevel;
+    let new_wflevel = (origindata._index == "repository") ? objToPost._source.wflevelrepo : objToPost._source.wflevel;  
+    let titleEntity = objToPost._source.title ;
     let index = origindata._index;
     let id = objToPost._id;
     let orignalOwner = objToPost._source.properties.owner.uid;
