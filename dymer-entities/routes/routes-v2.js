@@ -3630,6 +3630,7 @@ router.post('/:enttype', function(req, res) {
     } else {
         dymerextrainfo = undefined;
     } */
+    logger.info(nameFile + '| /:enttype | create | dymeruser:' + dymeruser);
     let urs_uid = dymeruser.id;
     let urs_gid = dymeruser.gid;
     /* if (dymerextrainfo != undefined)
