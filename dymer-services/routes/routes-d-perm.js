@@ -207,8 +207,8 @@ router.post('/:id?', util.checkIsAdmin, async function(req, res) {
             try {
                 await axios.post(EntitiesURL, { updated: callData.data.role });
             } catch (e) {
-                console.error("ERROR | " + nameFile + " | post | updateOne ", err);
-                logger.error(nameFile + ' | post | updateOne  : ' + err);
+                console.error("ERROR | " + nameFile + " | post | updateOne ", e);
+                logger.error(nameFile + ' | post | updateOne  : ' + e);
                 ret.setSuccess(false);
                 ret.setMessages("Model Error");
                 return res.send(ret);
