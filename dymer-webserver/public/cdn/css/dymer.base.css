@@ -826,5 +826,11 @@ table.dataTable tfoot td {
     background-color: #fff;
 }
 
+.filterItemOverflow{
+    overflow: scroll;
+    width: 100%;
+    height: 300px;
+}
+
 
 /*end summernote*/
