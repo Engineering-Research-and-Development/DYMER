@@ -634,6 +634,7 @@ function postMyData(el, index, DYM, DYM_EXTRA) {
             ...formdata.getHeaders(),
             'Authorization': `Bearer ${DYM}`,
             'extrainfo': `${DYM_EXTRA}`,
+	    'dymeruser':`${DYM}`
         },
         data: formdata
     };
