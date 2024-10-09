@@ -65,7 +65,7 @@ router.get('/', util.checkIsAdmin, (req, res) => {
 
 router.get('/userinfo', (req, res) => {
     var ret = new jsonResponse();
-    let data = req.body;;
+    let data = req.body;
     var mygid = 0;
     let extradata = {};
     if (data.dymtoExtraInfo != undefined && data.dymtoExtraInfo != 'undefined' && data.dymtoExtraInfo != null && data.dymtoExtraInfo != 'null') {
