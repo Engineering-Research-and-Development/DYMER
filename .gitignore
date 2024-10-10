@@ -7,3 +7,14 @@ warn.log
 routestest.js
 keycloak-config.js
 authenticate_opid.js
+.env
+dymer-forms/config/config.json
+dymer-templates/config/config.json
+dymer-services/config/config.json
+dymer-webserver/config/config.json
+dymer-entities/config/config.json
+dymer-forms/package-lock.json
+dymer-templates/package-lock.json
+dymer-services/package-lock.json
+dymer-webserver/package-lock.json
+dymer-entities/package-lock.json

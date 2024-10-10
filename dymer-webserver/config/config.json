@@ -14,12 +14,12 @@
                 "port": 8080,
                 "context-path": "",
                 "adminUser": "admin",
-                "adminPass": "demo2021",
+                "adminPass": "dymer",
                 "idp": [], 
                 "library":{
                     "type": "mongodb",
                     "protocol": "http",
-                    "ip": "mongodb",
+                    "ip": "localhost",
                     "port": 27017,
                     "index_ref": "dservice"
                 },
@@ -67,7 +67,7 @@
                 "library":{
                     "type": "mongodb",
                     "protocol": "http",
-                    "ip": "mongodb",
+                    "ip": "localhost",
                     "port": 27017,
                     "index_ref": "dservice"
                 },
