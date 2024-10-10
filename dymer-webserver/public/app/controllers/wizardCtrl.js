@@ -240,13 +240,15 @@ angular.module('wizardCtrl', [])
                                 method: "GET",
                                 params: {query: `{"instance._index":"${$scope.wizardObj.modelIndex}"}`},
                             }).then(function (getFullContentTemplateHtmlRet) {
+                               
+                                console.log("modeldetail - html ritornato dal modeldetail ====>", getFullContentTemplateHtmlRet.data);
 
-
+                                let dtReturnHTML=getFullContentTemplateHtmlRet.data;
                                 if (taxonomy){
-                                    getFullContentTemplateHtmlRet += '<div class="card card-primary">\n<div class="card-header"></div>\n<div class="card-body"> \n<strong><i class="fas fa-pencil-alt mr-1"></i>Vocabularies</strong>\n <p class="text-muted"> {{#each taxonomy }} \n<span class="tag tag-success"> {{this}}  </span> \n    {{/each }}\n    </p> \n   </div> \n     </div> \n';
+                                    dtReturnHTML += '<div class="card card-primary">\n<div class="card-header"></div>\n<div class="card-body"> \n<strong><i class="fas fa-pencil-alt mr-1"></i>Vocabularies</strong>\n <p class="text-muted"> {{#each taxonomy }} \n<span class="tag tag-success"> {{this}}  </span> \n    {{/each }}\n    </p> \n   </div> \n     </div> \n';
                                 }
 
-                                console.log("modeldetail - html ritornato dal modeldetail ====>", getFullContentTemplateHtmlRet);
+                                console.log("modeldetail - html ritornato dal modeldetail dtReturnHTML====>", dtReturnHTML);
 
 
 
@@ -264,7 +266,7 @@ angular.module('wizardCtrl', [])
                                     }],
                                     file: {
                                         originalname: modelName + "_fullTemplate.html",
-                                        src: getFullContentTemplateHtmlRet,
+                                        src: dtReturnHTML,
                                         ctype: "text/html"
                                     },
                                     posturl: "",
@@ -273,7 +275,7 @@ angular.module('wizardCtrl', [])
                                 let postFullContentTemplateData = new FormData();
                                 delete delete fullContentTemplateData.file;
                                 appendFormdata(postFullContentTemplateData, {"data": fullContentTemplateData});
-                                postFullContentTemplateData.append('data[file]', new File([new Blob([getFullContentTemplateHtmlRet.data])], modelName + "_fullTemplate" + ".html", {type: "text/html"}));
+                                postFullContentTemplateData.append('data[file]', new File([new Blob([dtReturnHTML])], modelName + "_fullTemplate" + ".html", {type: "text/html"}));
                                 $http({
                                     url: baseContextPath + 'api/templates/api/v1/template/',
                                     method: "POST",

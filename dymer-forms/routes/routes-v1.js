@@ -259,12 +259,14 @@ router.get('/modeldetail', [util.checkIsDymerUser], (req, res) => {
             //ret.setData(templateNodeList);
             templateHtml = `<div data-component-entitystatus="" data-vvveb-disabled="" class="row">
                             {{{EntityStatus this}}}</div> ${templateNodeList}\n`;
+            ret.setMessages("HTML");
             ret.setData(templateHtml);
+            
         });
 
         //TODO verificare esistenza del modello
         //TODO gestire edit
-        return res.send(ret.data);
+        return res.send(ret);
     }).catch(function(err) {
         console.error("ERROR | " + nameFile + ' | get | queryFind : ', err);
         logger.error(nameFile + ' | get/modeldetail | queryFind : ' + err);
