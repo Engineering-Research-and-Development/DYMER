@@ -109,18 +109,15 @@ angular.module('entitiesImportControllers', [])
         $scope.infoDetails = {
             index: "",
             separator: "",
-            enableRelations: false,
-            relationTo: "",
+            //enableRelations: false,
+            relations: {
+                enabled: false,
+                searchingField: "",
+                relationTo: ""
+            },
             fields: []
         };
-/*
-* {
-                originalName: "",
-                newName: "",
-                //type: "",
-                isSelected: false
-            }
-* */
+
         // Funzioni per la navigazione nel wizard
         $scope.nextStep = function () {
             if ($scope.currentStep < 4) {
@@ -130,14 +127,14 @@ angular.module('entitiesImportControllers', [])
                 $scope.activated = "activated";
             }
             if ($scope.currentStep == 3) {
-                $scope.activated1 = "activated";
+                $scope.activated = "activated";
 
             }
             if ($scope.currentStep == 4) {
                 runMapping()
-                $scope.activated2 = "activated";
+                $scope.activated = "activated";
             }
-           // console.log("wizard infoDetails: ", $scope.infoDetails)
+            // console.log("wizard infoDetails: ", $scope.infoDetails)
         };
 
         $scope.previousStep = function () {
@@ -147,7 +144,7 @@ angular.module('entitiesImportControllers', [])
         };
 
         $scope.submitForm = function () {
-           console.log('Form submitted:', $scope.infoDetails);
+            console.log('Form submitted:', $scope.infoDetails);
         };
 
         $scope.getFieldByCSV = async function () {
@@ -166,14 +163,14 @@ angular.module('entitiesImportControllers', [])
                         $scope.CSVData = result.data
                         $scope.errors = result.errors
 
-                       // console.log("$scope.CSVData: ", $scope.CSVData )
+                        // console.log("$scope.CSVData: ", $scope.CSVData )
                         $scope.$apply();
                     }
                 }
             )
         }
 
-        $scope.addHeader = function() {
+        $scope.addHeader = function () {
             $scope.infoDetails.fields.push({
                 originalName: "",
                 newName: "",
@@ -182,7 +179,7 @@ angular.module('entitiesImportControllers', [])
             });
         };
 
-        $scope.removeHeader= function(index) {
+        $scope.removeHeader = function (index) {
             $scope.infoDetails.fields.splice(index, 1);
         };
 
@@ -204,23 +201,25 @@ angular.module('entitiesImportControllers', [])
                         structure.push(key);
                     }
                 }
-              //  console.log("structure: ", structure)
+                //  console.log("structure: ", structure)
                 structure.forEach(field => {
                     $scope.infoDetails.fields.push({
-                            originalName: field,
-                            newName: "",
-                            isNew: false,
-                            isSelected: false
-                        })
+                        originalName: field,
+                        newName: "",
+                        isNew: false,
+                        isSelected: false
+                    })
                 })
             }).catch(e => {
                 console.log("Unable retrieve index fields due to: ", e)
             })
         }
 
-        $scope.setRelationTo = function(newName) {
-            if (newName) {
-                $scope.infoDetails.relationTo = newName;
+        $scope.setRelationTo = function (originalName) {
+            if (originalName) {
+                $scope.infoDetails.relations.enabled = true;
+                //$scope.infoDetails.relations.relationTo = newName;
+                $scope.infoDetails.relations.searchingField = originalName;
             }
         };
 
@@ -263,7 +262,14 @@ angular.module('entitiesImportControllers', [])
             // console.log("CSV Fields:", $scope.CSVFields);
         }
 
-
+        $scope.importMappedData = function () {
+            let dataToImport = {
+                relationTo: $scope.infoDetails.relations.relationTo,
+                data: $scope.MappedData,
+                searchingField: $scope.infoDetails.relations.searchingField
+            }
+            console.log("invio a al BE --> ", dataToImport)
+        }
 
 // AC - new import end
     });

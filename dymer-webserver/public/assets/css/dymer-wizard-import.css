@@ -39,6 +39,12 @@
     padding: 30px;
 }
 
+.form-wizard-import-scroll-table {
+    height: 600px;
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
 .form-wizard-import .wizard-import-form-radio {
     display: inline-block;
     margin-left: 5px;
@@ -187,6 +193,13 @@
 /* Per il secondo step attivo o attivato, coloriamo entrambe le braccia */
 .form-wizard-import .form-wizard-import-steps li:nth-child(2).active::after,
 .form-wizard-import .form-wizard-import-steps li:nth-child(2).activated::after {
+    left: 0;
+    width: 100%;
+}
+
+/* Per il terzo step attivo o attivato, coloriamo entrambe le braccia */
+.form-wizard-import .form-wizard-import-steps li:nth-child(3).active::after,
+.form-wizard-import .form-wizard-import-steps li:nth-child(3).activated::after {
     left: 0;
     width: 100%;
 }
