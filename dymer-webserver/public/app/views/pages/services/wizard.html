@@ -160,10 +160,10 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-lg-2 col-md-2 col-sm-2"  >
-                                            <div class="form-group" ng-if="field.type == 'taxonomy'">
-                                                <select ng-model="field.tax" class="form-control" id="taxid" >
-                                                    <option value="-" selected="selected">Select One</option>
+                                        <div class="col-lg-2 col-md-2 col-sm-2" ng-if="field.type == 'taxonomy'"  >
+                                            <div class="form-group">
+                                                <select ng-model="field.tax" class="form-control" id="vocabularyId">
+                                                    <option ng-repeat="vocabulary in vocabularies" value="{{vocabulary.vocabularyId}}"> {{vocabulary.vocabularyTitle}} </option>
                                                 </select>
                                             </div>
 
@@ -330,7 +330,7 @@
         </div>
         <div class="card-footer ">
             <hr/>
-            <div class="stats"><i class="fa fa-history"></i> Updated 30/09/2024</div>
+            <div class="stats"><i class="fa fa-history"></i> Updated 10/10/2024</div>
         </div>
     </div>
 </div>
