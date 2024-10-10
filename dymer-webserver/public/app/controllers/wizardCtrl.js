@@ -243,7 +243,7 @@ angular.module('wizardCtrl', [])
                                
                                 console.log("modeldetail - html ritornato dal modeldetail ====>", getFullContentTemplateHtmlRet.data);
 
-                                let dtReturnHTML=getFullContentTemplateHtmlRet.data;
+                                let dtReturnHTML=getFullContentTemplateHtmlRet.data.data;
                                 if (taxonomy){
                                     dtReturnHTML += '<div class="card card-primary">\n<div class="card-header"></div>\n<div class="card-body"> \n<strong><i class="fas fa-pencil-alt mr-1"></i>Vocabularies</strong>\n <p class="text-muted"> {{#each taxonomy }} \n<span class="tag tag-success"> {{this}}  </span> \n    {{/each }}\n    </p> \n   </div> \n     </div> \n';
                                 }
