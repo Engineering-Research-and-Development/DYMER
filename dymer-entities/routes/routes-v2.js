@@ -5056,7 +5056,7 @@ const haspermissionGrantByAction = function(urs, action, entityprop) {
     });
 };
 
-router.patch('/:id', async(req, res, next) => {
+router.patch('/:role', async(req, res, next) => {
     var callDatap = util.getAllQuery(req);
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser
