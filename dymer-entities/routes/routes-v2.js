@@ -5658,8 +5658,10 @@ router.patch("/addView", (req, res) => {
                 /*Incremento il contatore delle visualizzazioni*/
                 let viewsCounter = 1;
                 if (element._source.viewsCounter && element._source.viewsCounter != null){
-                    element._source.viewsCounter += 1;
-                    viewsCounter = element._source.viewsCounter;
+                    
+		   var temCount=parseInt(element._source.viewsCounter) + 1;
+                    viewsCounter = temCount;
+                     
                 }
                 let data = {
                     viewsCounter : viewsCounter
