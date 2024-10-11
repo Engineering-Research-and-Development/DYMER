@@ -86,7 +86,7 @@
 .form-wizard .wizard-form-radio input[type="radio"]:checked::after {
     content: "";
     display: inline-block;
-    webkit-animation: click-radio-wave 0.65s;
+    -webkit-animation: click-radio-wave 0.65s;
     -moz-animation: click-radio-wave 0.65s;
     animation: click-radio-wave 0.65s;
     background: #000000;
@@ -396,7 +396,7 @@
 .form-wizard .wizard-form-radio input[type="checkbox"]:checked::after {
     content: "";
     display: inline-block;
-    webkit-animation: click-radio-wave 0.65s;
+    -webkit-animation: click-radio-wave 0.65s;
     -moz-animation: click-radio-wave 0.65s;
     animation: click-radio-wave 0.65s;
     background: #000000;

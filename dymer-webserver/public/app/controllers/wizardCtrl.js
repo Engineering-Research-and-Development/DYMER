@@ -140,6 +140,7 @@ angular.module('wizardCtrl', [])
                     if (this.searchable) {
                         searchable = 'searchable-override="data[' + title + ']" searchable-label="' + title + '" searchable-element="true"'
                     }
+
                     if (this.type == "string" || this.type == "text") {
                         newFields += '<div class="form-group ' + repeatable + '"><label class="kms-title-label">' + this.title + '</label><input type="text" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '></div>\n';
                     }
