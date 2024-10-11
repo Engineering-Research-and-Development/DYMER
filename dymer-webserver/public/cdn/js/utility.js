@@ -5706,3 +5706,134 @@ function showDatasetContainer() {
         }
     }
 }
+ 
+
+// Mongo Update Likes
+async function likeMongoUpdate(entityId, act, email, roles, type) {
+    const sourceServiceUrl = getendpoint("stats") + "/" + "updatestats"
+
+    let service_config_call = {
+        url: `${sourceServiceUrl}/${entityId}`,
+        type: 'PUT',
+        contentType: "application/json",
+        addDataBody: true
+    };
+
+    let data_service_post = { "act": act, "email": email, "roles": roles, "resourceId": entityId, "type": type}
+
+    let ajax_temp_call = new Ajaxcall(service_config_call);
+    ajax_temp_call.addparams(data_service_post)
+    return await ajax_temp_call.send();
+
+}
+
+
+
+
+
+
+
+
+
+
+/*MG - Gestione visualizzazioni - INIZIO*/
+async function addView(id, index,title) {
+    let sourceUrl = getendpoint("entity") + "/" + "addView";
+    let datapost = {"id": id}
+    let temp_config_call = {
+        url: sourceUrl,
+        type: 'PATCH',
+        contentType: "application/json",
+        addDataBody: true
+    };
+    let ajax_temp_call = new Ajaxcall(temp_config_call);
+    ajax_temp_call.addparams(datapost);
+    let addViewCallRet = ajax_temp_call.send();
+     console.log("addView response",addViewCallRet);
+    sourceUrl = serverUrl + "/api/dservice/api/v1/stats/savestats";
+    datapost = {"resourceId" : id, "type" : index, "act": "views","title":title}
+    temp_config_call = {
+        url: sourceUrl,
+        type: 'POST',
+        contentType: "application/json",
+        addDataBody: true
+    };
+    ajax_temp_call = new Ajaxcall(temp_config_call);
+    ajax_temp_call.addparams(datapost);
+    let statsCallRet = ajax_temp_call.send();
+    //console.log("savestats response",statsCallRet);
+}
+/*MG - Gestione visualizzazioni - FINE*/
+
+
+/*********************/
+async function like(entityId, index, loggedUsrMail = "notLogged", roles,iconup,icondown) {
+
+    if (loggedUsrMail === "guest@dymer.it" || loggedUsrMail === "admin@dymer.it" || loggedUsrMail === "notLogged") {
+        useGritterTool("User not Logged", "Please log in", "danger")
+
+        let redirect_config_call = {
+            url: window.location.hostname
+        }
+        let ajax_redirect_call = new Ajaxcall(redirect_config_call)
+        ajax_redirect_call.send(redirect_config_call);
+
+        return
+    }
+    const sourceUrl = getendpoint("entity") + "/" + "entitylike"
+    let datapost = {"element": entityId, index: index, "loggedUser": loggedUsrMail}
+
+    let temp_config_call = {
+        url: sourceUrl,
+        type: 'PATCH',
+        contentType: "application/json",
+        addDataBody: true
+    };
+
+   // console.log(temp_config_call)
+    let ajax_temp_call = new Ajaxcall(temp_config_call);    // inviare anche l'email dell'utente -> controllo che non sia guest né admin
+    ajax_temp_call.addparams(datapost)
+    let ret = ajax_temp_call.send();
+
+    if (ret.message.action == "dislike") {
+        useGritterTool("<b><i class='fa fa-thumbs-down'></i> DISLIKE</b>", ret.message.action, "warning")
+    }else{
+        useGritterTool("<b><i class='fa fa-thumbs-up'></i> LIKE</b> ", ret.message.action, "success")
+    }
+
+    let newCounter = Number(ret.message.count)
+    console.log("inizial counter  ", newCounter)
+
+    if (ret.message.action == "dislike") {
+        let newTitle = ret.message.likes.join('<br>')
+        console.log("decremento ", newCounter)
+        $(`#likeBtn-${entityId}`).removeClass(icondown)
+        $(`#likeBtn-${entityId}`).addClass(iconup)
+        $(`#likeBtn-${entityId}`).html(' ' + newCounter + ' ')
+
+        $(`#likeBtn-${entityId}`).tooltip('dispose');
+        $(`#likeBtn-${entityId}`).attr('title', newTitle);
+        $(`#likeBtn-${entityId}`).tooltip();
+
+
+        let mongoUpdateRet = await likeMongoUpdate(entityId, "dislike", loggedUsrMail, roles, index)
+        console.log(mongoUpdateRet)
+
+
+    } else if (ret.message.action == "like") {
+        let newTitle = ret.message.likes.join('<br>')
+        console.log("incremento ", newCounter)
+        $(`#likeBtn-${entityId}`).removeClass(icondown)
+        $(`#likeBtn-${entityId}`).addClass(iconup)
+        $(`#likeBtn-${entityId}`).html(' ' + newCounter + ' ')
+
+        $(`#likeBtn-${entityId}`).tooltip('dispose');
+        $(`#likeBtn-${entityId}`).attr('title', newTitle);
+        $(`#likeBtn-${entityId}`).tooltip();
+
+
+        let mongoUpdateRet = await likeMongoUpdate(entityId, "like", loggedUsrMail, roles, index)
+        console.log(mongoUpdateRet)
+
+    }
+}
