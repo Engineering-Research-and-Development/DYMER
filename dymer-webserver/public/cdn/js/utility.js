@@ -74,6 +74,13 @@ const kmsconfig = {
             post: {
                 search: "/_search"
             }
+        },
+        {
+            type: "stats",
+            endpoint: serverUrl + "/api/dservice/api/v1/stats",
+            post: {
+                search: "/_search"
+            }
         }
 
     ]
