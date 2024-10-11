@@ -2711,6 +2711,8 @@ function getModelEntity(el) {
     html2pdf(entireHTML, {
         margin:       1,
         filename:     `${id}.pdf`,
+         enableLinks:  true,
+        pagebreak:{mode: ['css', 'legacy']},
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2 },
         jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
