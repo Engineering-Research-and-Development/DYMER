@@ -5534,7 +5534,7 @@ router.patch("/like-entity", async (req, res) => {
         }
         await client.update({
             index: index,
-            type: index,
+            /* type: index,*/
             id: entityId,
             body: {
                 doc: {
