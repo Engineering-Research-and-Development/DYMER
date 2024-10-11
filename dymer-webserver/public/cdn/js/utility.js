@@ -2691,7 +2691,7 @@ function getModelEntity(el) {
     console.log("Exporting PDF: ", id)
     var entireHTML;
     var domain= location.hosthame;
-    if (typeof obj.dviewtype !== 'undefined') {
+    if (typeof dviewtype !== 'undefined') {
         if(dviewtype=="dymermap"){
             entireHTML=$('#cont-MyEnt').html();
        }else{
