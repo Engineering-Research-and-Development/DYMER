@@ -254,8 +254,7 @@ Handlebars.registerHelper('EntityStatusPdf', function(obj, hookCheckSatusconf, o
             if (perm.edit) {
                   editBtn += '&nbsp;&nbsp;<span id="editBtn" class="text-info  " style="cursor:pointer" onclick="editEntity(\'' + obj._id + '\')"><i class="fa fa-pencil" aria-hidden="true"></i> Edit </span>   ';
             }
-            editBtn += '&nbsp;&nbsp;<span id="exportBtn" class="text-warning  " style="cursor:pointer" onclick="exportPDFEntity(\'' + obj._id + '\',\'' + obj.title + '\')"> <b> <i class="fa fa-download" aria-hidden="true"></i></b> <span> PDF Export </span> </span>';
-            editBtn += '</div>';
+          editBtn += '&nbsp;&nbsp;<span id="exportBtn" class="text-warning  " style="cursor:pointer" onclick="exportPDFEntity(\'' + obj._id + '\',\'' + obj.title + '\', \'' + dviewtype + '\')"> <b> <i class="fa fa-download" aria-hidden="true"></i></b> <span> PDF Export </span> </span>';            editBtn += '</div>';
 
         }
 
