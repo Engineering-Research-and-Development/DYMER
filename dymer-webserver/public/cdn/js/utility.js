@@ -39,7 +39,7 @@ const kmsconfig = {
                 id: "/:id"
             },
             patch: {
-                id: "/:id"
+                id: "/role/:id"
             },
             delete: {
                 id: "/:id"
