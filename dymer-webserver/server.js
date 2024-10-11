@@ -367,7 +367,7 @@ app.get('/info/:key?', (req, res, next) => {
         '<div class="p-5">' + '<div class="row">' +
         '<div class=" col-12">' +
         '<h1 class="h4   mb-4 text-center"  style="color:#023d7d;">Welcome to DYMER</h1>' +
-        '<div class="text-center">' + '<img class="rotate-20" src="public/cdn/img/dymer-logo.png" style="width: 45px;" >' + '<div>' +
+       '<div class="text-center">' + '<img class="" src="public\\\cdn\\\img\\\dymer-logo.png" style="width: 220px;" title="DYMER LOGO">' + '<div>' +
         '<br><small style="color: #8c8985;">DYnamic Information ModElling & Rendering</small>' +
         '</div>' +
         '<div class="  	col-12 p-2" style="color: #8c8985;">' +
