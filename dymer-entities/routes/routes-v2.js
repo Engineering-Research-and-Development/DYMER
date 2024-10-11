@@ -5624,4 +5624,60 @@ function stringTemplateParser(expression, valueObj) {
     });
     return text
 }
+
+/*AC - Gestione likes - INIZIO*/
+router.patch("/like-test", (req, res) => {
+    let dymeruser = JSON.parse(Buffer.from(req.headers.dymeruser, 'base64').toString('utf-8'));
+    console.log(req.body)
+    console.log("DYMER USER: ", dymeruser)
+    return res.send(req.body)
+})
+/*AC - Gestione likes - FINE*/
+/*MG - Gestione visualizzazioni - INIZIO*/
+router.patch("/addView", (req, res) => {
+    let dymeruser = JSON.parse(Buffer.from(req.headers.dymeruser, 'base64').toString('utf-8'));
+    let admin = false;
+    dymeruser.roles.forEach(function(value){   
+        admin = dymeruser.roles.some(value => value === 'app-admin');
+    });
+    /*Partecipa all'incremento delle visualizzazioni l'utente NON admin*/ 
+    if (!admin){
+        let params = {};
+        params["body"] = {
+            "query": {
+                "match": {
+                    "_id": req.body.id
+                }
+            }
+        };
+        params["body"].size = 1;
+        /*Acquisisco l'entità da aggiornare*/
+        client.search(params).then(async function(response) {
+            if ((response["hits"].hits).length > 0) {
+                let element = Object.assign({}, response["hits"].hits[0]);
+                /*Incremento il contatore delle visualizzazioni*/
+                let viewsCounter = 1;
+                if (element._source.viewsCounter && element._source.viewsCounter != null){
+                    element._source.viewsCounter += 1;
+                    viewsCounter = element._source.viewsCounter;
+                }
+                let data = {
+                    viewsCounter : viewsCounter
+                }
+                client.update({
+                    id: req.body.id,
+                    index: element._index,
+                    body: {
+                        doc: data
+                    },
+                    refresh: 'true'
+                }).then(async function(response) {
+                    console.log("ADD VIEW - UPDATE RESPONSE ===> ", response);
+                });
+            }          
+        });
+    }
+    return res.send(req.body);
+});
+
 module.exports = router;
