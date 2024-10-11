@@ -2687,9 +2687,16 @@ function getModelEntity(el) {
 
 // function editEntity(id) {
 //const editEntity = async function(id) {
- async function exportPDFEntity(id) {
+ async function exportPDFEntity(id,title,dviewtype) {
     console.log("Exporting PDF: ", id)
-    let entireHTML = document.documentElement.outerHTML;
+    var entireHTML;
+    var domain= location.hosthame;
+    if(dviewtype=="dymermap"){
+         entireHTML=$('#cont-MyEnt').html();
+    }else{
+         entireHTML=$('#cont-MyList').html();
+    }
+     
     let $tempContainer = $('<div>').html(entireHTML);
     $tempContainer.find('#primodfil').remove();
     $tempContainer.find('#addEntityBtn').remove();
