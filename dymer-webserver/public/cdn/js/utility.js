@@ -2687,16 +2687,19 @@ function getModelEntity(el) {
 
 // function editEntity(id) {
 //const editEntity = async function(id) {
- async function exportPDFEntity(id,title,dviewtype) {
+ async function exportPDFEntity(id,title) {
     console.log("Exporting PDF: ", id)
     var entireHTML;
     var domain= location.hosthame;
-    if(dviewtype=="dymermap"){
-         entireHTML=$('#cont-MyEnt').html();
+    if (typeof obj.dviewtype !== 'undefined') {
+        if(dviewtype=="dymermap"){
+            entireHTML=$('#cont-MyEnt').html();
+       }else{
+            entireHTML=$('#cont-MyList').html();
+       }
     }else{
-         entireHTML=$('#cont-MyList').html();
+          entireHTML=$('#cont-RenderForm').html();
     }
-     
     let $tempContainer = $('<div>').html(entireHTML);
     $tempContainer.find('#primodfil').remove();
     $tempContainer.find('#addEntityBtn').remove();
