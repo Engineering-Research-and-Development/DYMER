@@ -41,6 +41,19 @@ angular.module('wizardCtrl', [])
         })
         // AC end
 
+        $scope.vocabularies = [];
+        $http({
+            url: baseContextPath + '/api/dservice/api/v1/taxonomy',
+            method: "GET",
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            params: { "query": { "instance._index": { "$eq": "general" } } },
+        }).then(function(vocabularies) {
+            $scope.vocabularies = vocabularies.data.data.map(element => ({ "vocabularyId": element._id, "vocabularyTitle": element.title}));
+        }).catch((getVocabulariesErr) => {
+            console.log("getVocabulariesErr - Errore nella lettura delle tassonomìe  ====>", getVocabulariesErr);
+            useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>Unable retrieve taxonomies</b>", "", "danger");
+        })
+
         // Funzioni per la navigazione nel wizard
         $scope.nextStep = function () {
             if ($scope.currentStep < 3) {
@@ -110,6 +123,8 @@ angular.module('wizardCtrl', [])
                 let repeatable = "";
                 let required = "";
                 let searchable = "";
+                let taxonomy = false;
+                let relation = false;
                 $($scope.wizardObj.modelFields).each(function () {
                     title = this.title.replace(/\W+/g, '-').toLowerCase();
                     title = title.replace(/[^A-Za-z0-9\.\/]+/g, '-').toLowerCase();
@@ -138,10 +153,12 @@ angular.module('wizardCtrl', [])
                         newFields += '<div class="form-group ' + repeatable + '"><label class="kms-title-label">' + this.title + '</label><input type="email" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '></div>\n';
                     }
                     if (this.type == "taxonomy") {
-                        newFields += ' <div class="form-group"> <label for="description" class="kms-title-label">' + this.title + '</label>  <small class="form-text text-muted"><b>**</b></small>\n<div>\n<div data-component-kmstaxonomy="" name="data[taxonomy]" ' + required + '  class="form-group dymertaxonomy" data-totaxonomy="' + idTAX + '" data-max-options="10" style="height:3px" searchable-element="true" searchable-multiple="true" multiple="multiple" searchable-label="' + title + '"></div> </div><div>\n';
+                        newFields += '<div class="form-group collectionField ' + repeatable + '" style="min-height: 100px;"><label for="description" class="kms-title-label">Taxonomy</label><small class="form-text text-muted"><b></b> </small><div><div data-component-kmstaxonomy=""  ' + searchable + ' name="data[taxonomy]" ' + required + ' class="form-group dymertaxonomy" data-totaxonomy="' + this.tax + ' "data-max-options="10" style="height:3px" searchable-element="true"></div></div></div>';
+                        taxonomy = true;
                     }
                     if (this.type == "relation") {
-                        newFields = '<label for="description" class="kms-title-label">Relation</label>' + '<div>' + '<div data-component-kmsrelation class="form-group" contenteditable="false" data-torelation="`${this.relationto}`">' + '<span  contenteditable="false" class="inforelation">Relation</span> <i class="fa fa-code-fork rotandflip inforelation" aria-hidden="true"></i> <span contenteditable="false" class="torelation inforelation">......</span>' + '</div>' + '</div>' + '</div>'
+                        newFields += '<div class="form-group collectionField ' + repeatable + '" style="min-height: 100px;"><label for="description" class="kms-title-label">Relation</label><small class="form-text text-muted"><b></b> </small><div><div data-component-kmsrelation=""  ' + searchable + ' name="data[relations]" ' + required + ' class="form-group" contenteditable="false" data-torelation="' + this.relationto + ' "data-max-options="10" style="height:3px"></div></div></div>';
+                        relation = true;
                     }
                 });
                 modelTemplate = replaceAll(modelTemplate, "{{newFields}}", newFields);
@@ -223,7 +240,13 @@ angular.module('wizardCtrl', [])
                                 method: "GET",
                                 params: {query: `{"instance._index":"${$scope.wizardObj.modelIndex}"}`},
                             }).then(function (getFullContentTemplateHtmlRet) {
-
+                                let dtReturnHTML = getFullContentTemplateHtmlRet.data.data;
+                                if (taxonomy){
+                                    dtReturnHTML += '<div class="card card-primary">\n<div class="card-header"></div>\n<div class="card-body"> \n<strong><i class="fas fa-pencil-alt mr-1"></i>Taxonomy</strong>\n <p class="text-muted"> {{#each taxonomy }} \n<span class="tag tag-success"> {{this}}  </span> \n    {{/each }}\n    </p> \n   </div> \n     </div> \n';
+                                }
+                                if (relation){
+                                    dtReturnHTML += '<div class="card card-primary">\n<div class="card-header"></div>\n<div class="card-body"> \n<strong><i class="fas fa-pencil-alt mr-1"></i>Relation</strong>\n <p class="text-muted"> {{#each relations }} \n<span class="tag tag-success"> {{title}}  </span> \n    {{/each }}\n    </p> \n   </div> \n     </div> \n';
+                                }
                                 /*Eseguo la creazione del template Full Content*/
                                 let fullContentTemplateData = {
                                     title: $scope.wizardObj.modelName + '_templateFull',
@@ -236,7 +259,7 @@ angular.module('wizardCtrl', [])
                                     }],
                                     file: {
                                         originalname: modelName + "_fullTemplate.html",
-                                        src: getFullContentTemplateHtmlRet.data,
+                                        src: dtReturnHTML,
                                         ctype: "text/html"
                                     },
                                     posturl: "",
@@ -245,7 +268,7 @@ angular.module('wizardCtrl', [])
                                 let postFullContentTemplateData = new FormData();
                                 delete delete fullContentTemplateData.file;
                                 appendFormdata(postFullContentTemplateData, {"data": fullContentTemplateData});
-                                postFullContentTemplateData.append('data[file]', new File([new Blob([getFullContentTemplateHtmlRet.data])], modelName + "_fullTemplate" + ".html", {type: "text/html"}));
+                                postFullContentTemplateData.append('data[file]', new File([new Blob([dtReturnHTML])], modelName + "_fullTemplate" + ".html", {type: "text/html"}));
                                 $http({
                                     url: baseContextPath + 'api/templates/api/v1/template/',
                                     method: "POST",
@@ -260,7 +283,6 @@ angular.module('wizardCtrl', [])
                                     console.log("fillTmplNamesAndSubmit - ERRORE nella creazione del template Full Content ====>", postFullContentTemplateErr);
                                     useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>ERROR while creating Full Content template !</b>", "", "danger");
                                 })
-
                                 let templateType = "";
                                 let templateName = "";
                                 if ($scope.wizardObj.previewTemplateType == "card") {
@@ -275,6 +297,7 @@ angular.module('wizardCtrl', [])
                                     templateType = "teasermap";
                                     templateName = "Map";
                                 }
+                                
                                 /*Acquisico l'html del template selezionato*/
                                 $http({
                                     url: "public/assets/wsbuilder/libs/builder/dymer-basetemplate-template-" + templateType + '.html',
@@ -317,8 +340,6 @@ angular.module('wizardCtrl', [])
                                         $("#loadwiz").hide();
                                         $("#resultwiz").slideToggle();
                                         $("#resultwizstring").append('<h2>Model ' + modelName + ' and template has been created successfully!!!</h2><br><a class="btn bt-outline-info" href="managemodel" target="_blank"><i class="nc-icon nc-ruler-pencil"></i> <p>Manage Models</p> </a> or <a href="managetemplate" target="_blank" class="btn bt-outline-info"><i class="nc-icon nc-ruler-pencil"></i> <p>Manage Templates</p> </a>');
-
-
                                     }).catch((postTemplateErr) => {
                                         console.log("fillTmplNamesAndSubmit - ERRORE nella creazione del template " + templateName + " ====>", postTemplateErr);
                                         useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>ERROR while creating " + templateName + " template !</b>", "", "danger");
@@ -343,13 +364,11 @@ angular.module('wizardCtrl', [])
                     console.log("fillTmplNamesAndSubmit - ERRORE nella creazione del modello ===>", postModelErr);
                     useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>ERROR while creating the model !</b>", "", "danger");
                 });
-                //useGritterTool("<b><i class='nc-icon nc-vector'></i>Model and templates successfully generated. </b>", "");
             }).catch(function (getModelHtmlErr) {
                 console.log("fillTmplNamesAndSubmit - ERRORE nell'acquisizione dell'html del modello ===>", getModelHtmlErr);
                 useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>ERROR while reading the model html !</b>", "", "danger");
             });
         };
-
 
         $scope.getFieldByCSV = async function () {
             console.log("Fields from CSV")
@@ -402,11 +421,6 @@ angular.module('wizardCtrl', [])
                         params: par,
                     }).then(function(ret) {
                         $scope.vocabularies = ret.data.data
-                        
-                        console.log('Vocabularies ===>', ret.data.data);
-                        
-                        //$(ret.data.data).each(function(a) {
-                        //});        
                     }).catch((err) => {
                         console.log(err)
                     });

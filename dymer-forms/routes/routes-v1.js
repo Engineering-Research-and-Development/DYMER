@@ -229,14 +229,13 @@ router.get('/modeldetail', [util.checkIsDymerUser], (req, res) => {
     Model.find(queryFind, {}, { title: 1, instance: 1, "structure": 1 }).collation({ locale: "en" }).sort({ title: +1 }).then((Models) => {
         ret.setMessages("HTMLTemplate");
         ret.setData(Models);
-
         const formControlNodes = [];
         for (const item of ret.data) {
             if (item.structure) {
                 const childNodes = item.structure.child || [];
                 for (const node of childNodes) {
                     /*TO DO - Check attributo form-control e form-select*/
-                    if (node.node === "element" && node.attr.class && node.attr.class.includes("form-control") && !node.attr.name.includes("coordinates") && !node.attr.name.includes("initiatives")) {
+                    if (node.node === "element" && node.attr.class && node.attr.class.includes("form-control")) {
                         formControlNodes.push(node);     
                     }
                 }
@@ -248,23 +247,19 @@ router.get('/modeldetail', [util.checkIsDymerUser], (req, res) => {
         formControlNodes.forEach((node) => {
             //console.log(`node: ${node.tag}, name: ${JSON.stringify(node.attr.name)}`);
             let name = node.attr.name;
-            let tag = node.tag;
             let type = node.attr.type;
             name = convertString(name);
-            let nodeType = "";
-            if (type){
-                nodeType = 'type ="' + type+ '"'; 
-            }
-            templateNodeList = templateNodeList + `<div class="row"><div class="col-md-12 col-sx-12 col-lg-12"><label>${name}</label><${tag} ${nodeType}>${name}</div></div>\n`;
+            templateNodeList = templateNodeList + `<section class="container-fluid"> \n<div class="row  ">\n<div class="col-md-12 col-sx-12 col-lg-12">\n	<div class="row"><h3 class="primaryColor primaryTitlesection"><b> ${name}</b></h3></div>\n <div class="row">{{ ${name} }}  </div>\n</div>\n</div> \n</section>\n`;
+            // templateNodeList = templateNodeList + `<div class="row"><div class="col-md-12 col-sx-12 col-lg-12"><label>${name}</label><${tag} ${nodeType}>${name}</div></div>\n`;
             //ret.setData(templateNodeList);
             templateHtml = `<div data-component-entitystatus="" data-vvveb-disabled="" class="row">
                             {{{EntityStatus this}}}</div> ${templateNodeList}\n`;
+            ret.setMessages("HTML");
             ret.setData(templateHtml);
         });
-
         //TODO verificare esistenza del modello
         //TODO gestire edit
-        return res.send(ret.data);
+        return res.send(ret);
     }).catch(function(err) {
         console.error("ERROR | " + nameFile + ' | get | queryFind : ', err);
         logger.error(nameFile + ' | get/modeldetail | queryFind : ' + err);
