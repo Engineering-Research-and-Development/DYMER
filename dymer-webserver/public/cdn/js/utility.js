@@ -3605,12 +3605,14 @@ function kmsrenderdetail(_id) {
     if (retriveIfIsType('map') || retriveIfIsType('dt')) {
         hideDatasetContainer();
     }
+    var idx;
     actualTemplateType = "reset";
     removeTempImport('tftemp');
     var arObj = new Array();
     //console.log("kmsrenderdetail pre", arObj, templateslist);
     (kmsdataset).forEach(function(item, i) {
         if (item._id == _id) {
+             idx=item.index;
             arObj.push(item);
             /*	obj = item;
                 tmpl = item._index + "@" + item._type;
@@ -3636,6 +3638,7 @@ function kmsrenderdetail(_id) {
     } else {
         kmsrenderEl(arObj, 'fullcontent');
     }
+    addView( _id,idx);
 }
 
 function checkbreadcrumb(arObj, fnct, linklabel) {
