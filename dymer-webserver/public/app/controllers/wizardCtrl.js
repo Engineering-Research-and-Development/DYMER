@@ -154,11 +154,14 @@ angular.module('wizardCtrl', [])
                         newFields += '<div class="form-group ' + repeatable + '"><label class="kms-title-label">' + this.title + '</label><input type="email" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '></div>\n';
                     }
                     if (this.type == "taxonomy") {
-                        newFields += '<div class="form-group collectionField ' + repeatable + '" style="min-height: 100px;"><label for="description" class="kms-title-label">Taxonomy</label><small class="form-text text-muted"><b></b> </small><div><div data-component-kmstaxonomy=""  ' + searchable + ' name="data[taxonomy]" ' + required + ' class="form-group dymertaxonomy" data-totaxonomy="' + this.tax + ' "data-max-options="10" style="height:3px" searchable-element="true"></div></div></div>';
+                        searchable = 'searchable-label="' + this.title + '" searchable-text="' + this.title + '" searchable-element="true" searchable-multiple="true"';
+                        repeatable = 'multiple="multiple"';
+                        newFields += '<div class="form-group collectionField" style="min-height: 100px;"><label for="description" class="kms-title-label">Taxonomy ' + this.title + '</label><small class="form-text text-muted"><b></b> </small><div><div data-component-kmstaxonomy=""  ' + searchable + ' ' + repeatable + ' ' + required + ' class="form-group dymertaxonomy" data-totaxonomy="' + this.tax + ' " data-max-options="10" style="height:3px"></div></div></div>';
+                        taxonomy = true;
                         taxonomy = true;
                     }
                     if (this.type == "relation") {
-                        newFields += '<div class="form-group collectionField ' + repeatable + '" style="min-height: 100px;"><label for="description" class="kms-title-label">Relation</label><small class="form-text text-muted"><b></b> </small><div><div data-component-kmsrelation=""  ' + searchable + ' name="data[relations]" ' + required + ' class="form-group" contenteditable="false" data-torelation="' + this.relationto + ' "data-max-options="10" style="height:3px"></div></div></div>';
+                        newFields += '<div class="form-group collectionField ' + repeatable + '" style="min-height: 100px;"><label for="description" class="kms-title-label">Relation</label><small class="form-text text-muted"><b></b> </small><div><div data-component-kmsrelation=""  ' + searchable + ' ' + required + ' class="form-group" contenteditable="false" data-torelation="' + this.relationto + ' "data-max-options="10" style="height:3px"></div></div></div>';
                         relation = true;
                     }
                 });
