@@ -125,6 +125,7 @@ angular.module('wizardCtrl', [])
                 let required = "";
                 let searchable = "";
                 let taxonomy = false;
+                let relation = false;
                 $($scope.wizardObj.modelFields).each(function () {
                     title = this.title.replace(/\W+/g, '-').toLowerCase();
                     title = title.replace(/[^A-Za-z0-9\.\/]+/g, '-').toLowerCase();
@@ -154,11 +155,17 @@ angular.module('wizardCtrl', [])
                         newFields += '<div class="form-group ' + repeatable + '"><label class="kms-title-label">' + this.title + '</label><input type="email" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '></div>\n';
                     }
                     if (this.type == "taxonomy") {
-                        newFields += '<div class="form-group collectionField " style="min-height: 100px;"><label for="description" class="kms-title-label">Taxonomy</label><small class="form-text text-muted"><b>**</b> </small><div><div data-component-kmstaxonomy="" name="data[taxonomy]"required="" class="form-group dymertaxonomy" data-totaxonomy="' + this.tax + '"data-max-options="10" style="height:3px" searchable-element="true" searchable-multiple="true" multiple="multiple" searchable-label=" "></div></div></div>';
+                        searchable = 'searchable-label="' + this.title + '" searchable-text="' + this.title + '" searchable-element="true" searchable-multiple="true"';
+                        repeatable = 'multiple="multiple"';
+                        newFields += '<div class="form-group collectionField" style="min-height: 100px;"><label for="description" class="kms-title-label">Taxonomy ' + this.title + '</label><small class="form-text text-muted"><b></b> </small><div><div data-component-kmstaxonomy=""  ' + searchable + ' ' + repeatable + ' ' + required + ' class="form-group dymertaxonomy" data-totaxonomy="' + this.tax + ' " data-max-options="10" style="height:3px" searchable-element="true"></div></div></div>';
                         taxonomy = true;
                     }
                     if (this.type == "relation") {
-                        newFields += '<label for="description" class="kms-title-label">Relation</label>' + '<div>' + '<div data-component-kmsrelation class="form-group" contenteditable="false" data-torelation="' + this.relationto + '">' + '<span  contenteditable="false" class="inforelation">Relation</span> <i class="fa fa-code-fork rotandflip inforelation" aria-hidden="true"></i> <span contenteditable="false" class="torelation inforelation">......</span>' + '</div>' + '</div>' + '</div>'
+                          
+                        searchable = 'searchable-label="' + this.title + '" searchable-text="' + this.title + '" searchable-element="true" searchable-multiple="true"';
+                        repeatable = 'multiple="multiple"';
+                        newFields+='<div class="form-group"><label for="description" class="kms-title-label">Relation</label><div><div data-component-dymrelation="" class="form-group dymerselectpicker" data-torelation="' + this.relationto + '"  ' + searchable + ' ' + repeatable + ' ' + required + '  data-actions-box="true" data-max-options=""><span class="inforelation">Relation</span> <i class="fa fa-code-fork rotandflip inforelation" aria-hidden="true"></i> <span contenteditable="false" class="torelation inforelation">' + this.relationto + '</span></div></div></div> '
+                        relation = true;
                     }
                 });
                 modelTemplate = replaceAll(modelTemplate, "{{newFields}}", newFields);
@@ -250,7 +257,9 @@ angular.module('wizardCtrl', [])
                                 if (taxonomy){
                                     dtReturnHTML += '<div class="card card-primary">\n<div class="card-header"></div>\n<div class="card-body"> \n<strong><i class="fas fa-pencil-alt mr-1"></i>Vocabularies</strong>\n <p class="text-muted"> {{#each taxonomy }} \n<span class="tag tag-success"> {{this}}  </span> \n    {{/each }}\n    </p> \n   </div> \n     </div> \n';
                                 }
-
+                                if (relation){
+                                    dtReturnHTML += '<div class="card card-primary">\n<div class="card-header"></div>\n<div class="card-body"> \n<strong><i class="fas fa-pencil-alt mr-1"></i>Relation</strong>\n <p class="text-muted"> {{#each relations }} \n<span class="tag tag-success"> {{title}}  </span> \n    {{/each }}\n    </p> \n   </div> \n     </div> \n';
+                                }
                                 console.log("modeldetail - html ritornato dal modeldetail dtReturnHTML====>", dtReturnHTML);
 
 
