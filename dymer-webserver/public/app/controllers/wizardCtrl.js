@@ -49,6 +49,7 @@ angular.module('wizardCtrl', [])
             params: { "query": { "instance._index": { "$eq": "general" } } },
         }).then(function(vocabularies) {
             $scope.vocabularies = vocabularies.data.data.map(element => ({ "vocabularyId": element._id, "vocabularyTitle": element.title}));
+            console.log("Vocabularies ===>", $scope.vocabularies)
         }).catch((getVocabulariesErr) => {
             console.log("getVocabulariesErr - Errore nella lettura delle tassonomìe  ====>", getVocabulariesErr);
             useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>Unable retrieve taxonomies</b>", "", "danger");
@@ -140,9 +141,20 @@ angular.module('wizardCtrl', [])
                     if (this.searchable) {
                         searchable = 'searchable-override="data[' + title + ']" searchable-label="' + title + '" searchable-element="true"'
                     }
-
                     if (this.type == "string" || this.type == "text") {
                         newFields += '<div class="form-group ' + repeatable + '"><label class="kms-title-label">' + this.title + '</label><input type="text" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '></div>\n';
+                    }
+                    if (this.type == "date") {
+                        newFields += '<div class="form-group ' + repeatable + '"><label class="kms-title-label">' + this.title + ' (min 01-01-1900)</label><input type="date" data-date="" data-date-format="DD MMMM YYYY" min="1900-01-01" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '></div>\n';
+                    }
+                    if (this.type == "number") {
+                        newFields += '<div class="form-group ' + repeatable + '"><label class="kms-title-label">' + this.title + ' (min 1 - max 99)</label><input type="number" min="1" max="99" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '></div>\n';
+                    }
+                    if (this.type == "image") {
+                        newFields += '<div class="form-group ' + repeatable + '"><label class="kms-title-label">' + this.title + ' (.png,.jpg)</label><input type="file" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' accept=".png,.jpg" name="data[' + title + ']" ' + required + '></div>\n';
+                    }
+                    if (this.type == "file") {
+                        newFields += '<div class="form-group ' + repeatable + '"><label class="kms-title-label">' + this.title + ' (.doc,.pdf,.xml,.csv,.txt,.ppt)</label><input type="file" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' accept=".doc,.pdf,.xml,.csv,.txt,.ppt" name="data[' + title + ']" ' + required + '></div>\n';
                     }
                     if (this.type == "textarea") {
                         newFields += '<div class="form-group ' + repeatable + '"><label class="kms-title-label">' + this.title + '</label><textarea type="textarea" dymer-model-element="" class="form-control  col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '></textarea></div>\n';
@@ -156,13 +168,17 @@ angular.module('wizardCtrl', [])
                     if (this.type == "taxonomy") {
                         searchable = 'searchable-label="' + this.title + '" searchable-text="' + this.title + '" searchable-element="true" searchable-multiple="true"';
                         repeatable = 'multiple="multiple"';
-                        newFields += '<div class="form-group collectionField" style="min-height: 100px;"><label for="description" class="kms-title-label">Taxonomy ' + this.title + '</label><small class="form-text text-muted"><b></b> </small><div><div data-component-kmstaxonomy=""  ' + searchable + ' ' + repeatable + ' ' + required + ' class="form-group dymertaxonomy" data-totaxonomy="' + this.tax + ' " data-max-options="10" style="height:3px"></div></div></div>';
-                        taxonomy = true;
+                        newFields += '<div class="form-group collectionField" style="min-height: 100px;"><label for="description" class="kms-title-label">Taxonomy ' + this.title + '</label><small class="form-text text-muted"><b></b> </small><div><div data-component-kmstaxonomy=""  ' + searchable + ' ' + repeatable + ' ' + required + ' class="form-group dymertaxonomy" data-totaxonomy="' + this.tax + ' " data-max-options="10" style="height:3px" searchable-element="true"></div></div></div>';
                         taxonomy = true;
                     }
                     if (this.type == "relation") {
-                        newFields += '<div class="form-group collectionField ' + repeatable + '" style="min-height: 100px;"><label for="description" class="kms-title-label">Relation</label><small class="form-text text-muted"><b></b> </small><div><div data-component-kmsrelation=""  ' + searchable + ' ' + required + ' class="form-group" contenteditable="false" data-torelation="' + this.relationto + ' "data-max-options="10" style="height:3px"></div></div></div>';
+                        searchable = 'searchable-label="' + this.title + '" searchable-text="' + this.title + '" searchable-element="true" searchable-multiple="true"';
+                        repeatable = 'multiple="multiple"';
+                        newFields+='<div class="form-group"><label for="description" class="kms-title-label">Relation</label><div><div data-component-dymrelation="" class="form-group dymerselectpicker" data-torelation="' + this.relationto + '"  ' + searchable + ' ' + repeatable + ' ' + required + '  data-actions-box="true" data-max-options=""><span class="inforelation">Relation</span> <i class="fa fa-code-fork rotandflip inforelation" aria-hidden="true"></i> <span contenteditable="false" class="torelation inforelation">' + this.relationto + '</span></div></div></div> '
                         relation = true;
+                    }
+                    if (this.type == "geo") {
+                        newFields += '<div class="geopointcontgrp form-group field-description "><label for="description" class="kms-title-label">Geo Point ' + this.title + '</label>\n<div>  <div data-component-geopoint class="form-group  ">\n<input type="hidden" dymer-model-element="" class= "form-control" name="data[location][type]" value="Point">\n<label class="kms-title-label">Longitude</label>\n<input type="number" dymer-model-element="" class="form-control" name="data[location][coordinates][0]" ' + required + '>\n<label class="kms-title-label">Latitudine</label>\n<input type="number" dymer-model-element="" class="form-control" name="data[location][coordinates][1]" ' + required + '>\n</div></div></div>'
                     }
                 });
                 modelTemplate = replaceAll(modelTemplate, "{{newFields}}", newFields);
@@ -246,7 +262,7 @@ angular.module('wizardCtrl', [])
                             }).then(function (getFullContentTemplateHtmlRet) {
                                 let dtReturnHTML = getFullContentTemplateHtmlRet.data.data;
                                 if (taxonomy){
-                                    dtReturnHTML += '<div class="card card-primary">\n<div class="card-header"></div>\n<div class="card-body"> \n<strong><i class="fas fa-pencil-alt mr-1"></i>Taxonomy</strong>\n <p class="text-muted"> {{#each taxonomy }} \n<span class="tag tag-success"> {{this}}  </span> \n    {{/each }}\n    </p> \n   </div> \n     </div> \n';
+                                    dtReturnHTML += '<div class="card card-primary">\n<div class="card-header"></div>\n<div class="card-body"> \n<strong><i class="fas fa-pencil-alt mr-1"></i>Vocabularies</strong>\n <p class="text-muted"> {{#each taxonomy }} \n<span class="tag tag-success"> {{this}}  </span> \n    {{/each }}\n    </p> \n   </div> \n     </div> \n';
                                 }
                                 if (relation){
                                     dtReturnHTML += '<div class="card card-primary">\n<div class="card-header"></div>\n<div class="card-body"> \n<strong><i class="fas fa-pencil-alt mr-1"></i>Relation</strong>\n <p class="text-muted"> {{#each relations }} \n<span class="tag tag-success"> {{title}}  </span> \n    {{/each }}\n    </p> \n   </div> \n     </div> \n';
@@ -287,6 +303,7 @@ angular.module('wizardCtrl', [])
                                     console.log("fillTmplNamesAndSubmit - ERRORE nella creazione del template Full Content ====>", postFullContentTemplateErr);
                                     useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>ERROR while creating Full Content template !</b>", "", "danger");
                                 })
+
                                 let templateType = "";
                                 let templateName = "";
                                 if ($scope.wizardObj.previewTemplateType == "card") {
@@ -301,7 +318,6 @@ angular.module('wizardCtrl', [])
                                     templateType = "teasermap";
                                     templateName = "Map";
                                 }
-                                
                                 /*Acquisico l'html del template selezionato*/
                                 $http({
                                     url: "public/assets/wsbuilder/libs/builder/dymer-basetemplate-template-" + templateType + '.html',
@@ -374,6 +390,7 @@ angular.module('wizardCtrl', [])
             });
         };
 
+
         $scope.getFieldByCSV = async function () {
             console.log("Fields from CSV")
             let myFile = $scope.myFile
@@ -424,7 +441,7 @@ angular.module('wizardCtrl', [])
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                         params: par,
                     }).then(function(ret) {
-                        $scope.vocabularies = ret.data.data
+                        $scope.vocabularies = ret.data.data    
                     }).catch((err) => {
                         console.log(err)
                     });
