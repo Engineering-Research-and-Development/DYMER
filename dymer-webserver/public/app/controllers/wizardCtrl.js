@@ -143,29 +143,44 @@ angular.module('wizardCtrl', [])
                     }
 
                     if (this.type == "string" || this.type == "text") {
-                        newFields += '<div class="form-group ' + repeatable + '"><label class="kms-title-label">' + this.title + '</label><input type="text" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '></div>\n';
+                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + this.title + '</label>\n<input type="text" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '>\n</div>\n';
+                    }
+                    if (this.type == "date") {
+                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + this.title + ' (min 01-01-1900)</label>\n<input type="date" data-date="" data-date-format="DD MMMM YYYY" min="1900-01-01" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '>\n</div>\n';
+                    }
+                    if (this.type == "number") {
+                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + this.title + ' (min 1 - max 99)</label>\n<input type="number" min="1" max="99" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '>\n</div>\n';
+                    }
+                    if (this.type == "image") {
+                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + this.title + ' (.png,.jpg)</label>\n<input type="file" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' accept=".png,.jpg" name="data[' + title + ']" ' + required + '>\n</div>\n';
+                    }
+                    if (this.type == "file") {
+                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + this.title + ' (.doc,.pdf,.xml,.csv,.txt,.ppt)</label>\n<input type="file" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' accept=".doc,.pdf,.xml,.csv,.txt,.ppt" name="data[' + title + ']" ' + required + '>\n</div>\n';
                     }
                     if (this.type == "textarea") {
-                        newFields += '<div class="form-group ' + repeatable + '"><label class="kms-title-label">' + this.title + '</label><textarea type="textarea" dymer-model-element="" class="form-control  col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '></textarea></div>\n';
+                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + this.title + '</label>\n<textarea type="textarea" dymer-model-element="" class="form-control  col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '></textarea>\n</div>\n';
                     }
                     if (this.type == "selectlist") {
-                        newFields += '<div class="form-group ' + repeatable + '"><label class="kms-title-label">' + this.title + '</label><select class="form-control" dymer-model-element="" ' + searchable + ' name="data[' + title + ']" ' + required + '></select></div>\n';
+                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + this.title + '</label>\n<select class="form-control" dymer-model-element="" ' + searchable + ' name="data[' + title + ']" ' + required + '></select>\n</div>\n';
                     }
                     if (this.type == "email") {
-                        newFields += '<div class="form-group ' + repeatable + '"><label class="kms-title-label">' + this.title + '</label><input type="email" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '></div>\n';
+                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + this.title + '</label>\n<input type="email" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '>\n</div>\n';
                     }
                     if (this.type == "taxonomy") {
                         searchable = 'searchable-label="' + this.title + '" searchable-text="' + this.title + '" searchable-element="true" searchable-multiple="true"';
                         repeatable = 'multiple="multiple"';
-                        newFields += '<div class="form-group collectionField" style="min-height: 100px;"><label for="description" class="kms-title-label">Taxonomy ' + this.title + '</label><small class="form-text text-muted"><b></b> </small><div><div data-component-kmstaxonomy=""  ' + searchable + ' ' + repeatable + ' ' + required + ' class="form-group dymertaxonomy" data-totaxonomy="' + this.tax + ' " data-max-options="10" style="height:3px" searchable-element="true"></div></div></div>';
+                        newFields += '<div class="form-group collectionField" style="min-height: 100px;">\n<label for="description" class="kms-title-label">Taxonomy ' + this.title + '</label>\n<small class="form-text text-muted"><b></b> </small><div><div data-component-kmstaxonomy=""  ' + searchable + ' ' + repeatable + ' ' + required + ' class="form-group dymertaxonomy" data-totaxonomy="' + this.tax + ' " data-max-options="10" style="height:3px" searchable-element="true">\n</div>\n</div>\n</div>\n';
                         taxonomy = true;
                     }
                     if (this.type == "relation") {
                           
                         searchable = 'searchable-label="' + this.title + '" searchable-text="' + this.title + '" searchable-element="true" searchable-multiple="true"';
                         repeatable = 'multiple="multiple"';
-                        newFields+='<div class="form-group"><label for="description" class="kms-title-label">Relation</label><div><div data-component-dymrelation="" class="form-group dymerselectpicker" data-torelation="' + this.relationto + '"  ' + searchable + ' ' + repeatable + ' ' + required + '  data-actions-box="true" data-max-options=""><span class="inforelation">Relation</span> <i class="fa fa-code-fork rotandflip inforelation" aria-hidden="true"></i> <span contenteditable="false" class="torelation inforelation">' + this.relationto + '</span></div></div></div> '
+                        newFields+='<div class="form-group">\n<label for="description" class="kms-title-label">Relation</label>\n<div><div data-component-dymrelation="" class="form-group dymerselectpicker" data-torelation="' + this.relationto + '"  ' + searchable + ' ' + repeatable + ' ' + required + '  data-actions-box="true" data-max-options=""><span class="inforelation">Relation</span>\n <i class="fa fa-code-fork rotandflip inforelation" aria-hidden="true"></i> <span contenteditable="false" class="torelation inforelation">' + this.relationto + '</span>\n</div>\n</div>\n</div>\n ';
                         relation = true;
+                    }
+                    if (this.type == "geo") {
+                        newFields += '<div class="geopointcontgrp form-group field-description ">\n<label for="description" class="kms-title-label">Geo Point ' + this.title + '</label>\n<div>  <div data-component-geopoint class="form-group  ">\n<input type="hidden" dymer-model-element="" class= "form-control" name="data[location][type]" value="Point">\n<label class="kms-title-label">Longitude</label>\n<input type="number" dymer-model-element="" class="form-control" name="data[location][coordinates][0]" ' + required + '>\n<label class="kms-title-label">Latitudine</label>\n<input type="number" dymer-model-element="" class="form-control" name="data[location][coordinates][1]" ' + required + '>\n</div>\n</div>\n</div>';
                     }
                 });
                 modelTemplate = replaceAll(modelTemplate, "{{newFields}}", newFields);
