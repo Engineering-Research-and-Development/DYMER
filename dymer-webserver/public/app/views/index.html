@@ -34,9 +34,10 @@
 
     <!-- CSS Files -->
     <!-- Bootstrap core CSS -->
-    <link href="public/assets/css/bootstrap.css" rel="stylesheet">
-
-
+    <link href="public/assets/css/bootstrap.css" rel="stylesheet">  
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
+   -->
     <script src="public/assets/js/angular.js"></script>
     <script src="public/assets/js/plugins/ocLazyLoad/ocLazyLoad.js"></script>
     <script src="public/assets/js/angular-route.js"></script>
@@ -76,9 +77,10 @@
     <script src="public/app/controllers/mclgsCtrl.js"></script>
     <script src="public/app/controllers/relationsCtrl.js"></script>
     <script src="public/app/controllers/workflowCtrl.js"></script>
-    <script src="public/app/controllers/libraryCtrl.js"></script>
     <script src="public/app/directive/angularjs-dropdown-multiselect.js"></script>
 	<script src="public/app/controllers/swaggerCtrl.js"></script>
+    <script src="public/app/controllers/libraryCtrl.js"></script>
+    <script src="public/app/controllers/wizardCtrl.js"></script>
 
     <link href="public/assets/css/paper-dashboard.css" rel="stylesheet" />
     <link href="public/assets/css/json-viewer.css" rel="stylesheet">
@@ -163,6 +165,11 @@
 
                             </ul>
                         </div>
+                    </li>
+                    <li ng-show="hasPermission('app-admin' )"> 
+                        <a class="" href="wizard"><i class="nc-icon nc-spaceship lg "></i>
+                        <p>Wizard</p>
+                    </a>
                     </li>
                     <li ng-show="hasPermission('app-admin' )">
                         <a href="#" class="haschild">
@@ -323,10 +330,11 @@
                                         <p>Workflow</p>
                                     </a>
                                 </li>
-								<li class="  "><a class="" href="library"><i class="nc-icon nc-bullet-list-67 lg "></i>
+                                <li class="  "> <a class="" href="library"><i class="nc-icon nc-bullet-list-67 lg "></i>
 									<p>Libraries</p>
 								</a>
 								</li>
+                                
                             </ul>
                         </div>
                     </li>
@@ -384,10 +392,10 @@
                                         <p>Redis-Cache</p>
                                     </a>
                                 </li>
-								<li class=""> <a class="" href="swaggerapi"><i class="nc-icon nc-bullet-list-67 lg "></i>
+								<!--<li class=""> <a class="" href="swaggerapi"><i class="nc-icon nc-bullet-list-67 lg "></i>
 									<p>Swagger API</p>
 								</a>
-								</li>
+								</li> -->
                             </ul>
                         </div>
                     </li>
@@ -396,8 +404,7 @@
         </div>
         <div class="main-panel">
             <!-- Navbar -->
-            <nav class="navbar navbar-expand-lg navbar-absolute fixed-top navbar-transparent"
-                ng-hide="!globals.loggedIn">
+            <nav class="navbar navbar-expand-lg navbar-absolute fixed-top navbar-transparent" ng-hide="!globals.loggedIn">
                 <div class="container-fluid">
                     <div class="navbar-wrapper">
                         <div class="navbar-toggle">
@@ -407,16 +414,14 @@
                                 <span class="navbar-toggler-bar bar3"></span>
                             </button>
                         </div>
-                        <span onclick="$('#contfullp').toggleClass('full-page');" class="full_normal_zoom"
-                            ng-show="globals.loggedIn">
+                        <span onclick="$('#contfullp').toggleClass('full-page');" class="full_normal_zoom" ng-show="globals.loggedIn">
                             <i class="nc-icon nc-minimal-left"></i>
 
                         </span>
                         <span class="navbar-brand">DYnamic information ModElling & Rendering</span>
                     </div>
-
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
-                        aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
+                    
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-bar navbar-kebab"></span>
                         <span class="navbar-toggler-bar navbar-kebab"></span>
                         <span class="navbar-toggler-bar navbar-kebab"></span>
@@ -444,13 +449,27 @@
                                     </p>
                                 </a>
                             </li>-->
-                            <li class="nav-item btn-rotate dropdown" ng-show="globals.loggedIn">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                            <li class="nav-item">
+                                 <button class="nav-link btn-magnify border-0 btn-sm btn-dark-mode"  onclick="toggleDarkMode()">
+                                    <i class="nc-icon nc-sun-fog-29"></i>
+                                </button>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link btn-magnify" href="javascript:void(0)">
                                     <i class="nc-icon nc-bell-55"></i>
-                                    <p>
+                                    <!-- <p>
+                                        <span class="d-lg-none d-md-block">Stats</span>
+                                    </p> -->
+                                </a>
+                            </li>
+                            <li class="nav-item btn-rotate dropdown" ng-show="globals.loggedIn">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="nc-icon nc-settings-gear-65"></i>
+                                    <!-- <p>
                                         <span class="d-lg-none d-md-block">Some Actions</span>
-                                    </p>
+                                    </p> -->
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
                                     <a class="dropdown-item" href="logout"> Logout &nbsp;&nbsp; &nbsp;&nbsp; <i
@@ -528,9 +547,15 @@
         var d_uid = '99999';
     </script>
     <script src="public/assets/js/jquery-3.3.1.js"></script>
-    <script src="public/assets/js/bootstrap.js"></script>
+      <script src="public/assets/js/bootstrap.js"></script> 
+   <!--  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
 
-    <script src="public/assets/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/i18n/defaults-*.min.js"></script>
+   -->
+    
+    
+       <script src="public/assets/js/plugins/perfect-scrollbar.jquery.min.js"></script>
 
 
     <!-- Chart JS -->
@@ -556,11 +581,11 @@
     <script src="public/cdn/js/lib/datatables/jquery.dataTables.min.js" type="text/javascript"></script>
     <script src="public/cdn/js/lib/datatables/dataTables.bootstrap4.min.js" type="text/javascript"></script>
     <script src="public/cdn/js/dymer.querygen.js" type="text/javascript"></script>
-    <link rel="stylesheet" href="public/cdn/css/lib/bootstrap-select/bootstrap-select.min.css">
+   <!--  <link rel="stylesheet" href="public/cdn/css/lib/bootstrap-select/bootstrap-select.min.css">
 
-    <!-- Latest compiled and minified JavaScript -->
+     Latest compiled and minified JavaScript 
     <script src="public/cdn/js/lib/bootstrap-select/bootstrap-select.min.js"></script>
-
+ -->
 
     <!--<link href="public/assets/gwsbuilder/dist/css/grapes.min.css" rel="stylesheet">
 <script src="public/assets/gwsbuilder/dist/grapes.min.js"></script>
@@ -607,12 +632,18 @@
     <script type="text/javascript" src="public/cdn/js/handlebars.min.js"></script>
     <script type="text/javascript" src="public/cdn/js/handlebarshook.js"></script>
 
+ <!--    <link rel="stylesheet" href="public/cdn/css/lib/bootstrap-select/bootstrap-select.css">
+    <script src="public/cdn/js/lib/bootstrap-select/bootstrap-select.min.js"></script> -->
+     
     <link rel="stylesheet" href="public/cdn/css/lib/bootstrap-select/bootstrap-select.css">
     <script src="public/cdn/js/lib/bootstrap-select/bootstrap-select.min.js"></script>
     <link href="public/assets/css/prism-okaidia.css" rel="stylesheet">
-    <script src="public/assets/js/prism.js"></script>
-    <link href="public/assets/css/kmsweb.css" rel="stylesheet">
-    <link href="public/assets/css/toggle.css" rel="stylesheet">
+	<script src="public/assets/js/prism.js"></script>
+	<link href="public/assets/css/kmsweb.css" rel="stylesheet">
+	<link href="public/assets/css/toggle.css" rel="stylesheet">
+    <link href="public/assets/css/dymer-wizard.css" rel="stylesheet">
+
+
 
 </body>
 
