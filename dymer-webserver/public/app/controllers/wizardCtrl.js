@@ -193,9 +193,8 @@ angular.module('wizardCtrl', [])
                     name: modelName,
                     author: "Dymer Administrator",
                     instance: [{
-                        "_index": modelIndex,
-                        "_type": modelIndex
-                    }],
+                        "_index": modelIndex 
+                     }],
                     file: {
                         originalname: modelName + ".html",
                         src: modelTemplate,
@@ -260,7 +259,7 @@ angular.module('wizardCtrl', [])
                             $http({
                                 url: baseContextPath + 'api/forms/api/v1/form/modeldetail',
                                 method: "GET",
-                                params: {query: `{"instance._index":"${$scope.wizardObj.modelIndex}"}`},
+                                params: {query: `{"instance._index":"${modelIndex}"}`},
                             }).then(function (getFullContentTemplateHtmlRet) {
                                
                                 console.log("modeldetail - html ritornato dal modeldetail ====>", getFullContentTemplateHtmlRet.data);
@@ -288,8 +287,7 @@ angular.module('wizardCtrl', [])
                                     name: modelName + '_templateFull',
                                     author: "Dymer Administrator",
                                     instance: [{
-                                        "_index":modelIndex,
-                                        "_type":modelIndex
+                                        "_index":modelIndex 
                                     }],
                                     file: {
                                         originalname: modelName + "_fullTemplate.html",
@@ -346,9 +344,8 @@ angular.module('wizardCtrl', [])
                                         name: modelName + '_template' + templateName,
                                         author: "Dymer Administrator",
                                         instance: [{
-                                            "_index": $scope.wizardObj.modelIndex,
-                                            "_type": $scope.wizardObj.modelIndex
-                                        }],
+                                            "_index": modelIndex 
+                                          }],
                                         file: {
                                             originalname: modelName + '_template' + templateName + '.html',
                                             src: getTemplateHtmlRet.data,
