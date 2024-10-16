@@ -204,6 +204,12 @@ function config($routeProvider, $locationProvider) {
             controller  : "swaggerController",
             permission: ["app-admin" ]
         } )
+        .when( site_prefix + "/wizard", {
+                templateUrl : site_prefix + "/public/app/views/pages/services/wizard.html",
+                controller  : "wizardController",
+                permission  : [ "app-admin" ]
+            } )
+        
         /*   .when(site_prefix + "/authenticate", {
                templateUrl: site_prefix + "/authenticate"
            })*/
