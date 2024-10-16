@@ -107,7 +107,7 @@ angular.module('wizardCtrl', [])
 
             let modelName = $scope.wizardObj.modelName.replace(/\W+/g, '-').toLowerCase();
             modelName = modelName.replace(/[^A-Za-z0-9\.\/]+/g, '-').toLowerCase();
-
+            let modelIndex = $scope.wizardObj.modelIndex.replace(/[^a-zA-Z]/g, "").toLowerCase();
             /*Acquisico l'html del modello*/
             $http({
                 url: "public/assets/wsbuilder/libs/builder/dymer-basetemplate-form.html",
@@ -116,7 +116,7 @@ angular.module('wizardCtrl', [])
             }).then(function (getModelHtmlRet) {
                 console.log("fillTmplNamesAndSubmit - Template del modello ===>", getModelHtmlRet);
                 let modelTemplate = replaceAll(getModelHtmlRet.data, "{{titolo}}", $scope.wizardObj.modelName);
-                modelTemplate = replaceAll(modelTemplate, "{{instance}}", $scope.wizardObj.modelIndex);
+                modelTemplate = replaceAll(modelTemplate, "{{instance}}", modelIndex);
 
                 /*Aggiungo al template del modello i nuovi campi*/
                 let newFields = "";
@@ -193,8 +193,8 @@ angular.module('wizardCtrl', [])
                     name: modelName,
                     author: "Dymer Administrator",
                     instance: [{
-                        "_index": $scope.wizardObj.modelIndex,
-                        "_type": $scope.wizardObj.modelIndex
+                        "_index": modelIndex,
+                        "_type": modelIndex
                     }],
                     file: {
                         originalname: modelName + ".html",
@@ -288,8 +288,8 @@ angular.module('wizardCtrl', [])
                                     name: modelName + '_templateFull',
                                     author: "Dymer Administrator",
                                     instance: [{
-                                        "_index": $scope.wizardObj.modelIndex,
-                                        "_type": $scope.wizardObj.modelIndex
+                                        "_index":modelIndex,
+                                        "_type":modelIndex
                                     }],
                                     file: {
                                         originalname: modelName + "_fullTemplate.html",
