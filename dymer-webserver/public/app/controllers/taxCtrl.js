@@ -5,7 +5,7 @@ angular.module('taxCtrl', [])
         var newPageModal;
         var nodeDataVocab;
         $scope.showAddVocab = false;
-
+ $scope.tab = 1;
         function actionShowHideAddVocab($scope) {
             $scope.showAddVocab = true;
         }
