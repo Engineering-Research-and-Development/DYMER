@@ -1096,7 +1096,7 @@ function populateHookTaxonomy(x, y, z, w, k, a, b, arObj2, tax) {
             });
         } else {
             $.each(listTaxonomyForm[tax].nodes, function(ind, value) {
-                console.log("listTaxonomyForm[tax].nodes: ", listTaxonomyForm[tax].nodes)
+               // console.log("listTaxonomyForm[tax].nodes: ", listTaxonomyForm[tax].nodes)
 
                 //sel.append($("<optgroup>").attr("label", value.value));
                 // sel.append($("<option>").attr('value', value.id).text(value.locales.en.value));
