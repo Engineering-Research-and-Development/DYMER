@@ -2,6 +2,9 @@ function activeLeftMenu(el) {
     $(".sidebar-wrapper li").removeClass("active");
     el.addClass("active");
 }
+
+ 
+
 $(document).ready(function() {
     // Javascript method's body can be found in assets/assets-for-demo/js/demo.js
     var current = location.pathname;
@@ -28,6 +31,9 @@ $(document).ready(function() {
             }
         }
     });
+
+
+
     $(".sidebar-wrapper li a").on("click", function() {
         $(".sidebar-wrapper li").removeClass("active");
         $(this).parent("li").addClass("active");
@@ -46,9 +52,22 @@ $(document).ready(function() {
         }
     });
 
-
+ 
 });
 
+function toggleDarkMode() {
+    let isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+  }
+  
+  // On page load
+  document.addEventListener('DOMContentLoaded', (event) => {
+    if (localStorage.getItem('darkMode') === 'enabled') {
+      document.body.classList.add('dark-mode');
+    }
+  });
+
+   
 function urlToPromiseZip(url) {
     return new Promise(function(resolve, reject) {
         JSZipUtils.getBinaryContent(url, function(err, data) {
@@ -60,3 +79,6 @@ function urlToPromiseZip(url) {
         });
     });
 }
+
+
+ 
