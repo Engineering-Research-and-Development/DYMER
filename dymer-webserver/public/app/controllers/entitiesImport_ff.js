@@ -1,8 +1,8 @@
 angular.module('entitiesImportControllers', [])
     .controller('entitiesImport_ff', function ($scope, $http, $rootScope, exportEntities, multipartForm) {
-    //TODO check .controller('entitiesImport_ff', function($scope, $http, $rootScope) {
         var baseContextPath = $rootScope.globals.contextpath;
         //   console.log('testing controller entitiesImport_ff');
+
         $scope.method = "GET";
         $scope.host = "http://localhost";
         $scope.port = "8008";
@@ -16,8 +16,7 @@ angular.module('entitiesImportControllers', [])
         $scope.mapping = JSON.stringify(mapping, '",', '\t');
 
 
-        $http.get(baseContextPath + '/api/entities/api/v1/entity/allstatsglobal', {
-        }).then(function (retE) {
+        $http.get(baseContextPath + '/api/entities/api/v1/entity/allstatsglobal', {}).then(function (retE) {
             let res = retE.data.data.indices;
             $scope.listEntities = res.map((e) => e.index)
             // $scope.listEntities.shift()
@@ -36,21 +35,21 @@ angular.module('entitiesImportControllers', [])
             if ($scope.method == 'GET') {
                 $http.get(pathService,
                     $scope.mapping
-                ).then(function(ret) {
+                ).then(function (ret) {
                     console.log('Import Resp', ret);
 
                     return $scope.import_result = ret;
-                }).catch(function(response) {
+                }).catch(function (response) {
                     console.log(response.status);
                 });
 
             }
             if ($scope.method == 'POST') {
-                $http.post(pathService, $scope.mapping).then(function(ret) {
+                $http.post(pathService, $scope.mapping).then(function (ret) {
                     console.log('Import Resp', ret);
 
                     $scope.import_result = ret;
-                }).catch(function(response) {
+                }).catch(function (response) {
                     console.log(response.status);
                 });
             }
@@ -58,194 +57,219 @@ angular.module('entitiesImportControllers', [])
 
         $scope.ExportJSON = function () {
             console.log("Exporting JSON")
-            exportEntities.exportJSONFormat(baseContextPath, { index: $scope.selectedEntity })
+            exportEntities.exportJSONFormat(baseContextPath, {index: $scope.selectedEntity})
         }
-        $scope.selectedOptions = [];
 
         $scope.ExportCSV = function () {
             console.log("Exporting CSV")
-            let options = $scope.FieldsForIndex
-            //let selectedOptions = $scope.selectedOptions || [];
-
-            let selectedOptions = [];
-            for (let option in $scope.selectedOptions) {
-                if ($scope.selectedOptions.hasOwnProperty(option) && $scope.selectedOptions[option]) {
-                    selectedOptions.push(option);
-                }
-            }
-
-
-            console.log("SELECTED", selectedOptions)
+            let options = $scope.myDropdownOptions.map(el => (el.id))
+            let selectedOptions = $scope.myDropdownModel.map(el => el.id)
 
             let excluededFields = options.filter(element => !selectedOptions.includes(element))
-            exportEntities.exportCSVFormat(baseContextPath, { index: $scope.selectedEntity, exclude: excluededFields })
+            exportEntities.exportCSVFormat(baseContextPath, {index: $scope.selectedEntity, exclude: excluededFields})
         }
+
+        $scope.myDropdownSettings = {
+            smartButtonTextProvider: [],
+            smartButtonMaxItems: 3,
+            smartButtonTextProvider(selectionArray) {
+                if (selectionArray.length === 1) {
+                    return selectionArray[0].label;
+                } else {
+                    return selectionArray.length + ' Selected';
+                }
+            }
+        };
+
+        $scope.myDropdownModel = [{id: "ciao_test"}]
 
         $scope.selectOptions = function () {
             let index = $scope.selectedEntity
-         //   let fields = []
+            let fields = []
 
             $http.get(baseContextPath + '/api/entities/api/v1/entity/getstructure/' + index).then(function (rt) {
-                $scope.FieldsForIndex = rt.data// fields
-
+                for (let el of rt.data) {
+                    fields.push({id: el, label: el})
+                }
+                $scope.myDropdownOptions = fields
             }).catch(function (e) {
                 console.log("Error: ", e)
             })
-        }
+        };
 
-        $scope.importJSONFile = async function () {
+        // AC - new import start
+        $scope.currentStep = 1;
+        $scope.activated = "";
+        $scope.activated1 = "";
+        $scope.activated2 = "";
 
-			      var myFile = $scope.myFile
-			      let url = baseContextPath + '/api/dservice/api/v1/import/test'; //baseContextPath +
-																			  // "/api/entities/api/v1/entity/test"
+        $("#loadwiz").hide();
+        $("#resultwiz").hide();
 
-            let data = {
-                file: myFile
+        $scope.infoDetails = {
+            index: "",
+            separator: "",
+            //enableRelations: false,
+            relations: {
+                enabled: false,
+                searchingField: "",
+                relationTo: ""
+            },
+            fields: []
+        };
+
+        // Funzioni per la navigazione nel wizard
+        $scope.nextStep = function () {
+            if ($scope.currentStep < 4) {
+                $scope.currentStep++;
             }
-
-            let upload = await multipartForm.post(url, data)
-
-            let index = upload.data
-            //TODO check:  $scope.selecetdIndex = Object.keys( resp.data.data[ index ].mappings[ index ].properties )
-            $scope.selecetdIndex = Object.keys(resp.data.data[index].mappings.properties)
-            console.log("keys: ", $scope.selecetdIndex)
-        }
-
-
-        $scope.importCSVFile = async function () {
-            let separator = $scope.separator ? $scope.separator : ","
-            let model = $scope.selectedIndex
-            let enableRel = $scope.entityToRelation?.checked ? $scope.entityToRelation.checked : false
-            let relto = enableRel ? $scope.entityToRelation.index : ""
-
-            let checkedFields = $scope.originalFields.concat($scope.newCustomStaticRows).filter(element => element.checked === true)
-
-            checkedFields.forEach((el) => {
-                if (el.newName === "placeholder" || el.newName === "" || el.newName === undefined) {
-                    el.newName = el.originalName
-                }
-            })
-
-            console.log("checkedFields: ", checkedFields)
-
-            let csvRecords = $scope.csvRecords.data
-            console.log("# REC ", csvRecords.length)
-            let dataToImport = []
-
-            let fieldNames = csvRecords[0].replace(/["]/g, "").split(separator) //header
-
-            for (let _record of csvRecords) {   // for each "line" of the csv
-                let recArray = _record.replace(/["]/g, "").split(separator) // get values-array
-
-                let obj = {}
-                for (let element of checkedFields) {
-
-                    let index = fieldNames.indexOf(element.originalName)
-                    let key = element.newName
-
-                    obj[key] = recArray[index]
-                }
-                
-                if (model == "service") {
-                    let dih_index = fieldNames.indexOf("DIH")
-                    obj["DIH"] = recArray[dih_index]
-                }
-
-                dataToImport.push(obj) //
+            if ($scope.currentStep == 2) {
+                $scope.activated = "activated";
             }
-            dataToImport.shift()
+            if ($scope.currentStep == 3) {
+                $scope.activated = "activated";
 
-            console.log("dataToImport: ", dataToImport)
-            console.log("index:", $scope.selectedIndex)
+            }
+            if ($scope.currentStep == 4) {
+                runMapping()
+                $scope.activated = "activated";
+            }
+            // console.log("wizard infoDetails: ", $scope.infoDetails)
+        };
 
-            console.log("RELATION TO: ", $scope.entityToRelation)
+        $scope.previousStep = function () {
+            if ($scope.currentStep > 1) {
+                $scope.currentStep--;
+            }
+        };
 
-            let url = baseContextPath +  "/api/dservice/api/v1/import/fromcsv/" + model
-            $http.post(url, { dataToImport, indtorel: relto }).then(function (ret) {
-                console.log('Import Resp', ret);
-                useGritterTool("Import from CSV started", ret.status);
-
-            }).catch(function (response) {
-                console.log(response.status);
-            });
-        }
+        $scope.submitForm = function () {
+            console.log('Form submitted:', $scope.infoDetails);
+        };
 
         $scope.getFieldByCSV = async function () {
-            var myFile = $scope.myFile
-            let separator = $scope.separator ? $scope.separator : ","
-            console.log( "baseContextPath: ", baseContextPath )
-            let url = baseContextPath + '/api/dservice/api/v1/import/test-csv' //baseContextPath +
-																				  // "/api/entities/api/v1/entity/test"
-            let data = {
-                file: myFile
-            }
+            Papa.parse($scope.myFile, {
+                    header: true,
+                    delimiter: $scope.infoDetails.separator || "", // separator or autodetect
+                    complete: function (result) {
+                        $scope.metadata = {
+                            delimiter: result.meta.delimiter,
+                            linebreak: result.meta.linebreak,
+                            truncated: result.meta.truncated,
+                            cursor: result.meta.cursor,
+                        }
 
-            $scope.csvRecords = await multipartForm.post(url, data)
-            let fieldNames = $scope.csvRecords.data[0].split(separator)
+                        $scope.CSVFields = result.meta.fields
+                        $scope.CSVData = result.data
+                        $scope.errors = result.errors
 
-            if (fieldNames) {
-                $scope.loadedCSV = true;
-            }
-
-            $scope.originalFields = $scope.indexFields.map(el => { return { newName: el, checked: false, index: $scope.indexFields.indexOf(el) } })
-            //********* only dih4ai/
-            /*if ($scope.selectedIndex == "service") {
-                $scope.originalFields.push({ newName: "DIH", checked: true, index: $scope.indexFields.indexOf("DIH") })
-            }
-
-            if ($scope.selectedIndex == "dih") {
-                $scope.originalFields.push({ newName: "Initiatives", checked: false, index: $scope.indexFields.indexOf("Initiatives") })
-                $scope.originalFields.push({ newName: "Project", checked: false, index: $scope.indexFields.indexOf("Project") })
-            }*/
-            //*********/
-            $scope.csvFields = fieldNames
-
-
-            $scope.newCustomStaticRows = []
-
-            for (let i = 0; i < 5; i++) {
-                $scope.newCustomStaticRows.push({ newName: "", checked: false, index: ($scope.originalFields.length + i) })
-            }
-
-            console.log("originalFields ", $scope.originalFields)
-        }
-
-        $scope.getIndexStructure = async function () {
-
-            let index = $scope.selectedIndex
-            let url = baseContextPath + '/api/entities/api/v1/entity/allindex/' + index
-            let JSONStructureResponse = await $http.get(url)
-            //changed schema in elastic 8
-            //let JSONStructure = JSONStructureResponse.data.data[index].mappings[index].properties
-            let JSONStructure = JSONStructureResponse.data.data[index].mappings.properties
-
-            let structure = []
-            for (const key in JSONStructure) {
-                if (JSONStructure[key].hasOwnProperty("properties")) {
-                    for (const subKey in JSONStructure[key]["properties"]) {
-                        structure.push(`${key}.${subKey}`);
+                        // console.log("$scope.CSVData: ", $scope.CSVData )
+                        $scope.$apply();
                     }
-                } else {
-                    structure.push(key);
                 }
+            )
+        }
+
+        $scope.addHeader = function () {
+            $scope.infoDetails.fields.push({
+                originalName: "",
+                newName: "",
+                isNew: true,
+                isSelected: true
+            });
+        };
+
+        $scope.removeHeader = function (index) {
+            $scope.infoDetails.fields.splice(index, 1);
+        };
+
+        $scope.getIndexStructure = function () {
+            if (!$scope.infoDetails.index) return;
+
+            let index = $scope.infoDetails.index
+            let url = baseContextPath + '/api/entities/api/v1/entity/allindex/' + index
+
+            $http.get(url).then(ret => {
+                let JSONStructure = ret.data.data[index].mappings[index].properties
+                let structure = []
+                for (const key in JSONStructure) {
+                    if (JSONStructure[key].hasOwnProperty("properties")) {
+                        for (const subKey in JSONStructure[key]["properties"]) {
+                            structure.push(`${key}.${subKey}`);
+                        }
+                    } else {
+                        structure.push(key);
+                    }
+                }
+                //  console.log("structure: ", structure)
+                structure.forEach(field => {
+                    $scope.infoDetails.fields.push({
+                        originalName: field,
+                        newName: "",
+                        isNew: false,
+                        isSelected: false
+                    })
+                })
+            }).catch(e => {
+                console.log("Unable retrieve index fields due to: ", e)
+            })
+        }
+
+        $scope.setRelationTo = function (originalName) {
+            if (originalName) {
+                $scope.infoDetails.relations.enabled = true;
+                //$scope.infoDetails.relations.relationTo = newName;
+                $scope.infoDetails.relations.searchingField = originalName;
             }
-            $scope.indexFields = structure
+        };
+
+        function runMapping() {
+            // Get selected fields
+            const selectedFields = $scope.infoDetails.fields.filter(field => field.isSelected);
+
+            // header Map
+            let headerMap = {};
+            selectedFields.forEach(field => {
+                const originalName = field.originalName;
+                const newName = field.newName;
+
+                headerMap[newName] = originalName;
+                // headerMap[originalName] = newName;
+            });
+
+            // selected Data in CSV
+            const filteredData = $scope.CSVData.map(row => {
+                let newRow = {};
+                Object.keys(row).forEach(key => {
+                    if (headerMap[key]) {
+                        newRow[headerMap[key]] = row[key]; // Usa il nuovo nome
+                    }
+                });
+                return newRow;
+            });
+
+            // Filter headers map based
+            const filteredHeaders = $scope.CSVFields.filter(header => headerMap[header])
+                .map(header => headerMap[header]);
+
+            $scope.MappedData = filteredData
+
+            // console.log("filteredData", filteredData);
+            // console.log("filteredHeaders", filteredHeaders);
+            //
+            // console.log("Header Map:", headerMap);
+            // console.log("CSV Data:", $scope.CSVData);
+            // console.log("CSV Fields:", $scope.CSVFields);
         }
 
-        $scope.resetFields = function () {
-            $scope.indexFields = []
-            $scope.csvRecords = ""
-            $scope.selectedIndex = ""
-            $scope.separator = ""
-            $scope.originalFields = ""
-            $scope.csvRecords = ""
-            $scope.entityToRelation = ""
-            $scope.csvFields = ""
-            $scope.loadedCSV = false
-            $scope.myFile = null
-
-            document.getElementById("uploadBox").value = "";
+        $scope.importMappedData = function () {
+            let dataToImport = {
+                relationTo: $scope.infoDetails.relations.relationTo,
+                data: $scope.MappedData,
+                searchingField: $scope.infoDetails.relations.searchingField
+            }
+            console.log("invio a al BE --> ", dataToImport)
         }
 
-
+// AC - new import end
     });
