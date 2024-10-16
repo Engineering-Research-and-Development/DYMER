@@ -107,7 +107,7 @@ angular.module('wizardCtrl', [])
 
             let modelName = $scope.wizardObj.modelName.replace(/\W+/g, '-').toLowerCase();
             modelName = modelName.replace(/[^A-Za-z0-9\.\/]+/g, '-').toLowerCase();
-
+            let modelIndex = $scope.wizardObj.modelIndex.replace(/[^a-zA-Z]/g, "").toLowerCase();
             /*Acquisico l'html del modello*/
             $http({
                 url: "public/assets/wsbuilder/libs/builder/dymer-basetemplate-form.html",
@@ -116,7 +116,7 @@ angular.module('wizardCtrl', [])
             }).then(function (getModelHtmlRet) {
                 console.log("fillTmplNamesAndSubmit - Template del modello ===>", getModelHtmlRet);
                 let modelTemplate = replaceAll(getModelHtmlRet.data, "{{titolo}}", $scope.wizardObj.modelName);
-                modelTemplate = replaceAll(modelTemplate, "{{instance}}", $scope.wizardObj.modelIndex);
+                modelTemplate = replaceAll(modelTemplate, "{{instance}}", modelIndex);
 
                 /*Aggiungo al template del modello i nuovi campi*/
                 let newFields = "";
@@ -184,7 +184,7 @@ angular.module('wizardCtrl', [])
                     }
                 });
                 modelTemplate = replaceAll(modelTemplate, "{{newFields}}", newFields);
-                console.log("fillTmplNamesAndSubmit - Template del modello con i nuovi campi ===>", modelTemplate);
+                //console.log("fillTmplNamesAndSubmit - Template del modello con i nuovi campi ===>", modelTemplate);
 
                 /*Creo il modello con il template aggiornato*/
                 let modelData = {
@@ -193,8 +193,8 @@ angular.module('wizardCtrl', [])
                     name: modelName,
                     author: "Dymer Administrator",
                     instance: [{
-                        "_index": $scope.wizardObj.modelIndex,
-                        "_type": $scope.wizardObj.modelIndex
+                        "_index": modelIndex,
+                        "_type": modelIndex
                     }],
                     file: {
                         originalname: modelName + ".html",
@@ -266,9 +266,9 @@ angular.module('wizardCtrl', [])
                                 console.log("modeldetail - html ritornato dal modeldetail ====>", getFullContentTemplateHtmlRet.data);
 
                                 let dtReturnHTML=getFullContentTemplateHtmlRet.data.data;
-                                console.log("modeldetail - html ritornato dal getFullContentTemplateHtmlRet.data.data ====>", dtReturnHTML);
-                                  let str1=String(dtReturnHTML)  
-                                  console.log("str1",str1)
+                                //console.log("modeldetail - html ritornato dal getFullContentTemplateHtmlRet.data.data ====>", dtReturnHTML);
+                                  
+                               
                                 if (taxonomy){
                                     dtReturnHTML += '<div class="card card-primary">\n<div class="card-header"></div>\n<div class="card-body"> \n<strong><i class="fas fa-pencil-alt mr-1"></i>Vocabularies</strong>\n <p class="text-muted"> {{#each taxonomy }} \n<span class="tag tag-success"> {{this}}  </span> \n    {{/each }}\n    </p> \n   </div> \n     </div> \n';
                                 }
@@ -288,8 +288,8 @@ angular.module('wizardCtrl', [])
                                     name: modelName + '_templateFull',
                                     author: "Dymer Administrator",
                                     instance: [{
-                                        "_index": $scope.wizardObj.modelIndex,
-                                        "_type": $scope.wizardObj.modelIndex
+                                        "_index": modelIndex,
+                                        "_type": modelIndex
                                     }],
                                     file: {
                                         originalname: modelName + "_fullTemplate.html",

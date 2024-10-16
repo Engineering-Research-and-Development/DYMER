@@ -1,0 +1,838 @@
+.personal {
+    font-size: 36px;
+    font-weight: 700;
+    font-variant: normal;
+    margin-bottom: 8px;
+    color: var(--marineBlue);
+}
+
+.personalInfo {
+    color: var(--coolGray);
+    font-size: 14px;
+    font-weight: 450;
+}
+
+
+.wizard-import-content-left h1 {
+    color: #ffffff;
+    font-size: 38px;
+    font-weight: 600;
+    padding: 12px 20px;
+    text-align: center;
+}
+
+.form-wizard-import {
+    color: #888888;
+    padding: 30px;
+}
+
+.form-wizard-import-scroll-table {
+    height: 600px;
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+.form-wizard-import .wizard-import-form-radio {
+    display: inline-block;
+    margin-left: 5px;
+    position: relative;
+}
+
+.form-wizard-import .form-wizard-import-header {
+    text-align: center;
+}
+
+.form-wizard-import .form-wizard-import-next-btn, .form-wizard-import .form-wizard-import-previous-btn, .form-wizard-import .form-wizard-import-submit {
+    background-color: #3d85c6;
+    color: #ffffff;
+    display: inline-block;
+    min-width: 100px;
+    min-width: 120px;
+    padding: 10px;
+    text-align: center;
+}
+
+.form-wizard-import .form-wizard-import-next-btn:hover, .form-wizard-import .form-wizard-import-next-btn:focus, .form-wizard-import .form-wizard-import-previous-btn:hover, .form-wizard-import .form-wizard-import-previous-btn:focus, .form-wizard-import .form-wizard-import-submit:hover, .form-wizard-import .form-wizard-import-submit:focus {
+    color: #ffffff;
+    opacity: 0.6;
+    text-decoration: none;
+}
+
+.form-wizard-import .wizard-import-fieldset {
+    display: none;
+}
+
+.form-wizard-import .wizard-import-fieldset.show {
+    display: block;
+}
+
+.form-wizard-import .wizard-import-form-error {
+    display: none;
+    background-color: #d70b0b;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    width: 100%;
+}
+
+.form-wizard-import .form-wizard-import-previous-btn {
+    background-color: #fb1647;
+}
+
+.form-wizard-import .form-control {
+
+    height: auto !important;
+    padding: 15px;
+    color: #000;
+    background-color: #f1f1f1;
+    border: none;
+    padding-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.form-wizard-import .form-control:focus {
+    box-shadow: none;
+}
+
+.form-wizard-import .form-group {
+    position: relative;
+    margin: 25px 0;
+}
+
+.form-wizard-import .wizard-import-form-text-label {
+    position: absolute;
+    left: 10px;
+    top: 16px;
+    transition: 0.2s linear all;
+}
+
+.form-wizard-import .focus-input .wizard-import-form-text-label {
+    color: #3d85c6;
+    top: -18px;
+    transition: 0.2s linear all;
+    font-size: 12px;
+}
+
+.form-wizard-import .form-wizard-import-steps {
+    margin: 30px 0;
+}
+
+.form-wizard-import .form-wizard-import-steps li {
+    width: 24%;
+    float: left;
+    position: relative;
+}
+
+.form-wizard-import .form-wizard-import-steps li::after {
+    background-color: #f3f3f3;
+    content: "";
+    height: 5px;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    border-bottom: 1px solid #dddddd;
+    border-top: 1px solid #dddddd;
+}
+
+.form-wizard-import .form-wizard-import-steps li span {
+    background-color: #dddddd;
+    border-radius: 50%;
+    display: inline-block;
+    height: 40px;
+    line-height: 40px;
+    position: relative;
+    text-align: center;
+    width: 40px;
+    z-index: 1;
+}
+
+.form-wizard-import .form-wizard-import-steps li:last-child::after {
+    width: 50%;
+}
+
+.form-wizard-import .form-wizard-import-steps li.active span, .form-wizard-import .form-wizard-import-steps li.activated span {
+    background-color: #3d85c6;
+    color: #ffffff;
+}
+
+.form-wizard-import .form-wizard-import-steps li.active::after, .form-wizard-import .form-wizard-import-steps li.activated::after {
+    background-color: #3d85c6;
+    left: 50%;
+    width: 50%;
+    border-color: #3d85c6;
+}
+
+/* Per tutti gli step attivi */
+.form-wizard-import .form-wizard-import-steps li.active::after,
+.form-wizard-import .form-wizard-import-steps li.activated::after {
+    background-color: #3d85c6;
+    left: 50%;
+    width: 50%;
+    border-color: #3d85c6;
+}
+
+/* Per il secondo step attivo o attivato, coloriamo entrambe le braccia */
+.form-wizard-import .form-wizard-import-steps li:nth-child(2).active::after,
+.form-wizard-import .form-wizard-import-steps li:nth-child(2).activated::after {
+    left: 0;
+    width: 100%;
+}
+
+/* Per il terzo step attivo o attivato, coloriamo entrambe le braccia */
+.form-wizard-import .form-wizard-import-steps li:nth-child(3).active::after,
+.form-wizard-import .form-wizard-import-steps li:nth-child(3).activated::after {
+    left: 0;
+    width: 100%;
+}
+
+.form-wizard-import .form-wizard-import-steps li.activated::after {
+    width: 100%;
+    border-color: #3d85c6;
+}
+
+.form-wizard-import .form-wizard-import-steps li:last-child::after {
+    left: 0;
+}
+
+.form-wizard-import .wizard-import-password-eye {
+    position: absolute;
+    right: 32px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.form-wizard-import-next-btn:disabled {
+    background-color: #ccc;
+    border-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.csv-errors {
+    height: 200px;
+    overflow-y: auto;
+}
+
+.table-import-hover tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+.table-import-sm td, .table-import-sm th {
+    padding: 0.3rem; /* Riduce il padding */
+}
+
+thead {
+    color: #3d85c6;
+}
+
+th, td {
+    text-align: left;
+    vertical-align: middle;
+}
+
+input-import.form-control {
+    width: 100%;
+    padding: 0.4rem;
+    box-sizing: border-box;
+}
+
+.fa-trash {
+    cursor: pointer;
+    color: #dc3545;
+}
+
+.fa-trash:hover {
+    color: #ff6b6b;
+}
+
+.text-center {
+    text-align: center;
+}
+
+
+@keyframes click-radio-wave {
+    0% {
+        width: 25px;
+        height: 25px;
+        opacity: 0.35;
+        position: relative;
+    }
+    100% {
+        width: 60px;
+        height: 60px;
+        margin-left: -15px;
+        margin-top: -15px;
+        opacity: 0.0;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .wizard-import-content-left {
+        height: auto;
+    }
+}
+
+
+/*ADDD*/
+
+/* Effetto quando l'input riceve focus o contiene testo */
+.form-wizard-import .form-control:focus + label,
+.form-wizard-import .form-control:not(:placeholder-shown) + label {
+    top: -14px; /* Far fluttuare l'etichetta sopra l'input */
+    left: 10px;
+    font-size: 12px;
+    color: #3d85c6;
+}
+
+/* Rimuovere l'ombra dall'input quando è in focus */
+.form-wizard-import .form-control:focus {
+    outline: none;
+    box-shadow: none;
+    border: 1px solid #3d85c6;
+}
+
+.form-wizard-import  legend {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.form-wizard-import  input[type=radio] {
+    position: absolute;
+    border: 0px;
+    clip: rect(0px, 0px, 0px, 0px);
+    height: 1px;
+    width: 1px;
+    margin: -1px;
+    padding: 0px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.contentWiz  {
+    --content-stroke: 1px;
+    --content-padding: 1.25rem;
+    --content-check-container: 1.5rem;
+    --content-stroke-bg: #ccc;
+    --content-bg: transparent;
+}
+
+.contentWiz {
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+    height: 100%;
+    padding: var(--content-padding) calc(var(--content-padding)* 2 + var(--content-check-container)) var(--content-padding) var(--content-padding);
+    background-color: var(--content-bg);
+    box-shadow: inset 0 0 0 var(--content-stroke) var(--content-stroke-bg);
+    border-radius: 1.5rem;
+    transition: background-color .3s ease-in-out, box-shadow .3s ease-in-out;
+    cursor: pointer;
+}
+
+
+
+/* radio */
+
+.form-wizard-import .wizard-import-form-radio input[type="radio"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    -o-appearance: none;
+    appearance: none;
+    background-color: #dddddd;
+    height: 25px;
+    width: 25px;
+    display: inline-block;
+    vertical-align: middle;
+    border-radius: 50%;
+    position: relative;
+    cursor: pointer;
+}
+
+.form-wizard-import .wizard-import-form-radio input[type="radio"]:focus {
+    outline: 0;
+}
+
+.form-wizard-import .wizard-import-form-radio input[type="radio"]:checked {
+    background-color: #3d85c6;
+}
+
+.form-wizard-import .wizard-import-form-radio input[type="radio"]:checked::before {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    background-color: #ffffff;
+    border-radius: 50%;
+    left: 1px;
+    right: 0;
+    margin: 0 auto;
+    top: 8px;
+}
+
+.form-wizard-import .wizard-import-form-radio input[type="radio"]:checked::after {
+    content: "";
+    display: inline-block;
+    webkit-animation: click-radio-wave 0.65s;
+    -moz-animation: click-radio-wave 0.65s;
+    animation: click-radio-wave 0.65s;
+    background: #000000;
+    content: '';
+    display: block;
+    position: relative;
+    z-index: 100;
+    border-radius: 50%;
+}
+
+.form-wizard-import .wizard-import-form-radio input[type="radio"] ~ label {
+    padding-left: 10px;
+    cursor: pointer;
+}
+
+/* end radio*/
+
+
+/* check */
+.form-wizard-import .wizard-import-form-radio input[type="checkbox"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    -o-appearance: none;
+    appearance: none;
+    background-color: #dddddd;
+    height: 25px;
+    width: 25px;
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    cursor: pointer;
+}
+
+.form-wizard-import .wizard-import-form-radio input[type="checkbox"]:focus {
+    outline: 0;
+}
+
+.form-wizard-import .wizard-import-form-radio input[type="checkbox"]:checked {
+    background-color: #3d85c6;
+}
+
+.form-wizard-import .wizard-import-form-radio input[type="checkbox"]:checked::before {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    background-color: #ffffff;
+    border-radius: 50%;
+    left: 1px;
+    right: 0;
+    margin: 0 auto;
+    top: 8px;
+}
+
+.form-wizard-import .wizard-import-form-radio input[type="checkbox"]:checked::after {
+    content: "";
+    display: inline-block;
+    webkit-animation: click-radio-wave 0.65s;
+    -moz-animation: click-radio-wave 0.65s;
+    animation: click-radio-wave 0.65s;
+    background: #000000;
+    content: '';
+    display: block;
+    position: relative;
+    z-index: 100;
+    /*border-radius: 50%;*/
+}
+
+.form-wizard-import .wizard-import-form-radio input[type="checkbox"] ~ label {
+    padding-left: 10px;
+    cursor: pointer;
+}
+
+.import-toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 35px;
+}
+
+.import-toggle-switch input {
+    display: none;
+}
+
+.import-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #9e9e9e;
+    transition: 0.4s;
+    border-radius: 5px;
+    display: block;
+}
+
+.import-toggle-slider:before {
+    content: "";
+    position: absolute;
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 5px;
+    top: 2px;
+    display: block;
+}
+
+.import-toggle-switch input:checked + .import-toggle-slider {
+    background-color: #51cbce;
+}
+
+.import-toggle-switch input:checked + .import-toggle-slider:before {
+    transform: translateX(26px);
+}
+/*end check*/
+
+
+
+
+
+
+
+#loadwiz{
+
+
+    .preloader {
+        position: absolute;
+        margin-left: -55px;
+        margin-top: -100px;
+        height: 110px;
+        width: 110px;
+        left: 50%;
+        top: 50%;
+    }
+
+    svg {
+        width: 110px;
+        height: 110px;
+    }
+
+    path {
+        stroke: #9ea1a4;
+        stroke-width: 0.25;
+        fill: #241E20;
+    }
+
+    #cloud {
+        position: relative;
+        z-index: 2;
+    }
+
+    #cloud path {
+        fill: #efefef;
+    }
+
+    #sun {
+        margin-left: -10px;
+        margin-top: 6px;
+        opacity: 0;
+        width: 60px;
+        height: 60px;
+        position: absolute;
+        left: 45px;
+        top: 15px;
+        z-index: 1;
+        animation-name: rotate;
+        animation-duration: 16000ms;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+    }
+
+    #sun path {
+        stroke-width: 0.18;
+        fill: #9ea1a4;
+    }
+
+    @keyframes rotate {
+        0% {
+            transform: rotateZ(0deg);
+        }
+        100% {
+            transform: rotateZ(360deg);
+        }
+    }
+    /* Rain */
+    .rain {
+        position: absolute;
+        width: 70px;
+        height: 70px;
+        margin-top: -32px;
+        margin-left: 19px;
+    }
+
+    .drop {
+        opacity: 1;
+        background: #9ea1a4;
+        display: block;
+        float: left;
+        width: 3px;
+        height: 10px;
+        margin-left: 4px;
+        border-radius: 0px 0px 6px 6px;
+        animation-name: drop;
+        animation-duration: 350ms;
+        animation-iteration-count: infinite;
+    }
+
+    .drop:nth-child(1) {
+        animation-delay: -130ms;
+    }
+
+    .drop:nth-child(2) {
+        animation-delay: -240ms;
+    }
+
+    .drop:nth-child(3) {
+        animation-delay: -390ms;
+    }
+
+    .drop:nth-child(4) {
+        animation-delay: -525ms;
+    }
+
+    .drop:nth-child(5) {
+        animation-delay: -640ms;
+    }
+
+    .drop:nth-child(6) {
+        animation-delay: -790ms;
+    }
+
+    .drop:nth-child(7) {
+        animation-delay: -900ms;
+    }
+
+    .drop:nth-child(8) {
+        animation-delay: -1050ms;
+    }
+
+    .drop:nth-child(9) {
+        animation-delay: -1130ms;
+    }
+
+    .drop:nth-child(10) {
+        animation-delay: -1300ms;
+    }
+
+    @keyframes drop {
+        50% {
+            height: 45px;
+            opacity: 0;
+        }
+        51% {
+            opacity: 0;
+        }
+        100% {
+            height: 1px;
+            opacity: 0;
+        }
+    }
+    .text {
+        font-family: Helvetica, 'Helvetica Neue', sans-serif;
+        letter-spacing: 1px;
+        text-align: center;
+        margin-left: -43px;
+        font-weight: bold;
+        margin-top: 20px;
+        font-size: 11px;
+        color: #a0a0a0;
+        width: 200px;
+    }
+
+
+}
+#resultwiz, #loadwiz {
+    width: 100%;
+    height: 60vh;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#resultwizstring{
+    text-align: center;
+}
+
+
+.check-container {
+    width: 6.25rem;
+    height: 7.5rem;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: space-between;
+}
+.check-container .check-background {
+    width: 100%;
+    height: calc(100% - 1.25rem);
+    background: linear-gradient(to bottom right, #5de593, #41d67c);
+    box-shadow: 0px 0px 0px 65px rgba(255, 255, 255, 0.25) inset, 0px 0px 0px 65px rgba(255, 255, 255, 0.25) inset;
+    transform: scale(0.84);
+    border-radius: 50%;
+    animation: animateContainer 0.75s ease-out forwards 0.75s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+}
+.check-container .check-background svg {
+    width: 65%;
+    transform: translateY(0.25rem);
+    stroke-dasharray: 80;
+    stroke-dashoffset: 80;
+    animation: animateCheck 0.35s forwards 1.25s ease-out;
+}
+.check-container .check-shadow {
+    bottom: calc(-15% - 5px);
+    left: 0;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, #49da83, transparent);
+    animation: animateShadow 0.75s ease-out forwards 0.75s;
+}
+
+
+
+
+@keyframes animateContainer {
+    0% {
+        opacity: 0;
+        transform: scale(0);
+        box-shadow: 0px 0px 0px 65px rgba(255, 255, 255, 0.25) inset,
+        0px 0px 0px 65px rgba(255, 255, 255, 0.25) inset;
+    }
+    25% {
+        opacity: 1;
+        transform: scale(0.9);
+        box-shadow: 0px 0px 0px 65px rgba(255, 255, 255, 0.25) inset,
+        0px 0px 0px 65px rgba(255, 255, 255, 0.25) inset;
+    }
+    43.75% {
+        transform: scale(1.15);
+        box-shadow: 0px 0px 0px 43.334px rgba(255, 255, 255, 0.25) inset,
+        0px 0px 0px 65px rgba(255, 255, 255, 0.25) inset;
+    }
+    62.5% {
+        transform: scale(1);
+        box-shadow: 0px 0px 0px 0px rgba(255, 255, 255, 0.25) inset,
+        0px 0px 0px 21.667px rgba(255, 255, 255, 0.25) inset;
+    }
+    81.25% {
+        box-shadow: 0px 0px 0px 0px rgba(255, 255, 255, 0.25) inset,
+        0px 0px 0px 0px rgba(255, 255, 255, 0.25) inset;
+    }
+    100% {
+        opacity: 1;
+        box-shadow: 0px 0px 0px 0px rgba(255, 255, 255, 0.25) inset,
+        0px 0px 0px 0px rgba(255, 255, 255, 0.25) inset;
+    }
+}
+
+@keyframes animateCheck {
+    from {
+        stroke-dashoffset: 80;
+    }
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes animateShadow {
+    0% {
+        opacity: 0;
+        width: 100%;
+        height: 15%;
+    }
+    25% {
+        opacity: 0.25;
+    }
+    43.75% {
+        width: 40%;
+        height: 7%;
+        opacity: 0.35;
+    }
+    100% {
+        width: 85%;
+        height: 15%;
+        opacity: 0.25;
+    }
+}
+
+.checkBoxesParent {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.checkBoxContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1.875px solid var(--lightGray);
+    cursor: pointer;
+}
+
+.checkBoxInfo {
+    display: flex;
+    gap: 24px;
+    cursor: pointer;
+}
+.addOnPrice {
+    color: var(--purplishBlue);
+    font-weight: 600;
+}
+.checkBoxContainer.cardBorder {
+    border: 1.875px solid var(--purplishBlue);
+    background-color: var(--alabaster);
+}
+.checkBoxInfo input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    vertical-align: middle;
+    cursor: pointer;
+    accent-color: var(--purplishBlue);
+    margin-top: 8px;
+    border: 1.875px solid var(--lightGray) !important;
+}
+
+.addTitle {
+    font-weight: 700;
+    color: var(--marineBlue);
+}
+.checkBoxInfo p {
+    margin: 0;
+    margin-block: 4px;
+    align-items: center;
+}
+.random {
+    font-size: 14px;
+    color: var(--coolGray);
+    font-weight: 500;
+}
