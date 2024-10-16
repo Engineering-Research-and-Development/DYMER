@@ -1228,8 +1228,13 @@ Vvveb.Builder = {
                     postData_str.append('data[structure]', json_struct);
                     ajax_temp_call_str.setserializedata(false);
                     ajax_temp_call_str.setdatapost(postData_str);
-                    ajax_temp_call_str.seturl(Vvveb.pathservice + "updatestructure");
-                    let ret_str = ajax_temp_call_str.send();
+					//bug fix: invoke updatestructure only if form
+					if (Vvveb.pathservice.includes("api/forms")) {
+                        var temp = Vvveb.pathservice + "updatestructure";
+                        console.log("***update - updatestructure url ", temp);
+                        ajax_temp_call_str.seturl(temp);
+                        let ret_str = ajax_temp_call_str.send();
+                    }
                     ajax_temp_call.setdatapost(postData);
                 }
                 break;
@@ -1496,10 +1501,18 @@ Vvveb.Gui = {
             var description = $("[name=description]", newPageModal).val();
             var name = title.replace(/\W+/g, '-').toLowerCase();
             var viewtype = undefined;
+			var autogen = false;						   
             var path_basetemplate = "";
             if (Vvveb.editorType == "templates") {
                 viewtype = $("[name=viewtype]", newPageModal).val();
-                path_basetemplate = Vvveb.listResources.getCaseTemplatesPath(viewtype);
+				autogen = $("[name=autogeneration]", newPageModal).is(":checked");
+				if (viewtype === "fullcontent" && autogen){
+                    path_basetemplate = serverUrl + '/api/forms/api/v1/form/modeldetail?query={\"instance._index\":\"'+entitytype+'\"}';
+                    console.log("path_basetemplate with all fields of form: ", path_basetemplate);
+                } else {
+                    path_basetemplate = Vvveb.listResources.getCaseTemplatesPath(viewtype);
+                    console.log("path_basetemplate original: ", path_basetemplate);
+                }										 
             }
             if (Vvveb.editorType == "models") {
                 if (Vvveb.FileManager.listIndexExsist.includes(entitytype)) {
