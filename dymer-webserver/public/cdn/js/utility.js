@@ -3606,6 +3606,7 @@ function kmsrenderdetail(_id) {
         hideDatasetContainer();
     }
     var idx;
+    var tit;
     actualTemplateType = "reset";
     removeTempImport('tftemp');
     var arObj = new Array();
@@ -3613,6 +3614,7 @@ function kmsrenderdetail(_id) {
     (kmsdataset).forEach(function(item, i) {
         if (item._id == _id) {
              idx=item._index;
+            tit=item.title;
             arObj.push(item);
             /*	obj = item;
                 tmpl = item._index + "@" + item._type;
@@ -3638,7 +3640,7 @@ function kmsrenderdetail(_id) {
     } else {
         kmsrenderEl(arObj, 'fullcontent');
     }
-    addView( _id,idx);
+    addView( _id,idx,tit);
 }
 
 function checkbreadcrumb(arObj, fnct, linklabel) {
