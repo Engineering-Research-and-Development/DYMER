@@ -175,7 +175,7 @@ dropArea.addEventListener("drop", (event)=>{
 
 function showFile(){
   let fileType = file.type; //getting selected file type
-  let validExtensions = [".csv", "csv" ]; //adding some valid image extensions in array
+  let validExtensions = [".csv", "text/csv", "application/vnd.ms-excel", "application/csv", "text/x-csv", "application/x-csv", "text/comma-separated-values", "text/x-comma-separated-values" ]; //adding some valid image extensions in array
   if(validExtensions.includes(fileType)){ //if user selected file is an image file
     let fileReader = new FileReader(); //creating new FileReader object
     fileReader.onload = ()=>{
