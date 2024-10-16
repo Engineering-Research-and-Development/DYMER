@@ -134,7 +134,7 @@
 }
 
 .form-wizard-import .form-wizard-import-steps li {
-    width: 24%;
+    width: 20%;
     float: left;
     position: relative;
 }
@@ -200,6 +200,13 @@
 /* Per il terzo step attivo o attivato, coloriamo entrambe le braccia */
 .form-wizard-import .form-wizard-import-steps li:nth-child(3).active::after,
 .form-wizard-import .form-wizard-import-steps li:nth-child(3).activated::after {
+    left: 0;
+    width: 100%;
+}
+
+/* Per il quarto step attivo o attivato, coloriamo entrambe le braccia */
+.form-wizard-import .form-wizard-import-steps li:nth-child(4).active::after,
+.form-wizard-import .form-wizard-import-steps li:nth-child(4).activated::after {
     left: 0;
     width: 100%;
 }
