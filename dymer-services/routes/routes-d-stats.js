@@ -65,27 +65,62 @@ router.post("/savestats", async function (req, res) {
     return res.send(ret);
 });
 
-router.get("/getstats", async function (req, res) {
+router.get("/getstats/:enttype?", async function (req, res) {
     let ret = new jsonResponse();
     const filter = req.query;
+    
+    let enttype = req.params.enttype ? req.params.enttype : "";
+    const hdymeruser = req.headers.dymeruser;
+    const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+ 
+     logger.info(nameFile + '|_search| dymeruser :' + JSON.stringify(dymeruser));
 
+     
     try {
-        const documents = await statsModel.find(filter);
+        const query = { "type": enttype };
+        const options = {
+              sort: { "timestamps": -1 },
+              projection: { _id: 0 },
+           };
+
+
+        let docs = await statsModel.find(query)
+        //const documents = await statsModel.find(filter);
 
         ret.setSuccess(true)
         ret.setMessages("Entities retrived")
-        ret.addData(documents)
+        ret.addData(docs)
 
         return res.status(200).send(ret)
 
     } catch (error) {
-        console.error("ERROR | " + nameFile + " | get/getLikes | get :", err);
-        logger.error(nameFile + ' | get/getLikes | get : ' + err);
+        console.error("ERROR | " + nameFile + " | get/getLikes | get :", error);
+        logger.error(nameFile + ' | get/getLikes | get : ' + error);
 
         ret.setMessages("Get error");
         ret.setSuccess(false);
-        ret.setExtraData({"log": err.stack});
+        ret.setExtraData({"log": error.stack});
 
+        return res.send(ret);
+    }
+})
+
+
+router.get("/getallstats", async function (req, res) {
+    let ret = new jsonResponse();
+    const filter = req.query;
+    try {
+        const documents = await statsModel.find(filter);
+        ret.setSuccess(true)
+        ret.setMessages("Entities retrived")
+        ret.addData(documents)
+        return res.status(200).send(ret)
+    } catch (error) {
+        console.error("ERROR | " + nameFile + " | get/getLikes | get :", err);
+        logger.error(nameFile + ' | get/getLikes | get : ' + err);
+        ret.setMessages("Get error");
+        ret.setSuccess(false);
+        ret.setExtraData({"log": err.stack});
         return res.send(ret);
     }
 })
