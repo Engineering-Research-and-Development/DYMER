@@ -121,14 +121,17 @@ angular.module('wizardCtrl', [])
                 /*Aggiungo al template del modello i nuovi campi*/
                 let newFields = "";
                 let title = "";
+                let label="";
                 let repeatable = "";
                 let required = "";
                 let searchable = "";
                 let taxonomy = false;
                 let relation = false;
                 $($scope.wizardObj.modelFields).each(function () {
+                    label=this.title;
                     title = this.title.replace(/\W+/g, '-').toLowerCase();
-                    title = title.replace(/[^A-Za-z0-9\.\/]+/g, '-').toLowerCase();
+                    title = title.replace(/[^A-Za-z0-9\.\/]+/g, '').toLowerCase();
+                
                     repeatable = "";
                     required = "";
                     searchable = "";
@@ -139,42 +142,42 @@ angular.module('wizardCtrl', [])
                         repeatable = "repeatable first-repeatable";
                     }
                     if (this.searchable) {
-                        searchable = 'searchable-override="data[' + title + ']" searchable-label="' + title + '" searchable-element="true"'
+                        searchable = 'searchable-override="data[' + title + ']" searchable-label="' + label + '" searchable-element="true"'
                     }
 
                     if (this.type == "string" || this.type == "text") {
-                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + this.title + '</label>\n<input type="text" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '>\n</div>\n';
+                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + label + '</label>\n<input type="text" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '>\n</div>\n';
                     }
                     if (this.type == "date") {
-                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + this.title + ' (min 01-01-1900)</label>\n<input type="date" data-date="" data-date-format="DD MMMM YYYY" min="1900-01-01" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '>\n</div>\n';
+                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + label + ' (min 01-01-1900)</label>\n<input type="date" data-date="" data-date-format="DD MMMM YYYY" min="1900-01-01" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '>\n</div>\n';
                     }
                     if (this.type == "number") {
-                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + this.title + ' (min 1 - max 99)</label>\n<input type="number" min="1" max="99" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '>\n</div>\n';
+                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + label + ' (min 1 - max 99)</label>\n<input type="number" min="1" max="99" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '>\n</div>\n';
                     }
                     if (this.type == "image") {
-                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + this.title + ' (.png,.jpg)</label>\n<input type="file" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' accept=".png,.jpg" name="data[' + title + ']" ' + required + '>\n</div>\n';
+                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + label+ ' (.png,.jpg)</label>\n<input type="file" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' accept=".png,.jpg" name="data[' + title + ']" ' + required + '>\n</div>\n';
                     }
                     if (this.type == "file") {
-                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + this.title + ' (.doc,.pdf,.xml,.csv,.txt,.ppt)</label>\n<input type="file" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' accept=".doc,.pdf,.xml,.csv,.txt,.ppt" name="data[' + title + ']" ' + required + '>\n</div>\n';
+                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + label + ' (.doc,.pdf,.xml,.csv,.txt,.ppt)</label>\n<input type="file" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' accept=".doc,.pdf,.xml,.csv,.txt,.ppt" name="data[' + title + ']" ' + required + '>\n</div>\n';
                     }
                     if (this.type == "textarea") {
-                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + this.title + '</label>\n<textarea type="textarea" dymer-model-element="" class="form-control  col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '></textarea>\n</div>\n';
+                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + label+ '</label>\n<textarea type="textarea" dymer-model-element="" class="form-control  col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '></textarea>\n</div>\n';
                     }
                     if (this.type == "selectlist") {
-                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + this.title + '</label>\n<select class="form-control" dymer-model-element="" ' + searchable + ' name="data[' + title + ']" ' + required + '></select>\n</div>\n';
+                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + label + '</label>\n<select class="form-control" dymer-model-element="" ' + searchable + ' name="data[' + title + ']" ' + required + '></select>\n</div>\n';
                     }
                     if (this.type == "email") {
-                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + this.title + '</label>\n<input type="email" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '>\n</div>\n';
+                        newFields += '<div class="form-group ' + repeatable + '">\n<label class="kms-title-label">' + label + '</label>\n<input type="email" dymer-model-element="" class="form-control col-12 span12" ' + searchable + ' name="data[' + title + ']" ' + required + '>\n</div>\n';
                     }
                     if (this.type == "taxonomy") {
-                        searchable = 'searchable-label="' + this.title + '" searchable-text="' + this.title + '" searchable-element="true" searchable-multiple="true"';
+                        searchable = 'searchable-label="' + label + '" searchable-text="' + label + '" searchable-element="true" searchable-multiple="true"';
                         repeatable = 'multiple="multiple"';
-                        newFields += '<div class="form-group collectionField" style="min-height: 100px;">\n<label for="description" class="kms-title-label">Taxonomy ' + this.title + '</label>\n<small class="form-text text-muted"><b></b> </small><div><div data-component-kmstaxonomy=""  ' + searchable + ' ' + repeatable + ' ' + required + ' class="form-group dymertaxonomy" data-totaxonomy="' + this.tax + ' " data-max-options="10" style="height:3px" searchable-element="true">\n</div>\n</div>\n</div>\n';
+                        newFields += '<div class="form-group collectionField" style="min-height: 100px;">\n<label for="description" class="kms-title-label">Taxonomy ' + label + '</label>\n<small class="form-text text-muted"><b></b> </small><div><div data-component-kmstaxonomy=""  ' + searchable + ' ' + repeatable + ' ' + required + ' class="form-group dymertaxonomy" data-totaxonomy="' + this.tax + ' " data-max-options="10" style="height:3px" searchable-element="true">\n</div>\n</div>\n</div>\n';
                         taxonomy = true;
                     }
                     if (this.type == "relation") {
                           
-                        searchable = 'searchable-label="' + this.title + '" searchable-text="' + this.title + '" searchable-element="true" searchable-multiple="true"';
+                        searchable = 'searchable-label="' + label + '" searchable-text="' + this.title + '" searchable-element="true" searchable-multiple="true"';
                         repeatable = 'multiple="multiple"';
                         newFields+='<div class="form-group">\n<label for="description" class="kms-title-label">Relation</label>\n<div><div data-component-dymrelation="" class="form-group dymerselectpicker" data-torelation="' + this.relationto + '"  ' + searchable + ' ' + repeatable + ' ' + required + '  data-actions-box="true" data-max-options=""><span class="inforelation">Relation</span>\n <i class="fa fa-code-fork rotandflip inforelation" aria-hidden="true"></i> <span contenteditable="false" class="torelation inforelation">' + this.relationto + '</span>\n</div>\n</div>\n</div>\n ';
                         relation = true;
@@ -260,7 +263,7 @@ angular.module('wizardCtrl', [])
                             $http({
                                 url: baseContextPath + 'api/forms/api/v1/form/modeldetail',
                                 method: "GET",
-                                params: {query: `{"instance._index":"${$scope.wizardObj.modelIndex}"}`},
+                                params: {query: `{"instance._index":"${modelIndex}"}`},
                             }).then(function (getFullContentTemplateHtmlRet) {
                                
                                 console.log("modeldetail - html ritornato dal modeldetail ====>", getFullContentTemplateHtmlRet.data);
@@ -346,8 +349,8 @@ angular.module('wizardCtrl', [])
                                         name: modelName + '_template' + templateName,
                                         author: "Dymer Administrator",
                                         instance: [{
-                                            "_index": $scope.wizardObj.modelIndex,
-                                            "_type": $scope.wizardObj.modelIndex
+                                            "_index": modelIndex,
+                                            "_type": modelIndex
                                         }],
                                         file: {
                                             originalname: modelName + '_template' + templateName + '.html',
