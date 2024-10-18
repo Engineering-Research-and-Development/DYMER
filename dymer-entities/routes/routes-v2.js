@@ -6005,7 +6005,7 @@ router.patch("/addView", (req, res) => {
         admin = dymeruser.roles.some(value => value === 'app-admin');
     });
     /*Partecipa all'incremento delle visualizzazioni l'utente NON admin*/ 
-    if (admin){
+    if (!admin){
         let params = {};
         params["body"] = {
             "query": {
