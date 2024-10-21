@@ -114,7 +114,13 @@ var getfilesArrays = function(er) {
         });
     });
 }
-
+function convertString(input) {
+    if (input.startsWith("data[") && input.endsWith("]")) {
+        input = input.substring(5, input.length - 1);
+    }
+    const output = input.replace(/\]\[0\]\[/g, ".[0].");
+    return output;
+}
 var recFile = function(file_id) {
     return new Promise(function(resolve, reject) {
         //  gridFSBucket.openDownloadStream(file_id);
