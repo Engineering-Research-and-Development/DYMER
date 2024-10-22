@@ -5662,7 +5662,7 @@ async function addView(id, index, title) {
     ajax_temp_call.addparams(datapost);
     let addViewCallRet = ajax_temp_call.send();
     
-    //console.log("addView response",addViewCallRet);
+    //console.log("addView response ===> ",addViewCallRet);
     
     sourceUrl = serverUrl + "/api/dservice/api/v1/stats/savestats";
     datapost = {"resourceId" : id, "type" : index, "act": "views", "title":title}
@@ -5677,7 +5677,7 @@ async function addView(id, index, title) {
     ajax_temp_call.addparams(datapost);
     let statsCallRet = ajax_temp_call.send();
     
-    //console.log("savestats response",statsCallRet);
+    //console.log("savestats response ===> ",statsCallRet);
 }
 /*MG - Gestione visualizzazioni - FINE*/
 
