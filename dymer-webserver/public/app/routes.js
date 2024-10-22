@@ -211,6 +211,11 @@ function config($routeProvider, $locationProvider) {
                 controller  : "wizardController",
                 permission  : [ "app-admin" ]
             } )
+            .when(site_prefix + "/statistics", {
+                templateUrl: site_prefix + "/public/app/views/pages/services/statistics.html",
+                controller: "statisticsController",
+                permission: ["app-admin" ]
+            })
 
         /*   .when(site_prefix + "/authenticate", {
                templateUrl: site_prefix + "/authenticate"

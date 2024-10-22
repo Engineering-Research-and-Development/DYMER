@@ -26,7 +26,7 @@ router.post("/savestats", async function (req, res) {
     if (!admin) {
         let data = util.getAllQuery(req);
         try {
-            let existingDoc = await statsModel.findOne({resourceId: data.resourceId, email: dymeruser.email});
+            let existingDoc = await statsModel.findOne({resourceId: data.resourceId, email: dymeruser.email, act: data.act});
             if (existingDoc) {
                 existingDoc.timestamps.push(Date.now());
 
@@ -40,7 +40,7 @@ router.post("/savestats", async function (req, res) {
                 data.ip = req.ip;
                 data.timestamps = [Date.now()];
                 data.roles = dymeruser.roles;
-                
+
                 let newObj = new statsModel(data);
                 newObj.email = dymeruser.email;
                 console.log("savestats - newObj ===> ", newObj);
@@ -164,28 +164,27 @@ router.get("/getallstats", async function (req, res) {
 
 router.delete("/deletestats/:id", async function (req, res) {
     const id = req.params.id;
-
     let ret = new jsonResponse();
     let enttype = req.params.enttype ? req.params.enttype : "";
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     console.log("********* --> ",id);
     logger.info(nameFile + '| /deletestats/:id| id :' + id);
-
     try {
         dymeruser.roles.forEach(function (value) {
             admin = dymeruser.roles.some(value => value === 'app-admin');
         });
         if(admin){
-
             if (id === "all") {
                 await statsModel.deleteMany({});
             } else {
-                 
                 var myfilter = { "_id": id };
                 statsModel.findOneAndDelete(myfilter).then((el) => {
-                    ret.setMessages("Element deleted");
-                    return res.send(ret);
+                    console.log("document deleted --> ",id);
+                    ret.setSuccess(true);
+                    ret.setMessages("document(s) deleted");
+                    ret.addData();
+                    return res.status(200).send(ret);
                 }).catch((err) => {
                     if (err) {
                         console.error("ERROR | " + nameFile + " | delete/statsModel/:id | id :", id, err);
@@ -197,34 +196,18 @@ router.delete("/deletestats/:id", async function (req, res) {
                     }
                 })
             }
-
-
-
-
-
-
-            ret.setSuccess(true);
-            ret.setMessages("document(s) deleted");
-            ret.addData();
-    
-            return res.status(200).send(ret);
         }else{
             ret.setSuccess(false);
             ret.setMessages("NO permission");
             ret.addData();
-
-
-        }
-        
-         
+            return res.send(ret);
+        }  
     } catch (error) {
         console.error("ERROR | " + nameFile + " | delete/getLikes | delete :", err);
         logger.error(nameFile + ' | delete/getLikes | delete : ' + err);
-
         ret.setMessages("delete error");
         ret.setSuccess(false);
         ret.setExtraData({"log": err.stack});
-
         return res.send(ret);
     }
 })
@@ -237,6 +220,7 @@ router.put("/updatestats/:id", async function (req, res) {
     const roles = req.body.roles;
     const resourceId = req.body.resourceId;
     const type = req.body.type;
+    const title = req.body.title;
 
     let ret = new jsonResponse();
 
@@ -244,11 +228,11 @@ router.put("/updatestats/:id", async function (req, res) {
         let updatedDocument;
         switch (act) {
             case "views":
-                updatedDocument = await updateViews(idString, ip, email, roles, resourceId, type, Date.now());
+                updatedDocument = await updateViews(idString, ip, email, roles, resourceId, type, Date.now(), title);
                 break;
             case "like":
             case "dislike":
-                updatedDocument = await createOrUpdateDocument(idString, ip, email, roles, resourceId, type, act);
+                updatedDocument = await createOrUpdateDocument(idString, ip, email, roles, resourceId, type, act, title);
                 break;
             default:
                 ret.setMessages("Invalid action");
@@ -278,7 +262,7 @@ router.put("/updatestats/:id", async function (req, res) {
     }
 });
 
-async function updateViews(idString, ip, email, roles, resourceId, type, timestamp) {
+async function updateViews(idString, ip, email, roles, resourceId, type, timestamp, title) {
     try {
         let id = mongoose.Types.ObjectId(idString);
         let existingDoc = await statsModel.findOne({_id: id, email: email});
@@ -294,6 +278,7 @@ async function updateViews(idString, ip, email, roles, resourceId, type, timesta
                 resourceId: resourceId,
                 type: type,
                 act: "views",
+                title: title,
                 timestamps: [timestamp]
             };
             let newObj = new statsModel(data);
@@ -304,7 +289,7 @@ async function updateViews(idString, ip, email, roles, resourceId, type, timesta
     }
 }
 
-async function createOrUpdateDocument(idString, ip, email, roles, resourceId, type, act) {
+async function createOrUpdateDocument(idString, ip, email, roles, resourceId, type, act, title) {
     try {
         let existingDoc = await statsModel.findOne({email: email, resourceId: idString, act: act});
         if (existingDoc) {
@@ -318,6 +303,7 @@ async function createOrUpdateDocument(idString, ip, email, roles, resourceId, ty
                 resourceId: idString,//resourceId,
                 type: type,
                 act: act,
+                title,
                 timestamps: Date.now()
             };
             let newObj = new statsModel(data);
@@ -327,6 +313,4 @@ async function createOrUpdateDocument(idString, ip, email, roles, resourceId, ty
         throw e;
     }
 }
-
-
 module.exports = router;
