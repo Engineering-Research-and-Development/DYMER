@@ -2,7 +2,7 @@ angular.module('entitiesImportControllers', [])
     .controller('entitiesImport_ff', function ($scope, $http, $rootScope, exportEntities, multipartForm) {
         var baseContextPath = $rootScope.globals.contextpath;
         //   console.log('testing controller entitiesImport_ff');
-
+        $scope.tab = 1;
         $scope.method = "GET";
         $scope.host = "http://localhost";
         $scope.port = "8008";
