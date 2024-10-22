@@ -31,5 +31,8 @@ angular.module("userApp", [
     "swaggerCtrl",
     "fileModel",
     "libraryCtrl",
-    "wizardCtrl"
+    "wizardCtrl",
+    /*MG - Social Statistic - Inizio*/
+    "statisticsCtrl",
+    /*MG - Social Statistic - Fine*/
 ]);

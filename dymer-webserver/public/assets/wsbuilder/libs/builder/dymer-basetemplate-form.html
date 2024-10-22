@@ -5,20 +5,21 @@
     <div class="rendered-form">
         <div class="form-group ">
             <label class="kms-title-label">Title</label>
-            <input type="text" class="form-control col-12 span12" name="data[title]" required>
+            <input type="text" class="form-control col-12 span12" dymer-model-element="" name="data[title]" required>
             <small class="form-text text-muted">Please provide the name of the {{titolo}}</small>
         </div>
         <div class="form-group ">
             <label class="kms-title-label">Description</label>
-            <textarea type="textarea" class="form-control  col-12 span12" name="data[description]" required></textarea>
+            <textarea type="textarea" class="form-control  col-12 span12" dymer-model-element="" name="data[description]" required></textarea>
 
         </div>
         <div class="form-group ">
             <input name="data[likes]" type="hidden" dymer-model-element="" dymer-model-visibility="private" value="[]">
             <input name="data[viewsCounter]" type="hidden" dymer-model-element="" dymer-model-visibility="public" value="0">
         </div>
-
+        <!-- AC - MG - Wizard - Inizio -->
         <p id="newFields">{{newFields}}</p>
+        <!-- AC - MG - Wizard - Fine -->
         <div class="form-group">
             <label class="kms-title-label">Status</label>
             <select class="form-control col-12 span12" name="data[properties][status]">
