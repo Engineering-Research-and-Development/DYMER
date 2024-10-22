@@ -212,14 +212,15 @@
                                                     <th class="col-1">Import</th>
                                                     <th class="col-3">Index Fields</th>
                                                     <th>CSV Fields</th>
-                                                    <th>Relationship Key</th>
+                                                    <th>Array Field</th>
+<!--                                                    <th>Relationship Key</th>-->
                                                     <th></th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
                                                 <tr ng-repeat="record in infoDetails.fields" class="col-3">
                                                     <td>
-                                                        <div class="custom-control custom-switch">
+                                                        <div class="custom-control custom-switch wizard-import-form-radio">
                                                             <input type="checkbox" class="custom-control-input"
                                                                    id="customSwitch_{{$index}}"
                                                                    ng-model="record.isSelected">
@@ -241,15 +242,26 @@
                                                         </select>
                                                     </td>
 
+<!--                                                    <td>-->
+<!--                                                        <div class="form-wizard-import wizard-import-form-radio">-->
+<!--                                                            <input type="radio" id="radioSelect_{{$index}}"-->
+<!--                                                                   name="radioSelect"-->
+<!--                                                                   ng-disabled="!record.isSelected || !record.newName"-->
+<!--                                                                   ng-click="setRelationTo(record.newName)">-->
+<!--                                                            <label for="radioSelect_{{$index}}"></label>-->
+<!--                                                        </div>-->
+<!--                                                    </td>-->
+<!--                                                    START ARRAY CHECK-->
                                                     <td>
-                                                        <div class="form-wizard-import wizard-import-form-radio">
-                                                            <input type="radio" id="radioSelect_{{$index}}"
-                                                                   name="radioSelect"
-                                                                   ng-disabled="!record.isSelected || !record.newName"
-                                                                   ng-click="setRelationTo(record.newName)">
-                                                            <label for="radioSelect_{{$index}}"></label>
+                                                        <div class="custom-control custom-switch wizard-import-form-radio">
+                                                            <input type="checkbox" class="custom-control-input"
+                                                                   id="customSwitch_array{{$index}}"
+                                                                   ng-model="record.isArrayField">
+                                                            <label class="custom-control-label"
+                                                                   for="customSwitch_array{{$index}}"></label>
                                                         </div>
                                                     </td>
+<!--                                                    END ARRAY CHECK-->
                                                     <td>
                                                         <button class="btn btn-danger btn-sm"
                                                                 ng-click="removeHeader($index)" ng-if="record.isNew">
@@ -301,6 +313,7 @@
                                                 <label for="searchingField">Relationship Key</label>
                                                 <select ng-model="infoDetails.relations.searchingField" class="form-control" id="searchingField">
                                                     <option disabled selected value="">Choose index*</option>
+<!--                                                    <option ng-repeat="index in CSVFields" value="{{index}}" required>{{index}}</option>-->
                                                     <option ng-repeat="index in CSVFields" value="{{index}}" required>{{index}}</option>
                                                 </select>
                                             </div>

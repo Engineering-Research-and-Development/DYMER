@@ -440,10 +440,12 @@ input-import.form-control {
 
 .form-wizard-import .wizard-import-form-radio input[type="checkbox"]:focus {
     outline: 0;
+    vertical-align: middle;
 }
 
 .form-wizard-import .wizard-import-form-radio input[type="checkbox"]:checked {
     background-color: #3d85c6;
+    vertical-align: middle;
 }
 
 .form-wizard-import .wizard-import-form-radio input[type="checkbox"]:checked::before {
@@ -458,6 +460,7 @@ input-import.form-control {
     right: 0;
     margin: 0 auto;
     top: 8px;
+    vertical-align: middle;
 }
 
 .form-wizard-import .wizard-import-form-radio input[type="checkbox"]:checked::after {
@@ -471,12 +474,14 @@ input-import.form-control {
     display: block;
     position: relative;
     z-index: 100;
+    vertical-align: middle;
     /*border-radius: 50%;*/
 }
 
 .form-wizard-import .wizard-import-form-radio input[type="checkbox"] ~ label {
     padding-left: 10px;
     cursor: pointer;
+    vertical-align: middle;
 }
 
 .import-toggle-switch {
