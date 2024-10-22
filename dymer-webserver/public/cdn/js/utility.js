@@ -5630,7 +5630,7 @@ function showDatasetContainer() {
  
 
 // Mongo Update Likes
-async function likeMongoUpdate(entityId, act, email, roles, type) {
+async function likeMongoUpdate(entityId, act, email, roles, type,title) {
     const sourceServiceUrl = getendpoint("stats") + "/" + "updatestats"
 
     let service_config_call = {
@@ -5640,7 +5640,7 @@ async function likeMongoUpdate(entityId, act, email, roles, type) {
         addDataBody: true
     };
 
-    let data_service_post = { "act": act, "email": email, "roles": roles, "resourceId": entityId, "type": type}
+    let data_service_post = { "act": act, "email": email, "roles": roles, "resourceId": entityId, "type": type, "title": title}
 
     let ajax_temp_call = new Ajaxcall(service_config_call);
     ajax_temp_call.addparams(data_service_post)
@@ -5688,7 +5688,7 @@ async function addView(id, index,title) {
 
 
 /*********************/
-async function like(entityId, index, loggedUsrMail = "notLogged", roles,iconup,icondown) {
+async function like(entityId, title, index, loggedUsrMail = "notLogged", roles,iconup,icondown) {
 
     if (loggedUsrMail === "guest@dymer.it" || loggedUsrMail === "admin@dymer.it" || loggedUsrMail === "notLogged") {
         useGritterTool("User not Logged", "Please log in", "danger")
@@ -5702,7 +5702,7 @@ async function like(entityId, index, loggedUsrMail = "notLogged", roles,iconup,i
         return
     }
     const sourceUrl = getendpoint("entity") + "/" + "entitylike"
-    let datapost = {"element": entityId, index: index, "loggedUser": loggedUsrMail}
+    let datapost = {"element": entityId, title:title,index: index, "loggedUser": loggedUsrMail}
 
     let temp_config_call = {
         url: sourceUrl,
@@ -5737,7 +5737,7 @@ async function like(entityId, index, loggedUsrMail = "notLogged", roles,iconup,i
         $(`#likeBtn-${entityId}`).tooltip();
 
 
-        let mongoUpdateRet = await likeMongoUpdate(entityId, "dislike", loggedUsrMail, roles, index)
+        let mongoUpdateRet = await likeMongoUpdate(entityId, "dislike", loggedUsrMail, roles, index, title)
         console.log(mongoUpdateRet)
 
 
@@ -5753,7 +5753,7 @@ async function like(entityId, index, loggedUsrMail = "notLogged", roles,iconup,i
         $(`#likeBtn-${entityId}`).tooltip();
 
 
-        let mongoUpdateRet = await likeMongoUpdate(entityId, "like", loggedUsrMail, roles, index)
+        let mongoUpdateRet = await likeMongoUpdate(entityId, "like", loggedUsrMail, roles, index, title)
         console.log(mongoUpdateRet)
 
     }
