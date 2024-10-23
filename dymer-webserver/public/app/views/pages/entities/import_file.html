@@ -85,7 +85,8 @@
                     <div class="row no-gutters">
                         <div class="col-lg-10 col-md-10 offset-1" id="wiz">
                             <div class="form-wizard-import">
-                                <form name="wizardForm" ng-submit="submitForm()">
+<!--                                <form name="wizardForm" ng-submit="submitForm()">-->
+                                <form name="wizardForm">
                                     <div class="form-wizard-import-header">
                                         <p>Fill all form field to go to the next step</p>
                                         <ul class="list-unstyled form-wizard-import-steps clearfix">
@@ -98,13 +99,16 @@
                                             <li ng-class="[{'active': currentStep === 3},{'activated': currentStep >= 4}]">
                                                 <span>3</span>
                                             </li>
-                                            <li ng-class="{'active': currentStep === 4}">
+                                            <li ng-class="[{'active': currentStep === 4},{'activated': currentStep >= 5}]">
                                                 <span>4</span>
+                                            </li>
+                                            <li ng-class="{'active': currentStep === 5}">
+                                                <span>5</span>
                                             </li>
                                         </ul>
                                     </div>
 
-                                    <!-- Step 1 -->
+                                    <!-- Step 1 - Index and Separator -->
                                     <fieldset ng-show="currentStep === 1" class="wizard-import-fieldset show">
                                         <h5 class="personal">Index and Separator</h5>
                                         <p class="personalInfo">choose your index in this section, choose the CSV
@@ -145,7 +149,7 @@
                                         </div>
                                     </fieldset>
 
-                                    <!-- Step 2 -->
+                                    <!-- Step 2 - Load CSV -->
                                     <fieldset ng-show="currentStep === 2" class="wizard-import-fieldset show">
                                         <h5 class="personal">Load CSV</h5>
                                         <p class="personalInfo">Enter all your model fields in this section. Upload them
@@ -185,21 +189,21 @@
                                         </div>
                                     </fieldset>
 
-                                    <!-- Step 3 -->
+                                    <!-- Step 3 - Manage CSV Fields -->
                                     <fieldset ng-show="currentStep === 3" class="wizard-import-fieldset show">
 
                                         <h5 class="personal">Manage CSV Fields</h5>
                                         <p class="personalInfo">In this section you can manage, edit, add and remove CSV
                                             fields </p>
 
-                                        <div class="col-lg-2 col-md-2 col-sm-2 offset-10">
-                                            <div class="form-group">
-                                                <input type="text" class="form-control" id="relatonTo"
-                                                       ng-model="infoDetails.relations.relationTo">
-                                                <label for="relatonTo" class="wizard-import-form-text-label">Index to
-                                                    relation to</label>
-                                            </div>
-                                        </div>
+<!--                                        <div class="col-lg-2 col-md-2 col-sm-2 offset-10">-->
+<!--                                            <div class="form-group">-->
+<!--                                                <input type="text" class="form-control" id="relatonTo"-->
+<!--                                                       ng-model="infoDetails.relations.relationTo">-->
+<!--                                                <label for="relatonTo" class="wizard-import-form-text-label">Index to-->
+<!--                                                    relation to</label>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
 
                                         <div>
                                             <table class="table-import-hover table-import-sm dataTable no-footer">
@@ -208,14 +212,15 @@
                                                     <th class="col-1">Import</th>
                                                     <th class="col-3">Index Fields</th>
                                                     <th>CSV Fields</th>
-                                                    <th>Relationship Key</th>
+                                                    <th>Array Field</th>
+<!--                                                    <th>Relationship Key</th>-->
                                                     <th></th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
                                                 <tr ng-repeat="record in infoDetails.fields" class="col-3">
                                                     <td>
-                                                        <div class="custom-control custom-switch">
+                                                        <div class="custom-control custom-switch wizard-import-form-radio">
                                                             <input type="checkbox" class="custom-control-input"
                                                                    id="customSwitch_{{$index}}"
                                                                    ng-model="record.isSelected">
@@ -237,15 +242,26 @@
                                                         </select>
                                                     </td>
 
+<!--                                                    <td>-->
+<!--                                                        <div class="form-wizard-import wizard-import-form-radio">-->
+<!--                                                            <input type="radio" id="radioSelect_{{$index}}"-->
+<!--                                                                   name="radioSelect"-->
+<!--                                                                   ng-disabled="!record.isSelected || !record.newName"-->
+<!--                                                                   ng-click="setRelationTo(record.newName)">-->
+<!--                                                            <label for="radioSelect_{{$index}}"></label>-->
+<!--                                                        </div>-->
+<!--                                                    </td>-->
+<!--                                                    START ARRAY CHECK-->
                                                     <td>
-                                                        <div class="form-wizard-import wizard-import-form-radio">
-                                                            <input type="radio" id="radioSelect_{{$index}}"
-                                                                   name="radioSelect"
-                                                                   ng-disabled="!record.isSelected || !record.newName"
-                                                                   ng-click="setRelationTo(record.originalName)">
-                                                            <label for="radioSelect_{{$index}}"></label>
+                                                        <div class="custom-control custom-switch wizard-import-form-radio">
+                                                            <input type="checkbox" class="custom-control-input"
+                                                                   id="customSwitch_array{{$index}}"
+                                                                   ng-model="record.isArrayField">
+                                                            <label class="custom-control-label"
+                                                                   for="customSwitch_array{{$index}}"></label>
                                                         </div>
                                                     </td>
+<!--                                                    END ARRAY CHECK-->
                                                     <td>
                                                         <button class="btn btn-danger btn-sm"
                                                                 ng-click="removeHeader($index)" ng-if="record.isNew">
@@ -270,7 +286,49 @@
                                         </div>
                                     </fieldset>
 
+                                    <!-- Step 4 - Manage Relations -->
                                     <fieldset ng-show="currentStep === 4" class="wizard-import-fieldset show">
+                                        <h5 class="personal">Manage Relations</h5>
+                                        <p class="personalInfo">choose your index to relation and searching field</p>
+
+                                        <div class="row align-items-center">
+                                            <div class="col-md-2 form-group">
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input" id="relationEnabled" ng-model="infoDetails.relations.enabled">
+                                                    <label class="custom-control-label" for="relationEnabled">Enable Relations</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-5 form-group">
+                                                <!-- Dagli indici -->
+                                                <label for="relationTo">Relation Index</label>
+                                                <select ng-model="infoDetails.relations.relationTo" class="form-control" id="relationTo">
+                                                    <option disabled selected value="">Choose index*</option>
+                                                    <option ng-repeat="index in listEntities" value="{{index}}" required>{{index}}</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-md-5 form-group">
+                                                <!-- Dal CSV -->
+                                                <label for="searchingField">Relationship Key</label>
+                                                <select ng-model="infoDetails.relations.searchingField" class="form-control" id="searchingField">
+                                                    <option disabled selected value="">Choose index*</option>
+<!--                                                    <option ng-repeat="index in CSVFields" value="{{index}}" required>{{index}}</option>-->
+                                                    <option ng-repeat="index in CSVFields" value="{{index}}" required>{{index}}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group clearfix">
+                                            <button type="button" class="form-wizard-import-previous-btn float-left"
+                                                    ng-click="previousStep()">Previous
+                                            </button>
+                                            <button type="button" class="form-wizard-import-next-btn float-right"
+                                                    ng-click="nextStep()">Next
+                                            </button>
+                                        </div>
+                                    </fieldset>
+                                    <!-- Step 5 Data Mapping Preview -->
+                                    <fieldset ng-show="currentStep === 5" class="wizard-import-fieldset show">
 
                                         <h5 class="personal">Data Mapping Preview</h5>
                                         <p class="personalInfo">In this section you check your mapping </p>
