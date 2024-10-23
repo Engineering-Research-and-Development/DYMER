@@ -108,7 +108,7 @@
                                 {{ el.timestamps.length }}
                             </td>
                             <td class=" text-center actmodindexdash">
-                                <i class="fa fa-trash deleteAction " title="Flush statistics" ng-click="deleteStatisticsById(el,el._id)"></i>
+                                <i class="fa fa-trash deleteAction " title="Flush this statistic" ng-click="deleteStatistics(el._id)"></i>
                             </td>
                         </tr>
                     </tbody>
@@ -117,7 +117,10 @@
         </div>
         <div class="card-footer ">
             <hr/>
-            <div class="stats"><i class="fa fa-history"></i> Updated 17/10/2024</div>
+            <div class="stats"><i class="fa fa-history"></i> Updated 23/10/2024</div>
+            <div class="pull-right">
+                <span class="deleteAction" ng-click="deleteStatistics('all')">Flush all statistics <i class="fa fa-trash  " title="Flush all statistics"></i></span>
+            </div>
         </div>
     </div>
 </div>

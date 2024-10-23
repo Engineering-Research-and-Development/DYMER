@@ -21,9 +21,15 @@ angular.module('statisticsCtrl', [])
             });
         }
         statistics(50, [], '#dtStatistics', 'dtStatistics','types');
-        $scope.deleteStatisticsById = function(obj, id) {
+        $scope.deleteStatistics = function(id) {
             if (confirm("Are you sure to flush statistics ?")) {
-                $http.delete(baseContextPath + '/api/dservice/api/v1/stats/deletestats/'+id, {
+                let url = "";
+                if (id == "all"){
+                  url = '/api/dservice/api/v1/stats/deletestats/all';
+                }else{
+                  url = '/api/dservice/api/v1/stats/deletestats/'+id;
+                }
+                $http.delete(baseContextPath + url, {
                 }).then(function(response) {
                     statistics(50, [], '#dtStatistics', 'dtStatistics');
                     useGritterTool("<b><i class='fa fa-map-signs  '></i> Delete successfully </b>", "");
