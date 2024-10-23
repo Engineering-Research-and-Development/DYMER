@@ -23,7 +23,7 @@ router.post("/savestats", async function (req, res) {
         admin = dymeruser.roles.some(value => value === 'app-admin');
     });
     /*Partecipa all'incremento delle visualizzazioni l'utente NON admin*/
-    if (admin) {
+    if (!admin) {
         let data = util.getAllQuery(req);
         try {
             let existingDoc = await statsModel.findOne({resourceId: data.resourceId, email: dymeruser.email, act: data.act});
