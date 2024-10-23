@@ -27,7 +27,7 @@ angular.module('entitiesImportControllers', [])
         }).catch(function (e) {
             console.error("error: ", e)
         })
-
+ 
 
         $scope.importEntFl = function () {
 
