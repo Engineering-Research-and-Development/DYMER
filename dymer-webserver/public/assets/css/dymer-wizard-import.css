@@ -251,12 +251,12 @@ input-import.form-control {
     box-sizing: border-box;
 }
 
-.fa-trash {
+.form-wizard-import .fa-trash {
     cursor: pointer;
     color: #dc3545;
 }
 
-.fa-trash:hover {
+.form-wizard-import .fa-trash:hover {
     color: #ff6b6b;
 }
 
