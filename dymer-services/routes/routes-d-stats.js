@@ -116,7 +116,7 @@ router.get("/getallstats", async function (req, res) {
         ret.setMessages("Entities retrived")
         ret.addData(documents)
         return res.status(200).send(ret)
-    } catch (error) {
+    } catch (err) {
         console.error("ERROR | " + nameFile + " | get/getLikes | get :", err);
         logger.error(nameFile + ' | get/getLikes | get : ' + err);
         ret.setMessages("Get error");
