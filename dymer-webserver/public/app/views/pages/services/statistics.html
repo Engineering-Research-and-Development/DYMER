@@ -8,6 +8,63 @@
         </div>
         <div class="card-body ">
             <div class=" ">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Type</div>
+                                <div class="panel-body" id="type">
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" value="all" class="all">  All</label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <div ng-repeat="el in types">
+                                            <label><input type="checkbox" value="{{ el[0].type }}">  {{ el[0].type }}</label>
+                                        </div> 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Action</div>
+                                <div class="panel-body" id="action">
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" value="all" class="all">  All</label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" value="views">  Views</label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" value="like">  Likes</label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" value="dislike">  Dislikes</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Counter</div>
+                                <div class="panel-body" id="counter">
+                                        <div class="checkbox">
+                                            <label><input type="checkbox" value="all" class="all">  All</label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label><input type="checkbox" value="one">  0 - 100</label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label><input type="checkbox" value="two">  101 - 300</label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label><input type="checkbox" value="three">  > 300</label>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>    
+                    </div>      
+                 
                 <table class="table  table-hover table-sm " id="dtStatistics">
                     <thead class=" text-primary">
                         <tr>
@@ -51,7 +108,7 @@
                                 {{ el.timestamps.length }}
                             </td>
                             <td class=" text-center actmodindexdash">
-                                <i class="fa fa-trash deleteAction " title="Flush statistics" ng-click="deleteStatisticsById(el,el._id)"></i>
+                                <i class="fa fa-trash deleteAction " title="Flush this statistic" ng-click="deleteStatistics(el._id)"></i>
                             </td>
                         </tr>
                     </tbody>
@@ -60,7 +117,10 @@
         </div>
         <div class="card-footer ">
             <hr/>
-            <div class="stats"><i class="fa fa-history"></i> Updated 17/10/2024</div>
+            <div class="stats"><i class="fa fa-history"></i> Updated 23/10/2024</div>
+            <div class="pull-right">
+                <span class="deleteAction" ng-click="deleteStatistics('all')">Flush all statistics <i class="fa fa-trash  " title="Flush all statistics"></i></span>
+            </div>
         </div>
     </div>
 </div>

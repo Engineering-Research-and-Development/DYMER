@@ -86,250 +86,312 @@
                     </div>
             </div>
 
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title">Import Entities from CSV<span class='pull-right'> <i
-                            class="fa fa-bars burgherAction " aria-hidden="true "
-                            ng-click="importFromCSV=! importFromCSV "></i></span></h5>
-                </div>
-                <div class="card-body" ng-show="importFromCSV" style="overflow-x:hidden;">
-                    <section class="wizard-section">
-                        <div class="row no-gutters">
-                            <div class="col-lg-10 col-md-10 offset-1" id="wiz">
-                                <div class="form-wizard-import">
-                                    <form name="wizardForm" ng-submit="submitForm()">
-                                        <div class="form-wizard-import-header">
-                                            <p>Fill all form field to go to the next step</p>
-                                            <ul class="list-unstyled form-wizard-import-steps clearfix">
-                                                <li ng-class="[{'active': currentStep === 1},{'activated': currentStep >= 2}]">
-                                                    <span>1</span>
-                                                </li>
-                                                <li ng-class="[{'active': currentStep === 2},{'activated': currentStep >= 3}]">
-                                                    <span>2</span>
-                                                </li>
-                                                <li ng-class="[{'active': currentStep === 3},{'activated': currentStep >= 4}]">
-                                                    <span>3</span>
-                                                </li>
-                                                <li ng-class="{'active': currentStep === 4}">
-                                                    <span>4</span>
-                                                </li>
-                                            </ul>
-                                        </div>
-    
-                                        <!-- Step 1 -->
-                                        <fieldset ng-show="currentStep === 1" class="wizard-import-fieldset show">
-                                            <h5 class="personal">Index and Separator</h5>
-                                            <p class="personalInfo">choose your index in this section, choose the CSV
-                                                separator</p>
-    
-                                            <div class="row">
-                                                <div class="col-md-5 form-group">
-                                                    <select ng-model="infoDetails.index" class="form-control" id="index"
-                                                            ng-change="getIndexStructure()" required>
-                                                        <option disabled selected value="">Choose index*</option>
-                                                        <option ng-repeat="index in listEntities" value="{{index}}"
-                                                                required>{{index}}
-                                                        </option>
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-1"></div>
-                                                <div class="col-md-6 form-group d-flex align-items-center">
-                                                    <select ng-model="infoDetails.separator" class="form-control"
-                                                            id="separator"
-                                                            ng-change="customSeparator = (infoDetails.separator === 'custom')">
-                                                        <option value="" selected>Auto-detect</option>
-                                                        <option value=";">Semicolon (;)</option>
-                                                        <option value=",">Comma (,)</option>
-                                                        <option value="\t">Tab (\t)</option>
-                                                        <option value="|">Pipe (|)</option>
-                                                        <option value="custom">Custom</option>
-                                                    </select>
-                                                    <!-- Input per separatore custom -->
-                                                    <input type="text" ng-model="infoDetails.separator"
-                                                           class="form-control ml-2" id="custom-separator"
-                                                           placeholder="Custom Separator" ng-if="customSeparator">
-                                                </div>
-                                            </div>
-                                            <div class="form-group clearfix">
-                                                <button type="button" class="form-wizard-import-next-btn float-right"
-                                                        ng-click="nextStep()" ng-disabled="!infoDetails.index">Next
-                                                </button>
-                                            </div>
-                                        </fieldset>
-    
-                                        <!-- Step 2 -->
-                                        <fieldset ng-show="currentStep === 2" class="wizard-import-fieldset show">
-                                            <h5 class="personal">Load CSV</h5>
-                                            <p class="personalInfo">Enter all your model fields in this section. Upload them
-                                                from a CSV or enter them manually with the available mask</p>
-    
-                                            <div class="csvContainer">
-                                                <input type="file" file-model="myFile"/>
-                                                <button type="submit" class="btn btn-primary btn-round"
-                                                        ng-click="getFieldByCSV()"> Process File
-                                                </button>
-    
-                                                <div class="row">
-                                                    <div ng-if="metadata" class="col-3">
-                                                        <h3>Metadata</h3>
-                                                        <pre>{{ metadata | json }}</pre>
-                                                    </div>
-                                                    <div ng-if="errors.length > 0" class="csv-errors col-9">
-                                                        <h3>Warnings</h3>
-                                                        <div class="alert alert-info" role="alert"
-                                                             ng-repeat="error in errors">
-                                                            <p>Error {{$index + 1}}: {{ error.message }}</p>
-                                                            <p>Row: {{ error.row }} -
-                                                                Type: {{ error.type }}</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-    
-                                            </div>
-    
-                                            <div class="form-group clearfix">
-                                                <button type="button" class="form-wizard-import-previous-btn float-left"
-                                                        ng-click="previousStep()">Previous
-                                                </button>
-                                                <button type="button" class="form-wizard-import-next-btn float-right"
-                                                        ng-click="nextStep()">Next
-                                                </button>
-                                            </div>
-                                        </fieldset>
-    
-                                        <!-- Step 3 -->
-                                        <fieldset ng-show="currentStep === 3" class="wizard-import-fieldset show">
-    
-                                            <h5 class="personal">Manage CSV Fields</h5>
-                                            <p class="personalInfo">In this section you can manage, edit, add and remove CSV
-                                                fields </p>
-    
-                                            <div class="col-lg-2 col-md-2 col-sm-2 offset-10">
-                                                <div class="form-group">
-                                                    <input type="text" class="form-control" id="relatonTo"
-                                                           ng-model="infoDetails.relations.relationTo">
-                                                    <label for="relatonTo" class="wizard-import-form-text-label">Index to
-                                                        relation to</label>
-                                                </div>
-                                            </div>
-    
-                                            <div>
-                                                <table class="table-import-hover table-import-sm dataTable no-footer">
-                                                    <thead>
-                                                    <tr>
-                                                        <th class="col-1">Import</th>
-                                                        <th class="col-3">Index Fields</th>
-                                                        <th>CSV Fields</th>
-                                                        <th>Relationship Key</th>
-                                                        <th></th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    <tr ng-repeat="record in infoDetails.fields" class="col-3">
-                                                        <td>
-                                                            <div class="custom-control custom-switch">
-                                                                <input type="checkbox" class="custom-control-input"
-                                                                       id="customSwitch_{{$index}}"
-                                                                       ng-model="record.isSelected">
-                                                                <label class="custom-control-label"
-                                                                       for="customSwitch_{{$index}}"></label>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <input type="text" ng-model="record.originalName"
-                                                                   ng-if="record.isNew" placeholder="Enter Original Name">
-                                                            <span ng-if="!record.isNew">{{ record.originalName }}</span>
-                                                        </td>
-                                                        <td>
-                                                            <select class="form-control" ng-model="record.newName">
-                                                                <option disabled selected value="">Choose CSV field</option>
-                                                                <option ng-repeat="field in CSVFields" value="{{field}}">
-                                                                    {{field}}
-                                                                </option>
-                                                            </select>
-                                                        </td>
-    
-                                                        <td>
-                                                            <div class="form-wizard-import wizard-import-form-radio">
-                                                                <input type="radio" id="radioSelect_{{$index}}"
-                                                                       name="radioSelect"
-                                                                       ng-disabled="!record.isSelected || !record.newName"
-                                                                       ng-click="setRelationTo(record.originalName)">
-                                                                <label for="radioSelect_{{$index}}"></label>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <button class="btn btn-danger btn-sm"
-                                                                    ng-click="removeHeader($index)" ng-if="record.isNew">
-                                                                Remove
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                    </tbody>
-                                                </table>
-    
-                                                <button class="btn btn-primary" ng-click="addHeader()">Add New Column
-                                                </button>
-                                            </div>
-    
-                                            <div class="form-group clearfix">
-                                                <button type="button" class="form-wizard-import-previous-btn float-left"
-                                                        ng-click="previousStep()">Previous
-                                                </button>
-                                                <button type="button" class="form-wizard-import-next-btn float-right"
-                                                        ng-click="nextStep()">Next
-                                                </button>
-                                            </div>
-                                        </fieldset>
-    
-                                        <fieldset ng-show="currentStep === 4" class="wizard-import-fieldset show">
-    
-                                            <h5 class="personal">Data Mapping Preview</h5>
-                                            <p class="personalInfo">In this section you check your mapping </p>
-                                            <div class="form-wizard-import-scroll-table">
-                                                <table class="table">
-                                                    <thead>
-                                                    <tr>
-                                                        <th ng-repeat="(key, value) in MappedData[0]">{{ key }}</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    <tr ng-repeat="item in MappedData">
-                                                        <td ng-repeat="value in item">{{ value }}</td>
-                                                    </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            <div class="form-group clearfix">
-                                                <button type="button" class="form-wizard-import-previous-btn float-left"
-                                                        ng-click="previousStep()">Previous
-                                                </button>
-                                                <button type="submit" class="form-wizard-import-submit float-right"
-                                                        ng-click="importMappedData()">Submit
-                                                </button>
-                                            </div>
-    
-                                        </fieldset>
-                                    </form>
-                                </div>
-                            </div>
-                            <div class="col-lg-12 col-md-12 hide" id="resultwiz">
-                                <div class="check-container">
-                                    <div class="check-background">
-                                        <svg viewBox="0 0 65 51" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M7 25L27.3077 44L58.5 7" stroke="white" stroke-width="13"
-                                                  stroke-linecap="round" stroke-linejoin="round"/>
-                                        </svg>
+             <!-- AC - NUOVO IMPORT START -->
+ 
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Import Entities from CSV<span class='pull-right'> <i
+                        class="fa fa-bars burgherAction " aria-hidden="true "
+                        ng-click="importFromCSV=! importFromCSV "></i></span></h5>
+            </div>
+            <div class="card-body" ng-show="importFromCSV" style="overflow-x:hidden;">
+                <section class="wizard-section">
+                    <div class="row no-gutters">
+                        <div class="col-lg-10 col-md-10 offset-1" id="wiz">
+                            <div class="form-wizard-import">
+<!--                                <form name="wizardForm" ng-submit="submitForm()">-->
+                                <form name="wizardForm">
+                                    <div class="form-wizard-import-header">
+                                        <p>Fill all form field to go to the next step</p>
+                                        <ul class="list-unstyled form-wizard-import-steps clearfix">
+                                            <li ng-class="[{'active': currentStep === 1},{'activated': currentStep >= 2}]">
+                                                <span>1</span>
+                                            </li>
+                                            <li ng-class="[{'active': currentStep === 2},{'activated': currentStep >= 3}]">
+                                                <span>2</span>
+                                            </li>
+                                            <li ng-class="[{'active': currentStep === 3},{'activated': currentStep >= 4}]">
+                                                <span>3</span>
+                                            </li>
+                                            <li ng-class="[{'active': currentStep === 4},{'activated': currentStep >= 5}]">
+                                                <span>4</span>
+                                            </li>
+                                            <li ng-class="{'active': currentStep === 5}">
+                                                <span>5</span>
+                                            </li>
+                                        </ul>
                                     </div>
-                                    <div class="check-shadow"></div>
-                                </div>
-                                <div id="resultwizstring">
-                                </div>
+
+                                    <!-- Step 1 - Index and Separator -->
+                                    <fieldset ng-show="currentStep === 1" class="wizard-import-fieldset show">
+                                        <h5 class="personal">Index and Separator</h5>
+                                        <p class="personalInfo">choose your index in this section, choose the CSV
+                                            separator</p>
+
+                                        <div class="row">
+                                            <div class="col-md-5 form-group">
+                                                <select ng-model="infoDetails.index" class="form-control" id="index"
+                                                        ng-change="getIndexStructure()" required>
+                                                    <option disabled selected value="">Choose index*</option>
+                                                    <option ng-repeat="index in listEntities" value="{{index}}"
+                                                            required>{{index}}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-1"></div>
+                                            <div class="col-md-6 form-group d-flex align-items-center">
+                                                <select ng-model="infoDetails.separator" class="form-control"
+                                                        id="separator"
+                                                        ng-change="customSeparator = (infoDetails.separator === 'custom')">
+                                                    <option value="" selected>Auto-detect</option>
+                                                    <option value=";">Semicolon (;)</option>
+                                                    <option value=",">Comma (,)</option>
+                                                    <option value="\t">Tab (\t)</option>
+                                                    <option value="|">Pipe (|)</option>
+                                                    <option value="custom">Custom</option>
+                                                </select>
+                                                <!-- Input per separatore custom -->
+                                                <input type="text" ng-model="infoDetails.separator"
+                                                       class="form-control ml-2" id="custom-separator"
+                                                       placeholder="Custom Separator" ng-if="customSeparator">
+                                            </div>
+                                        </div>
+                                        <div class="form-group clearfix">
+                                            <button type="button" class="form-wizard-import-next-btn float-right"
+                                                    ng-click="nextStep()" ng-disabled="!infoDetails.index">Next
+                                            </button>
+                                        </div>
+                                    </fieldset>
+
+                                    <!-- Step 2 - Load CSV -->
+                                    <fieldset ng-show="currentStep === 2" class="wizard-import-fieldset show">
+                                        <h5 class="personal">Load CSV</h5>
+                                        <p class="personalInfo">Enter all your model fields in this section. Upload them
+                                            from a CSV or enter them manually with the available mask</p>
+
+                                        <div class="csvContainer">
+                                            <input type="file" file-model="myFile"/>
+                                            <button type="submit" class="btn btn-primary btn-round"
+                                                    ng-click="getFieldByCSV()"> Process File
+                                            </button>
+
+                                            <div class="row">
+                                                <div ng-if="metadata" class="col-3">
+                                                    <h3>Metadata</h3>
+                                                    <pre>{{ metadata | json }}</pre>
+                                                </div>
+                                                <div ng-if="errors.length > 0" class="csv-errors col-9">
+                                                    <h3>Warnings</h3>
+                                                    <div class="alert alert-info" role="alert"
+                                                         ng-repeat="error in errors">
+                                                        <p>Error {{$index + 1}}: {{ error.message }}</p>
+                                                        <p>Row: {{ error.row }} -
+                                                            Type: {{ error.type }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="form-group clearfix">
+                                            <button type="button" class="form-wizard-import-previous-btn float-left"
+                                                    ng-click="previousStep()">Previous
+                                            </button>
+                                            <button type="button" class="form-wizard-import-next-btn float-right"
+                                                    ng-click="nextStep()">Next
+                                            </button>
+                                        </div>
+                                    </fieldset>
+
+                                    <!-- Step 3 - Manage CSV Fields -->
+                                    <fieldset ng-show="currentStep === 3" class="wizard-import-fieldset show">
+
+                                        <h5 class="personal">Manage CSV Fields</h5>
+                                        <p class="personalInfo">In this section you can manage, edit, add and remove CSV
+                                            fields </p>
+
+<!--                                        <div class="col-lg-2 col-md-2 col-sm-2 offset-10">-->
+<!--                                            <div class="form-group">-->
+<!--                                                <input type="text" class="form-control" id="relatonTo"-->
+<!--                                                       ng-model="infoDetails.relations.relationTo">-->
+<!--                                                <label for="relatonTo" class="wizard-import-form-text-label">Index to-->
+<!--                                                    relation to</label>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+
+                                        <div>
+                                            <table class="table-import-hover table-import-sm dataTable no-footer">
+                                                <thead>
+                                                <tr>
+                                                    <th class="col-1">Import</th>
+                                                    <th class="col-3">Index Fields</th>
+                                                    <th>CSV Fields</th>
+                                                    <th>Array Field</th>
+<!--                                                    <th>Relationship Key</th>-->
+                                                    <th></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr ng-repeat="record in infoDetails.fields" class="col-3">
+                                                    <td>
+                                                        <div class="custom-control custom-switch wizard-import-form-radio">
+                                                            <input type="checkbox" class="custom-control-input"
+                                                                   id="customSwitch_{{$index}}"
+                                                                   ng-model="record.isSelected">
+                                                            <label class="custom-control-label"
+                                                                   for="customSwitch_{{$index}}"></label>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" ng-model="record.originalName"
+                                                               ng-if="record.isNew" placeholder="Enter Original Name">
+                                                        <span ng-if="!record.isNew">{{ record.originalName }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <select class="form-control" ng-model="record.newName">
+                                                            <option disabled selected value="">Choose CSV field</option>
+                                                            <option ng-repeat="field in CSVFields" value="{{field}}">
+                                                                {{field}}
+                                                            </option>
+                                                        </select>
+                                                    </td>
+
+<!--                                                    <td>-->
+<!--                                                        <div class="form-wizard-import wizard-import-form-radio">-->
+<!--                                                            <input type="radio" id="radioSelect_{{$index}}"-->
+<!--                                                                   name="radioSelect"-->
+<!--                                                                   ng-disabled="!record.isSelected || !record.newName"-->
+<!--                                                                   ng-click="setRelationTo(record.newName)">-->
+<!--                                                            <label for="radioSelect_{{$index}}"></label>-->
+<!--                                                        </div>-->
+<!--                                                    </td>-->
+<!--                                                    START ARRAY CHECK-->
+                                                    <td>
+                                                        <div class="custom-control custom-switch wizard-import-form-radio">
+                                                            <input type="checkbox" class="custom-control-input"
+                                                                   id="customSwitch_array{{$index}}"
+                                                                   ng-model="record.isArrayField">
+                                                            <label class="custom-control-label"
+                                                                   for="customSwitch_array{{$index}}"></label>
+                                                        </div>
+                                                    </td>
+<!--                                                    END ARRAY CHECK-->
+                                                    <td>
+                                                        <button class="btn btn-danger btn-sm"
+                                                                ng-click="removeHeader($index)" ng-if="record.isNew">
+                                                            Remove
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+
+                                            <button class="btn btn-primary" ng-click="addHeader()">Add New Column
+                                            </button>
+                                        </div>
+
+                                        <div class="form-group clearfix">
+                                            <button type="button" class="form-wizard-import-previous-btn float-left"
+                                                    ng-click="previousStep()">Previous
+                                            </button>
+                                            <button type="button" class="form-wizard-import-next-btn float-right"
+                                                    ng-click="nextStep()">Next
+                                            </button>
+                                        </div>
+                                    </fieldset>
+
+                                    <!-- Step 4 - Manage Relations -->
+                                    <fieldset ng-show="currentStep === 4" class="wizard-import-fieldset show">
+                                        <h5 class="personal">Manage Relations</h5>
+                                        <p class="personalInfo">choose your index to relation and searching field</p>
+
+                                        <div class="row align-items-center">
+                                            <div class="col-md-2 form-group">
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input" id="relationEnabled" ng-model="infoDetails.relations.enabled">
+                                                    <label class="custom-control-label" for="relationEnabled">Enable Relations</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-5 form-group">
+                                                <!-- Dagli indici -->
+                                                <label for="relationTo">Relation Index</label>
+                                                <select ng-model="infoDetails.relations.relationTo" class="form-control" id="relationTo">
+                                                    <option disabled selected value="">Choose index*</option>
+                                                    <option ng-repeat="index in listEntities" value="{{index}}" required>{{index}}</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-md-5 form-group">
+                                                <!-- Dal CSV -->
+                                                <label for="searchingField">Relationship Key</label>
+                                                <select ng-model="infoDetails.relations.searchingField" class="form-control" id="searchingField">
+                                                    <option disabled selected value="">Choose index*</option>
+<!--                                                    <option ng-repeat="index in CSVFields" value="{{index}}" required>{{index}}</option>-->
+                                                    <option ng-repeat="index in CSVFields" value="{{index}}" required>{{index}}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group clearfix">
+                                            <button type="button" class="form-wizard-import-previous-btn float-left"
+                                                    ng-click="previousStep()">Previous
+                                            </button>
+                                            <button type="button" class="form-wizard-import-next-btn float-right"
+                                                    ng-click="nextStep()">Next
+                                            </button>
+                                        </div>
+                                    </fieldset>
+                                    <!-- Step 5 Data Mapping Preview -->
+                                    <fieldset ng-show="currentStep === 5" class="wizard-import-fieldset show">
+
+                                        <h5 class="personal">Data Mapping Preview</h5>
+                                        <p class="personalInfo">In this section you check your mapping </p>
+                                        <div class="form-wizard-import-scroll-table">
+                                            <table class="table">
+                                                <thead>
+                                                <tr>
+                                                    <th ng-repeat="(key, value) in MappedData[0]">{{ key }}</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr ng-repeat="item in MappedData">
+                                                    <td ng-repeat="value in item">{{ value }}</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="form-group clearfix">
+                                            <button type="button" class="form-wizard-import-previous-btn float-left"
+                                                    ng-click="previousStep()">Previous
+                                            </button>
+                                            <button type="submit" class="form-wizard-import-submit float-right"
+                                                    ng-click="importMappedData()">Submit
+                                            </button>
+                                        </div>
+
+                                    </fieldset>
+                                </form>
                             </div>
                         </div>
-                    </section>
-                </div>
+                        <div class="col-lg-12 col-md-12 hide" id="resultwiz">
+                            <div class="check-container">
+                                <div class="check-background">
+                                    <svg viewBox="0 0 65 51" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M7 25L27.3077 44L58.5 7" stroke="white" stroke-width="13"
+                                              stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </div>
+                                <div class="check-shadow"></div>
+                            </div>
+                            <div id="resultwizstring">
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
+        </div>
+   
+<!-- AC - NUOVO IMPORT END -->
 
 
 

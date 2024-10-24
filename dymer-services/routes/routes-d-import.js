@@ -237,6 +237,10 @@ router.post('/test-csv', upload.single('file'), async (req, res) => {
     }
 })
 
+
+
+
+/*
 router.post('/fromcsv/:enttype', util.checkIsAdmin,(req, res) => {
     let ret = new jsonResponse();
     let listTopost = [];
@@ -416,62 +420,326 @@ router.post('/fromcsv/:enttype', util.checkIsAdmin,(req, res) => {
         });
 
 });
+*/
 
-function buildNestedObj(dottedObj) {
-    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>dottedObj*********************************************");
-    console.log(JSON.stringify(dottedObj));
-    const result = {};
-    for (const key in dottedObj) {
-      if (dottedObj.hasOwnProperty(key)) {
-        const keys = key.split('.');
-        let currentLevel = result;
+
+// AC New Import Function START
+router.post('/fromcsv', util.checkIsAdmin, (req, res) => {
+    let ret = new jsonResponse();
+    let listTopost = []; // object to send to entities service
+
+    console.log("HEADERS HTTP:  ==> ", req.headers)
+
+    const indexToImport = req.body.index
+    let dataToImport = req.body.data
+    let enabledRelations = req.body.enabledRelations
+    const relationTo = req.body.relationTo
+    const searchingField = req.body.searchingField
+    const arrayFields = req.body.arrayFields
+
+    // logger.debug(nameFile + '| post/fromcsv | indexToImport:' + indexToImport);
+    // logger.debug(nameFile + '| post/fromcsv | dataToImport:' + dataToImport);
+    // logger.debug(nameFile + '| post/fromcsv | enabledRelations:' + enabledRelations);
+    // logger.debug(nameFile + '| post/fromcsv | relationTo:' + relationTo);
+    // logger.debug(nameFile + '| post/fromcsv | searchingField:' + searchingField);
+
+    console.log(nameFile + '| post/fromcsv | indexToImport:' + indexToImport);
+    console.log(nameFile + '| post/fromcsv | dataToImport:' + dataToImport);
+    console.log(nameFile + '| post/fromcsv | enabledRelations:' + enabledRelations);
+    console.log(nameFile + '| post/fromcsv | relationTo:' + relationTo);
+    console.log(nameFile + '| post/fromcsv | searchingField:' + searchingField);
+
+    let searchUrl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/_search";
+    // const originalrelquery = req.body.indtorel //"dih";
+
+    // Set query to retrieve all relationTo index entities
+    let query = {
+        "query": {
+            "bool": {
+                "must": [{
+                    "term": {
+                        "_index": relationTo
+                    }
+                }]
+            }
+        }
+    };
+
+    // Axios call to retrieve all relationTo index entities
+    axios.post(searchUrl, query).then(response => {
+        const relIndexEntities = response.data.data;
+        console.log("relIndexEntities", relIndexEntities)
+
+        // for Each mapped record, build propert_ object
+        dataToImport.forEach(element => {
+            let propert_ = {
+                owner: {
+                    uid: element["properties.owner"],
+                    gid: 20121
+                },
+                "grant": {
+                    "update": {
+                        "uid": [
+                            ""
+                        ],
+                        "gid": [
+                            ""
+                        ]
+                    },
+                    "delete": {
+                        "uid": [
+                            ""
+                        ],
+                        "gid": [
+                            ""
+                        ]
+                    },
+                    "managegrant": {
+                        "uid": [
+                            ""
+                        ],
+                        "gid": [
+                            ""
+                        ]
+                    }
+                },
+                ipsource: util.getServiceUrl('webserver') + util.getContextPath('webserver')
+            };
+            propert_.status = "1";
+            propert_.visibility = "0";
+            propert_.extrainfo = {
+                lastupdate: {
+                    uid: element["properties.owner"],
+                    origin: util.getServiceUrl('webserver') + util.getContextPath('webserver')
+                }
+            }
+            propert_.changed = (new Date()).toISOString(); // end propert_ building object
+
+            // for each entity in relIndexEntities finds the one that has the same title to the searchingField indicated
+            let elrel = relIndexEntities.find((el) => el["_source"].title === element[searchingField]);
+            //console.log("elrel: ", elrel)
+            let rel_id = undefined;
+            if (elrel != undefined) rel_id = elrel["_id"]; // if rel has an entity, get the id
+
+            // Start to build the single Entity
+            var singleEntity = {
+                "instance": {
+                    "index": indexToImport,
+                    "type": indexToImport
+                },
+
+                "data": buildNestedObj(element, arrayFields) // mapped and structured record
+            };
+
+            singleEntity.data.properties = propert_ // add propert_
+            // console.log(singleEntity.data.properties)
+    // QUANDO METTO PIU RELAZIONI --->> cicla relations array
+            if (enabledRelations) {
+                if (rel_id != undefined)
+                    singleEntity.data.relation = {[relationTo]: [{to: rel_id}]};
+            }
+
+
+            // if (newentityType.toLocaleLowerCase() == "dih") {
+            //     const initiativesArray = singleEntity.data.initiatives?.replace(/\r/g, '').split(",").map(el => {
+            //         return {"to": el}
+            //     })
+            //     const projectArray = singleEntity.data.project?.replace(/\r/g, '').split(",").map(el => {
+            //         return {"to": el}
+            //     })
+            //
+            //     // initialize if I need
+            //     singleEntity.data.relation = singleEntity.data.relation || {};
+            //     singleEntity.data.relation.initiatives = singleEntity.data.relation.initiatives || [];
+            //     singleEntity.data.relation.project = singleEntity.data.relation.project || [];
+            //
+            //     for (let itv of initiativesArray) {
+            //         singleEntity.data.relation.initiatives.push(itv);
+            //     }
+            //
+            //     for (let prj of projectArray) {
+            //         singleEntity.data.relation.project.push(prj);
+            //     }
+            // }
+
+            // console.log("===============")
+            // console.log(JSON.stringify(singleEntity))
+            var extrainfo = {
+                "extrainfo": {
+                    "companyId": "20097",
+                    "groupId": "20121",
+                    "cms": "lfr",
+                    "userId": element["email"],
+                    "virtualhost": "localhost"
+                }
+            };
+            let extrainfo_objJsonStr = JSON.stringify(extrainfo);
+            let extrainfo_objJsonB64 = Buffer.from(extrainfo_objJsonStr).toString("base64");
+
+            // user section
+            var userinfo = {
+                "isGravatarEnabled": false,
+                "authorization_decision": "",
+                "roles": [{
+                    "role": "User",
+                    "id": "20109"
+                },
+                    {
+                        "role": "app-admin",
+                        "id": "20110"
+                    }
+                ],
+                "app_azf_domain": "",
+                "id": element["email"],
+                "app_id": "",
+                "email": element["email"],
+                "username": element["email"]
+            };
+            let userinfo_objJsonStr = JSON.stringify(userinfo);
+            let userinfo_objJsonB64 = Buffer.from(userinfo_objJsonStr).toString("base64");
+
+            // Compose object to send
+            var objToPost = {'data': singleEntity, 'DYM': userinfo_objJsonB64, 'DYM_EXTRA': extrainfo_objJsonB64};
+            // console.log("===============")
+            // console.log(JSON.stringify(singleEntity))
+            listTopost.push(objToPost);
+        });
+        listTopost.forEach(function (obj, index) {
+            setTimeout(function () {
+                // console.log(nameFile + ' get/fromjcsv | sent Entity to Entities Microservice:' + index + " " + JSON.stringify(obj.data));
+                // logger.info(nameFile + ' get/fromjcsv | sent Entity to Entities Microservice :' + index + " " + JSON.stringify(obj.data));
+                console.log({data: obj.data, index: indexToImport, DYM: obj.DYM, DYM_EXTRA: obj.DYM_EXTRA})
+               postMyData(obj.data, indexToImport, obj.DYM, obj.DYM_EXTRA);
+            }, 1000 * (index + 1));
+        });
+        return res.send(ret);
+    })
+        .catch(error => {
+            console.error("ERROR | " + nameFile + " | get/fromcsv ", error);
+            logger.error(nameFile + ' | get/fromcsv : ' + error);
+        });
+});
+// AC New Import Function END
+
+// function buildNestedObj(dottedObj) {
+//     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>dottedObj*********************************************");
+//     console.log(JSON.stringify(dottedObj));
+//     const result = {};
+//     for (const key in dottedObj) {
+//       if (dottedObj.hasOwnProperty(key)) {
+//         const keys = key.split('.');
+//         let currentLevel = result;
   
-        for (let i = 0; i < keys.length; i++) {
-          const nestedKey = keys[i];
-          if (i === keys.length - 1) {
-            currentLevel[nestedKey] = dottedObj[key];
-          } else {
-            currentLevel[nestedKey] = currentLevel[nestedKey] || {};
-            currentLevel = currentLevel[nestedKey];
-          }
-        }
-      }
-    }
-    /**/
-    if(result["representatives"]) {
-        let representatives = JSON.stringify(result["representatives"]);
-        delete result["representatives"]
-        result["representatives"] = [JSON.parse(representatives)]
-    }
+//         for (let i = 0; i < keys.length; i++) {
+//           const nestedKey = keys[i];
+//           if (i === keys.length - 1) {
+//             currentLevel[nestedKey] = dottedObj[key];
+//           } else {
+//             currentLevel[nestedKey] = currentLevel[nestedKey] || {};
+//             currentLevel = currentLevel[nestedKey];
+//           }
+//         }
+//       }
+//     }
+//     /**/
+//     if(result["representatives"]) {
+//         let representatives = JSON.stringify(result["representatives"]);
+//         delete result["representatives"]
+//         result["representatives"] = [JSON.parse(representatives)]
+//     }
 
-    if(result["type"]) {
+//     if(result["type"]) {
 
-        if(result["type"].split(":").length>0){
-            let representatives = result["type"].split(":");
-            delete result["type"];
+//         if(result["type"].split(":").length>0){
+//             let representatives = result["type"].split(":");
+//             delete result["type"];
     
-            result["type"] = representatives[0];
+//             result["type"] = representatives[0];
 
-        }
+//         }
 
 
-        if(result["type"].split(";").length>0){
-            let representatives = result["type"].split(";");
-            delete result["type"];
+//         if(result["type"].split(";").length>0){
+//             let representatives = result["type"].split(";");
+//             delete result["type"];
     
-            result["type"] = representatives[0];
+//             result["type"] = representatives[0];
 
+//         }
+//     }
+
+
+
+//     /**/
+//     // if(!result.properties) result.properties = {}
+//     // if(result.properties?.owner) result.properties.owner = {owner: result.properties.owner}
+//     return result;
+// }
+/******************************************/
+
+function buildNestedObj(dottedObj, arrayFields = []) {
+    const result = {};
+    const arrayFieldGroups = {};    // new to put in the same object
+
+    for (const key in dottedObj) {
+        if (dottedObj.hasOwnProperty(key)) {
+            const keys = key.split('.');
+            let currentLevel = result;
+
+            for (let i = 0; i < keys.length; i++) {
+                const nestedKey = keys[i];
+                if (i === keys.length - 1) {
+                    currentLevel[nestedKey] = dottedObj[key];
+                } else {
+                    currentLevel[nestedKey] = currentLevel[nestedKey] || {};
+                    currentLevel = currentLevel[nestedKey];
+                }
+            }
         }
     }
 
+    // Raggruppamento dei campi che devono essere trasformati in array
+    arrayFields.forEach(field => {
+        const keys = field.split('.');
+        const topLevelKey = keys[0];
 
+        // Se non esiste ancora un gruppo per questo topLevelKey, lo creiamo
+        if (!arrayFieldGroups[topLevelKey]) {
+            arrayFieldGroups[topLevelKey] = {};
+        }
 
-    /**/
-    // if(!result.properties) result.properties = {}
-    // if(result.properties?.owner) result.properties.owner = {owner: result.properties.owner}
+        let currentGroupLevel = arrayFieldGroups[topLevelKey];
+        let currentResultLevel = result[topLevelKey];
+
+        // Costruzione del gruppo per tutti i campi definiti in arrayFields
+        for (let i = 1; i < keys.length; i++) {
+            const nestedKey = keys[i];
+
+            // Se siamo all'ultimo livello, copiamo il valore
+            if (i === keys.length - 1 && currentResultLevel) {
+                currentGroupLevel[nestedKey] = currentResultLevel[nestedKey];
+                delete currentResultLevel[nestedKey]; // Rimuove il campo dall'oggetto principale
+            } else if (currentResultLevel) {
+                currentResultLevel = currentResultLevel[nestedKey];
+            }
+        }
+    });
+
+    // Trasforma i gruppi in array di oggetti nel risultato finale
+    for (const key in arrayFieldGroups) {
+        if (arrayFieldGroups.hasOwnProperty(key)) {
+            result[key] = [arrayFieldGroups[key]];
+        }
+    }
+
     return result;
 }
+
 /******************************************/
+
+
+
+
 
 // '/api/dservice/api/v1/import/fromjson'
 router.get('/fromjson', util.checkIsAdmin, (req, res) => {

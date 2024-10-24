@@ -2,7 +2,7 @@ angular.module('entitiesImportControllers', [])
     .controller('entitiesImport_ff', function ($scope, $http, $rootScope, exportEntities, multipartForm) {
         var baseContextPath = $rootScope.globals.contextpath;
         //   console.log('testing controller entitiesImport_ff');
-        $scope.tab = 1;
+
         $scope.method = "GET";
         $scope.host = "http://localhost";
         $scope.port = "8008";
@@ -27,7 +27,7 @@ angular.module('entitiesImportControllers', [])
         }).catch(function (e) {
             console.error("error: ", e)
         })
- 
+
 
         $scope.importEntFl = function () {
 
@@ -120,7 +120,7 @@ angular.module('entitiesImportControllers', [])
 
         // Funzioni per la navigazione nel wizard
         $scope.nextStep = function () {
-            if ($scope.currentStep < 4) {
+            if ($scope.currentStep < 5) {
                 $scope.currentStep++;
             }
             if ($scope.currentStep == 2) {
@@ -128,23 +128,22 @@ angular.module('entitiesImportControllers', [])
             }
             if ($scope.currentStep == 3) {
                 $scope.activated = "activated";
-
             }
             if ($scope.currentStep == 4) {
+                $scope.selectedFields = $scope.infoDetails.fields.filter((element) => element.isSelected === true);
+                $scope.activated = "activated";
+            }
+            if ($scope.currentStep == 5) {
                 runMapping()
                 $scope.activated = "activated";
             }
-            // console.log("wizard infoDetails: ", $scope.infoDetails)
+            console.log("wizard infoDetails: ", $scope.infoDetails)
         };
 
         $scope.previousStep = function () {
             if ($scope.currentStep > 1) {
                 $scope.currentStep--;
             }
-        };
-
-        $scope.submitForm = function () {
-            console.log('Form submitted:', $scope.infoDetails);
         };
 
         $scope.getFieldByCSV = async function () {
@@ -175,7 +174,8 @@ angular.module('entitiesImportControllers', [])
                 originalName: "",
                 newName: "",
                 isNew: true,
-                isSelected: true
+                isSelected: true,
+                isArrayField: false
             });
         };
 
@@ -207,7 +207,8 @@ angular.module('entitiesImportControllers', [])
                         originalName: field,
                         newName: "",
                         isNew: false,
-                        isSelected: false
+                        isSelected: false,
+                        isArrayField: false
                     })
                 })
             }).catch(e => {
@@ -215,26 +216,32 @@ angular.module('entitiesImportControllers', [])
             })
         }
 
-        $scope.setRelationTo = function (originalName) {
-            if (originalName) {
-                $scope.infoDetails.relations.enabled = true;
-                //$scope.infoDetails.relations.relationTo = newName;
-                $scope.infoDetails.relations.searchingField = originalName;
-            }
-        };
+        // $scope.setRelationTo = function (newName) {
+        //     if (newName) {
+        //         $scope.infoDetails.relations.enabled = true;
+        //         $scope.infoDetails.relations.searchingField = newName;
+        //     }
+        // };
+
 
         function runMapping() {
             // Get selected fields
-            const selectedFields = $scope.infoDetails.fields.filter(field => field.isSelected);
+            const selectedFields = $scope.selectedFields //$scope.infoDetails.fields.filter(field => field.isSelected);
 
             // header Map
             let headerMap = {};
+            $scope.arrayFields = []
+
             selectedFields.forEach(field => {
                 const originalName = field.originalName;
                 const newName = field.newName;
 
+                if(field.isArrayField) {
+                    $scope.arrayFields.push(originalName)
+                }
+
                 headerMap[newName] = originalName;
-                // headerMap[originalName] = newName;
+                //headerMap["isArrayField"] = isArrayField;
             });
 
             // selected Data in CSV
@@ -253,7 +260,7 @@ angular.module('entitiesImportControllers', [])
                 .map(header => headerMap[header]);
 
             $scope.MappedData = filteredData
-
+            console.log("arrayFields ==> ", $scope.arrayFields)
             // console.log("filteredData", filteredData);
             // console.log("filteredHeaders", filteredHeaders);
             //
@@ -263,12 +270,29 @@ angular.module('entitiesImportControllers', [])
         }
 
         $scope.importMappedData = function () {
+            // Prepare body
             let dataToImport = {
+                index: $scope.infoDetails.index,
+                enabledRelations: $scope.infoDetails.relations.enabled,
                 relationTo: $scope.infoDetails.relations.relationTo,
                 data: $scope.MappedData,
-                searchingField: $scope.infoDetails.relations.searchingField
+                searchingField: $scope.infoDetails.relations.searchingField,
+                arrayFields: $scope.arrayFields
             }
-            console.log("invio a al BE --> ", dataToImport)
+
+            console.log("Sending to Backend ==> ", dataToImport)
+
+            // Send to BE
+            let url = baseContextPath + "/api/dservice/api/v1/import/fromcsv"
+            $http.post(url, dataToImport).then(function (ret) {
+                if (ret.data.success) {
+                    useGritterTool("<b><i class='nc-icon nc-vector'></i>CSV Import</b>", ret.data.message);
+                } else {
+                    useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>CSV Import</b>", ret.data.message, "danger");
+                }
+            }).catch(function (response) {
+                console.log(response.status);
+            });
         }
 
 // AC - new import end
