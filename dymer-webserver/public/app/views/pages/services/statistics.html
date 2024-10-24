@@ -14,17 +14,16 @@
                                 <div class="panel-heading">Type</div>
                                 <div class="panel-body" id="type">
                                     <div class="checkbox">
-                                        <label><input type="checkbox" value="all" class="all">  All</label>
+                                        <label><input type="radio" name="radioType" ng-click="typeFilter('all', $event)" value="all" class="all">  All</label>
                                     </div>
                                     <div class="checkbox">
                                         <div ng-repeat="el in types">
-                                            <label><input type="checkbox" value="{{ el[0].type }}">  {{ el[0].type }}</label>
+                                            <label><input type="radio" name="radioType" ng-click="typeFilter(el, $event)" value="{{ el[0].type }}">  {{ el[0].type }}</label>
                                         </div> 
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="col-md-4">
                             <div class="panel panel-default">
                                 <div class="panel-heading">Action</div>
