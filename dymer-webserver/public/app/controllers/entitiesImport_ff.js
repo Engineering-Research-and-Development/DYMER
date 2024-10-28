@@ -106,15 +106,23 @@ angular.module('entitiesImportControllers', [])
         $("#loadwiz").hide();
         $("#resultwiz").hide();
 
+        // $scope.infoDetails = {
+        //     index: "",
+        //     separator: "",
+        //     //enableRelations: false,
+        //     relations: {
+        //         enabled: false,
+        //         searchingField: "",
+        //         relationTo: ""
+        //     },
+        //     fields: []
+        // };
         $scope.infoDetails = {
             index: "",
             separator: "",
-            //enableRelations: false,
-            relations: {
-                enabled: false,
-                searchingField: "",
-                relationTo: ""
-            },
+            relationsList: [
+                { enabled: false, searchingField: '', relationTo: '' } // Inizialmente la prima relazione è vuota
+            ],
             fields: []
         };
 
@@ -269,31 +277,73 @@ angular.module('entitiesImportControllers', [])
             // console.log("CSV Fields:", $scope.CSVFields);
         }
 
+        // $scope.importMappedData = function () {
+        //     // Prepare body
+        //     let dataToImport = {
+        //         index: $scope.infoDetails.index,
+        //         enabledRelations: $scope.infoDetails.relations.enabled,
+        //         relationTo: $scope.infoDetails.relations.relationTo,
+        //         data: $scope.MappedData,
+        //         searchingField: $scope.infoDetails.relations.searchingField,
+        //         arrayFields: $scope.arrayFields
+        //     }
+        //
+        //     console.log("Sending to Backend ==> ", dataToImport)
+        //
+        //     // Send to BE
+        //     let url = baseContextPath + "/api/dservice/api/v1/import/fromcsv"
+        //     $http.post(url, dataToImport).then(function (ret) {
+        //         if (ret.data.success) {
+        //             useGritterTool("<b><i class='nc-icon nc-vector'></i>CSV Import</b>", ret.data.message);
+        //         } else {
+        //             useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>CSV Import</b>", ret.data.message, "danger");
+        //         }
+        //     }).catch(function (response) {
+        //         console.log(response.status);
+        //     });
+        // }
         $scope.importMappedData = function () {
-            // Prepare body
+            // Prepara il corpo dei dati
             let dataToImport = {
                 index: $scope.infoDetails.index,
-                enabledRelations: $scope.infoDetails.relations.enabled,
-                relationTo: $scope.infoDetails.relations.relationTo,
+                enabledRelations: $scope.infoDetails.relationsList.map(r => r.enabled), // Prende tutte le relazioni abilitate
+                relationTo: $scope.infoDetails.relationsList.map(r => r.relationTo), // Prende tutte le relazioni "relationTo"
                 data: $scope.MappedData,
-                searchingField: $scope.infoDetails.relations.searchingField,
+                searchingField: $scope.infoDetails.relationsList.map(r => r.searchingField), // Prende tutte le chiavi "searchingField"
                 arrayFields: $scope.arrayFields
-            }
+            };
 
-            console.log("Sending to Backend ==> ", dataToImport)
+            console.log("Sending to Backend ==> ", dataToImport);
 
-            // Send to BE
-            let url = baseContextPath + "/api/dservice/api/v1/import/fromcsv"
-            $http.post(url, dataToImport).then(function (ret) {
-                if (ret.data.success) {
-                    useGritterTool("<b><i class='nc-icon nc-vector'></i>CSV Import</b>", ret.data.message);
-                } else {
-                    useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>CSV Import</b>", ret.data.message, "danger");
-                }
-            }).catch(function (response) {
-                console.log(response.status);
+            // Invia al BE
+            // let url = baseContextPath + "/api/dservice/api/v1/import/fromcsv";
+            // $http.post(url, dataToImport).then(function (ret) {
+            //     if (ret.data.success) {
+            //         useGritterTool("<b><i class='nc-icon nc-vector'></i>CSV Import</b>", ret.data.message);
+            //     } else {
+            //         useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>CSV Import</b>", ret.data.message, "danger");
+            //     }
+            // }).catch(function (response) {
+            //     console.log(response.status);
+            // });
+        };
+
+        $scope.addRelation = function () {
+            console.log("ADD RELATION");
+            // Aggiungi una nuova relazione con "enabled" a true
+            $scope.infoDetails.relationsList.push({
+                enabled: true,
+                searchingField: '',
+                relationTo: ''
             });
-        }
+        };
+
+        $scope.removeRelation = function (index) {
+            if (index !== 0) {
+                console.log("REMOVE RELATION " + index);
+                $scope.infoDetails.relationsList.splice(index, 1); // Rimuove solo se non è la prima riga
+            }
+        };
 
 // AC - new import end
     });

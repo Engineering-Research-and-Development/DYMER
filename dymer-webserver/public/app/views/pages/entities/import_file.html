@@ -291,33 +291,67 @@
                                         <h5 class="personal">Manage Relations</h5>
                                         <p class="personalInfo">choose your index to relation and searching field</p>
 
-                                        <div class="row align-items-center">
+<!--                                        <div class="row align-items-center">-->
+<!--                                            <div class="col-md-2 form-group">-->
+<!--                                                <div class="custom-control custom-switch">-->
+<!--                                                    <input type="checkbox" class="custom-control-input" id="relationEnabled" ng-model="infoDetails.relations.enabled">-->
+<!--                                                    <label class="custom-control-label" for="relationEnabled">Enable Relations</label>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+
+<!--                                            <div class="col-md-4 form-group">-->
+<!--                                                &lt;!&ndash; Dagli indici &ndash;&gt;-->
+<!--                                                <label for="relationTo">Relation Index</label>-->
+<!--                                                <select ng-model="infoDetails.relations.relationTo" class="form-control" id="relationTo">-->
+<!--                                                    <option disabled selected value="">Choose index*</option>-->
+<!--                                                    <option ng-repeat="index in listEntities" value="{{index}}" required>{{index}}</option>-->
+<!--                                                </select>-->
+<!--                                            </div>-->
+
+<!--                                            <div class="col-md-4 form-group">-->
+<!--                                                &lt;!&ndash; Dal CSV &ndash;&gt;-->
+<!--                                                <label for="searchingField">Relationship Key</label>-->
+<!--                                                <select ng-model="infoDetails.relations.searchingField" class="form-control" id="searchingField">-->
+<!--                                                    <option disabled selected value="">Choose index*</option>-->
+<!--&lt;!&ndash;                                                    <option ng-repeat="index in CSVFields" value="{{index}}" required>{{index}}</option>&ndash;&gt;-->
+<!--                                                    <option ng-repeat="index in CSVFields" value="{{index}}" required>{{index}}</option>-->
+<!--                                                </select>-->
+<!--                                            </div>-->
+<!--                                            <div class="col-lg-2 col-md-2 col-sm-2 action-br" style="margin-top: 40px;">-->
+<!--                                                <span class="btn btn-outline-primary btn-sm" ng-click="addRelation()">+</span>-->
+<!--                                                <span class="btn btn-outline-danger btn-sm" ng-click="removeRelation($index)">-</span>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+                                        <div class="row align-items-center" ng-repeat="relation in infoDetails.relationsList track by $index">
                                             <div class="col-md-2 form-group">
                                                 <div class="custom-control custom-switch">
-                                                    <input type="checkbox" class="custom-control-input" id="relationEnabled" ng-model="infoDetails.relations.enabled">
-                                                    <label class="custom-control-label" for="relationEnabled">Enable Relations</label>
+                                                    <input type="checkbox" class="custom-control-input" id="relationEnabled{{$index}}" ng-model="relation.enabled">
+                                                    <label class="custom-control-label" for="relationEnabled{{$index}}">Enable Relations</label>
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-5 form-group">
-                                                <!-- Dagli indici -->
-                                                <label for="relationTo">Relation Index</label>
-                                                <select ng-model="infoDetails.relations.relationTo" class="form-control" id="relationTo">
+                                            <div class="col-md-4 form-group">
+                                                <label for="relationTo{{$index}}">Relation Index</label>
+                                                <select ng-model="relation.relationTo" class="form-control" id="relationTo{{$index}}">
                                                     <option disabled selected value="">Choose index*</option>
                                                     <option ng-repeat="index in listEntities" value="{{index}}" required>{{index}}</option>
                                                 </select>
                                             </div>
 
-                                            <div class="col-md-5 form-group">
-                                                <!-- Dal CSV -->
-                                                <label for="searchingField">Relationship Key</label>
-                                                <select ng-model="infoDetails.relations.searchingField" class="form-control" id="searchingField">
+                                            <div class="col-md-4 form-group">
+                                                <label for="searchingField{{$index}}">Relationship Key</label>
+                                                <select ng-model="relation.searchingField" class="form-control" id="searchingField{{$index}}">
                                                     <option disabled selected value="">Choose index*</option>
-<!--                                                    <option ng-repeat="index in CSVFields" value="{{index}}" required>{{index}}</option>-->
                                                     <option ng-repeat="index in CSVFields" value="{{index}}" required>{{index}}</option>
                                                 </select>
                                             </div>
+
+                                            <div class="col-lg-2 col-md-2 col-sm-2 action-br" style="margin-top: 40px;">
+                                                <span class="btn btn-outline-primary btn-sm" ng-click="addRelation()">+</span>
+                                                <span class="btn btn-outline-danger btn-sm" ng-click="removeRelation($index)" ng-if="$index !== 0">-</span>
+                                            </div>
                                         </div>
+
                                         <div class="form-group clearfix">
                                             <button type="button" class="form-wizard-import-previous-btn float-left"
                                                     ng-click="previousStep()">Previous
