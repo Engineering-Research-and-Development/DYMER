@@ -3,11 +3,21 @@ angular.module('statisticsCtrl', [])
     .controller('statisticsController', function ($scope, $http, $rootScope, multipartForm) {
         var baseContextPath = $rootScope.globals.contextpath;
         $scope.dtStatistics = [];
+        $scope.typeFilter = function(el, event) {
+            if (el == "all" || !event.target.checked){
+              statistics(50, [], '#dtStatistics', 'dtStatistics','types');   
+            }else{
+                $scope['dtStatistics'] = el;     
+                jQuery(document).ready(function() {
+                  jQuery('#dtStatistics').DataTable();
+                });
+            }
+          return true;
+        }
         let statistics = function(size, sort, idDt, lista, types) {
-            let par = {
-                "query": { "instance._type": { "$eq": "" } }
-            };
-            $http.get(baseContextPath + '/api/dservice/api/v1/stats/getallstats', par).then(function(ret) {
+            $http.get(baseContextPath + '/api/dservice/api/v1/stats/getallstats',{
+              params: {}
+            }).then(function(ret) {
                 $scope[lista] = ret.data.data[0]; 
                 let results = ret.data.data[0], 
                 typesObject = Object.groupBy(results, ({ type }) => type);    
@@ -21,9 +31,15 @@ angular.module('statisticsCtrl', [])
             });
         }
         statistics(50, [], '#dtStatistics', 'dtStatistics','types');
-        $scope.deleteStatisticsById = function(obj, id) {
+        $scope.deleteStatistics = function(id) {
             if (confirm("Are you sure to flush statistics ?")) {
-                $http.delete(baseContextPath + '/api/dservice/api/v1/stats/deletestats/'+id, {
+                let url = "";
+                if (id == "all"){
+                  url = '/api/dservice/api/v1/stats/deletestats/all';
+                }else{
+                  url = '/api/dservice/api/v1/stats/deletestats/'+id;
+                }
+                $http.delete(baseContextPath + url, {
                 }).then(function(response) {
                     statistics(50, [], '#dtStatistics', 'dtStatistics');
                     useGritterTool("<b><i class='fa fa-map-signs  '></i> Delete successfully </b>", "");
