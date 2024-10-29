@@ -6,15 +6,27 @@
 [![Issues][issues-shield]][issues-url]
 
  
-<img src="https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/dymer-logo.png?raw=true" title="Dymer" alt="Dymer"> 
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/Engineering-Research-and-Development/DYMER">
+    <img src="https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/dymer-logo.png?raw=true" alt="Logo">
+  </a>
 
+  <h3 align="center">DYnamic Information ModElling & Rendering</h3>
 
-# DYMER
-<img src="https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/Dymer.jpg?raw=true" title="Dymer" alt="Dymer"> 
+  <p align="center">
+    The DYMER is a suite for resource catalog visualization. DYMER provides advanced mapping capabilities between a data model in JSON format and its graphic template on the one hand, and on the other hand, it provides a JavaScript framework for integrating the DYMER template into a web-based application. The software is flexible because it adopts open technologies and can be used in various environments without considerable requirements. 
+    <br />
+    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+   <img src="https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/Dymer.jpg?raw=true" title="Dymer" alt="Dymer"> 
+ 
+  </p>
+</div>
 
-> DYnamic Information ModElling & Rendering
-
-The DYMER is a suite for resource catalog visualization. DYMER provides advanced mapping capabilities between a data model in JSON format and its graphic template on the one hand, and on the other hand, it provides a JavaScript framework for integrating the DYMER template into a web-based application. The software is flexible because it adopts open technologies and can be used in various environments without considerable requirements. 
+ 
 
 ## Table of contents
 * [**Architecture**](#architecture)
