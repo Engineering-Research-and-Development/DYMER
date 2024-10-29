@@ -5,13 +5,28 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 
+ 
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/Engineering-Research-and-Development/DYMER">
+    <img src="https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/dymer-logo.png?raw=true" alt="Logo">
+  </a>
 
-# DYMER
-<img src="https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/Dymer.jpg?raw=true" title="Dymer" alt="Dymer"> 
+  <h3 align="center">DYnamic Information ModElling & Rendering</h3>
 
-> DYnamic Information ModElling & Rendering
+  <p align="center">
+    The DYMER is a suite for resource catalog visualization. DYMER provides advanced mapping capabilities between a data model in JSON format and its graphic template on the one hand, and on the other hand, it provides a JavaScript framework for integrating the DYMER template into a web-based application. The software is flexible because it adopts open technologies and can be used in various environments without considerable requirements. 
+    <br />
+    <a href="https://github.com/Engineering-Research-and-Development/DYMER/edit/master/README.md"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+   <img src="https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/Dymer.jpg?raw=true" title="Dymer" alt="Dymer"> 
+ 
+  </p>
+</div>
 
-The DYMER is a suite for resource catalog visualization. DYMER provides advanced mapping capabilities between a data model in JSON format and its graphic template on the one hand, and on the other hand, it provides a JavaScript framework for integrating the DYMER template into a web-based application. The software is flexible because it adopts open technologies and can be used in various environments without considerable requirements. 
+ 
 
 ## Table of contents
 * [**Architecture**](#architecture)
