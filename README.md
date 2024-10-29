@@ -5,6 +5,9 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 
+ 
+<img src="https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/dymer-d.png?raw=true" title="Dymer" alt="Dymer"> 
+
 
 # DYMER
 <img src="https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/Dymer.jpg?raw=true" title="Dymer" alt="Dymer"> 
