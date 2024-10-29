@@ -202,6 +202,14 @@ The application image doesn't contain any data, so for the use of DYMER features
 * [Marco Bernandino Romano](https://github.com/marco-romano-eng) 
 * [Marko Stojanovic](https://github.com/marest94) 
 
+### Top contributors:
+
+<a href="https://github.com/Engineering-Research-and-Development/DYMER/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=Engineering-Research-and-Development/DYMER" alt="contrib.rocks image" />
+</a>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 
 ## Status
 Project is: _in progress_ 
