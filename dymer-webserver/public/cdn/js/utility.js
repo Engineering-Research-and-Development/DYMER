@@ -562,7 +562,7 @@ class ElTemplate {
         ajax_temp_call.flush();
         //TODO check
         //var tempQuery = { "query": { "query": { "instance._index": this._index, "instance._type": this._type } } };
-        var tempQuery = { "query": { "query": { "instance._index": this._index, "instance._type": this._index } } };
+        var tempQuery = { "query": { "query": { "instance._index": this._index /*FS, "instance._type": this._index */} } };
         //var tempQuery = { "query": { "query": { "instance._index": this._index } } };
 
         ajax_temp_call.addparams(tempQuery);
@@ -2586,7 +2586,7 @@ function kmsrenderEl(ar, rendertype) {
                 //TODO check
                 //var datapost = { "query": { "instance._index": itemToEdit._index, "instance._type": itemToEdit._type }, "act": "update" };
 
-                var datapost = { "query": { "instance._index": itemToEdit._index, "instance._type": itemToEdit._index }, "act": "update" };
+                var datapost = { "query": { "instance._index": itemToEdit._index /*FS, "instance._type": itemToEdit._index*/ }, "act": "update" };
 
                 //var datapost = { "query": { "instance._index": itemToEdit._index }, "act": "update" };
 
