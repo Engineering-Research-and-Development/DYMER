@@ -133,7 +133,7 @@ router.post('/addrule', util.checkIsAdmin, function (req, res) {
     var ret = new jsonResponse();
     var newObj = {
         _index: data.op_index,
-        _type: data.op_type,
+        _type: data.op_index,//VL
         mapping: data.op_mapping,
         sendnotification: data.sendnotification
     }
@@ -167,7 +167,7 @@ function findRule(queryFind, res) {
     OpnSearchRule.find(queryFind).then((els) => {
         ret.setMessages("List");
         ret.setData(els);
-        // console.log('ret', ret);
+        // console.log('>>>findRule ret', ret);
         return res.send(ret);
     }).catch((err) => {
         if (err) {
@@ -507,7 +507,7 @@ function del(ind, el, dymerentry, hook, dymeruser) {
         "emailAddress": dymeruser.email,
         "companyId": Number(dymeruser.extrainfo.companyId),
         "index": el._index,
-        "type": el._type,
+        "type": el._index,//VL
         "id": dymerentry.id_,
         "notify": el.sendNotification
     };
@@ -563,7 +563,7 @@ router.post('/listener', function (req, res) {
     var eventSource = (data.eventSource).split('_');
     var queryFind = {
         "_index": data.obj._index,
-        "_type": data.obj._type
+        "_type": data.obj._index//VL
     };
     OpnSearchRule.find(queryFind).then((els) => {
         ret.setMessages("List");
@@ -698,7 +698,7 @@ function postAssettOpenness(typeaction, obj, rule, extraInfo) {
                             "groupId": Number(groupId), //20121
                             "userId": Number(userId),
                             "index": obj._index,
-                            "type": obj._type,
+                            "type": obj._index,//VL
                             "id": obj._id,
                             "url": url_base_entity, //url del dymer
                             "title": assetTitle,
@@ -714,7 +714,7 @@ function postAssettOpenness(typeaction, obj, rule, extraInfo) {
                             "emailAddress": emailAddress,
                             "companyId": Number(companyId),
                             "index": obj._index,
-                            "type": obj._type,
+                            "type": obj._index,//VL
                             "id": obj._id,
                             "notify": notify
                         };
