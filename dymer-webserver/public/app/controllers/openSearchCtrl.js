@@ -72,6 +72,7 @@ angular.module('openSearchCtrl', [])
         resetRule();
         $scope.opnsearch = {
             config: {
+                get: { servicetype: "get", id: '' },
                 insert: { servicetype: "insert", id: '' },
                 update: { servicetype: "update", id: '' },
                 delete: { servicetype: "delete", id: '' }
