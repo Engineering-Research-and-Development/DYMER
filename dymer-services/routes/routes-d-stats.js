@@ -28,8 +28,9 @@ router.post("/savestats", async function (req, res) {
         try {
             let existingDoc = await statsModel.findOne({resourceId: data.resourceId, email: dymeruser.email, act: data.act});
             if (existingDoc) {
-                existingDoc.timestamps.push(Date.now());
-
+                //existingDoc.timestamps.push(Date.now());
+                existingDoc.timestamps.push((new Date().toLocaleString()));
+                
                 ret.setSuccess(true)
                 ret.setMessages("Statistics updated successfully")
                 ret.addData(await existingDoc.save());
@@ -38,7 +39,8 @@ router.post("/savestats", async function (req, res) {
                 return res.status(201).send(ret);
             } else {
                 data.ip = req.ip;
-                data.timestamps = [Date.now()];
+                //data.timestamps = [Date.now()];
+                data.timestamps = [new Date().toLocaleString()];
                 data.roles = dymeruser.roles;
 
                 let newObj = new statsModel(data);
@@ -204,7 +206,8 @@ router.put("/updatestats/:id", async function (req, res) {
         let updatedDocument;
         switch (act) {
             case "views":
-                updatedDocument = await updateViews(idString, ip, email, roles, resourceId, type, Date.now(), title);
+                //updatedDocument = await updateViews(idString, ip, email, roles, resourceId, type, Date.now(), title);
+                updatedDocument = await updateViews(idString, ip, email, roles, resourceId, type, new Date().toLocaleString(), title);
                 break;
             case "like":
             case "dislike":
@@ -269,7 +272,8 @@ async function createOrUpdateDocument(idString, ip, email, roles, resourceId, ty
     try {
         let existingDoc = await statsModel.findOne({email: email, resourceId: idString, act: act});
         if (existingDoc) {
-            existingDoc.timestamps.push(Date.now());
+            //existingDoc.timestamps.push(Date.now());
+            existingDoc.timestamps.push(new Date().toLocaleString());
             return await existingDoc.save();
         } else {
             let data = {
@@ -280,7 +284,8 @@ async function createOrUpdateDocument(idString, ip, email, roles, resourceId, ty
                 type: type,
                 act: act,
                 title,
-                timestamps: Date.now()
+                //timestamps: Date.now()
+                timestamps: new Date().toLocaleString()
             };
             let newObj = new statsModel(data);
             return await newObj.save();
