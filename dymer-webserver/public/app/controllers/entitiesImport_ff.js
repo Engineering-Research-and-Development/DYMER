@@ -109,16 +109,13 @@ angular.module('entitiesImportControllers', [])
         $scope.infoDetails = {
             index: "",
             separator: "",
-            //enableRelations: false,
-            relations: {
-                enabled: false,
-                searchingField: "",
-                relationTo: ""
-            },
+            relationsList: [
+                { enabled: false, searchingField: '', relationTo: '' }
+            ],
             fields: []
         };
 
-        // Funzioni per la navigazione nel wizard
+        // Wizard Handling
         $scope.nextStep = function () {
             if ($scope.currentStep < 5) {
                 $scope.currentStep++;
@@ -162,7 +159,6 @@ angular.module('entitiesImportControllers', [])
                         $scope.CSVData = result.data
                         $scope.errors = result.errors
 
-                        // console.log("$scope.CSVData: ", $scope.CSVData )
                         $scope.$apply();
                     }
                 }
@@ -216,14 +212,6 @@ angular.module('entitiesImportControllers', [])
             })
         }
 
-        // $scope.setRelationTo = function (newName) {
-        //     if (newName) {
-        //         $scope.infoDetails.relations.enabled = true;
-        //         $scope.infoDetails.relations.searchingField = newName;
-        //     }
-        // };
-
-
         function runMapping() {
             // Get selected fields
             const selectedFields = $scope.selectedFields //$scope.infoDetails.fields.filter(field => field.isSelected);
@@ -241,7 +229,6 @@ angular.module('entitiesImportControllers', [])
                 }
 
                 headerMap[newName] = originalName;
-                //headerMap["isArrayField"] = isArrayField;
             });
 
             // selected Data in CSV
@@ -249,18 +236,27 @@ angular.module('entitiesImportControllers', [])
                 let newRow = {};
                 Object.keys(row).forEach(key => {
                     if (headerMap[key]) {
-                        newRow[headerMap[key]] = row[key]; // Usa il nuovo nome
+                        newRow[headerMap[key]] = row[key]; // Use new name
                     }
                 });
                 return newRow;
             });
 
             // Filter headers map based
-            const filteredHeaders = $scope.CSVFields.filter(header => headerMap[header])
-                .map(header => headerMap[header]);
+            // const filteredHeaders = $scope.CSVFields.filter(header => headerMap[header])
+            //     .map(header => headerMap[header]);
 
             $scope.MappedData = filteredData
             console.log("arrayFields ==> ", $scope.arrayFields)
+
+            /****/
+            // Get relations fields
+            $scope.infoDetails.relationsList.forEach(rel => {
+                //console.log($scope.CSVData.map(headerData => headerData[rel.searchingField]))
+                rel["relationData"] = $scope.CSVData.map(headerData => headerData[rel.searchingField])
+            })
+            /****/
+
             // console.log("filteredData", filteredData);
             // console.log("filteredHeaders", filteredHeaders);
             //
@@ -270,20 +266,18 @@ angular.module('entitiesImportControllers', [])
         }
 
         $scope.importMappedData = function () {
-            // Prepare body
+            // Build object
             let dataToImport = {
                 index: $scope.infoDetails.index,
-                enabledRelations: $scope.infoDetails.relations.enabled,
-                relationTo: $scope.infoDetails.relations.relationTo,
                 data: $scope.MappedData,
-                searchingField: $scope.infoDetails.relations.searchingField,
+                relations: $scope.infoDetails.relationsList,
                 arrayFields: $scope.arrayFields
-            }
+            };
 
-            console.log("Sending to Backend ==> ", dataToImport)
+            console.log("Sending to Backend ==> ", dataToImport);
 
             // Send to BE
-            let url = baseContextPath + "/api/dservice/api/v1/import/fromcsv"
+            let url = baseContextPath + "/api/dservice/api/v1/import/fromcsv";
             $http.post(url, dataToImport).then(function (ret) {
                 if (ret.data.success) {
                     useGritterTool("<b><i class='nc-icon nc-vector'></i>CSV Import</b>", ret.data.message);
@@ -293,7 +287,22 @@ angular.module('entitiesImportControllers', [])
             }).catch(function (response) {
                 console.log(response.status);
             });
-        }
+        };
+
+        $scope.addRelation = function () {
+            // Add a new row already "enabled"
+            $scope.infoDetails.relationsList.push({
+                enabled: true,
+                searchingField: '',
+                relationTo: ''
+            });
+        };
+
+        $scope.removeRelation = function (index) {
+            if (index !== 0) {
+                $scope.infoDetails.relationsList.splice(index, 1); // remove if is not the first row
+            }
+        };
 
 // AC - new import end
     });
