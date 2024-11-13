@@ -33,7 +33,7 @@
 }
 
 .kmssublist li a i {
-    font-size: 18px !important;
+    font-size: 15px !important;
 }
 
 .btn-wd {
@@ -191,11 +191,12 @@ pre.code-jquery code {
 
 #vvveb-builder #left-panel .tree>ol {
     width: 100%;
-    padding-left: 10px;
+    /*FS padding-left: 10px;*/
 }
 
 #vvveb-builder #left-panel .tree>ol>li {
-    margin-bottom: 12px;
+   /* FS margin-bottom: 12px;*/
+   padding-bottom: 8px;
     border-bottom: 1px dotted #9a9a9a33;
     border-bottom-style: dashed;
 }
@@ -208,7 +209,7 @@ pre.code-jquery code {
 .tree ol li.lbltemplic>label,
 .tree ol li.lblmodelic>label {
     background-size: 15px 15px;
-    background-position-y: 1px;
+    background-position-y: 5px;/*FS*/
 }
 
 #vvveb-builder #left-panel .tree ol li.lblmodelic>input:checked+ol {
@@ -364,15 +365,15 @@ pre.code-jquery code {
 }
 
 #vvveb-builder #pageTitleManage {
-    color: #007bff !important;
-    top: 4px;
+    color: #3d85c6 !important;
+    /*FS top: 4px;*/
 }
 
-#vvveb-builder #pageTitleManage #pageTitleActualmanage {
+/*#vvveb-builder #pageTitleManage #pageTitleActualmanage {
     position: relative;
     bottom: 7px;
     padding-left: 7px;
-}
+} */
 
 #vvveb-builder #assetsTab .dropdown-menu .dropdown-item:hover,
 #vvveb-builder #assetsTab .dropdown-menu .dropdown-item:focus,
@@ -381,7 +382,7 @@ pre.code-jquery code {
 #vvveb-builder #assetsTab .nav-item.dropdown .nav-link:hover {
     background-color: transparent;
     cursor: pointer;
-    color: #007bff !important;
+    /*FS*/ color: #3d85c6 !important;
 }
 
 #vvveb-builder .tree ol li,
@@ -491,8 +492,8 @@ pre.code-jquery code {
 
 #vvveb-builder #filemanager .header {
     height: auto !important;
-    padding: 0 !important;
-    text-align: right !important;
+   /* padding: 0 !important; */
+   /* FS text-align: right !important; */
 }
 
 #vvveb-builder #filemanager .header .btn-group {
@@ -626,11 +627,11 @@ pre.code-jquery code {
 #vvveb-builder #top-panel {
     /* height: 40px; */
     /*   border-top: 1px solid #ccc;*/
-    background-color: #fff !important;
+  /*FS  background-color: #fff !important; */
 }
 
 #vvveb-builder .btn-light {
-    background-color: #fff !important;
+  /*FS  background-color: #fff !important; */
     margin-top: 0;
     margin-bottom: 0;
     border: none;
@@ -638,7 +639,7 @@ pre.code-jquery code {
 
 #vvveb-builder .btn-light:hover,
 #vvveb-builder .btn-group .btn:focus {
-    color: #007bff !important;
+    color: #ffffff !important; /*FS*/
 }
 
 #vvveb-builder .btn-light:not(:disabled):not(.disabled):active,
@@ -647,12 +648,12 @@ pre.code-jquery code {
     color: #007bff !important;
 }
 
-#vvveb-builder #top-panel .btn i {
+/*FS #vvveb-builder #top-panel .btn i {
     vertical-align: middle;
     bottom: 3px;
     position: relative;
 }
-
+*/
 #vvveb-builder #select-actions {
     z-index: 999;
     right: initial !important;
@@ -664,7 +665,7 @@ pre.code-jquery code {
 
 #vvveb-builder .tree ol li.active>label>span,
 #vvveb-builder .tree ol li.active>a>span {
-    color: #007bff;
+    color:#79abd8; /* FS #007bff;*/
     font-weight: bold;
 }
 

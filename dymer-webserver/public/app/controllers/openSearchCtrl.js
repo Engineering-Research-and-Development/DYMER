@@ -3,12 +3,12 @@ angular.module('openSearchCtrl', [])
         var baseContextPath = $rootScope.globals.contextpath;
         $scope.copyPastIndType = function(el) {
 
-            $scope.rule.op_index = el._type;
+            $scope.rule.op_index = el._index;//VL
             $scope.rule.op_type = el._index;
         }
         $scope.clearString = function() {
             $scope.rule.op_index = (($scope.rule.op_index.replace(/[^a-z]/g, "")).trim()).toLowerCase();
-            $scope.rule.op_type = (($scope.rule.op_type.replace(/[^a-z]/g, "")).trim()).toLowerCase();
+            $scope.rule.op_type = (($scope.rule.op_index.replace(/[^a-z]/g, "")).trim()).toLowerCase();//VL
         }
         var mapping = {
             /* "elasticSearchResourceId": -1,
@@ -29,6 +29,7 @@ angular.module('openSearchCtrl', [])
                     _index: key,
                     _type: Object.keys(value.mappings)[0]
                 };
+                
                 if (key != "entity_relation") {
                     $scope.listEntitiesAvailable.push(newObj);
                 }
@@ -41,7 +42,7 @@ angular.module('openSearchCtrl', [])
                     element.instance.forEach(el => {
                         var newObj = {
                             _index: el._index,
-                            _type: el._type
+                            _type: el._index//VL
                         };
                         if (el._index != 'general' && el._index != 'entity_relation') {
                             if (!$scope.listEntitiesAvailable.filter(obj => obj._index == el._index).length)
@@ -74,7 +75,8 @@ angular.module('openSearchCtrl', [])
             config: {
                 insert: { servicetype: "insert", id: '' },
                 update: { servicetype: "update", id: '' },
-                delete: { servicetype: "delete", id: '' }
+                delete: { servicetype: "delete", id: '' },
+                get: { servicetype: "get", id: '' }
             }
         };
 
@@ -115,10 +117,10 @@ angular.module('openSearchCtrl', [])
 
             }).then(function successCallback(response) {
 
-                    console.log('saveOpnSearchConfig', response);
+                    console.log('saveOpnSearchConfig ', response);
                     //        console.log("User has update Successfully")
                     response.data.data.forEach(el => {
-                        // console.log("ellllll", el);
+                        // console.log(">>>>>ellllll ", el);
                         $scope.opnsearch.config[el.servicetype].id = el.id;
                     });
                     if (response.data.success) {

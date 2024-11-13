@@ -34,10 +34,14 @@
 
     <!-- CSS Files -->
     <!-- Bootstrap core CSS -->
-    <link href="public/assets/css/bootstrap.css" rel="stylesheet">  
+    <link href="public/assets/css/bootstrap.min.css" rel="stylesheet">  
+    
+    
     <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
    -->
+   
+  
     <script src="public/assets/js/angular.js"></script>
     <script src="public/assets/js/plugins/ocLazyLoad/ocLazyLoad.js"></script>
     <script src="public/assets/js/angular-route.js"></script>
@@ -78,11 +82,13 @@
     <script src="public/app/controllers/relationsCtrl.js"></script>
     <script src="public/app/controllers/workflowCtrl.js"></script>
     <script src="public/app/directive/angularjs-dropdown-multiselect.js"></script>
-	<script src="public/app/controllers/swaggerCtrl.js"></script>
+	  <script src="public/app/controllers/swaggerCtrl.js"></script>
     <script src="public/app/controllers/libraryCtrl.js"></script>
     <script src="public/app/controllers/wizardCtrl.js"></script>
 
-    <link href="public/assets/css/paper-dashboard.css" rel="stylesheet" />
+     <link href="public/assets/css/paper-dashboard.css" rel="stylesheet" /> 
+    <!-- <link href="https://demo.vvveb.com/admin/default/css/admin.css" rel="stylesheet"> -->
+    
     <link href="public/assets/css/json-viewer.css" rel="stylesheet">
     <script src="public/assets/js/lib/Pure-JavaScript-HTML5-Parser/htmlparser.js"></script>
     <script src="public/assets/js/lib/html2json.js"></script>
@@ -95,7 +101,9 @@
     <!-- AC Start -->
     <script src="public/assets/js/lib/papaparse.min.js"></script>
     <!-- AC End -->
-
+<link href="
+https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css
+" rel="stylesheet">
     <!-- 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.0/d3.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.0/d3.min.js" integrity="sha512-DZKI/aub7j2NWPnRe/Rl3y0+7g5qbAfh34kF2l50u+rPvnRSCII38e3bCMYE1U6SNxbfNm34j+/uA89KnllyWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -109,7 +117,7 @@
 
 </head>
 
-<body class="">
+<body class="sidebar-mini">
 
     <div id="contfullp" class="wrapper full-page_" ng-class="{'full-page':!globals.loggedIn}">
         <div class="sidebar" data-color="white" data-active-color="danger" ng-show="globals.loggedIn">
@@ -117,8 +125,15 @@
         Tip 1: You can change the color of the sidebar using: data-color="blue | green | orange | red | yellow"
     -->
             <div class="logo">
-                <a href="/" class="simple-text logo-mid">
-                    <div class="logo-image-small">
+                  <a href="/" class="simple-text logo-mini">
+                  <div class="logo-image-small">
+                    <img src="public\cdn\img\dymer-d.png">
+                  </div>
+                  <!-- <p>CT</p> -->
+                </a>
+        
+                <a href="/" class="simple-text logo-mid logo-normal">
+                    <div class="logo-image-big">
                         <img src="public\cdn\img\dymer-logo.png" class=" ">
                     </div>
                 </a>
@@ -132,7 +147,7 @@
                             <p>Dashboard</p>
                         </a>
                         <div class=" kmssublist" ng-show="hasPermission('app-admin' )">
-                            <ul class="">
+                            <ul class="nav">
                                 <li class="  ">
                                     <a href="mclgs"><i class="nc-icon nc-paper"></i>
                                         <p>Logs</p>
@@ -150,7 +165,7 @@
 
                         </a>
                         <div class=" kmssublist">
-                            <ul class="">
+                            <ul class="nav">
                                 <li class="  ">
                                     <a href="authenticationconfig"><i class="fa fa-key"></i>
                                         <p>Authorization</p>
@@ -181,7 +196,7 @@
                             <p>Models</p>
                         </a>
                         <div class=" kmssublist">
-                            <ul class="">
+                            <ul class="nav">
                                 <li class="  "> <a class="" href="managemodel" target="_self"><i
                                             class="nc-icon nc-ruler-pencil"></i>
                                         <p>Manage Models</p>
@@ -206,7 +221,7 @@
                             <p>Templates</p>
                         </a>
                         <div class=" kmssublist">
-                            <ul class="">
+                            <ul class="nav">
                                 <li class=" "> <a href="managetemplate" target="_self"><i
                                             class="nc-icon nc-ruler-pencil"></i>
                                         <p>Manage Templates</p>
@@ -227,7 +242,7 @@
                             <p>Entities</p>
                         </a>
                         <div class=" kmssublist">
-                            <ul class="">
+                            <ul class="nav">
                                 <li class="  ">
                                     <a class="" href="listentities"><i class="nc-icon nc-bullet-list-67 lg "></i>
                                         <p>Manage Entities</p>
@@ -273,7 +288,7 @@
                             <p>Config Tool</p>
                         </a>
                         <div class=" kmssublist">
-                            <ul class="">
+                            <ul class="nav">
                                 <li class="  ">
                                     <a class="" href="listconfig"><i class="nc-icon nc-bullet-list-67 lg "></i>
                                         <p>List Config</p>
@@ -296,7 +311,7 @@
                             <p>Services</p>
                         </a>
                         <div class=" kmssublist">
-                            <ul class="">
+                            <ul class="nav">
                                 <li class="  ">
                                     <a class="" href="bridge-entities-conf"><i class="nc-icon nc-vector"
                                             aria-hidden="true"></i>
@@ -349,7 +364,7 @@
                         </a>
 
                         <div class=" kmssublist">
-                            <ul class="">
+                            <ul class="nav">
                                 <li class="  ">
                                     <a class="" href="fixproblems"><i class="fa fa-exclamation-triangle"></i>
                                         <p>Fix Problems</p>
@@ -391,9 +406,12 @@
                                         <p>Templates</p>
                                     </a>
                                 </li>
-                                <li class="  "> <a class="" href="redisdoc"><i class="fa fa-database"
-                                            aria-hidden="true"></i>
-                                        <p>Redis-Cache</p>
+                                <li class="  "> <a class="" href="redisdoc">
+                                
+                                   <span class="sidebar-mini-icon">   <i class="fa fa-database"  aria-hidden="true"></i> </span>
+                                   <span class="sidebar-normal">  <p>Redis-Cache</p> </span>
+                                
+                                        
                                     </a>
                                 </li>
 								<!--<li class=""> <a class="" href="swaggerapi"><i class="nc-icon nc-bullet-list-67 lg "></i>
@@ -551,7 +569,10 @@
         var d_uid = '99999';
     </script>
     <script src="public/assets/js/jquery-3.3.1.js"></script>
-      <script src="public/assets/js/bootstrap.js"></script> 
+      
+      <script src="public/assets/wsbuilder/js/bootstrap.min.js"></script> <!--vvvebjs 2.0.3-->
+ 
+ 
    <!--  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
@@ -574,7 +595,7 @@
     <!--[if IE]>
     <script src="public/assets/wsbuilder/libs/jszip/jszip-utils-ie.min.js"></script>
     <![endif]-->z
-    <script src="public/assets/wsbuilder/libs/jszip/FileSaver.js"></script>
+    
     <script src="public/assets/js/kmsweb.js"></script>
     <link href="public/assets/jquerybuilder/css/query-builder.default.min.css" rel="stylesheet">
     <link href="public/assets/jquerybuilder/css/query-builder.dymer.css" rel="stylesheet">
@@ -605,26 +626,61 @@
 <script src="public/assets/wsbuilder/js/bootstrap.min.js"></script> 
 -->
 
-    <script src="public/assets/wsbuilder/libs/builder/builder.js"></script>
+   <!-- start upgrade vvvebjs from 1.4.1 to 2.0.3-->
 
-    <script src="public/assets/wsbuilder/libs/builder/undo.js"></script>
+    <script src="public/assets/wsbuilder/libs/builder/builder.js"></script><!--vvvebjs203-->
+    <script src="public/assets/wsbuilder/libs/builder/undo.js"></script><!--vvvebjs203-->
+    <script src="public/assets/wsbuilder/libs/builder/inputs.js"></script><!--vvvebjs203-->
 
-    <script src="public/assets/wsbuilder/libs/builder/inputs.js"></script>
+	<!-- media gallery only vvveb.js 2.0.3-->
+	<link href="public/assets/wsbuilder/libs/media/media.css" rel="stylesheet">
+	<script src="public/assets/wsbuilder/libs/media/media.js"></script>
+	<script src="public/assets/wsbuilder/libs/builder/plugin-media.js"></script> 	 
+	<!--TODO check eliminato temporaneamente displayToast nella libreria-->	
+    
+	<script src="public/assets/wsbuilder/libs/builder/components-common.js"></script> 
+	<script src="public/assets/wsbuilder/libs/builder/plugin-aos.js"></script> 
+	<script src="public/assets/wsbuilder/libs/builder/components-html.js"></script>
+	<script src="public/assets/wsbuilder/libs/builder/components-elements.js"></script>	
+	<script src="public/assets/wsbuilder/libs/builder/section.js"></script>	
+	<script src="public/assets/wsbuilder/libs/builder/components-bootstrap5.js"></script> 
+	<script src="public/assets/wsbuilder/libs/builder/components-widgets.js"></script>	 <!--old-->
+	<script src="public/assets/wsbuilder/libs/builder/oembed.js"></script>
+	<script src="public/assets/wsbuilder/libs/builder/components-embeds.js"></script> 
 
-
-    <script src="public/assets/wsbuilder/libs/builder/components-bootstrap4.js"></script>
+	<!--start sections only vvveb.js 2.0.3-->
+	<!--script src="public/assets/wsbuilder/demo/landing/sections/sections.js"></script--><!--TODO check eliminato temporaneamente--> 
+	<script src="public/assets/wsbuilder/libs/builder/sections-bootstrap4.js"></script> 
+	<!--end sections-->
+	
+    <!--script src="public/assets/wsbuilder/libs/builder/components-bootstrap4.js"></script--><!--TODO check eliminato temporaneamente--> 
     <script src="public/assets/wsbuilder/libs/builder/components-widgets.js"></script>
     <script src="public/assets/wsbuilder/libs/builder/components-kms.js"></script>
-    <script src="public/assets/wsbuilder/libs/builder/blocks-bootstrap4.js"></script>
+    
+	<!-- blocks vvveb.js 1.4.1 and 2.0.3-->
+	<script src="public/assets/wsbuilder/libs/builder/blocks-bootstrap4.js"></script>
     <!--<script src="public/assets/wsbuilder/libs/builder/components-server.js"></script>-->
 
-    <link href="public/assets/wsbuilder/libs/codemirror/lib/codemirror.css" rel="stylesheet" />
-    <link href="public/assets/wsbuilder/libs/codemirror/theme/material.css" rel="stylesheet" />
+	<!-- plugins vvveb.js 1.4.1 and 2.0.3-->
+    <link href="public/assets/wsbuilder/libs/codemirror/lib/codemirror.css" rel="stylesheet"/>
+    <link href="public/assets/wsbuilder/libs/codemirror/theme/material.css" rel="stylesheet"/>
     <script src="public/assets/wsbuilder/libs/codemirror/lib/codemirror.js"></script>
     <script src="public/assets/wsbuilder/libs/codemirror/lib/xml.js"></script>
     <script src="public/assets/wsbuilder/libs/codemirror/lib/formatting.js"></script>
     <script src="public/assets/wsbuilder/libs/builder/plugin-codemirror.js"></script>
 
+	<!--start only vvveb.js 2.0.3-->
+	<script src="public/assets/wsbuilder/libs/jszip/filesaver.min.js"></script> <!--*-->
+	<script src="public/assets/wsbuilder/libs/builder/plugin-jszip.js"></script> <!--*-->
+	<!--TODO check: Uncaught TypeError: Cannot read properties of null (reading 'after')-->
+ 
+
+   
+   
+   
+   
+   
+   
 
     <link rel="stylesheet" href="public/assets/angular-ui-tree/angular-ui-tree.css">
     <script type="text/javascript" src="public/assets/angular-ui-tree/angular-ui-tree.js"></script>
@@ -639,8 +695,11 @@
  <!--    <link rel="stylesheet" href="public/cdn/css/lib/bootstrap-select/bootstrap-select.css">
     <script src="public/cdn/js/lib/bootstrap-select/bootstrap-select.min.js"></script> -->
      
-    <link rel="stylesheet" href="public/cdn/css/lib/bootstrap-select/bootstrap-select.css">
-    <script src="public/cdn/js/lib/bootstrap-select/bootstrap-select.min.js"></script>
+    
+     <script src="
+https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js
+"></script>
+
     <link href="public/assets/css/prism-okaidia.css" rel="stylesheet">
 	<script src="public/assets/js/prism.js"></script>
 	<link href="public/assets/css/kmsweb.css" rel="stylesheet">

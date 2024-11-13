@@ -67,11 +67,11 @@ Vvveb.Components.add("dymer/kmsgeopoint", {
         '<div>' +
         '<div data-component-geopoint class="form-group  ">' +
         //"<div>" +
-        '<input type="hidden" class= "form-control" name="data[location][type]" value="Point">' +
+        '<input type="hidden" class= "form-control" dymer-model-element="" name="data[location][type]" value="Point">' +
         '<label class="kms-title-label">Longitude</label>' +
-        '<input type="number" class="form-control" name="data[location][coordinates][0]">' +
+        '<input type="number" class="form-control" dymer-model-element="" name="data[location][coordinates][0]">' +
         '<label class="kms-title-label">Latitudine</label>' +
-        '<input type="number" class="form-control" name="data[location][coordinates][1]">' +
+        '<input type="number" class="form-control" dymer-model-element="" name="data[location][coordinates][1]">' +
         //  "</div>" +
         '</div>' +
         '</div>' +
@@ -462,7 +462,7 @@ Vvveb.Components.extend("_base", "html/mytextinput", {
     attributes: ["data-component-dymerinput"],
     image: "icons/text_input.svg",
     dragHtml: '<img src="' + Vvveb.baseUrl + 'icons/text_input.png">',
-    html: '<div class="form-group"><label>Text</label><input data-component-dymerinput class="form-control" type="text" ></div></div>',
+    html: '<div class="form-group"><label>Text</label><input data-component-dymerinput dymer-model-element="" class="form-control" type="text" ></div></div>',
     properties: [{
             name: "Value",
             key: "value",

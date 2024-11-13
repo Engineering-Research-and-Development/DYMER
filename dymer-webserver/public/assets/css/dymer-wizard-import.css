@@ -243,20 +243,8 @@ input-import.form-control {
     box-sizing: border-box;
 }
 
-.fa-trash {
-    cursor: pointer;
-    color: #dc3545;
-}
-
-.fa-trash:hover {
-    color: #ff6b6b;
-}
-
-.text-center {
-    text-align: center;
-}
-
-
+ 
+ 
 @keyframes click-radio-wave {
     0% {
         width: 25px;

@@ -2,8 +2,8 @@
     "production": {
         "config_id": "production",
         "dymer":{
-            "version":"2.0.0",
-            "updated":"2024-01-31"
+            "version":"2.0.1",
+            "updated":"2024-10-16"
         },
         "services": {
             "webserver": {

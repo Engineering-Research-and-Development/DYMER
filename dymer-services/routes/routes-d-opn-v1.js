@@ -167,7 +167,7 @@ function findRule(queryFind, res) {
     OpnSearchRule.find(queryFind).then((els) => {
         ret.setMessages("List");
         ret.setData(els);
-        // console.log('>>>findRule ret', ret);
+        // console.log('ret', ret);
         return res.send(ret);
     }).catch((err) => {
         if (err) {

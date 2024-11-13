@@ -118,10 +118,10 @@ router.post('/checkhook', function(req, res) {
     var queryFind = {};
     var eventSource = data.eventSource;
 
-    //TODO CHECK
+    
     var queryFind = {
         "_index": data.obj._index,
-        //"_type": data.obj._type,
+        "_type": data.obj._index, //VL
         "eventType": eventSource
     };
     var wbsUrl = util.getServiceUrl('webserver');

@@ -362,7 +362,8 @@ app.get('/info/:key?', (req, res, next) => {
         '<div class="card o-hidden border-0 shadow-lg my-5">' +
         '<div class="card-body p-0">' +
         '<div class="row">' +
-        '<div class="col-lg-12">' +
+        '<div class="col-lg-6 d-none d-lg-block bg-login-image" style=\'background:url("public/cdn/img/bg-ver.jpg");background-position: center;background-size: cover; min-height: 280px; \'>' + '</div>' +
+        '<div class="col-lg-6">' +
         '<div class="p-5">' + '<div class="row">' +
         '<div class=" col-12">' +
         '<h1 class="h4   mb-4 text-center"  style="color:#023d7d;">Welcome to DYMER</h1>' +

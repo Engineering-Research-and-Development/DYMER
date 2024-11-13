@@ -5,7 +5,8 @@ angular.module('templateBuilderControllers', [])
     //console.log('testing controller createTemplateBuilder');
     // $scope.listaForms = [];
     // console.log('get my list');
-    $('.tab-content').perfectScrollbar();
+    //$('.tab-content').perfectScrollbar();
+     new PerfectScrollbar(".tab-content"),
     // console.log('get my list');
 
     $scope.$on("$destroy", function() {
@@ -53,7 +54,7 @@ angular.module('templateBuilderControllers', [])
                 var allindex = rt.data.data;
                 //  console.log('indexWithModel ', indexWithModel);
                 for (const [key, value] of Object.entries(allindex)) {
-                    console.log(key, value);
+                    // console.log(key, value);
 
                     if (!listIndex.includes(key)) {
 
@@ -65,14 +66,15 @@ angular.module('templateBuilderControllers', [])
                             indexWithModel.push(obj);
                     }
                 }
+                
                 Vvveb.listResources.setModels(indexWithModel);
                 $scope.listaModels = indexWithModel;
                 var listStr = extractStrElast(allindex);
-                console.log('listStr', listStr);
+                //  console.log('listStr', listStr);
                 Vvveb.listResources.setStructures(listStr);
                 // Vvveb.listResources.setModels(ret.data.data);
                 //   $scope.listaModels = ret.data.data;
-
+                
                 let listpages = [];
                 var serviceurl = baseContextPath + '/api/templates/api/v1/template';
 
@@ -150,6 +152,7 @@ angular.module('templateBuilderControllers', [])
                     //       $(".component-properties-tab").hide();
                     //     }
 
+                    /*
                     Vvveb.Builder.init(
                         "",
                         function() {
@@ -167,13 +170,59 @@ angular.module('templateBuilderControllers', [])
 
                     //  }, 3000);
 
+                    */
+
+            //start vvveb.js 2.3.0 TODO to solve: setModels and SetTemplate
+            //after vvvebjs customization
+            let defaultPages = {
+                "index": {
+                    name: "template",
+                    filename: "template.html",
+                    file: "public/assets/wsbuilder/pages/default/template.html",
+                    url: "public/assets/wsbuilder/pages/default/template.html",
+                    title: "Default template",
+                    folder: null,
+                    description: "Default template",
+                    instance: "temp",
+                    viewtype:"fullcontent"
+                }
+            };      	
+                                  
+            let pages = defaultPages;
+
+            if (listpages.length>0){
+                pages = listpages;
+            }
+                      
+            let firstPage = Object.keys(pages)[0];
+            Vvveb.Builder.init(pages[firstPage]["url"], function() {
+                //load code after page is loaded here
+            });
+            
+            Vvveb.Gui.init();
+            Vvveb.FileManager.init();
+            Vvveb.SectionList.init();
+            Vvveb.TreeList.init();
+            Vvveb.Breadcrumb.init();
+            Vvveb.CssEditor.init();
+            
+            Vvveb.FileManager.addPages(pages);
+            Vvveb.FileManager.loadPage(pages[firstPage]["name"]);
+            Vvveb.Gui.toggleRightColumn(false);
+            Vvveb.Breadcrumb.init();
+
+            //end vvvebjs 203
+
                 }).catch(function(response) {
+                    console.log(">>>>>>>>>>response1 ", response);
                     console.log(response.status);
                 });
             }).catch(function(response) {
+                console.log(">>>>>>>>>>response2 ", response);
                 console.log(response.status);
             })
         }).catch(function(response) {
+            console.log(">>>>>>>>>>response3 ", response);
             console.log(response.status);
         })
 

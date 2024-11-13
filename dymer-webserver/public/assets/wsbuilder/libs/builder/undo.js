@@ -52,7 +52,6 @@ MutationRecord.oldValue 			String 		The return value depends on the MutationReco
  
 Vvveb.Undo = {
 	
-	undos: [],
 	mutations: [],
 	undoIndex: -1,
 	enabled:true,
@@ -65,8 +64,9 @@ Vvveb.Undo = {
 			this.mutations.push(mutation);
 			this.undoIndex++;
 		*/
-		Vvveb.Builder.frameBody.trigger("vvveb.undo.add");
-		this.mutations.splice(++this.undoIndex, 0, mutation);
+		this.mutations.splice(++this.undoIndex, this.mutations.length - this.undoIndex, mutation);
+		const event = new CustomEvent("vvveb.undo.add", {detail: mutation});
+		Vvveb.Builder.frameBody.dispatchEvent(event);
 	 },
 
 	restore : function(mutation, undo) {	
@@ -74,55 +74,48 @@ Vvveb.Undo = {
 		switch (mutation.type) {
 			case 'childList':
 			
-				if (undo == true)
-				{
+				if (undo == true) {
 					addedNodes = mutation.removedNodes;
 					removedNodes = mutation.addedNodes;
-				} else //redo
-				{
+				} else { //redo 
 					addedNodes = mutation.addedNodes;
 					removedNodes = mutation.removedNodes;
 				}
 				
-				if (addedNodes) for(i in addedNodes)
-				{
+				if (addedNodes) for(i in addedNodes) {
 					node = addedNodes[i];
-					if (mutation.nextSibling)
-					{ 
+					if (mutation.nextSibling) { 
 						mutation.nextSibling.parentNode.insertBefore(node, mutation.nextSibling);
-					} else
-					{
+					} else {
 						mutation.target.append(node);
 					}
 				}
 
-				if (removedNodes) for(i in removedNodes)
-				{
+				if (removedNodes) for(i in removedNodes) {
 					node = removedNodes[i];
 					node.parentNode.removeChild(node);
 				}
 			break;					
 			case 'move':
-				if (undo == true)
-				{
+				if (undo == true) {
 					parent = mutation.oldParent;
 					sibling = mutation.oldNextSibling;
-				} else //redo
-				{
+				} else { //redo
 					parent = mutation.newParent;
 					sibling = mutation.newNextSibling;
 				}
 			  
-				if (sibling)
-				{
+				if (sibling) {
 					sibling.parentNode.insertBefore(mutation.target, sibling);
-				} else
-				{
+				} else {
 					parent.append(node);
 				}
 			break;
 			case 'characterData':
 			  mutation.target.innerHTML = undo ? mutation.oldValue : mutation.newValue;
+			  break;
+			case 'style':
+			  window.FrameDocument.getElementById("vvvebjs-styles").textContent = ( undo ? mutation.oldValue : mutation.newValue );
 			  break;
 			case 'attributes':
 			  value = undo ? mutation.oldValue : mutation.newValue;
@@ -135,7 +128,8 @@ Vvveb.Undo = {
 			break;
 		}
 		
-		Vvveb.Builder.frameBody.trigger("vvveb.undo.restore");
+		const event = new CustomEvent("vvveb.undo.restore", {detail: mutation});
+		Vvveb.Builder.frameBody.dispatchEvent(event);
 	 },
 	 
 	undo : function() {	
@@ -153,5 +147,10 @@ Vvveb.Undo = {
 	hasChanges : function() {	
 		return this.mutations.length;
 	},
+
+	reset : function() {	
+		this.mutations = [];
+		this.undoIndex = -1;
+	}
 };
 

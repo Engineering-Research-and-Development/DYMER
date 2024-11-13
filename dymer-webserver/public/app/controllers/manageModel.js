@@ -7,8 +7,8 @@ angular.module('formBuilderControllers', [])
     // $scope.listaForms = [];
     // console.log('get my list');
 
-    $('.tab-content').perfectScrollbar();
-
+   // $('.tab-content').perfectScrollbar();
+ new PerfectScrollbar(".tab-content"),
     $scope.$on("$destroy", function() {
         /*Vvveb.baseUrl = document.currentScript ? document.currentScript.src.replace(/[^\/]*?\.js$/, '') : '';
             
@@ -47,7 +47,7 @@ angular.module('formBuilderControllers', [])
         }).then(function(ret) {
             //$http.get(serviceurl, this.entData).then(function(ret) {
             //	   $http.get(serviceurl, this.entData).then(function(ret) {
-            // console.log('Data controller lists', ret);
+            //console.log('Data controller lists', ret);
             var arrLIst = ret.data.data;
             arrLIst.forEach(function(element) {
 
@@ -97,59 +97,68 @@ angular.module('formBuilderControllers', [])
                 listpages.push(singlePage);
 
                 //    if (window.location.hash.indexOf("no-right-panel") != -1) {
-
             });
-            //   setTimeout(function(){ 
-            //  $("#vvveb-builder").addClass("no-right-panel");
-            // $(".component-properties-tab").show();
+
+            // start old dymer - codice che potrebbe essere superfluo
             Vvveb.CodeEditor.codemirror = false;
             Vvveb.Components.componentPropertiesElement = "#left-panel .component-properties";
             Vvveb.editorType = "models";
             Vvveb.pathservice = baseContextPath + "/api/forms/api/v1/form/";
-            //Vvveb.basetemplate ="/assets/wsbuilder/libs/builder/dymer-basetemplate-form.html";
-            //  } else {
-            //       $(".component-properties-tab").hide();
-            //     }
-
-            Vvveb.Builder.init(
-                "",
-                function() {
-                    //run code after page/iframe is loaded
-                    // console.log("INIT PRIMO FORM");
+            // end old dymer 
 
 
+            //start vvvebjs 203
+            let defaultPages = {
+                "index": {
+                    name: "model",
+                    filename: "model.html",
+                    file: "public/assets/wsbuilder/pages/default/model.html",
+                    url: "public/assets/wsbuilder/pages/default/model.html",
+                    title: "Default model",
+                    folder: null,
+                    description: "Default model",
+                    instance: "temp"
                 }
-            );
-            /*Vvveb.Builder.init(
-              "assets/wsbuilder/demo/narrow-jumbotron/index.html",
-              function () {
-                //run code after page/iframe is loaded
-                console.log("INIT PRIMO");
-               
-                
-              }
-            );*/
-            //console.log("pre SECcondo");
+            };      	
+                                  
+            let pages = defaultPages;
 
-
-            Vvveb.FileManager.init();
-            Vvveb.FileManager.addPages(listpages);
-            if (listpages.length)
-                Vvveb.FileManager.loadPage(listpages[0].name);
+            if (listpages.length>0){
+                pages = listpages;
+            }
+                      
+            let firstPage = Object.keys(pages)[0];
+            Vvveb.Builder.init(pages[firstPage]["url"], function() {
+                //load code after page is loaded here
+            });
+            
             Vvveb.Gui.init();
-            //   }, 3000);
-
+            Vvveb.FileManager.init();
+            Vvveb.SectionList.init();
+            Vvveb.TreeList.init(); 
+            Vvveb.Breadcrumb.init();
+            Vvveb.CssEditor.init();
+            console.log("pages",pages);
+            Vvveb.FileManager.addPages(pages);
+            Vvveb.FileManager.loadPage(pages[firstPage]["name"]);
+            Vvveb.Gui.toggleRightColumn(false);
+            Vvveb.Breadcrumb.init();
+            //Vvveb.Gui.collapse();
+            //end vvvebjs 203
 
             var myQueryModel = { "query": { "instance._index": { $ne: "xssxxsxxs" } } };
             $http.get(baseContextPath + '/api/forms/api/v1/form/', { data: myQueryModel }).then(function(ret) {
-                // Vvveb.listResources.setModels(ret.data.data);
                 var indexWithModel = ret.data.data;
                 var listIndex = [];
-                indexWithModel.forEach(element => {
-                    element.instance.forEach(el => {
-                        listIndex.push(el._index);
+                if(indexWithModel.length>0){
+                    indexWithModel.forEach(element => {
+                        element.instance.forEach(el => {
+    																		
+                            listIndex.push(el._index);
+                        });
                     });
-                });
+                }
+                
                 $http.get(baseContextPath + '/api/entities/api/v1/entity/allstats', this.entData).then(function(rt) {
                     var allindex = rt.data.data.indices;
                     for (const [key, value] of Object.entries(allindex)) {
@@ -159,31 +168,27 @@ angular.module('formBuilderControllers', [])
                                 listIndex.push(key);
                         }
                     }
+														   
                     Vvveb.FileManager.listIndexExsist = listIndex;
                 }).catch(function(response) {
-                    console.log(response.status);
+                    console.log("****************ERROR manageModel.js ", response);
+                    console.log("****************ERROR manageModel.js ", response.status);
                 })
             }).catch(function(response) {
-                console.log(response.status);
+                console.log(">>>>>>>>>>>>>ManageModel.js response1 ", response);
+                console.log(">>>>>>>>>>>>>ManageModel.js status1 ", response.status);
             })
 
-
-
-
-
-
-
         }).catch(function(response) {
-            console.log(response.status);
+            console.log(">>>>>>>>>>>>>ManageModel.js response2... ", response);
+            console.log(">>>>>>>>>>>>>ManageModel.js response.status2 ", response.status);
         });
 
 
     });
-    //  console.log('testing controller' );
+    console.log('testing controller' );
     $scope.initbuilder = function() {
         // check if there is query in url
-
-
     };
     $window.reloadMe = function() {
 

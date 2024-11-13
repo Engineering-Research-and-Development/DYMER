@@ -12,7 +12,7 @@ Handlebars.registerHelper('ifNotEquals', function(arg1, arg2, options) {
 });
 Handlebars.registerHelper('loadfile', function(eid, fid, options) {
     if(fid==undefined)
-        return "#";
+    return "#";
     var ret = (kmsconfig.cdn).replace('public/cdn/', "") + "api/entities/api/v1/entity/contentfile/" + eid + "/" + fid;
     var tk = localStorage.getItem('DYMAT');
     var tk_extra = localStorage.getItem('DYM_EXTRA');
@@ -185,12 +185,11 @@ Handlebars.registerHelper('EntityStatus', function(obj, hookCheckSatusconf, obj2
         if (actualTemplateType == 'fullcontent') {
             editBtn += '<div class="col-12 text-right" >';
             if (perm.delete)
-                editBtn += '<span id="deleteBtn" class="text-danger  " style="cursor:pointer" onclick="deleteEntity(\'' + obj._id + '\', \'' + obj._index + '\'  )"><i class="fa fa-trash" aria-hidden="true"></i> Delete </span>   ';
+                editBtn += '<span class="text-danger  " style="cursor:pointer" onclick="deleteEntity(\'' + obj._id + '\', \'' + obj._index + '\'  )"><i class="fa fa-trash" aria-hidden="true"></i> Delete </span>   ';
             if (perm.edit) {
                 // editBtn += '&nbsp;&nbsp;<span class="text-warning  " style="cursor:pointer" onclick="cloneEntity(\'' + obj._id + '\')"><i class="fa fa-clone" aria-hidden="true"></i> Clone </span> ';
-                editBtn += '&nbsp;&nbsp;<span id="editBtn" class="text-info  " style="cursor:pointer" onclick="editEntity(\'' + obj._id + '\')"><i class="fa fa-pencil" aria-hidden="true"></i> Edit </span> ';
+                editBtn += '&nbsp;&nbsp;<span class="text-info  " style="cursor:pointer" onclick="editEntity(\'' + obj._id + '\')"><i class="fa fa-pencil" aria-hidden="true"></i> Edit </span> ';
             }
-            editBtn += '&nbsp;&nbsp;<span id="exportBtn" class="text-warning  " style="cursor:pointer" onclick="exportPDFEntity(\'' + obj._id + '\')"> <b> <i class="fa fa-download" aria-hidden="true"></i></b> <span> PDF Export </span> </span>';
             editBtn += '</div>';
 
         }
@@ -204,7 +203,7 @@ Handlebars.registerHelper('EntityStatus', function(obj, hookCheckSatusconf, obj2
             owner = '<i class="fa fa-user-o icon-action" title="co-editor"  ></i>';
     }*/
     if (owner != '' || visibility != '')
-        owner = '<div id="entityStatus" class="col-12 text-right">' + owner + "&nbsp;" + visibility + '</div>';
+        owner = '<div class="col-12 text-right">' + owner + "&nbsp;" + visibility + '</div>';
     ret = status + owner + editBtn;
 
     /*
@@ -227,6 +226,7 @@ Handlebars.registerHelper('EntityStatus', function(obj, hookCheckSatusconf, obj2
         }*/
     return ret;
 });
+
 
 Handlebars.registerHelper('EntityStatusPdf', function(obj, hookCheckSatusconf, obj2) {
     var ret = '';
@@ -254,7 +254,8 @@ Handlebars.registerHelper('EntityStatusPdf', function(obj, hookCheckSatusconf, o
             if (perm.edit) {
                   editBtn += '&nbsp;&nbsp;<span id="editBtn" class="text-info  " style="cursor:pointer" onclick="editEntity(\'' + obj._id + '\')"><i class="fa fa-pencil" aria-hidden="true"></i> Edit </span>   ';
             }
-          editBtn += '&nbsp;&nbsp;<span id="exportBtn" class="text-warning  " style="cursor:pointer" onclick="exportPDFEntity(\'' + obj._id + '\',\'' + obj.title + '\')"> <b> <i class="fa fa-download" aria-hidden="true"></i></b> <span> PDF Export </span> </span>';            editBtn += '</div>';
+            editBtn += '&nbsp;&nbsp;<span id="exportBtn" class="text-warning  " style="cursor:pointer" onclick="exportPDFEntity(\'' + obj._id + '\',\'' + obj.title + '\')"> <b> <i class="fa fa-download" aria-hidden="true"></i></b> <span> PDF Export </span> </span>';
+            editBtn += '</div>';
 
         }
 
@@ -268,6 +269,7 @@ Handlebars.registerHelper('EntityStatusPdf', function(obj, hookCheckSatusconf, o
     
     return ret;
 });
+
 
 Handlebars.registerHelper('EntityView', function(obj, hookCheckSatusconf, obj2) {
     var ret = '';
@@ -335,6 +337,7 @@ Handlebars.registerHelper('EntityLike', function (obj, hookCheckSatusconf,iconup
     ret = likeBtn;
     return ret
 });
+
 Handlebars.registerHelper('EntityStatusTwo', function(obj, hookCheckSatusconf, obj2) {
     var ret = '';
     var args = [],
@@ -360,7 +363,7 @@ Handlebars.registerHelper('EntityStatusTwo', function(obj, hookCheckSatusconf, o
             if (perm.delete)
                 editBtn += '<a href="#" class="actionDymerItem fixedDelete" style="cursor:pointer" onclick="deleteEntity(\'' + obj._id + '\', \'' + obj._index + '\'  )"><b><i class="fa fa-trash" aria-hidden="true"></i></b> <span>Delete </span></a> ';
             if (perm.edit) {
-                editBtn += '<a href="#" class="actionDymerItem fixedEdit" style="cursor:pointer" onclick="editEntity(\'' + obj._id + '\')"> <b> <i class="fa fa-pencil" aria-hidden="true"></i></b> <span>Edit</span> </a>';
+                editBtn += '<a href="#" class="actionDymerItem fixedEdit" style="cursor:pointer" onclick="editEntity(\'' + obj._id + '\')"> <b> <i class="fa fa-pencil" aria-hidden="true"></i></b> <span>Edit </span> </a>';
             }
             //editBtn += '<span id="closeButtonItem" style="cursor:pointer" class="closeButton  btn-listdymer " onclick="drawEntities(jsonConfig)"> <i class="fa fa-window-close-o" aria-hidden="true"></i> Close </span>';
 

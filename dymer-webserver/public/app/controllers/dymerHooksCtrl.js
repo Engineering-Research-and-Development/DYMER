@@ -9,7 +9,8 @@ angular.module('dymerHooksCtrl', [])
         };
 
         $scope.copyPastIndType = function(el) {
-            $scope.hook._type = el._index;
+
+            $scope.hook._type = el._index;//VL
             $scope.hook._index = el._index;
         }
         $scope.clearString = function() {
@@ -42,6 +43,7 @@ angular.module('dymerHooksCtrl', [])
         };
         $http.get(baseContextPath + '/api/entities/api/v1/entity/allindex', this.entData).then(function(rt) {
             var allindex = rt.data.data;
+			
             $scope.listEntitiesAvailable = [];
             for (const [key, value] of Object.entries(allindex)) {
                 var newObj = {
@@ -58,7 +60,7 @@ angular.module('dymerHooksCtrl', [])
                     listmodels.forEach(element => {
                         element.instance.forEach(el => {
                             var newObj = {
-                                _index: el._index,
+                                _index: el._index,//VL
                                 _type: el._index
                             };
                             if (el._index != 'general' && el._index != 'entity_relation') {
