@@ -114,6 +114,7 @@ var getfilesArrays = function(er) {
         });
     });
 }
+//VL
 function convertString(input) {
     if (input.startsWith("data[") && input.endsWith("]")) {
         input = input.substring(5, input.length - 1);
@@ -121,6 +122,7 @@ function convertString(input) {
     const output = input.replace(/\]\[0\]\[/g, ".[0].");
     return output;
 }
+//VL
 var recFile = function(file_id) {
     return new Promise(function(resolve, reject) {
         //  gridFSBucket.openDownloadStream(file_id);
@@ -154,63 +156,7 @@ var recFile = function(file_id) {
         logger.error(nameFile + ' | recFile  : ' + err);
     });
 }
-
-router.get('/modeldetail', [util.checkIsDymerUser], (req, res) => {
-    var ret = new jsonResponse();
-    let callData = util.getAllQuery(req);
-    let queryFind = callData.query;
-    console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
-    logger.info(nameFile + '  | get/modeldetail | queryFind:' + JSON.stringify(queryFind));
-    //let queryFind = (Object.keys(callData.query).length === 0) ? {} : JSON.parse(callData.query);
-    //let queryFind = (Object.keys(callData.query).length === 0) ? {} : callData.query;
-    Model.find(queryFind, {}, { title: 1, instance: 1, "structure": 1 }).collation({ locale: "en" }).sort({ title: +1 }).then((Models) => {
-        ret.setMessages("HTMLTemplate");
-        ret.setData(Models);
-
-        const formControlNodes = [];
-        for (const item of ret.data) {
-            if (item.structure) {
-                const childNodes = item.structure.child || [];
-                for (const node of childNodes) {
-                    /*TO DO - Check attributo form-control e form-select*/
-                    if (node.node === "element" && node.attr.class && node.attr.class.includes("form-control")) {
-                        formControlNodes.push(node);     
-                    }
-                }
-            }
-        }
-        let templateNodeList = "";
-        var templateHtml = "";
-
-        formControlNodes.forEach((node) => {
-            //console.log(`node: ${node.tag}, name: ${JSON.stringify(node.attr.name)}`);
-            let name = node.attr.name;
-            let tag = node.tag;
-            let type = node.attr.type;
-            name = convertString(name);
-            let nodeType = "";
-            if (type){
-                nodeType = 'type ="' + type+ '"'; 
-            }
-            templateNodeList = templateNodeList + `<section class="container-fluid"> \n<div class="row  ">\n<div class="col-md-12 col-sx-12 col-lg-12">\n	<div class="row"><h3 class="primaryColor primaryTitlesection"><b> ${name}</b></h3></div>\n <div class="row">{{ ${name} }}  </div>\n</div>\n</div> \n</section>\n`;
-            // templateNodeList = templateNodeList + `<div class="row"><div class="col-md-12 col-sx-12 col-lg-12"><label>${name}</label><${tag} ${nodeType}>${name}</div></div>\n`;
-            //ret.setData(templateNodeList);
-            templateHtml = `<div data-component-entitystatus="" data-vvveb-disabled="" class="row">
-                            {{{EntityStatus this}}}</div> ${templateNodeList}\n`;
-            ret.setMessages("HTML");
-            ret.setData(templateHtml);
-            
-        });
-
-        //TODO verificare esistenza del modello
-        //TODO gestire edit
-        return res.send(templateHtml);
-    }).catch(function(err) {
-        console.error("ERROR | " + nameFile + ' | get | queryFind : ', err);
-        logger.error(nameFile + ' | get/modeldetail | queryFind : ' + err);
-    });
-});
-
+//VL master
 router.get('/modeldetailwizard', [util.checkIsDymerUser], (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -266,6 +212,63 @@ router.get('/modeldetailwizard', [util.checkIsDymerUser], (req, res) => {
         logger.error(nameFile + ' | get/modeldetail | queryFind : ' + err);
     });
 });
+//VL master
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 router.get('/dettagliomodel', [util.checkIsDymerUser], (req, res) => {
@@ -396,6 +399,7 @@ router.post('/', util.checkIsAdmin, function(req, res) {
 });
 
 router.post('/create', util.checkIsAdmin, function(req, res) {
+    //console.log(">>>create");
     var ret = new jsonResponse();
     upload(req, res, function(err) {
         if (err) {
@@ -410,7 +414,7 @@ router.post('/create', util.checkIsAdmin, function(req, res) {
         let data = callData.data;
         var mod = new Model(data);
         mod.save().then((el) => {
-            //console.log(nameFile + ' | post/create  |  saved successfully :', JSON.stringify(data));
+            /*console.log(nameFile + ' | post/create  |  saved successfully :', JSON.stringify(data));*/
             logger.info(nameFile + ' | post/create  |  saved successfully :' + JSON.stringify(data));
             ret.setMessages("Model uploaded successfully");
             ret.addData(el);
@@ -466,6 +470,7 @@ router.post('/addAsset', util.checkIsAdmin, function(req, res) {
 });
 
 router.post('/update', util.checkIsAdmin, function(req, res) {
+    //console.log(">>>update");
     var ret = new jsonResponse();
     upload(req, res, function(err) {
         if (err) {
@@ -485,6 +490,7 @@ router.post('/update', util.checkIsAdmin, function(req, res) {
                 'description': data.description
             }
         };
+        //console.log("---data ", data);
         Model.updateOne(myfilter, myquery,
             function(err, raw) {
                 if (err) {
@@ -497,6 +503,10 @@ router.post('/update', util.checkIsAdmin, function(req, res) {
                     //console.log(nameFile + ' | post/update  |  updateOne successfully :', data.title);
                     logger.info(nameFile + ' | post/update  |  updateOne successfully :' + data.title);
                     ret.setMessages("Model Updated");
+                    /*VL*/
+                    console.log(">>>data ", data);
+                    ret.setData(data);
+                    /*VL*/
                     return res.send(ret);
                 }
             }
