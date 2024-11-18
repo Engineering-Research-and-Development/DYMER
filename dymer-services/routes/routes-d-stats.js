@@ -28,8 +28,9 @@ router.post("/savestats", async function (req, res) {
         try {
             let existingDoc = await statsModel.findOne({resourceId: data.resourceId, email: dymeruser.email, act: data.act});
             if (existingDoc) {
-                existingDoc.timestamps.push(Date.now());
-
+                //existingDoc.timestamps.push(Date.now());
+                existingDoc.timestamps.push((new Date().toLocaleString()));
+                
                 ret.setSuccess(true)
                 ret.setMessages("Statistics updated successfully")
                 ret.addData(await existingDoc.save());
@@ -38,7 +39,8 @@ router.post("/savestats", async function (req, res) {
                 return res.status(201).send(ret);
             } else {
                 data.ip = req.ip;
-                data.timestamps = [Date.now()];
+                //data.timestamps = [Date.now()];
+                data.timestamps = [new Date().toLocaleString()];
                 data.roles = dymeruser.roles;
 
                 let newObj = new statsModel(data);
@@ -84,10 +86,8 @@ router.get("/getstats/:enttype?", async function (req, res) {
               projection: { _id: 0 },
            };
 
-
         let docs = await statsModel.find(query)
-        //const documents = await statsModel.find(filter);
-
+        
         ret.setSuccess(true)
         ret.setMessages("Entities retrived")
         ret.addData(docs)
@@ -126,42 +126,6 @@ router.get("/getallstats", async function (req, res) {
     }
 })
 
-/*router.get("/getstats", async function (req, res) {
-    let ret = new jsonResponse();
-    const filter = req.query;
-    
-    let enttype = req.params.enttype ? req.params.enttype : "";
-    const hdymeruser = req.headers.dymeruser;
-    const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
- 
-   logger.info(nameFile + '|_search| dymeruser :' + JSON.stringify(dymeruser));
-
-     
-    try {
-        const documents = await statsModel.find(filter);
-
-        ret.setSuccess(true)
-        ret.setMessages("Entities retrived")
-        ret.addData(documents)
-
-        return res.status(200).send(ret)
-
-    } catch (error) {
-        console.error("ERROR | " + nameFile + " | get/getLikes | get :", error);
-        logger.error(nameFile + ' | get/getLikes | get : ' + error);
-
-        ret.setMessages("Get error");
-        ret.setSuccess(false);
-        ret.setExtraData({"log": error.stack});
-
-        return res.send(ret);
-    }
-})
-
- */
-
-
-
 router.delete("/deletestats/:id", async function (req, res) {
     const id = req.params.id;
     let ret = new jsonResponse();
@@ -170,32 +134,46 @@ router.delete("/deletestats/:id", async function (req, res) {
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     console.log("********* --> ",id);
     logger.info(nameFile + '| /deletestats/:id| id :' + id);
+    var myfilter = "";
+    if (id == "all"){
+        myfilter = {act: {$ne: ""}};
+    }else{
+        myfilter = { "_id": id };
+    }    
     try {
         dymeruser.roles.forEach(function (value) {
             admin = dymeruser.roles.some(value => value === 'app-admin');
         });
         if(admin){
-            if (id === "all") {
-                await statsModel.deleteMany({});
-            } else {
-                var myfilter = { "_id": id };
-                statsModel.findOneAndDelete(myfilter).then((el) => {
-                    console.log("document deleted --> ",id);
-                    ret.setSuccess(true);
-                    ret.setMessages("document(s) deleted");
-                    ret.addData();
-                    return res.status(200).send(ret);
-                }).catch((err) => {
-                    if (err) {
-                        console.error("ERROR | " + nameFile + " | delete/statsModel/:id | id :", id, err);
-                        logger.error(nameFile + " | delete/statsModel/:id | id :" + id + " , " + err);
-                        ret.setMessages("Delete Error");
-                        ret.setSuccess(false);
-                        ret.setExtraData({ "log": err.stack });
-                        return res.send(ret);
-                    }
-                })
-            }
+            statsModel.find(myfilter).then((el) => {
+                for (element of el) {
+                    myfilter = { "_id": element._id };    
+                    statsModel.findOneAndDelete(myfilter).then((el) => {
+                    }).catch((err) => {
+                        if (err) {
+                            console.error("ERROR | " + nameFile + " | delete/statsModel/:id | id :", id, err);
+                            logger.error(nameFile + " | delete/statsModel/:id | id :" + id + " , " + err);
+                            ret.setMessages("Delete Error");
+                            ret.setSuccess(false);
+                            ret.setExtraData({ "log": err.stack });
+                            return res.send(ret);
+                        }
+                    })
+                }
+            }).catch((err) => {
+                if (err) {
+                    console.error("ERROR | " + nameFile + " | delete/statsModel/:id | id :", id, err);
+                    logger.error(nameFile + " | delete/statsModel/:id | id :" + id + " , " + err);
+                    ret.setMessages("Delete Error");
+                    ret.setSuccess(false);
+                    ret.setExtraData({ "log": err.stack });
+                    return res.send(ret);
+                }
+            })
+            ret.setSuccess(true);
+            ret.setMessages("document(s) deleted");
+            ret.addData();
+            return res.status(200).send(ret);
         }else{
             ret.setSuccess(false);
             ret.setMessages("NO permission");
@@ -228,7 +206,8 @@ router.put("/updatestats/:id", async function (req, res) {
         let updatedDocument;
         switch (act) {
             case "views":
-                updatedDocument = await updateViews(idString, ip, email, roles, resourceId, type, Date.now(), title);
+                //updatedDocument = await updateViews(idString, ip, email, roles, resourceId, type, Date.now(), title);
+                updatedDocument = await updateViews(idString, ip, email, roles, resourceId, type, new Date().toLocaleString(), title);
                 break;
             case "like":
             case "dislike":
@@ -293,7 +272,8 @@ async function createOrUpdateDocument(idString, ip, email, roles, resourceId, ty
     try {
         let existingDoc = await statsModel.findOne({email: email, resourceId: idString, act: act});
         if (existingDoc) {
-            existingDoc.timestamps.push(Date.now());
+            //existingDoc.timestamps.push(Date.now());
+            existingDoc.timestamps.push(new Date().toLocaleString());
             return await existingDoc.save();
         } else {
             let data = {
@@ -304,7 +284,8 @@ async function createOrUpdateDocument(idString, ip, email, roles, resourceId, ty
                 type: type,
                 act: act,
                 title,
-                timestamps: Date.now()
+                //timestamps: Date.now()
+                timestamps: new Date().toLocaleString()
             };
             let newObj = new statsModel(data);
             return await newObj.save();
