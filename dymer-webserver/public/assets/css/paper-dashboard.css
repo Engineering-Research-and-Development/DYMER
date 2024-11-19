@@ -5527,7 +5527,7 @@ tr:first-child>td>.fc-day-grid-event {
 }
 
 .fc-time-grid-event.fc-short .fc-time:after {
-    content: " - "
+    content: "Â -Â "
 }
 
 .fc-time-grid-event.fc-short .fc-title {
@@ -6107,7 +6107,7 @@ tr:first-child>td>.fc-day-grid-event {
     border-radius: 3px;
     padding: 11px 22px;
     cursor: pointer;
-    background-color: #66615b;
+    background-color: /*FS #66615b; */ #5291cb;
     color: #fff;
     transition: all .15s linear
 }
