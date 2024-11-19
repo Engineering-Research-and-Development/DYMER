@@ -1321,3 +1321,7 @@ margin: 4px 0;*/
         padding: 15px;
         margin: 3px;
     }
+/*FS FIX bt5 dropdown menu in home*/
+.navbar-expand-lg .navbar-nav .dropdown-menu{
+left: -116px !important;
+    top: 90px !important;}
