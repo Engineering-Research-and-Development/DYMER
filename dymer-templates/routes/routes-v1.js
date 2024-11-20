@@ -176,7 +176,6 @@ var recFile = function(file_id) {
  */
 
 router.get('/', (req, res) => {
-
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
