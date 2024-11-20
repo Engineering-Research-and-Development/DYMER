@@ -1033,10 +1033,14 @@ function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action, fileurl) {
 }
 
 
-/*MG - Funzione di import MODEL e TEMPLATES - Inizio*/
+ /*MG - Funzione di import MODEL e TEMPLATES - Inizio*/
 function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_objJsonB64_admin, extrainfo_objJsonB64_admin, originalrelquery, newentityType){
+    
+    /*PER TESTARE IN LOCALE*/
+    //let localApiUrl = 'http://192.168.1.52:8080/api/' + formTemplate + 's/api/v1/' + formTemplate + "/";
     let localApiUrl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + '/api/' + formTemplate + 's/api/v1/' + formTemplate + "/";
     let externalApiUrl = sourcepath +'/api/' + formTemplate + 's/api/v1/' + formTemplate + "/";
+    
     /*Verifico se i moduli da importare sono già presenti nella destinazione*/
     let modulesIds = [];
     let titleId = {};
@@ -1049,7 +1053,7 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
         headers: {
             ...formdata_admin.getHeaders(),
             'dymeruser': userinfo_objJsonB64_admin,
-            'Referer': 'http://localhost/',
+            //'Referer': 'http://localhost/',
             'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
             'extrainfo': `${extrainfo_objJsonB64_admin}`,
         } 
@@ -1061,7 +1065,8 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
                 console.log("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - " + formTemplate + " Id", data._id);
                 titleId.id = data._id;
                 titleId.title = data.title;
-                titleId.changed = data.properties.changed;
+                /*DA RIPRISTINARE DOPO AVER AGGIORNATO LA MACCHINA VIRTUALE*/
+                //titleId.changed = data.properties.changed;
                 modulesIds.push(titleId);
                 titleId = {};
             //}
@@ -1085,15 +1090,17 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
                     if (element.contentType == "text/html"){
                         /*Se i moduli HTML sono già presenti nella destinazione, li elimino*/
                         if (modulesIds.length > 0){
-                            modulesIds.forEach(titleId => {    
-                                if (data.title == titleId.title && (data.properties.changed > titleId.changed || forceimport)){ 
+                            modulesIds.forEach(titleId => {  
+                                /*DA RIPRISTINARE DOPO AVER AGGIORNATO LA MACCHINA VIRTUALE*/
+                                //if (data.title == titleId.title && (data.properties.changed > titleId.changed || forceimport)){   
+                                if (data.title == titleId.title){ 
                                     var config = {
                                         method: 'delete',
                                         url: localApiUrl + titleId.id,
                                         headers: {
                                             ...postData.getHeaders(),
                                             'dymeruser': userinfo_objJsonB64_admin,
-                                            "Referer": "http://localhost/",
+                                            //"Referer": "http://localhost/",
                                             'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
                                             'extrainfo': `${extrainfo_objJsonB64_admin}`,
                                         }
@@ -1109,7 +1116,7 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
                                                     headers: {
                                                         ...postData.getHeaders(),
                                                         'dymeruser': userinfo_objJsonB64_admin,
-                                                        "Referer": "http://localhost/",
+                                                        //"Referer": "http://localhost/",
                                                         'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
                                                         'extrainfo': `${extrainfo_objJsonB64_admin}`,
                                                     }
@@ -1164,7 +1171,7 @@ function createModules(formTemplate, userinfo_objJsonB64_admin, extrainfo_objJso
         headers: {
             ...postData.getHeaders(),
             'dymeruser': userinfo_objJsonB64_admin,
-            "Referer": "http://localhost/",
+            //"Referer": "http://localhost/",
             'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
             'extrainfo': `${extrainfo_objJsonB64_admin}`,
         },
@@ -1179,7 +1186,7 @@ function createModules(formTemplate, userinfo_objJsonB64_admin, extrainfo_objJso
             headers: {
                 ...formdata_admin.getHeaders(),
                 'dymeruser': userinfo_objJsonB64_admin,
-                "Referer": "http://localhost/",
+                //"Referer": "http://localhost/",
                 'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
                 'extrainfo': `${extrainfo_objJsonB64_admin}`,
             }
@@ -1200,7 +1207,7 @@ function createModules(formTemplate, userinfo_objJsonB64_admin, extrainfo_objJso
                             headers: {
                                 ...postData.getHeaders(),
                                 'dymeruser': userinfo_objJsonB64_admin,
-                                "Referer": "http://localhost/",
+                                //"Referer": "http://localhost/",
                                 'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
                                 'extrainfo': `${extrainfo_objJsonB64_admin}`,
                             },
