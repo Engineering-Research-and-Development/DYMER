@@ -1,37 +1,71 @@
 [
-  {
-	"name"      : "bootstrap-css",
-	"domtype"   : "link",
-	"filename"  : "css/lib/bootstrap/4.1.3/bootstrap.min.css",
-	"callback"  : null,
-	"useonload" : false,
-	"group"     : "bootstrap",
-	"activated" : true,
-	"loadtype"  : "view",
-	"mandatory" : false
-  },
-  {
-	"name"      : "bootstrap-css",
-	"domtype"   : "link",
-	"filename"  : "css/lib/bootstrap/4.1.3/bootstrap.min.css",
-	"callback"  : null,
-	"useonload" : false,
-	"group"     : "bootstrap",
-	"activated" : true,
-	"loadtype"  : "map",
-	"mandatory" : false
-  },
-  {
-	"name"      : "bootstrap-css",
-	"domtype"   : "link",
-	"filename"  : "css/lib/bootstrap/4.1.3/bootstrap.min.css",
-	"callback"  : null,
-	"useonload" : false,
-	"group"     : "bootstrap",
-	"activated" : true,
-	"loadtype"  : "form",
-	"mandatory" : false
-  },
+	{
+		"name"      : "bootstrap-css",
+		"domtype"   : "link",
+		"filename"  : "css/lib/bootstrap/4.1.3/bootstrap.min.css",
+		"callback"  : null,
+		"useonload" : false,
+		"group"     : "bootstrap",
+		"activated" : true,
+		"loadtype"  : "view",
+		"mandatory" : false
+	},
+	{
+		"name"      : "bootstrap-css",
+		"domtype"   : "link",
+		"filename"  : "css/lib/bootstrap/4.1.3/bootstrap.min.css",
+		"callback"  : null,
+		"useonload" : false,
+		"group"     : "bootstrap",
+		"activated" : true,
+		"loadtype"  : "map",
+		"mandatory" : false
+	},
+	{
+		"name"      : "bootstrap-css",
+		"domtype"   : "link",
+		"filename"  : "css/lib/bootstrap/4.1.3/bootstrap.min.css",
+		"callback"  : null,
+		"useonload" : false,
+		"group"     : "bootstrap",
+		"activated" : true,
+		"loadtype"  : "form",
+		"mandatory" : false
+	},
+  	{
+		"name"      : "bootstrap-css",
+		"domtype"   : "link",
+		"filename"  : "css/lib/bootstrap/5.3.3/bootstrap.min.css",
+		"callback"  : null,
+		"useonload" : false,
+		"group"     : "bootstrap",
+		"activated" : true,
+		"loadtype"  : "view",
+		"mandatory" : false
+	},
+	{
+		"name"      : "bootstrap-css",
+		"domtype"   : "link",
+		"filename"  : "css/lib/bootstrap/5.3.3/bootstrap.min.css",
+		"callback"  : null,
+		"useonload" : false,
+		"group"     : "bootstrap",
+		"activated" : true,
+		"loadtype"  : "map",
+		"mandatory" : false
+	},
+	{
+		"name"      : "bootstrap-css",
+		"domtype"   : "link",
+		"filename"  : "css/lib/bootstrap/5.5.3/bootstrap.min.css",
+		"callback"  : null,
+		"useonload" : false,
+		"group"     : "bootstrap",
+		"activated" : true,
+		"loadtype"  : "form",
+		"mandatory" : false
+	},
+
   {
 	"name"      : "font-awesome-css",
 	"domtype"   : "link",
@@ -109,7 +143,7 @@
 	"loadtype"  : "form",
 	"mandatory" : false
   },
-  {
+{
 	"name"      : "bootstrap-js",
 	"domtype"   : "script",
 	"filename"  : "js/lib/bootstrap/4.1.3/bootstrap.min.js",
@@ -119,8 +153,8 @@
 	"activated" : true,
 	"loadtype"  : "view",
 	"mandatory" : false
-  },
-  {
+},
+{
 	"name"      : "bootstrap-js",
 	"domtype"   : "script",
 	"filename"  : "js/lib/bootstrap/4.1.3/bootstrap.min.js",
@@ -130,8 +164,8 @@
 	"activated" : true,
 	"loadtype"  : "map",
 	"mandatory" : false
-  },
-  {
+},
+{
 	"name"      : "bootstrap-js",
 	"domtype"   : "script",
 	"filename"  : "js/lib/bootstrap/4.1.3/bootstrap.min.js",
@@ -141,7 +175,42 @@
 	"activated" : true,
 	"loadtype"  : "form",
 	"mandatory" : false
-  },
+},
+
+{
+	"name"      : "bootstrap-js",
+	"domtype"   : "script",
+	"filename"  : "js/lib/bootstrap/5.3.3/bootstrap.min.js",
+	"callback"  : null,
+	"useonload" : true,
+	"group"     : "bootstrap",
+	"activated" : true,
+	"loadtype"  : "view",
+	"mandatory" : false
+},
+{
+	"name"      : "bootstrap-js",
+	"domtype"   : "script",
+	"filename"  : "js/lib/bootstrap/5.3.3/bootstrap.min.js",
+	"callback"  : null,
+	"useonload" : true,
+	"group"     : "bootstrap",
+	"activated" : true,
+	"loadtype"  : "map",
+	"mandatory" : false
+},
+{
+	"name"      : "bootstrap-js",
+	"domtype"   : "script",
+	"filename"  : "js/lib/bootstrap/5.3.3/bootstrap.min.js",
+	"callback"  : null,
+	"useonload" : true,
+	"group"     : "bootstrap",
+	"activated" : true,
+	"loadtype"  : "form",
+	"mandatory" : false
+},
+
   {
 	"name"      : "summernote-css",
 	"domtype"   : "link",
@@ -206,30 +275,53 @@
 	"group"     : "summernote",
 	"activated" : true,
 	"loadtype"  : "form",
+	"mandatory" : false
+  },
+
+  {
+	"name"      : "bootstrap-select-css",
+	"domtype"   : "link",
+	"filename"  : "css/lib/bootstrap-select/1.13.1/bootstrap-select.css",
+	"callback"  : null,
+	"useonload" : false,
+	"group"     : "bootstrap-select",
+	"activated" : false,
+	"loadtype"  : "view",
 	"mandatory" : false
   },
   {
 	"name"      : "bootstrap-select-css",
 	"domtype"   : "link",
-	"filename"  : "css/lib/bootstrap-select/bootstrap-select.css",
+	"filename"  : "css/lib/bootstrap-select/1.13.1/bootstrap-select.css",
+	"callback"  : null,
+	"useonload" : false,
+	"group"     : "bootstrap-select",
+	"activated" : false,
+	"loadtype"  : "map",
+	"mandatory" : false
+  },
+{
+	"name"      : "bootstrap-select-css",
+	"domtype"   : "link",
+	"filename"  : "css/lib/bootstrap-select/1.14.0-beta3/bootstrap-select.css",
 	"callback"  : null,
 	"useonload" : false,
 	"group"     : "bootstrap-select",
 	"activated" : true,
 	"loadtype"  : "view",
 	"mandatory" : false
-  },
-  {
+},
+{
 	"name"      : "bootstrap-select-css",
 	"domtype"   : "link",
-	"filename"  : "css/lib/bootstrap-select/bootstrap-select.css",
+	"filename"  : "css/lib/bootstrap-select/1.14.0-beta3/bootstrap-select.css",
 	"callback"  : null,
 	"useonload" : false,
 	"group"     : "bootstrap-select",
 	"activated" : true,
 	"loadtype"  : "map",
 	"mandatory" : false
-  },
+},
   {
 	"name"      : "bootstrap-dymertagsinput-css",
 	"domtype"   : "link",
@@ -318,10 +410,22 @@
 	"loadtype"  : "view",
 	"mandatory" : false
   },
+
+	{
+		"name"      : "bootstrap-bundle-js",
+		"domtype"   : "script",
+		"filename"  : "js/lib/bootstrap/4.1.3/bootstrap.bundle.min.js",
+		"callback"  : null,
+		"useonload" : true,
+		"group"     : "bootstrap",
+		"activated" : true,
+		"loadtype"  : "view",
+		"mandatory" : false
+	},
   {
 	"name"      : "bootstrap-bundle-js",
 	"domtype"   : "script",
-	"filename"  : "js/lib/bootstrap/4.1.3/bootstrap.bundle.min.js",
+	"filename"  : "js/lib/bootstrap/5.3.3/bootstrap.bundle.min.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "bootstrap",
@@ -332,14 +436,25 @@
   {
 	"name"      : "bootstrap-select-js",
 	"domtype"   : "script",
-	"filename"  : "js/lib/bootstrap-select/bootstrap-select.min.js",
+	"filename"  : "js/lib/bootstrap-select/1.13.1/bootstrap-select.min.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "bootstrap-select",
-	"activated" : true,
+	"activated" : false,
 	"loadtype"  : "view",
 	"mandatory" : false
   },
+	{
+		"name"      : "bootstrap-select-js",
+		"domtype"   : "script",
+		"filename"  : "js/lib/bootstrap-select/1.14.0-beta3/bootstrap-select.min.js",
+		"callback"  : null,
+		"useonload" : true,
+		"group"     : "bootstrap-select",
+		"activated" : false,
+		"loadtype"  : "view",
+		"mandatory" : false
+	},
   {
 	"name"      : "dymer-base-css",
 	"domtype"   : "link",
@@ -420,7 +535,7 @@
   {
 	"name"      : "leaflet-css",
 	"domtype"   : "link",
-	"filename"  : "leaflet/leaflet.css",
+	"filename"  : "lib/leaflet/leaflet.css",
 	"callback"  : null,
 	"useonload" : false,
 	"group"     : "mandatory",
@@ -431,7 +546,7 @@
   {
 	"name"      : "leaflet-toolbar-css",
 	"domtype"   : "link",
-	"filename"  : "leaflet/plugin/toolbar/leaflet.toolbar.css",
+	"filename"  : "lib/leaflet/plugin/toolbar/leaflet.toolbar.css",
 	"callback"  : null,
 	"useonload" : false,
 	"group"     : "mandatory",
@@ -453,7 +568,7 @@
   {
 	"name"      : "markercluster-default-css",
 	"domtype"   : "link",
-	"filename"  : "leaflet/plugin/markercluster/MarkerCluster.Default.css",
+	"filename"  : "lib/leaflet/plugin/markercluster/MarkerCluster.Default.css",
 	"callback"  : null,
 	"useonload" : false,
 	"group"     : "jquery.dataTables",
@@ -464,7 +579,7 @@
   {
 	"name"      : "control-fullscreen-css",
 	"domtype"   : "link",
-	"filename"  : "leaflet/plugin/fullscreen/Control.FullScreen.css",
+	"filename"  : "lib/leaflet/plugin/fullscreen/Control.FullScreen.css",
 	"callback"  : null,
 	"useonload" : false,
 	"group"     : "jquery.dataTables",
@@ -475,7 +590,7 @@
   {
 	"name"      : "l-control-sidebar-css",
 	"domtype"   : "link",
-	"filename"  : "leaflet/plugin/sidebar/L.Control.Sidebar.css",
+	"filename"  : "lib/leaflet/plugin/sidebar/L.Control.Sidebar.css",
 	"callback"  : null,
 	"useonload" : false,
 	"group"     : "jquery.dataTables",
@@ -519,7 +634,7 @@
   {
 	"name"      : "leaflet-awesome-markers-css",
 	"domtype"   : "link",
-	"filename"  : "leaflet/leaflet.awesome-markers.css",
+	"filename"  : "lib/leaflet/leaflet.awesome-markers.css",
 	"callback"  : null,
 	"useonload" : false,
 	"group"     : "mandatory",
@@ -541,7 +656,7 @@
   {
 	"name"      : "leaflet-src-js",
 	"domtype"   : "script",
-	"filename"  : "leaflet/leaflet-src.js",
+	"filename"  : "lib/leaflet/leaflet-src.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "ajaxcall",
@@ -552,7 +667,7 @@
   {
 	"name"      : "leaflet-awesome-markers-js",
 	"domtype"   : "script",
-	"filename"  : "leaflet/leaflet.awesome-markers.js",
+	"filename"  : "lib/leaflet/leaflet.awesome-markers.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "ajaxcall",
@@ -662,7 +777,7 @@
   {
 	"name"      : "control-fullscreen-js",
 	"domtype"   : "script",
-	"filename"  : "leaflet/plugin/fullscreen/Control.FullScreen.js",
+	"filename"  : "lib/leaflet/plugin/fullscreen/Control.FullScreen.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "jquery.dataTables",
@@ -673,7 +788,7 @@
   {
 	"name"      : "leaflet-toolbar-js",
 	"domtype"   : "script",
-	"filename"  : "leaflet/plugin/toolbar/leaflet.toolbar.js",
+	"filename"  : "lib/leaflet/plugin/toolbar/leaflet.toolbar.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "mandatory",
@@ -684,7 +799,7 @@
   {
 	"name"      : "l-control-sidebar-js",
 	"domtype"   : "script",
-	"filename"  : "leaflet/plugin/sidebar/L.Control.Sidebar.js",
+	"filename"  : "lib/leaflet/plugin/sidebar/L.Control.Sidebar.js",
 	"callback"  : null,
 	"useonload" : true,
 	"group"     : "mandatory",
@@ -695,14 +810,25 @@
   {
 	"name"      : "bootstrap-select-js",
 	"domtype"   : "script",
-	"filename"  : "js/lib/bootstrap-select/bootstrap-select.min.js",
+	"filename"  : "js/lib/bootstrap-select/1.13.1/bootstrap-select.min.js",
 	"callback"  : "() => {\n\tvar temp_config_call = {\n\t\turl         : csd + '/api2/retriveinfo',\n\t\ttype        : 'POST',\n\t\taddDataBody : false\n\t};\n\tvar ajax_temp_call = new Ajaxcall( temp_config_call );\n\tajax_temp_call.flush();\n\tvar ret = ajax_temp_call.send();\n\tfor ( const [ key, value ] of Object.entries( ret ) ) {\n\t\tif ( key == 'DYMisi' ) {\n\t\t\tdocument.cookie = 'DYMisi=' + value;\n\t\t} else {\n\t\t\tlocalStorage.removeItem( key );\n\t\t\tlocalStorage.setItem( key, value );\n\t\t}\n\t}\n\tmainMapOnLoad();\n};",
 	"useonload" : true,
 	"group"     : "bootstrap-select",
-	"activated" : true,
+	"activated" : false,
 	"loadtype"  : "map",
 	"mandatory" : false
   },
+	{
+		"name"      : "bootstrap-select-js",
+		"domtype"   : "script",
+		"filename"  : "js/lib/bootstrap-select/1.14.0-beta3/bootstrap-select.min.js",
+		"callback"  : "() => {\n\tvar temp_config_call = {\n\t\turl         : csd + '/api2/retriveinfo',\n\t\ttype        : 'POST',\n\t\taddDataBody : false\n\t};\n\tvar ajax_temp_call = new Ajaxcall( temp_config_call );\n\tajax_temp_call.flush();\n\tvar ret = ajax_temp_call.send();\n\tfor ( const [ key, value ] of Object.entries( ret ) ) {\n\t\tif ( key == 'DYMisi' ) {\n\t\t\tdocument.cookie = 'DYMisi=' + value;\n\t\t} else {\n\t\t\tlocalStorage.removeItem( key );\n\t\t\tlocalStorage.setItem( key, value );\n\t\t}\n\t}\n\tmainMapOnLoad();\n};",
+		"useonload" : true,
+		"group"     : "bootstrap-select",
+		"activated" : true,
+		"loadtype"  : "map",
+		"mandatory" : false
+	},
   {
 	"name"      : "handlebarshook-js",
 	"domtype"   : "script",
@@ -717,7 +843,7 @@
   {
 	"name"      : "leaflet-markercluster-js",
 	"domtype"   : "script",
-	"filename"  : "leaflet/plugin/markercluster/leaflet.markercluster.js",
+	"filename"  : "lib/leaflet/plugin/markercluster/leaflet.markercluster.js",
 	"callback"  : "() => {\n\tvar temp_config_call = {\n\t\turl         : csd + '/api2/retriveinfo',\n\t\ttype        : 'POST',\n\t\taddDataBody : false\n\t};\n\tvar ajax_temp_call = new Ajaxcall( temp_config_call );\n\tajax_temp_call.flush();\n\tvar ret = ajax_temp_call.send();\n\tfor ( const [ key, value ] of Object.entries( ret ) ) {\n\t\tif ( key == 'DYMisi' ) {\n\t\t\tdocument.cookie = 'DYMisi=' + value;\n\t\t} else {\n\t\t\tlocalStorage.removeItem( key );\n\t\t\tlocalStorage.setItem( key, value );\n\t\t}\n\t}\n\tmainMapOnLoad();\n};",
 	"useonload" : true,
 	"group"     : "mandatory",

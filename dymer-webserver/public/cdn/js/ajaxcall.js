@@ -463,10 +463,16 @@ function getResponseHeaders(jqXHR) {
             '<span class="sr-only">Loading...</span>' +
             '	</div></div>');
         if (option != undefined) {
-            if (option.cssclass != undefined)
+            if (option.cssclass != undefined){
+
                 this.find('.loading-animation-ajax').addClass(option.cssclass);
-            if (option.css != undefined)
+            }
+
+            if (option.css != undefined){
+
                 this.find('.loading-animation-ajax').css(option.css);
+            }
+
         }
     };
     $.fn.hideLoader = function() {

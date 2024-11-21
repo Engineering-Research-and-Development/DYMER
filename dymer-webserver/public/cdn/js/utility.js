@@ -726,6 +726,7 @@ async function onloadFiles(arr) {
         var script = null;
         //  var filename = obj.filename + "?dmts=1";
         var filename = obj.filename;
+        console.log(filename);
         //    filename += "?dmts=1";
         if (!filename.includes('cdn'))
             filename += toperm;
@@ -1313,11 +1314,11 @@ var listLoadedAdm = {};
 
 function loadModelListToModal(target, index, action) {
     var insertmodal = '<div id="entityAdd"  class="dymermodal modal fade" tabindex="-1" role="dialog"   data-backdrop="static">' +
-        '<div class="modal-dialog" role="document" style="    max-width: 60%;">' +
+        '<div class="modal-dialog" role="document" style="max-width: 60%;">' +
         '<div class="modal-content">' +
         '<div class="modal-header">' +
-        '<button type="button" class="close closeform" onclick="closeDymerModal(\'entityAdd\')" style="float: right;display: block;position: relative;"><span aria-hidden="true">&times;</span></button>' +
-        '<h4 class="modal-title" style="float: left;position: absolute;    margin-top: 0;">Add Entity</h4>' +
+        '<button type="button" class="close closeform" onclick="closeDymerModal(\'entityAdd\')" style="float: right;"><span aria-hidden="true">&times;</span></button>' +
+        '<h4 class="modal-title" style="float: left;margin-top: 0;">Add Entity</h4>' +
         '</div>' +
         '<div class="modal-body" id="cont-module-addentity">' +
         '</div>' +
@@ -1389,7 +1390,7 @@ function loadModelListToModal(target, index, action) {
         });
         newHtml += " ";
         if (!listToLoad.length)
-            newHtml = '<div  class="alert alert-info  "> No '+item.title+' data available  </div>';
+            newHtml = '<div  class="alert alert-info"> No '+item.title+' data available  </div>';
         if (action == undefined) {
             $(target).html("");
             $(target).html(newHtml);
@@ -1953,7 +1954,8 @@ async function loadRequireMap() {
     filename = kmsconfig.cdn + "js/lib/jquery/popper.min.js";
     if (!(ckaddimport.indexOf(group) > -1))
         arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    filename = kmsconfig.cdn + "js/lib/bootstrap/4.1.3/bootstrap.min.js";
+    filename = kmsconfig.cdn + "js/lib/bootstrap/5.3.3/bootstrap.min.js";//VL
+    //VL filename = kmsconfig.cdn + "js/lib/bootstrap/4.1.3/bootstrap.min.js";
     group = "bootstrap";
     if (!(ckaddimport.indexOf(group) > -1))
         arr.push(new Elfile(domtype, filename, callback, useonload, group));
@@ -1967,13 +1969,13 @@ async function loadRequireMap() {
         arr.push(new Elfile(domtype, filename, callback, useonload, group));
     }
     group = "mandatory";
-    filename = kmsconfig.cdn + "leaflet/plugin/toolbar/leaflet.toolbar.js";
+    filename = kmsconfig.cdn + "lib/leaflet/plugin/toolbar/leaflet.toolbar.js";
     arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    filename = kmsconfig.cdn + "leaflet/plugin/sidebar/L.Control.Sidebar.js";
+    filename = kmsconfig.cdn + "lib/leaflet/plugin/sidebar/L.Control.Sidebar.js";
     arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    //filename = 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js';
+    //VL filename = 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/js/bootstrap-select.min.js';
     group = "bootstrap-select";
-    filename = kmsconfig.cdn + 'js/lib/bootstrap-select/bootstrap-select.min.js';
+    filename = kmsconfig.cdn + 'js/lib/bootstrap-select/1.14.0-beta3/bootstrap-select.min.js';//VL
     arr.push(new Elfile(domtype, filename, mycallback, useonload));
     group = "mandatory";
     filename = kmsconfig.cdn + "js/handlebars.min.js";
@@ -2667,8 +2669,8 @@ async function editEntity(id) {
         '<div class="modal-content">' +
         '<div class="modal-header">' +
         //  '<button type="button" class="close" data-dismiss="modal"  style="float: right;display: block;position: relative;"><span aria-hidden="true">&times;</span></button>' +
-        '<button type="button" class="close closeform" onclick="closeDymerModal(\'entityEdit\')"  style="float: right;display: block;position: relative;"><span aria-hidden="true">&times;</span></button>' +
-        '<h4 class="modal-title" style="float: left;position: absolute;    margin-top: 0;">Edit</h4>' +
+        '<button type="button" class="close closeform" onclick="closeDymerModal(\'entityEdit\')"  style="float: right;"><span aria-hidden="true">&times;</span></button>' +
+        '<h4 class="modal-title" style="float: left; margin-top: 0;">Edit</h4>' +
         '</div>' +
         '<div class="modal-body">' +
         '<div class="contbody">' +
@@ -2697,11 +2699,19 @@ async function editEntity(id) {
 
         dymodalmode = "edit";
         if (!ret.data.length) {
-            $('#entityEdit').modal({
+            /*VL $('#entityEdit').modal({
                 show: true,
                 keyboard: false,
                 backdrop: 'static'
-            });
+            }); VL*/
+            //VL
+            let options = {
+                show: true,
+                keyboard: false,
+                backdrop: 'static'
+            }
+            new bootstrap.Modal($("#entityEdit"), options).show();
+            //VL
             $('#entityEdit .onputform').hide();
         } else {
             dymphases.setModal("edit", true);
@@ -2731,12 +2741,23 @@ async function editEntity(id) {
                 dymphases.setSubPhase("edit", true, "loadedform");
                 $('#entityEdit .modal-body .contbody').html(model_form); //.find('form').append('<input name="data[idedit]" type="hidden" value="' + id + '">');
                 $(grtHtml).insertBefore($('#entityEdit .modal-body .contbody .alert.alertaction'));
-                $('#entityEdit').modal({
+
+                /*VL $('#entityEdit').modal({
                     show: true,
                     keyboard: false,
                     backdrop: 'static'
-                });
-                $('#entityEdit .modal-body').showLoader();
+                }); VL*/
+
+                //VL
+                let options1 = {
+                    show: true,
+                    keyboard: false,
+                    backdrop: 'static'
+                }
+                new bootstrap.Modal($("#entityEdit"), options1).show();
+                //VL
+
+                /*VL $('#entityEdit .modal-body').showLoader();*/
                 // setTimeout(function() {
 
                 dymphases.setSubPhase("edit", true, "loadattachment");
@@ -2786,7 +2807,7 @@ async function editEntity(id) {
                 dymphases.setSubPhase("edit", true, "populateform");
                 //console.log('#entityEdit', itemToEdit, undefined, undefined, itemToEdit_);
                 await populateFormEdit_await('#entityEdit', itemToEdit, undefined, undefined, itemToEdit_);
-                $('#entityEdit .modal-body').hideLoader();
+                //VL $('#entityEdit .modal-body').hideLoader();//TODO eliminare dal momento che ho tolto showLoader
                 //console.log("fnito!!!");
                 dymphases.setSubPhase("edit", true, "dympostpopulated");
                 await postPopulatedFormEdit_Promise(itemToEdit);
@@ -2833,12 +2854,13 @@ function deleteEntity(id, indexentity) {
                 }
             });
     }
+    //VL
     var editmodal = '<div id="deleteEdit" data-identityDelete="' + id + '" data-indexentityDelete="' + indexentity + '" class="dymermodal modal fade" tabindex="-1" role="dialog"  data-backdrop="static">' +
         '<div class="modal-dialog" role="document" style="    max-width: 60%;">' +
         '<div class="modal-content">' +
         '<div class="modal-header">' +
-        '<button type="button" class="close" data-dismiss="modal"  style="float: right;display: block;position: relative;"><span aria-hidden="true">&times;</span></button>' +
-        '<h4 class="modal-title" style="float: left;position: absolute;    margin-top: 0;">Delete</h4>' +
+        '<button type="button" class="close" data-bs-dismiss="modal"  style="float: right;"><span aria-hidden="true">&times;</span></button>' +
+        '<h4 class="modal-title" style="float: left; margin-top: 0;">Delete</h4>' +
         '</div>' +
         '<div class="modal-body">' +
         '<p>Click on confirm to delete <b id="nameEntity"></b> </p>' +
@@ -2850,7 +2872,7 @@ function deleteEntity(id, indexentity) {
         '</div>' +
         '</div>' +
         '<div class="modal-footer">' +
-        '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>' +
+        '<button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>' +
         '<button type="button" class="btn btn-primary" onclick="actionDeleteMultipartForm(\'entity\',undefined,undefined, undefined,undefined,undefined,true)">Confirm</button>' +
         '</div>' +
         '</div>' +
@@ -4050,11 +4072,19 @@ function actionPatchMultipartForm(type, el, datapost, senderForm, callback, call
 
 function showAddEntityBindReload() {
     setTimeout(function() {
-        $('#entityAdd').modal({
+        /*VL $('#entityAdd').modal({
             show: true,
             keyboard: false,
             backdrop: 'static'
-        });
+        });*/
+
+        let options = {
+            show: true,
+            keyboard: false,
+            backdrop: 'static'
+        }
+        new bootstrap.Modal($("#entityAdd"), options).show();
+
         var oldact = $('#entityAdd').find("[onclick^='actionPostMultipartForm']").attr('onclick');
         var actToAppend = oldact;
         $('#entityAdd').find("[onclick^='actionPostMultipartForm']").attr('onclick', actToAppend);
