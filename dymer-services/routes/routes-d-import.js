@@ -1794,8 +1794,8 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
             "app_azf_domain": "",
             "id": 1,
             "app_id": "",
-            "email": "marcoromano12@gmail.com",
-            "username": "marcoromano12@gmail.com"
+            "email": "admin@dymer.com",
+            "username": "admin@dymer.com"
         };
 
         let userinfo_objJsonStr_admin = JSON.stringify(userinfo_admin);

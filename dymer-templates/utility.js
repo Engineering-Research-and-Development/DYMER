@@ -88,8 +88,9 @@ exports.getAllQuery = function(req) {
     if (!isEmpty(query)) {
         if (typeof(query.query) == 'string')
             query.query = JSON.parse(query.query);
-        /*MG - query e non query.query*/    
-        Object.assign(obj, query);
+        /*MG - query e non query.query*/   
+        console.log("query.query",query.query);
+        Object.assign(obj, query.query);
     }
     //  console.log("obj", obj );
     return obj;
