@@ -968,9 +968,11 @@ function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action, fileurl) {
     if (action == "put")
         posturl = "'http://192.168.1.52:8080/api/entities/api/v1/entity/" + el.instance.id;
     */
+    
     var posturl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/" + index;
     if (action == "put")
         posturl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/" + el.instance.id;
+    
 
     var formdata = new FormData();
     let arrlistFiles = [];
@@ -1039,6 +1041,13 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
     let localApiUrl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + '/api/' + formTemplate + 's/api/v1/' + formTemplate + "/";
     let externalApiUrl = sourcepath +'/api/' + formTemplate + 's/api/v1/' + formTemplate + "/";
     
+    /*Per gestire il query.query di utility.js dei templates*/
+    let modelTemplateParameters ="";
+    if (formTemplate==="form")
+        modelTemplateParameters = { "query": { "instance._index": { "$eq": newentityType } } };
+    if (formTemplate==="template")
+        modelTemplateParameters = { "query": { "query": { "instance._index": { "$eq": newentityType } } } };
+
     /*Verifico se i moduli da importare sono già presenti nella destinazione*/
     let modulesIds = [];
     let titleId = {};
@@ -1047,7 +1056,7 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
     let config = {
         method: 'GET',
         url: localApiUrl,
-        params: { "query": { "instance._index": { "$eq": newentityType } } },
+        params: modelTemplateParameters,
         headers: {
             ...formdata_admin.getHeaders(),
             'dymeruser': userinfo_objJsonB64_admin,
@@ -1724,7 +1733,7 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
         //var pt_internal = "http://192.168.1.52:8080/api/entities/api/v1/entity/_search";
         var pt_internal = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/_search";
         var pt_external = crnrule.sourcepath + crnrule.apisearchpath; //"http://localhost:8080/api/entities/api/v1/entity/_search";
-        
+
         const fileurl = crnrule.sourcepath; //"http://195.201.83.104"
         const originalrelquery = crnrule.sourceindex; //."";
         const crnruletitle = crnrule.title; //."";
