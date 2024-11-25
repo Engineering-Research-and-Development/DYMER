@@ -794,11 +794,12 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
     if (formTemplate==="template")
         modelTemplateParameters = { "query": { "query": { "instance._index": { "$eq": newentityType } } } };
 
-    console.log("==> modelTemplateParameters ", modelTemplateParameters);
+    console.log("==> modelTemplateParameters ", modelTemplateParameters); /*VL MG*/
     let config = {
         method: 'GET',
         url: localApiUrl,
-        params: modelTemplateParameters,
+        params: modelTemplateParameters, //VL MG
+        //params: { "query": { "instance._index": { "$eq": newentityType } } },//VL MG
         headers: {
             ...formdata_admin.getHeaders(),
             'dymeruser': userinfo_objJsonB64_admin,

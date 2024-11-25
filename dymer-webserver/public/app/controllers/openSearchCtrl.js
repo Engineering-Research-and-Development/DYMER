@@ -107,7 +107,7 @@ angular.module('openSearchCtrl', [])
         });
         $scope.saveOpnSearchConfig = function(opnconf) {
 
-            console.log("opnconf", opnconf);
+            //console.log("opnconf", opnconf);
             var dapaPost = opnconf;
             $http({
 
@@ -117,8 +117,8 @@ angular.module('openSearchCtrl', [])
 
             }).then(function successCallback(response) {
 
-                    console.log('saveOpnSearchConfig ', response);
-                    //        console.log("User has update Successfully")
+                    //console.log('saveOpnSearchConfig ', response);
+                    //console.log("User has update Successfully")
                     response.data.data.forEach(el => {
                         // console.log(">>>>>ellllll ", el);
                         $scope.opnsearch.config[el.servicetype].id = el.id;

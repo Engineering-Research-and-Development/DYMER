@@ -54,7 +54,7 @@ loadAllConfig();
                 method: 'DELETE',
                 url:apiPath + '/' + el_id._id
             }).then(function successCallback(response) {
-                    console.log('response delete', response);
+                    //console.log('response delete', response);
                     $scope.ListUsers.splice(index, 1);
                 },
                 function errorCallback(response) {

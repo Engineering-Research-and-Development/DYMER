@@ -153,7 +153,7 @@ angular.module('dashCtrl', ['nvd3'])
                 $http.get(baseContextPath + '/api/entities/api/v1/entity/deleteAllEntityByIndex', {
                     params: par
                 }).then(function (rt) {
-                    console.log("deleted done", rt);
+                    //console.log("deleted done", rt);
                     $scope.ListEntities[ind].count = 0;
                 }).catch(function (response) {
                     console.log(response.status);

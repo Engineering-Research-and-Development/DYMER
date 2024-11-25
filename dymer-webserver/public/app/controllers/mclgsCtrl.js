@@ -94,9 +94,9 @@ angular.module('mclgsCtrl', [])
                 $scope.checkservice.entities.db.elastic.msg = rts.data.data.label;
             })
         }).then(function() {
-            console.log("ddddd");
+            //console.log(">>>>redisstate");
             $http.get(baseContextPath + "/api/entities/api/v1/entity/redisstate").then(function(rts) {
-                console.log("rts",rts);
+                console.log(">>>>redisstate ",rts);
                 $scope.checkservice.entities.db.redis.css = rts.data.data.css;
                 $scope.checkservice.entities.db.redis.msg = rts.data.data.label;
                 if (rts.data.data.value == 1 )

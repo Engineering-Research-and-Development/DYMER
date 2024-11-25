@@ -108,7 +108,7 @@ angular.module('bridgeEntitiesCtrl', [])
                 method: 'DELETE',
                 url: baseContextPath + '/api/entities/api/v1/entity/entitiesbridge/' + el_id._id
             }).then(function successCallback(response) {
-                    console.log('response delete', response);
+                    //console.log('response delete', response);
                     $scope.ListbridgeEntities.splice(index, 1);
                 },
                 function errorCallback(response) {

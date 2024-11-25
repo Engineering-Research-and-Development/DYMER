@@ -115,7 +115,7 @@ angular.module('importcronjobCtrl', [])
                 method: 'DELETE',
                 url: baseContextPath + '/api/dservice/api/v1/import/cronjob/' + el_id._id
             }).then(function successCallback(response) {
-                    console.log('response delete', response);
+                    //console.log('response delete', response);
                     $scope.List.splice(index, 1);
                 },
                 function errorCallback(response) {

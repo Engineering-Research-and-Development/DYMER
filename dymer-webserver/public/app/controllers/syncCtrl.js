@@ -102,7 +102,7 @@ $http.get(pathRun, {}).then(function(response) {
                 method: 'DELETE',
                 url: baseContextPath + '/api/dservice/api/v1/sync/' + el_id._id
             }).then(function successCallback(response) {
-                    console.log('response delete', response);
+                    //console.log('response delete', response);
                     $scope.List.splice(index, 1);
                 },
                 function errorCallback(response) {
