@@ -739,7 +739,7 @@ function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action, fileurl) {
     })
     Promise.all(requests).then(() => {
         appendFormdataFiles(formdata, el, '', dir + "/");
-        //console.log("Promesse tutte eseguite");
+        console.log("postMyDataAndFiles | Promesse tutte eseguite");
         logger.info(nameFile + ' | postMyDataAndFiles | Promesse tutte eseguite  ');
         var config = {
             method: action,

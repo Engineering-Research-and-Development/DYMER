@@ -190,7 +190,8 @@ angular.module('entitiesImportControllers', [])
             let url = baseContextPath + '/api/entities/api/v1/entity/allindex/' + index
 
             $http.get(url).then(ret => {
-                let JSONStructure = ret.data.data[index].mappings[index].properties
+                //let JSONStructure = ret.data.data[index].mappings[index].properties //master old elasticsearch
+                let JSONStructure = ret.data.data[index].mappings.properties //elasticsearch 8.11
                 let structure = []
                 for (const key in JSONStructure) {
                     if (JSONStructure[key].hasOwnProperty("properties")) {
