@@ -3512,7 +3512,7 @@ const jsonMappingDymerEntityToExternal = (obj, conf, calltype, files) => {
             console.error("ERROR | " + nameFile + '| jsonMappingDymerEntityToExternal | jsonMapper : ', error);
             logger.error(nameFile + '| jsonMappingDymerEntityToExternal | jsonMapper : ' + error);
             reject("ERROR:jsonMappingDymerEntityToExternal error")
-        });;
+        });
     })
 }
 
@@ -3623,7 +3623,8 @@ router.post('/:enttype', function(req, res) {
     //console.log('==>dymeruser', dymeruser);
     let requestjsonpath=req.headers.requestjsonpath;
     let dymerextrainfo = dymeruser.extrainfo;
-    //console.log("dymeruser", dymeruser);
+	logger.info(nameFile + '| /:enttype | create | dymeruser:' + dymeruser);																		
+	console.log("dymeruser", dymeruser);
     // var dymerextrainfo = req.headers.extrainfo;
     /*if (dymerextrainfo != undefined && dymerextrainfo != "null" && dymerextrainfo != null) {
         dymerextrainfo = JSON.parse(Buffer.from(req.headers.extrainfo, 'base64').toString('utf-8'));

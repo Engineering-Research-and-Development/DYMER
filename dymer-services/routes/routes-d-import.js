@@ -232,10 +232,12 @@ router.post('/fromcsv', util.checkIsAdmin, (req, res) => {
     const mainSearchingField = mainRelation.searchingField
     const mainEnabledRelation = mainRelation.enabled
 
-    logger.debug(nameFile + '| post/fromcsv | indexToImport:' + indexToImport);
-    logger.debug(nameFile + '| post/fromcsv | dataToImport:' + dataToImport);
-    logger.debug(nameFile + '| post/fromcsv | mainRelation:' + JSON.stringify(mainRelation));
-    logger.debug(nameFile + '| post/fromcsv | secondaryRelations:' + JSON.stringify(secondaryRelations));
+    console.log(">>> mainEnabledRelation  ", mainEnabledRelation);
+
+    logger.info(nameFile + '| post/fromcsv | indexToImport:' + indexToImport);
+    logger.info(nameFile + '| post/fromcsv | dataToImport:' + dataToImport);
+    logger.info(nameFile + '| post/fromcsv | mainRelation:' + JSON.stringify(mainRelation));
+    logger.info(nameFile + '| post/fromcsv | secondaryRelations:' + JSON.stringify(secondaryRelations));
 
     // console.log(nameFile + '| post/fromcsv | indexToImport:' + indexToImport);
     // console.log(nameFile + '| post/fromcsv | dataToImport:' + dataToImport);
@@ -244,26 +246,29 @@ router.post('/fromcsv', util.checkIsAdmin, (req, res) => {
 
     let searchUrl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/_search";
 
-    // Set query to retrieve all relationTo index entities
+    // Set query to retrieve all relationTo index entities - elastic 8.11
     let query = {
         "query": {
-            "bool": {
-                "must": [{
-                    "term": {
-                        "_index": mainRelationTo
-                    }
-                }]
+            "query": {
+                "bool": {
+                    "must": [{
+                        "term": {
+                            "_index": mainRelationTo
+                        }
+                    }]
+                }
             }
         }
     };
 
     // Axios call to retrieve all relationTo index entities
     axios.post(searchUrl, query).then(response => {
+        //console.log(">>>>response ", response);
         const relIndexEntities = response.data.data;
         console.log("relIndexEntities", relIndexEntities)
 
         // for Each mapped record, build propert_ object
-        dataToImport.forEach((element, index) => {
+        dataToImport.forEach((element, i) => {
             let propert_ = {
                 owner: {
                     uid: element["properties.owner"],
@@ -308,16 +313,20 @@ router.post('/fromcsv', util.checkIsAdmin, (req, res) => {
             propert_.changed = (new Date()).toISOString(); // end propert_ building object
 
             // for each entity in relIndexEntities finds the one that has the same title to the searchingField indicated
-            let elrel = relIndexEntities.find((el) => el["_source"].title === mainRelation.relationData[index] );
-            console.log("elrel: ", elrel)
+            let elrel;
+            if (mainEnabledRelation){
+                elrel = relIndexEntities.find((el) => el["_source"].title === mainRelation.relationData[i] );
+                //console.log("elrel: ", elrel);
+            }
+
             let rel_id = undefined;
             if (elrel != undefined) rel_id = elrel["_id"]; // if rel has an entity, get the id
 
             // Start to build the single Entity
             var singleEntity = {
                 "instance": {
-                    "index": indexToImport,
-                    "type": indexToImport
+                    "index": indexToImport
+                    //"type": indexToImport
                 },
 
                 "data": buildNestedObj(element, arrayFields) // mapped and structured record
@@ -343,7 +352,7 @@ router.post('/fromcsv', util.checkIsAdmin, (req, res) => {
                         if (!singleEntity.data.relation[secRel.relationTo]) {
                             singleEntity.data.relation[secRel.relationTo] = [];
                         }
-                        singleEntity.data.relation[secRel.relationTo].push({to: secRel.relationData[index]})
+                        singleEntity.data.relation[secRel.relationTo].push({to: secRel.relationData[i]})
                    }
                 }
             })
@@ -392,7 +401,8 @@ router.post('/fromcsv', util.checkIsAdmin, (req, res) => {
             setTimeout(function () {
                 console.log(nameFile + ' get/fromjcsv | sent Entity to Entities Microservice:' + index + " " + JSON.stringify(obj.data));
                 logger.info(nameFile + ' get/fromjcsv | sent Entity to Entities Microservice :' + index + " " + JSON.stringify(obj.data));
-               postMyData(obj.data, indexToImport, obj.DYM, obj.DYM_EXTRA);
+                //set app-guest permission ex tefindservice view, create, edit
+                postMyData(obj.data, indexToImport, obj.DYM, obj.DYM_EXTRA);
             }, 1000 * (index + 1));
         });
         console.log("Entitied processed and sent to Entities Microservice")
