@@ -1,0 +1,134 @@
+<!--MG - Social Statistics - Inizio-->
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title">Social Statistics</h5>
+            <div class="card-category"></div>
+        </div>
+        <div class="card-body">
+            <div class=" ">
+                 
+                    <div class="actions float-right">
+                        <div class="btns">
+                            <button type="button" data-toggle="collapse" href="#filters" aria-expanded="false" aria-controls="filters" title="Filter" class="btn btn-icon btn-outline-info me-2">
+                                <i class="fa fa-filter"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row collapse" id="filters">
+                        <div class="col-md-4">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Type</div>
+                                <div class="panel-body" id="type">
+                                    <div class="checkbox">
+                                        <label><input type="radio" name="radioType" ng-click="typeFilter('all', $event)" value="all" class="all" /> All</label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <div ng-repeat="el in types">
+                                            <label><input type="radio" name="radioType" ng-click="typeFilter(el, $event)" value="{{ el[0].type }}" /> {{ el[0].type }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Action</div>
+                                <div class="panel-body" id="action">
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" value="all" class="all" /> All</label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" value="views" /> Views</label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" value="like" /> Likes</label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" value="dislike" /> Dislikes</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Counter</div>
+                                <div class="panel-body" id="counter">
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" value="all" class="all" /> All</label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" value="one" /> 0 - 100</label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" value="two" /> 101 - 300</label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" value="three" /> > 300</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                
+                <table class="table table-hover table-sm" id="dtStatistics">
+                    <thead class="text-primary">
+                        <tr>
+                            <th>#</th>
+                            <th>
+                                Type
+                            </th>
+                            <th class="text-center">
+                                Title
+                            </th>
+                            <th class="text-center">
+                                User
+                            </th>
+                            <th class="text-center">
+                                Action
+                            </th>
+                            <th class="text-center">
+                                Counter
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="el in dtStatistics">
+                            <td>
+                                {{$index+1}}
+                            </td>
+                            <td>
+                                {{ el.type }}
+                            </td>
+                            <td class="text-center">
+                                {{ el.title }}
+                            </td>
+                            <td class="text-center">
+                                {{ el.email }}
+                            </td>
+                            <td class="text-center">
+                                {{ el.act }}
+                            </td>
+                            <td class="text-center">
+                                <a href="#" data-toggle="tooltip" title="{{ el.timestamps.join('\n') }}">{{ el.timestamps.length }}</a>
+                                
+                            </td>
+                            <td class="text-center actmodindexdash">
+                                <i class="fa fa-trash deleteAction" title="Flush this statistic" ng-click="deleteStatistics(el._id)"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer">
+            <hr />
+            <div class="stats"><i class="fa fa-history"></i> Updated 23/10/2024</div>
+            <div class="pull-right">
+                <span class="deleteAction" ng-click="deleteStatistics('all')">Flush all statistics <i class="fa fa-trash" title="Flush all statistics"></i></span>
+            </div>
+        </div>
+    </div>
+</div>
+<!--MG - Social Statistics - Fine-->
