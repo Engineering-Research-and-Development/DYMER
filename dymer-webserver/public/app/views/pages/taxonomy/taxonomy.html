@@ -180,9 +180,9 @@
                                         <div>
                                             <form ng-submit="importVocabularyFromREST(restForm)">
                                                 <label>Title</label>
-                                                <input type="text" required class="form-control " ng-model="restForm.title">
+                                                <input type="text" required class="form-control " ng-model="restForm.title" placeholder="Source Vocabolary Title (Example)">
                                                 <label>REST Source path</label>
-                                                <input type="text" required class="form-control " ng-model="restForm.sourcePath">
+                                                <input type="text" required class="form-control " ng-model="restForm.sourcePath" placeholder="Source DYMER Path (https://dymer.com)">
                                                 <div class="row text-right ">
                                                     <div class="col-12 ">
                                                         <input class="btn btn-info " type="submit" value="Import">
@@ -195,7 +195,7 @@
                                         <div>
                                             <form ng-submit="importVocabularyFromCSV(csvForm)">
                                                 <label>Title</label>
-                                                <input type="text" required class="form-control" ng-model="csvForm.title">
+                                                <input type="text" required class="form-control" ng-model="csvForm.title" placeholder="Source Column Name in CSV">
                                                 <label>Description</label>
                                                 <input type="text" required class="form-control" size="1" ng-model="csvForm.description"/>
                                                 <div>
