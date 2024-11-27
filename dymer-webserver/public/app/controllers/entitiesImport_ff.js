@@ -14,7 +14,7 @@ angular.module('entitiesImportControllers', [])
             "_source": "_source"
         };
         $scope.mapping = JSON.stringify(mapping, '",', '\t');
-
+        $scope.tab = 1;
 
         $http.get(baseContextPath + '/api/entities/api/v1/entity/allstatsglobal', {}).then(function (retE) {
             let res = retE.data.data.indices;

@@ -119,13 +119,13 @@
 .form-wizard-import .form-wizard-import-steps {
     margin: 30px 0;
 }
-
+/* AC start */
 .form-wizard-import .form-wizard-import-steps li {
-    width: 24%;
+    width: 20%; 
     float: left;
     position: relative;
 }
-
+/* AC end */
 .form-wizard-import .form-wizard-import-steps li::after {
     background-color: #f3f3f3;
     content: "";
@@ -191,6 +191,13 @@
     width: 100%;
 }
 
+/* Per il quarto step attivo o attivato, coloriamo entrambe le braccia */
+.form-wizard-import .form-wizard-import-steps li:nth-child(4).active::after,
+.form-wizard-import .form-wizard-import-steps li:nth-child(4).activated::after {
+    left: 0;
+    width: 100%;
+}
+
 .form-wizard-import .form-wizard-import-steps li.activated::after {
     width: 100%;
     border-color: #3d85c6;
@@ -243,6 +250,19 @@ input-import.form-control {
     box-sizing: border-box;
 }
 
+
+.fa-trash {
+    cursor: pointer;
+    color: #dc3545;
+}
+ 
+.fa-trash:hover {
+    color: #ff6b6b;
+}
+ 
+.text-center {
+    text-align: center;
+}
  
  
 @keyframes click-radio-wave {
@@ -405,13 +425,15 @@ input-import.form-control {
     position: relative;
     cursor: pointer;
 }
-
+/* AC start */
 .form-wizard-import .wizard-import-form-radio input[type="checkbox"]:focus {
     outline: 0;
+    vertical-align: middle;
 }
 
 .form-wizard-import .wizard-import-form-radio input[type="checkbox"]:checked {
     background-color: #3d85c6;
+    vertical-align: middle;
 }
 
 .form-wizard-import .wizard-import-form-radio input[type="checkbox"]:checked::before {
@@ -426,6 +448,7 @@ input-import.form-control {
     right: 0;
     margin: 0 auto;
     top: 8px;
+    vertical-align: middle;
 }
 
 .form-wizard-import .wizard-import-form-radio input[type="checkbox"]:checked::after {
@@ -439,14 +462,16 @@ input-import.form-control {
     display: block;
     position: relative;
     z-index: 100;
+    vertical-align: middle;
     /*border-radius: 50%;*/
 }
 
 .form-wizard-import .wizard-import-form-radio input[type="checkbox"] ~ label {
     padding-left: 10px;
     cursor: pointer;
+    vertical-align: middle;
 }
-
+/* AC end */
 .import-toggle-switch {
     position: relative;
     display: inline-block;
