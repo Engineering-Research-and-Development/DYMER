@@ -31,5 +31,6 @@ angular.module("userApp", [
     "swaggerCtrl",
     "fileModel",
     "libraryCtrl",
-    "wizardCtrl"
+    "wizardCtrl",
+    "statisticsCtrl"
 ]);
