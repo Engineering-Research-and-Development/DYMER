@@ -5896,9 +5896,9 @@ async function like(entityId, title, index, loggedUsrMail = "notLogged", roles,i
     let ret = ajax_temp_call.send();
 
     if (ret.message.action == "dislike") {
-        useGritterTool("<b><i class='fa fa-thumbs-down'></i> DISLIKE</b>", ret.message.action, "warning")
+        useGritterTool("<b><i class='fa fa-thumbs-down'></i> DISLIKE</b>", title)
     }else{
-        useGritterTool("<b><i class='fa fa-thumbs-up'></i> LIKE</b> ", ret.message.action, "success")
+        useGritterTool("<b><i class='fa fa-thumbs-up'></i> LIKE</b> ", title)
     }
 
     let newCounter = Number(ret.message.count)
