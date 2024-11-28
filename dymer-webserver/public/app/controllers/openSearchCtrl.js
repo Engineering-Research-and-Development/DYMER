@@ -258,5 +258,26 @@ angular.module('openSearchCtrl', [])
                 });
         }
 
+        /*MG - Run RULE - Inizio*/ 
+        $scope.runOpnSearchRule = function(index) {
+            let el_id = $scope.ListRules[index];
+            let pathRun = baseContextPath + '/api/dservice/api/v1/opn/run/' + el_id._id;
+            if (confirm(`Are you sure to run the rule for the ` + el_id._index + ` index ?
+            \n Check that you have activated the relative hooks to enable the insert, delete and update operations for the Openness Search service.`)) {
+                $http.get(pathRun, {}).then(function(response) {
+                    if (response.data.success) {
+                        useGritterTool("<b><i class='nc-icon nc-vector'></i>Run invoked </b>", response.data.message);
+                    } else {
+                        useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>Error while Running Rule. Try Again !</b>", response.data.message, "danger");
+                    }
+                },
+                function errorCallback(response) {
+                    console.log("Error while Running Rule. Try Again !", response);
+                    useGritterTool("<b><i class='fa fa-map-signs  '></i> Openness Search Run Rule</b>", "We are sorry but an error has occurred !", "danger");
+                });
+            }
+        }
+        /*MG - Run RULE - Fine*/ 
+
         
     });
