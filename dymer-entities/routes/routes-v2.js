@@ -3684,7 +3684,7 @@ router.post('/dih4industryCounters', (req, res) => {
                                 logger.info(nameFile + '|dih4industryCounters| resp filter relations:count ' + nlist.length);
                                 /*MG - Inizio*/
                                 let counters = [];
-                                nlist=[];
+                                let nlist2=[];
                                 nlist.forEach(obj => {
                                     let counter = {};
                                     let rel_Ini_Prog= obj.relations;
@@ -3695,11 +3695,11 @@ router.post('/dih4industryCounters', (req, res) => {
                                     counter['value'] = tempData_.length;
                                     counters.push(counter); 
                                 });
-                                nlist.push(counters);
-                                console.log("**** 1",nlist);
-                                logger.info(nameFile + '|dih4industryCounters| nlist1: ' + nlist);
+                                nlist2.push(counters);
+                                console.log("**** 1",nlist2);
+                                logger.info(nameFile + '|dih4industryCounters| nlist1: ' + nlist2);
                                 /*MG - Fine*/
-                                ret.setData(nlist);
+                                ret.setData(nlist2);
                                 if (redisEnabled) {
                                     let ids = await redisClient.extractIds(ret, redisEnabled)
                                     let indexes = await redisClient.extractIndexes(ret, redisEnabled)
@@ -3716,7 +3716,7 @@ router.post('/dih4industryCounters', (req, res) => {
                             filertEntitiesFields(meatch, minmodelist, hdymeruser).then(async function(nlist) { 
                                 /*MG - Inizio*/
                                 let counters = [];
-                                nlist=[];
+                                let nlist2=[];
                                 nlist.forEach(obj => {
                                     let counter = {};
                                     let rel_Ini_Prog= obj.relations;
@@ -3727,11 +3727,11 @@ router.post('/dih4industryCounters', (req, res) => {
                                     counter['value'] = tempData_.length;
                                     counters.push(counter); 
                                 });
-                                nlist.push(counters);
-                                console.log("**** 2",nlist);
-                                logger.info(nameFile + '|dih4industryCounters| nlist2: ' + nlist);
+                                nlist2.push(counters);
+                                console.log("**** 2",nlist2);
+                                logger.info(nameFile + '|dih4industryCounters| nlist2: ' + nlist2);
                                 /*MG - Fine*/
-                                ret.setData(nlist);
+                                ret.setData(nlist2);
                                 if (redisEnabled) {
                                     let ids = await redisClient.extractIds(ret, redisEnabled)
                                     let indexes = await redisClient.extractIndexes(ret, redisEnabled)
