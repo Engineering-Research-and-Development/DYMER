@@ -30,7 +30,8 @@ const kmsconfig = {
             post: {
                 search: "/_search",
                 create: "",
-                dih4industryCounters: "/dih4industryCounters" /*MG*/
+                dih4industryCounters: "/dih4industryCounters", /*MG*/
+                dih4industryConstraints:"/dih4industryConstraints" /*AC*/
             },
             get: {
                 getbyid: "/:id"

@@ -3761,7 +3761,7 @@ router.post('/dih4industryCounters', (req, res) => {
 
 
 /* AC new endpoint start */
-router.post('/_search-constraints', (req, res) => {
+router.post('/dih4industryConstraints', (req, res) => {
     let origin=req.get('origin');
     var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
     var ret = new jsonResponse();
