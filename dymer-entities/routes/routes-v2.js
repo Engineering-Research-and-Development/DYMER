@@ -3684,6 +3684,7 @@ router.post('/dih4industryCounters', (req, res) => {
                                 logger.info(nameFile + '|dih4industryCounters| resp filter relations:count ' + nlist.length);
                                 /*MG - Inizio*/
                                 let counters = [];
+                                nlist=[];
                                 nlist.forEach(obj => {
                                     let counter = {};
                                     let rel_Ini_Prog= obj.relations;
@@ -3695,6 +3696,8 @@ router.post('/dih4industryCounters', (req, res) => {
                                     counters.push(counter); 
                                 });
                                 nlist.push(counters);
+                                console.log("**** 1",nlist);
+                                logger.info(nameFile + '|dih4industryCounters| nlist1: ' + nlist);
                                 /*MG - Fine*/
                                 ret.setData(nlist);
                                 if (redisEnabled) {
@@ -3713,6 +3716,7 @@ router.post('/dih4industryCounters', (req, res) => {
                             filertEntitiesFields(meatch, minmodelist, hdymeruser).then(async function(nlist) { 
                                 /*MG - Inizio*/
                                 let counters = [];
+                                nlist=[];
                                 nlist.forEach(obj => {
                                     let counter = {};
                                     let rel_Ini_Prog= obj.relations;
@@ -3724,8 +3728,8 @@ router.post('/dih4industryCounters', (req, res) => {
                                     counters.push(counter); 
                                 });
                                 nlist.push(counters);
-                                console.log("****",nlist);
-                                logger.info(nameFile + '|dih4industryCounters| nlist: ' + nlist);
+                                console.log("**** 2",nlist);
+                                logger.info(nameFile + '|dih4industryCounters| nlist2: ' + nlist);
                                 /*MG - Fine*/
                                 ret.setData(nlist);
                                 if (redisEnabled) {
