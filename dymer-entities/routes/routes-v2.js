@@ -3439,6 +3439,321 @@ var filertEntitiesFields = function(originalList, minmodelist, hdymeruser) {
     });
 }
 
+/*MG - Ottimizzazione query per produzione contatori da visualizzare in index.html(index.js) per DIH4INDUSTRY - Inizio*/
+router.post('/dih4industryCounters', (req, res) => {     
+    var ret = new jsonResponse();
+    const hdymeruser = req.headers.dymeruser;
+    const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+    logger.info(nameFile + '|dih4industryCounters| dymeruser :' + JSON.stringify(dymeruser));   
+    var act = "view";
+    var index = req.params.enttype;
+    var queryString = "";
+    var hasperm = false;
+    var isadmin = false;
+    if ((dymeruser.roles.indexOf("app-admin") > -1)||(dymeruser.roles.indexOf("app-content-curator") > -1)) {
+        hasperm = true;
+        isadmin = true;
+    }
+    queryString = "?role[]=" + dymeruser.roles.join("&role[]=");
+    var url = util.getServiceUrl("dservice") + "/api/v1/perm/entityrole/";
+    url += act + "/";
+    url += index + "/";
+    url += queryString;
+    upload(req, res, async function(err) {
+        if (err) {
+            return res.end("Error!!!!");
+        }
+        let callData = util.getAllQuery(req);
+        let instance = callData.instance;
+        let query = callData.query;
+        let source = callData.query.getfields;
+        let _source = callData.source;
+        let qoptions = callData.qoptions;
+        let recoverRelation = true;
+        let size = 10000;
+        let sort = ["title.keyword:asc"];
+        if (qoptions != undefined) {
+            if (qoptions.relations != undefined)
+                recoverRelation = qoptions.relations;
+            if (qoptions.size != undefined)
+                size = qoptions.size;
+            if (qoptions.sort != undefined)
+                sort = qoptions.sort;
+        }
+        let params = (instance) ? instance : {};
+        var req_uid = 0;
+        var req_gid = 0;
+        req_uid = dymeruser.id;
+        req_gid = dymeruser.gid;
+        logger.info(nameFile + '|dih4industryCounters| dymeruser:' + dymeruser.id + "/" + dymeruser.roles + "/" + JSON.stringify(dymeruser.extrainfo));
+        logger.info(nameFile + '|dih4industryCounters| callData :' + JSON.stringify(callData));
+        var rr = [];
+        var rr = { indextosearch: [], query: [] };
+        rr = retriveIndex_Query_ToSearch(rr, query.query);
+        var bridgeConf = undefined;
+        if (rr != undefined)
+            bridgeConf = bE.findByIndex(rr.indextosearch[0]);
+        if (bridgeConf != undefined) {
+            logger.info(nameFile + '|dih4industryCounters| bridgeConf :' + JSON.stringify(bridgeConf));
+            bridgeEsternalEntities(bridgeConf, "search", undefined, rr).then(function(callresp) {
+                jsonMappingExternalToDymerEntity(callresp.data, bridgeConf, "search").then(function(mapdata) {
+                    let msg = (mapdata.length > 0) ? "List entities" : "Empty list";
+                    ret.setData(mapdata);
+                    ret.setMessages(msg);
+                    return res.send(ret);
+                }).catch(function(error) {
+                    console.error("ERROR | " + nameFile + '|dih4industryCounters| jsonMappingExternalToDymerEntity:', error);
+                    logger.error(nameFile + '|dih4industryCounters| jsonMappingExternalToDymerEntity : ' + error);
+                    ret.setSuccess(false);
+                    ret.setMessages("Entity Mapping Problem");
+                    return res.send(ret);
+                });
+            }).catch(function(error) {
+                console.error("ERROR | " + nameFile + '|dih4industryCounters| bridgeEsternalEntities:', error);
+                logger.error(nameFile + '|dih4industryCounters| bridgeEsternalEntities : ' + error);
+                ret.setSuccess(false);
+                ret.setMessages("Entity Recovery Problem");
+                return res.send(ret);
+            });
+        } else {
+            let filterRelationDymer = {};
+            if (query.query != undefined) {
+                if (query.query.relationdymer != undefined) {
+                    filterRelationDymer = query.query.relationdymer;
+                    delete query.query.relationdymer;
+                }
+            }
+            if (!isadmin) {
+                var my_oldquery = query.query;
+                let permFilterByAction = await checkPermissionByAction(dymeruser, params.index, act)
+                query = {
+                    "query": {
+                        "bool": {
+                            "must": [{
+                                "bool": {
+                                    "should": [{
+                                        "bool": {
+                                            "must": [{
+                                                "match": {
+                                                    "properties.status": "1"
+                                                }
+                                            }, {
+                                                "match": {
+                                                    "properties.visibility": "0"
+                                                }
+                                            },{
+                                                "terms": {
+                                                    "_index": permFilterByAction.listind,
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "bool": {
+                                            "must": [{
+                                                "match_phrase": {
+                                                    "properties.owner.uid": req_uid
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "bool": {
+                                            "must": [{
+                                                "match": {
+                                                    "properties.owner.gid": req_gid
+                                                }
+                                            }, {
+                                                "match": {
+                                                    "properties.visibility": "2"
+                                                }
+                                            }],
+                                            "must_not": [{
+                                                "match": {
+                                                    "properties.status": "2"
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "bool": {
+                                            "should": [{
+                                                "match_phrase": {
+                                                    "properties.grant.view.uid": req_uid
+                                                }
+                                            }, {
+                                                "match_phrase": {
+                                                    "properties.grant.view.gid": req_gid
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "bool": {
+                                            "should": [{
+                                                "match_phrase": {
+                                                    "properties.grant.update.uid": req_uid
+                                                }
+                                            }, {
+                                                "match_phrase": {
+                                                    "properties.grant.update.gid": req_gid
+                                                }
+                                            }]
+                                        }
+                                    }, {
+                                        "bool": {
+                                            "should": [{
+                                                "match_phrase": {
+                                                    "properties.grant.delete.uid": req_uid
+                                                }
+                                            }, {
+                                                "match_phrase": {
+                                                    "properties.grant.delete.gid": req_gid
+                                                }
+                                            }]
+                                        }
+                                    }]
+                                }
+                            }]
+                        }
+                    }
+                };
+                if (my_oldquery != null) {
+                    query.query.bool.must.push(my_oldquery);
+                }
+            }
+            if (source != undefined)
+                params["_source"] = source;
+            if (_source != undefined)
+                params["_source"] = _source;
+            if (qoptions != undefined)
+                if (qoptions.fields != undefined) {
+                    if (source == undefined)
+                        params["_source"] = qoptions.fields.include;
+            }
+            params["sort"] = sort;
+            params["body"] = query;
+            params["body"].size = size;
+            let cachedResponse;
+            if (redisEnabled) {
+                    cachedResponse = await redisClient.readCacheByKey(params, redisEnabled)
+                    if (cachedResponse && Object.keys(cachedResponse).length != 0) {
+                        logger.info(nameFile + '|dih4industryCounters| cachedResponse ');  
+                        return res.send(cachedResponse)  
+                    }
+                }
+            client.search(params).then(function(resp) {
+                if (err) {
+                    console.error("ERROR | " + nameFile + '|dih4industryCounters| search:', err);
+                    logger.error(nameFile + '|dih4industryCounters| search : ' + err);
+                    ret.setSuccess(false);
+                    ret.setExtraData({ "log": err.message });
+                    ret.setMessages("Entity " + err.displayName);
+                    return res.send(ret);
+                }
+                let msg = (resp.hits.total > 0) ? "List entities" : "Empty list";
+                ret.setMessages(msg);
+                if (resp.hits.total == 0) {
+                    logger.info(nameFile + '|dih4industryCounters| resp:count 0');
+                    return res.send(ret);
+                }
+                const unique = [...new Set((resp.hits.hits).map(item => item._index))];
+                let minmodelist = [];
+                minmodelist = unique;
+                if (recoverRelation == 'false' || recoverRelation == false) {
+                    filertEntitiesFields(resp.hits.hits, minmodelist, hdymeruser).then(async function(nlist) {
+                        ret.setData(nlist);
+                        logger.info(nameFile + '|dih4industryCounters| resp no relations: count:' + resp.hits.hits.length);
+                        if (redisEnabled) {
+                            let ids = await redisClient.extractIds(ret, redisEnabled)
+                            let indexes = await redisClient.extractIndexes(ret, redisEnabled)
+                            await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                //logger.info(nameFile + '|_search| resp no relations: response cached  ');
+                        }
+                        return res.send(ret);
+                    }).catch(function(err) {
+                        console.error("ERROR | " + nameFile + '|dih4industryCounters| checkUnionRelation:', err);
+                        logger.error(nameFile + '|dih4industryCounters| checkUnionRelation : ' + err);
+                    });
+                } else {
+                    checkUnionRelationV2(resp.hits.hits, filterRelationDymer).then(function(meatch) {
+                        var fileterdList = meatch;
+                        (meatch).map(item => item.relations).filter(
+                            function(thing, i, arr) {
+                                let cc = [...minmodelist, ...new Set((thing).map(item => item._index))];
+                                minmodelist = cc.filter((item, pos) => cc.indexOf(item) === pos)
+                            }
+                        );
+                        if (Object.keys(filterRelationDymer).length > 0) {
+                            filertEntitiesFields(fileterdList, minmodelist, hdymeruser).then(async function(nlist) {
+                                logger.info(nameFile + '|dih4industryCounters| resp filter relations:count ' + nlist.length);
+                                /*MG - Inizio*/
+                                let counters = [];
+                                nlist.forEach(obj => {
+                                    let counter = {};
+                                    let rel_Ini_Prog= obj.relations;
+                                    let tempData_=rel_Ini_Prog.filter(function(item){
+                                        return item._index == "dih";         
+                                    });    
+                                    counter['id'] = obj._id;
+                                    counter['value'] = tempData_.length;
+                                    counters.push(counter); 
+                                });
+                                nlist.push(counters);
+                                /*MG - Fine*/
+                                ret.setData(nlist);
+                                if (redisEnabled) {
+                                    let ids = await redisClient.extractIds(ret, redisEnabled)
+                                    let indexes = await redisClient.extractIndexes(ret, redisEnabled)
+                                    await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)
+                                }
+                                logger.info(nameFile + '|dih4industryCounters| resp filter relations: response cached  ');
+                                return res.send(ret);
+                            }).catch(function(err) {  
+                                console.error("ERROR | " + nameFile + '|dih4industryCounters| resp filter relations:count:', err);
+                                logger.error(nameFile + '|dih4industryCounters| resp filter relations count: ' + err);
+                            });  
+                        } else {
+                            logger.info(nameFile + '|dih4industryCounters| resp no detected relations :count ' + resp.hits.hits.length);
+                            filertEntitiesFields(meatch, minmodelist, hdymeruser).then(async function(nlist) { 
+                                /*MG - Inizio*/
+                                let counters = [];
+                                nlist.forEach(obj => {
+                                    let counter = {};
+                                    let rel_Ini_Prog= obj.relations;
+                                    let tempData_=rel_Ini_Prog.filter(function(item){
+                                        return item._index == "dih";         
+                                    });    
+                                    counter['id'] = obj._id;
+                                    counter['value'] = tempData_.length;
+                                    counters.push(counter); 
+                                });
+                                nlist.push(counters);
+                                /*MG - Fine*/
+                                ret.setData(nlist);
+                                if (redisEnabled) {
+                                    let ids = await redisClient.extractIds(ret, redisEnabled)
+                                    let indexes = await redisClient.extractIndexes(ret, redisEnabled)
+                                    await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                        //logger.info(nameFile + '|_search| resp no detected relations: response cached  ');
+                                }
+                                return res.send(ret);
+                            }).catch(function(err) {
+                                console.error("ERROR | " + nameFile + '|dih4industryCounters| checkUnionRelation:', err);
+                                logger.error(nameFile + '|dih4industryCounters| checkUnionRelation: ' + err);
+                            });
+                        }
+                    }).catch(function(err) {
+                        console.error("ERROR | " + nameFile + '|dih4industryCounters| checkUnionRelationv2:', err);
+                        logger.error(nameFile + '|dih4industryCounters| checkUnionRelationv2: ' + err);
+                    });
+                }    
+            }).catch(function(error) {
+                ret.setMessages("Search Error");
+                ret.setSuccess(false);
+                ret.setExtraData({ "log": error });
+                return res.send(ret);
+            });
+        }
+    });
+});
+/*MG - Ottimizzazione query per produzione contatori da visualizzare in index.html(index.js) per DIH4INDUSTRY - Fine*/
+
+
 /* AC new endpoint start */
 router.post('/_search-constraints', (req, res) => {
     let origin=req.get('origin');

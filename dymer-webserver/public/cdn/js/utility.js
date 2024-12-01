@@ -29,7 +29,8 @@ const kmsconfig = {
             endpoint: serverUrl + "/api/entities/api/v1/entity",
             post: {
                 search: "/_search",
-                create: ""
+                create: "",
+                dih4industryCounters: "/dih4industryCounters" /*MG*/
             },
             get: {
                 getbyid: "/:id"
@@ -1773,7 +1774,7 @@ async function loadRequireView() {
 //-----------------END VIEW---------------
 
 //-----------------SART MAP-----------------
-async function loadRequireMap() {
+async function loadRequireMap_NEW() {
 
 
 
@@ -1783,101 +1784,8 @@ async function loadRequireMap() {
     if ( typeof dymerconf !== 'undefined' ) {
         ckaddimport = dymerconf.notImport;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    }
+  
+    
 
     let arr = [];
 
@@ -1888,161 +1796,195 @@ async function loadRequireMap() {
 
         libraries.filter( ( { loadtype, activated } ) => loadtype === 'map' && activated ).forEach( library => {
 
-
-
-
-
-
-
-
-
-
-
+ 
 
             const { domtype, filename, callback, useonload, group, name } = library;
 
             // Valuta la callback solo se non è nulla (attenzione: eval può comportare rischi di sicurezza)
             const evalCallback = callback !== null ? eval( `${ callback }` ) : null;
-
-
-
-
-
-
-
-
-
-
-
-
+ 
             if ( ckaddimport.indexOf( group ) <= -1 ) {
                 arr.push( new Elfile( domtype, kmsconfig.cdn + filename, evalCallback, useonload, group ) );
                 //console.log( `Add ${ library.name } at arr array:` )
 
-
-
-
-
-
-
-
-
-
-
-
-
-            }
+        }
 
         } )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    } catch ( error ) {
+  } catch ( error ) {
         console.error( 'Error fetching and loading libraries:', error );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    }
+  }
 
     await onloadFiles( arr );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 
 
 }
+}
+//-----------------END MAP------------------
+
+function loadRequireMap() {
+    var domtype = "link";
+    var filename = "";
+    var callback = null;
+    var useonload = false;
+    var arr = [];
+    var ckaddimport = [];
+    if (typeof dymerconf !== 'undefined')
+        ckaddimport = dymerconf.notImport;
+    var group = "mandatory";
+    group = "bootstrap";
+    filename = kmsconfig.cdn + "css/lib/bootstrap/4.1.3/bootstrap.min.css";
+    if (!(ckaddimport.indexOf(group) > -1))
+        arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    //filename = "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css";
+    group = "bootstrap-select";
+    filename = kmsconfig.cdn + "css/lib/bootstrap-select/bootstrap-select.css";
+    if (!(ckaddimport.indexOf(group) > -1))
+        arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    group = "font-awesome";
+    filename = kmsconfig.cdn + "css/lib/font-awesome/4.7/font-awesome.min.css";
+    if (!(ckaddimport.indexOf(group) > -1))
+        arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    group = "mandatory";
+    filename = kmsconfig.cdn + "leaflet/leaflet.css";
+    arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    filename = kmsconfig.cdn + "leaflet/plugin/toolbar/leaflet.toolbar.css";
+    arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    group = "jquery.dataTables";
+    if (!(ckaddimport.indexOf(group) > -1))
+        filename = kmsconfig.cdn + "css/lib/datatables/jquery.dataTables.min.css";
+    arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    filename = kmsconfig.cdn + "leaflet/plugin/markercluster/MarkerCluster.Default.css";
+    arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    filename = kmsconfig.cdn + "leaflet/plugin/fullscreen/Control.FullScreen.css";
+    arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    filename = kmsconfig.cdn + "leaflet/plugin/sidebar/L.Control.Sidebar.css";
+    arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    filename = kmsconfig.cdn + "css/kms.view.map.css";
+    arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    filename = kmsconfig.cdn + "css/bootstrap-dymertagsinput.css";
+    arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    group = "mandatory";
+    filename = kmsconfig.cdn + "css/dymer.base.css";
+    if (!(ckaddimport.indexOf(group) > -1))
+        arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    filename = kmsconfig.cdn + "leaflet/leaflet.awesome-markers.css";
+    if (!(ckaddimport.indexOf(group) > -1))
+        arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    domtype = "script";
+    callback = null;
+    useonload = true;
+    group = "jquery";
+    filename = kmsconfig.cdn + "js/lib/jquery/jquery-3.3.1.min.js";
+    if (!(ckaddimport.indexOf(group) > -1))
+        arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    group = "mandatory";
+    //Marco filename = kmsconfig.cdn + "js/dymer.oauth.js";
+    //Marco arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    // filename = kmsconfig.cdn + "js/utility.js";
+    // arr.push(new Elfile(domtype, filename, callback, useonload, group)); //controllare carico in altra
+    filename = kmsconfig.cdn + "js/bootstrap-dymertagsinput.js";
+    arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    group = "serializejson";
+     filename = kmsconfig.cdn + "js/lib/jquery/jquery.serializejson.js";
+     if (!(ckaddimport.indexOf(group) > -1))
+    arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    group = "ajaxcall";
+    filename = kmsconfig.cdn + "js/ajaxcall.js";
+    if (!(ckaddimport.indexOf(group) > -1))
+    arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    filename = kmsconfig.cdn + "leaflet/leaflet-src.js";
+    //filename =  "http://unpkg.com/leaflet@1.3.1/dist/leaflet.js";
+    arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    filename = kmsconfig.cdn + "leaflet/leaflet.awesome-markers.js";
+    arr.push(new Elfile(domtype, filename, callback, useonload, group));
+
+    group = "jquery.dataTables";
+    if (!(ckaddimport.indexOf(group) > -1)) {
+        filename = kmsconfig.cdn + "js/lib/datatables/jquery.dataTables.min.js";
+        // filename = "https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js";
+        arr.push(new Elfile(domtype, filename, callback, useonload, group));
+        //filename = 'https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js';
+        filename = kmsconfig.cdn + 'js/lib/buttons/buttons.print.min.js';
+        arr.push(new Elfile(domtype, filename, callback, true, group));
+        //filename = 'https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js';
+        filename = kmsconfig.cdn + 'js/lib/datatables/dataTables.buttons.min.js';
+        arr.push(new Elfile(domtype, filename, callback, true, group));
+        //filename = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js';
+        filename = kmsconfig.cdn + 'js/lib/jszip.min.js';
+        arr.push(new Elfile(domtype, filename, callback, false, group));
+        //filename = 'https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css';
+        filename = kmsconfig.cdn + 'css/lib/datatables/dataTables.bootstrap4.min.css';
+        arr.push(new Elfile("link", filename, callback, false, group));
+        //filename = 'https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js';
+        filename = kmsconfig.cdn + 'js/lib/datatables/dataTables.bootstrap4.min.js';
+        arr.push(new Elfile(domtype, filename, callback, false, group));
+        filename = kmsconfig.cdn + "js/lib/pdfmake.min.js";
+        arr.push(new Elfile(domtype, filename, callback, true, group));
+        filename = kmsconfig.cdn + "js/lib/vfs_fonts.js";
+        arr.push(new Elfile(domtype, filename, callback, true, group));
+        //filename = 'https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js';
+        filename = kmsconfig.cdn + 'js/lib/buttons/buttons.html5.min.js';
+        arr.push(new Elfile(domtype, filename, callback, false, group));
+    }
+    filename = kmsconfig.cdn + "leaflet/plugin/fullscreen/Control.FullScreen.js";
+    arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    group = "popper";
+    filename = kmsconfig.cdn + "js/lib/jquery/popper.min.js";
+    if (!(ckaddimport.indexOf(group) > -1))
+        arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    filename = kmsconfig.cdn + "js/lib/bootstrap/4.1.3/bootstrap.min.js";
+    group = "bootstrap";
+    if (!(ckaddimport.indexOf(group) > -1))
+        arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    //filename = kmsconfig.cdn + "js/kms.view.js";
+    //arr.push(new Elfile(domtype, filename, callback, useonload));
+    group = "summernote";
+    if (!(ckaddimport.indexOf(group) > -1)) {
+        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.css";
+        arr.push(new Elfile("link", filename, callback, useonload, group));
+        filename = kmsconfig.cdn + "lib/summernote/0.8.18/summernote.min.js";
+        arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    }
+    group = "mandatory";
+    filename = kmsconfig.cdn + "leaflet/plugin/toolbar/leaflet.toolbar.js";
+    arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    filename = kmsconfig.cdn + "leaflet/plugin/sidebar/L.Control.Sidebar.js";
+    arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    //filename = 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js';
+    group = "bootstrap-select";
+    filename = kmsconfig.cdn + 'js/lib/bootstrap-select/bootstrap-select.min.js';
+    arr.push(new Elfile(domtype, filename, mycallback, useonload));
+    group = "mandatory";
+    filename = kmsconfig.cdn + "js/handlebars.min.js";
+    arr.push(new Elfile(domtype, filename, callback, useonload, group));
+    filename = kmsconfig.cdn + "js/handlebarshook.js";
+    arr.push(new Elfile(domtype, filename, callback, useonload));
+    filename = kmsconfig.cdn + "leaflet/plugin/markercluster/leaflet.markercluster.js";;
+    var mycallback = function() { // Method which will display type of Animal
+        var temp_config_call = {
+            url: csd + "/api2/retriveinfo",
+            type: 'POST',
+            addDataBody: false
+        };
+        var ajax_temp_call = new Ajaxcall(temp_config_call);
+        ajax_temp_call.flush();
+        var ret = ajax_temp_call.send();
+		 document.cookie = "DYMDOC=" + ret["DYM"];
+        for (const [key, value] of Object.entries(ret)) {
+            if (key == "DYMisi")
+                document.cookie = "DYMisi=" + value;
+            else {
+                localStorage.removeItem(key);
+                localStorage.setItem(key, value);
+            }
+        }
+        mainMapOnLoad();
+    };
+    arr.push(new Elfile(domtype, filename, mycallback, useonload, group));
+    onloadFiles(arr);
+    //loadAllJsCss();
+}
+
 //-----------------END MAP------------------
 //-----------------SART ENTITY--------------
 
