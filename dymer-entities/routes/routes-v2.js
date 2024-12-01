@@ -3821,7 +3821,7 @@ router.post('/dih4industryConstraints', (req, res) => {
 
         var rr = { indextosearch: [], query: [] };
         rr = retriveIndex_Query_ToSearch(rr, query.query);
-
+        console.log("rrr******************",rr);
         var bridgeConf = undefined;
         if (rr != undefined)
             bridgeConf = bE.findByIndex(rr.indextosearch[0]);
@@ -4013,7 +4013,7 @@ router.post('/dih4industryConstraints', (req, res) => {
 
                 if (recoverRelation == 'false' || recoverRelation == false) {
                     filertEntitiesFields(resp.hits.hits, minmodelist, hdymeruser).then(async function(nlist) {
-
+                        console.log("nlist AC 1*******************", nlist);
                         ret.setData(nlist);
 
                         logger.info(nameFile + '|_search| resp no relations: count:' + resp.hits.hits.length);
@@ -4043,6 +4043,7 @@ router.post('/dih4industryConstraints', (req, res) => {
                             filertEntitiesFields(fileterdList, minmodelist, hdymeruser).then(async function(nlist) {
 
                                 logger.info(nameFile + '|_search| resp filter relations:count ' + nlist.length);
+                                console.log("nlist AC 2*******************", nlist);
                                 ret.setData(nlist);
                                 if (redisEnabled) {
                                     let ids = await redisClient.extractIds(ret, redisEnabled)
@@ -4059,7 +4060,7 @@ router.post('/dih4industryConstraints', (req, res) => {
                         } else {
                             logger.info(nameFile + '|_search| resp no detected relations :count ' + resp.hits.hits.length);
                             filertEntitiesFields(meatch, minmodelist, hdymeruser).then(async function(nlist) {
-
+                                console.log("nlist AC 3*******************", nlist);
                                 ret.setData(nlist);
                                 if (redisEnabled) {
                                     let ids = await redisClient.extractIds(ret, redisEnabled)
