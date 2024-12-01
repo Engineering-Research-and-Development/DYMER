@@ -3725,7 +3725,7 @@ router.post('/dih4industryCounters', (req, res) => {
                                 });
                                 nlist.push(counters);
                                 console.log("****",nlist);
-                                logger.inf(nameFile + '|dih4industryCounters| nlist: ' + nlist);
+                                logger.info(nameFile + '|dih4industryCounters| nlist: ' + nlist);
                                 /*MG - Fine*/
                                 ret.setData(nlist);
                                 if (redisEnabled) {
