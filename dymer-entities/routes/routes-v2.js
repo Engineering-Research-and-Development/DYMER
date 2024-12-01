@@ -3772,6 +3772,7 @@ router.post('/dih4industryConstraints', (req, res) => {
     var act = "view";
     var index = req.params.enttype;
     let requestedFields = req.body.fields
+    console.log(requestedFields)
     let getRelations = req.body.getrelations
     var queryString = "";
     var hasperm = false;
@@ -3821,6 +3822,8 @@ router.post('/dih4industryConstraints', (req, res) => {
 
         var rr = { indextosearch: [], query: [] };
         rr = retriveIndex_Query_ToSearch(rr, query.query);
+        console.log("requestedFields.index",requestedFields.index);
+        rr=requestedFields.index;
         console.log("rrr******************",rr);
         var bridgeConf = undefined;
         if (rr != undefined)
