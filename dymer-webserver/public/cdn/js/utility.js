@@ -15,6 +15,7 @@ function resetDymerStart() {
     sidebar = undefined;
     kmsDT = undefined;
 }
+
 const kmsconfig = {
     cdn: cdnurl,
     endpoints: [{
@@ -29,7 +30,8 @@ const kmsconfig = {
             endpoint: serverUrl + "/api/entities/api/v1/entity",
             post: {
                 search: "/_search",
-                create: ""
+                create: "",
+                dih4industryConstraints: "/dih4industryConstraints" /* AC */
             },
             get: {
                 getbyid: "/:id"
@@ -86,7 +88,7 @@ const kmsconfig = {
 };
 
 function setCheck(senderForm) {
-    $(senderForm + ' [type="checkbox"] ').each(function() {
+    $(senderForm + ' [type="checkbox"] ').each(function () {
         checkvalue($(this));
     });
     return;
@@ -103,7 +105,7 @@ function useGritterTool(title, text, type_) {
     //type; danger|info|success|warning
     if (type_ == undefined)
         type_ = 'info';
-    $.notify({ 'title': title, 'message': text }, {
+    $.notify({'title': title, 'message': text}, {
         type: type_,
         animate: {
             enter: 'animated fadeInDown',
@@ -133,9 +135,9 @@ function useGritter(title, text) {
 function useAlert(id, title_msg, msg_text, success) {
     var el = $(id + ' .alertaction');
     el.removeClass("alert-success alert-danger");
-    (success) ? el.addClass("alert-success"): el.addClass("alert-danger");
-    (!title_msg) ? el.find('.msg_title').hide(): el.find('.msg_title').text(title_msg).show();
-    (!msg_text) ? el.find('.msg_txt').hide(): el.find('.msg_txt').text(msg_text).show();
+    (success) ? el.addClass("alert-success") : el.addClass("alert-danger");
+    (!title_msg) ? el.find('.msg_title').hide() : el.find('.msg_title').text(title_msg).show();
+    (!msg_text) ? el.find('.msg_txt').hide() : el.find('.msg_txt').text(msg_text).show();
     el.slideDown();
 }
 
@@ -151,7 +153,7 @@ function check_dymer_validform(senderForm) { //aaaaa
     // Loop over them and prevent submission
     let firstFocusEl = undefined;
     let customvalid = true;
-    $(senderForm[0]).find("[dymer-element-validation]").each(function() {
+    $(senderForm[0]).find("[dymer-element-validation]").each(function () {
         let call_fn = $(this).attr("dymer-element-validation");
         let elvalid = window[call_fn]($(this));
         if (!elvalid) {
@@ -202,7 +204,7 @@ function check_dymer_validform(senderForm) { //aaaaa
 
 function check_required(senderForm) {
     var valid = true;
-    $(senderForm + " [required]").each(function() {
+    $(senderForm + " [required]").each(function () {
         let val = "";
         if ($(this).hasClass("selectpicker")) {
             val = $(this).selectpicker('val');
@@ -228,7 +230,7 @@ function check_required(senderForm) {
 
 function check_validation(senderForm) {
     var valid = true;
-    $(senderForm + " [validation-unique]").each(function() {
+    $(senderForm + " [validation-unique]").each(function () {
         var val = ($(this).val()).trim();
         if (!(val.length > 0)) {
             $(this).addClass("error_border");
@@ -251,7 +253,8 @@ function checkSession() { //active - warned -expired
             return true;
     } catch (err) {
         console.error(err);
-    } finally {}
+    } finally {
+    }
     return false;
 }
 
@@ -261,10 +264,10 @@ function resetContainer(el) {
     $(el).find('.alertaction').slideUp();
     $(el).removeClass('was-validated');
     $(el).find('.is-invalid').removeClass('is-invalid');
-    $(el).find(".selectpicker").each(function() {
+    $(el).find(".selectpicker").each(function () {
         $(this).val('').selectpicker("refresh");
     });
-    $(el).find(".repeatable:not(.first-repeatable) .act-remove").each(function() {
+    $(el).find(".repeatable:not(.first-repeatable) .act-remove").each(function () {
         removeRepeatable($(this));
     });
     /*	var par = $(el).find(
@@ -278,7 +281,7 @@ function appendFormdata(FormData, data, name) {
     //console.log("typeof data", typeof data, FormData, data, name);
     name = name || '';
     if (typeof data === 'object') {
-        $.each(data, function(index, value) {
+        $.each(data, function (index, value) {
             if (name == '') {
                 appendFormdata(FormData, value, index);
             } else {
@@ -323,7 +326,7 @@ function cloneRepeatable(elToClone) {
     ark = ark.split("@@");
     var matchname = ark[0];
     ark.shift();
-    $.each(ark, function(i, val) {
+    $.each(ark, function (i, val) {
         var cast = parseInt(val);
         if (!isNaN(cast)) {
             lastIndex = i;
@@ -334,14 +337,14 @@ function cloneRepeatable(elToClone) {
         matchname += '[' + ark[index] + ']';
     }
     (newGroup).attr("grp", matchname);
-    $.each(newGroup.find('[name^="data["]'), function(index, value) {
+    $.each(newGroup.find('[name^="data["]'), function (index, value) {
         var name = $(this).attr("name");
         var ark = replaceAll(name, '[', '@@');
         ark = replaceAll(ark, ']', '');
         ark = ark.split("@@");
         var newName = ark[0];
         ark.shift();
-        $.each(ark, function(i, val) {
+        $.each(ark, function (i, val) {
             var cast = parseInt(val);
             if (!isNaN(cast))
                 ark[i] = cast + 1;
@@ -353,7 +356,7 @@ function cloneRepeatable(elToClone) {
             if ($(this).next() != undefined) {
                 if ($(this).next().hasClass("note-editor")) {
                     $(this).next().remove();
-                    $(this).summernote({ dialogsInBody: true });
+                    $(this).summernote({dialogsInBody: true});
                 }
             }
         } else {
@@ -374,7 +377,7 @@ function cloneRepeatable(elToClone) {
     newGroup.find('[fileid][attachref]').remove();
     newGroup.find('div[id^="contattach_data"]').remove();
     newGroup.insertAfter(elToClone.closest('.repeatable'));
-    setTimeout(function() {
+    setTimeout(function () {
         reindexRepeatable(matchname);
     }, 2000);
 }
@@ -382,22 +385,22 @@ function cloneRepeatable(elToClone) {
 function removeRepeatable(elToClone) {
     var toRem = elToClone.closest('.repeatable');
     var matchname = (toRem).attr('grp');
-    $(toRem.find("[fileid]")).each(function() {
+    $(toRem.find("[fileid]")).each(function () {
         appendTodeleteId($(this).attr('fileid'), $(this).attr('attachref'));
     });
-    $(toRem.find('[name^="data[relation]"]')).each(function() {
+    $(toRem.find('[name^="data[relation]"]')).each(function () {
         relChngd($(this));
     });
     (toRem).remove();
-    setTimeout(function() {
+    setTimeout(function () {
         reindexRepeatable(matchname);
     }, 2000);
 }
 
 function reindexRepeatable(matchname) {
-    $.each($("#entityForm").find('[grp="' + matchname + '"].repeatable '), function(index, value) {
+    $.each($("#entityForm").find('[grp="' + matchname + '"].repeatable '), function (index, value) {
         var act = $(this);
-        $.each((act).find('[name^="' + matchname + '"]'), function(index2, value2) {
+        $.each((act).find('[name^="' + matchname + '"]'), function (index2, value2) {
             var oldname = $(this).attr('name');
             var endname = (oldname).replace(matchname, '');
             var f1 = (endname.indexOf("]")) + 1;
@@ -410,7 +413,7 @@ function reindexRepeatable(matchname) {
                 }
             $(this).attr('name', updtname);
         });
-        $.each((act).find('[attachref^="' + matchname + '"]'), function(index2, value2) {
+        $.each((act).find('[attachref^="' + matchname + '"]'), function (index2, value2) {
             var oldname = $(this).attr('attachref');
             var endname = (oldname).replace(matchname, '');
             var f1 = (endname.indexOf("]")) + 1;
@@ -423,7 +426,7 @@ function reindexRepeatable(matchname) {
                 (oldclik).attr('onclick', newclick);
             }
         });
-        $.each((act).find('[id^="contattach_' + matchname + '"]'), function(index2, value2) {
+        $.each((act).find('[id^="contattach_' + matchname + '"]'), function (index2, value2) {
             var endname = ($(this).attr('id')).replace(matchname, '');
             var f1 = (endname.indexOf("]")) + 1;
             var res = endname.substring(f1);
@@ -438,9 +441,9 @@ function replaceAll(str, cerca, sostituisci) {
 }
 
 //----------START Dynamic loader---------------
-var removeTempImport = function(attr) {
-    return new Promise(function(resolve, reject) {
-        document.querySelectorAll(`[${attr}]`).forEach(async function(e, i) {
+var removeTempImport = function (attr) {
+    return new Promise(function (resolve, reject) {
+        document.querySelectorAll(`[${attr}]`).forEach(async function (e, i) {
             var panel_link = e.getAttribute(attr);
             let onremovefct = "onremove" + panel_link;
             //console.log("invocata onremovefct panel_link--", panel_link);
@@ -459,6 +462,7 @@ var removeTempImport = function(attr) {
         resolve("ok");
     });
 }
+
 /*
 var removeTempImport = function(attr) {
     return new Promise(function(resolve, reject) {
@@ -490,6 +494,7 @@ async function prePopulateFormEdit_Promise(item) {
          });*/
     }
 }
+
 async function postPopulatedFormEdit_Promise(item) {
     if (typeof dympostpopulated === 'function') {
         let rrs = await dympostpopulated(item);
@@ -500,6 +505,7 @@ async function postPopulatedFormEdit_Promise(item) {
         return item;
     }
 }
+
 class Elfile {
     constructor(domtype, filename, callback, useonload, group) {
         this.domtype = domtype;
@@ -513,11 +519,13 @@ class Elfile {
         this.extrattr = [];
         this.group = group;
     }
+
     setExtrattr(k, v) {
         var _this = this;
-        _this.extrattr.push({ key: k, value: v });
+        _this.extrattr.push({key: k, value: v});
     }
 }
+
 class ElTemplate {
     //constructor(_index, _type) {
     constructor(_index, _type) {
@@ -555,7 +563,7 @@ class ElTemplate {
         ajax_temp_call.flush();
         //TODO check
         //var tempQuery = { "query": { "query": { "instance._index": this._index, "instance._type": this._type } } };
-        var tempQuery = { "query": { "query": { "instance._index": this._index, "instance._type": this._index } } };
+        var tempQuery = {"query": {"query": {"instance._index": this._index, "instance._type": this._index}}};
         //var tempQuery = { "query": { "query": { "instance._index": this._index } } };
 
         ajax_temp_call.addparams(tempQuery);
@@ -563,12 +571,12 @@ class ElTemplate {
         //	var appendfiles = new Array();
         if (ret.success) {
             //console.log("==> ret.data ", ret.data);
-            (ret.data).forEach(function(el, i) {
+            (ret.data).forEach(function (el, i) {
                 var dom_to_render = undefined;
                 var t_ar = [];
                 var indport = sourceUrl + "/";
                 //var indport = sourceUrl.substring(0, sourceUrl.indexOf('api'));
-                (el.files).forEach(function(fl, l) {
+                (el.files).forEach(function (fl, l) {
                     //dom_to_render = (fl.mimetype == "text/html") ? fl.path : dom_to_render;
                     //MArco da valutare
                     //console.log("fl",fl);
@@ -580,11 +588,17 @@ class ElTemplate {
                         dom_to_render = fl.data;
                     else {
                         ftype = (ftype == "css") ? "link" : ftype;
-                        if (ftype != "octet-stream"){
-                            let eltopush={ domtype: ftype, filename: lkpath, extrattr: [],data:{} ,name:fl.filename};
+                        if (ftype != "octet-stream") {
+                            let eltopush = {
+                                domtype: ftype,
+                                filename: lkpath,
+                                extrattr: [],
+                                data: {},
+                                name: fl.filename
+                            };
 
-                            if(fl.filename=="language.json")
-                                eltopush.data.language=fl.data;
+                            if (fl.filename == "language.json")
+                                eltopush.data.language = fl.data;
                             t_ar.push(eltopush);
 
                         }
@@ -599,7 +613,7 @@ class ElTemplate {
                     //console.log("==>rt ", rt);
                     //console.log("==>ret2 ", ret2);
                     for (var j = 0; j < t_ar.length; j++) {
-                        (t_ar[j]).extrattr.push({ key: 'tftemp', value: rt });
+                        (t_ar[j]).extrattr.push({key: 'tftemp', value: rt});
                     }
                     //console.log("==>setAppendfiles  t_ar ", rt, t_ar);
                     _this.setAppendfiles(rt, t_ar);
@@ -608,18 +622,21 @@ class ElTemplate {
             });
         }
     }
+
     setTemplate(type, scriptTemplate) {
         var _this = this;
         //console.log("scriptTemplate ", scriptTemplate)
         _this.viewtype[type] = scriptTemplate;
         return true;
     }
+
     setAppendfiles(type, apf) {
         //   arr.push(new Elfile(domtype, filename, callback, useonload, group));
         //  filename = kmsconfig.cdn + "leaflet/plugin/markercluster/leaflet.markercluster.js";;
         this.files[type] = apf;
         return true;
     }
+
     getAppendfiles(type) {
         var _this = this;
         return _this.files[type];
@@ -641,7 +658,7 @@ async function onloadFiles2(arr) {
         toperm = "?tkdym=" + tk + "&tkextra=" + tk_extra;
 
     let promlist = arr.map((obj) => {
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
             //console.log('onloadFiles2', obj);
             var attr = "";
             var script = null;
@@ -661,7 +678,7 @@ async function onloadFiles2(arr) {
                 script.setAttribute("type", "text/css");
             }
             if (obj.extrattr != undefined) {
-                (obj.extrattr).forEach(function(af, j) {
+                (obj.extrattr).forEach(function (af, j) {
                     script.setAttribute(af.key, af.value);
                 });
             }
@@ -677,7 +694,7 @@ async function onloadFiles2(arr) {
                 resolve();
             }
             if (obj.useonload) {
-                script.onload = function() {
+                script.onload = function () {
                     if (obj.callback != null) {
                         obj.callback();
                         //window[obj.callback];
@@ -696,7 +713,8 @@ async function onloadFiles2(arr) {
         });
     })
 
-    return Promise.all(promlist).then(mappedlist => { /*console.log("tutti i files sono stati caricati", mappedlist);*/ });
+    return Promise.all(promlist).then(mappedlist => { /*console.log("tutti i files sono stati caricati", mappedlist);*/
+    });
 }
 
 
@@ -713,7 +731,7 @@ async function onloadFiles(arr) {
     if (arr.length > 0) {
         var obj = arr[0];
         arr.shift();
-        if(obj.domtype=="json")
+        if (obj.domtype == "json")
             return onloadFiles(arr);
         var attr = "";
         var script = null;
@@ -733,7 +751,7 @@ async function onloadFiles(arr) {
             script.setAttribute("type", "text/css");
         }
         if (obj.extrattr != undefined) {
-            (obj.extrattr).forEach(function(af, j) {
+            (obj.extrattr).forEach(function (af, j) {
                 script.setAttribute(af.key, af.value);
             });
         }
@@ -746,7 +764,7 @@ async function onloadFiles(arr) {
             return onloadFiles(arr);
         }
         if (obj.useonload) {
-            script.onload = function() {
+            script.onload = function () {
                 if (obj.callback != null) {
                     obj.callback();
                     //window[obj.callback];
@@ -766,12 +784,13 @@ async function onloadFiles(arr) {
     } else
         return true;
 }
+
 //-----------END Dynamic loader---------------
 
 //-----------------START FORM-----------------
 async function loadRequireForm() {
     let ckaddimport = [];
-    if ( typeof dymerconf !== 'undefined' ) {
+    if (typeof dymerconf !== 'undefined') {
         ckaddimport = dymerconf.notImport;
     }
 
@@ -779,27 +798,27 @@ async function loadRequireForm() {
 
     // Load libraries from the database
     try {
-        const response = await fetch( serverUrl + '/api/dservice/api/v1/library/' );
+        const response = await fetch(serverUrl + '/api/dservice/api/v1/library/');
         const libraries = await response.json();
 
-        libraries.filter( ( { loadtype, activated } ) => loadtype === 'form' && activated ).forEach( library => {
-            const { domtype, filename, callback, useonload, group, name } = library;
+        libraries.filter(({loadtype, activated}) => loadtype === 'form' && activated).forEach(library => {
+            const {domtype, filename, callback, useonload, group, name} = library;
 
             // Valuta la callback solo se non è nulla (attenzione: eval può comportare rischi di sicurezza)
-            const evalCallback = callback !== null ? eval( `${ callback }` ) : null;
+            const evalCallback = callback !== null ? eval(`${callback}`) : null;
 
-            if ( ckaddimport.indexOf( group ) <= -1 ) {
-                arr.push( new Elfile( domtype, kmsconfig.cdn + filename, evalCallback, useonload, group ) );
+            if (ckaddimport.indexOf(group) <= -1) {
+                arr.push(new Elfile(domtype, kmsconfig.cdn + filename, evalCallback, useonload, group));
                 // console.log( `Add ${ library.name } at arr array:` )
             }
 
-        } )
+        })
 
-    } catch ( error ) {
-        console.error( 'Error fetching and loading libraries:', error );
+    } catch (error) {
+        console.error('Error fetching and loading libraries:', error);
     }
 
-    await onloadFiles( arr );
+    await onloadFiles(arr);
 }
 
 function getbaseEntityConfig(basedat) {
@@ -824,6 +843,7 @@ function getbaseEntityConfig(basedat) {
     };
     return obj;
 }
+
 const retriveVarCookie = (key) => {
     var name = key + "=";
     var decodedCookie = decodeURIComponent(document.cookie);
@@ -853,33 +873,34 @@ function setbaseEntityConfig(target) {
         ownerGid = d_gid;
     $(target).find('[name="data[owner][gid]"]').val(ownerGid);
 }
+
 var listRelationForm = {};
 
 function hookReleationForm(item) {
     var loadedList = {};
     listRelationForm = loadedList;
-    $('.senderForm [data-torelation]').each(function(index) {
+    $('.senderForm [data-torelation]').each(function (index) {
         var rel = $(this).attr('data-torelation');
         if (loadedList[rel] == undefined) {
             var datapost = {
-                instance: { "index": rel },
-                qoptions: { relations: false }
+                instance: {"index": rel},
+                qoptions: {relations: false}
             };
             actionPostMultipartForm("entity.search", undefined, datapost, undefined, populateHookRelation, undefined, false, rel);
         }
     });
 }
 
-const hookReleationForm_Promise = function(item) {
-    return new Promise(function(resolve, reject) {
+const hookReleationForm_Promise = function (item) {
+    return new Promise(function (resolve, reject) {
         var loadedList = {};
         listRelationForm = loadedList;
-        $('.senderForm [data-torelation]').each(async function(index) {
+        $('.senderForm [data-torelation]').each(async function (index) {
             var rel = $(this).attr('data-torelation');
             if (loadedList[rel] == undefined) {
                 var datapost = {
-                    instance: { "index": rel },
-                    qoptions: { relations: false }
+                    instance: {"index": rel},
+                    qoptions: {relations: false}
                 };
                 await actionPostMultipartForm_Promise("entity.search", undefined, datapost, undefined, populateHookRelation, undefined, false, rel);
             }
@@ -896,7 +917,7 @@ function populateHookRelation(x, y, z, w, k, a, b, arObj2, rel) {
     arObj2.data = templ_data.arr
     //console.log('==>populateHookRelation templ_data',arObj2);
     listRelationForm[rel] = arObj2.data;
-    $('.senderForm [data-torelation="' + rel + '"]').each(function(inde) {
+    $('.senderForm [data-torelation="' + rel + '"]').each(function (inde) {
         var esxtraAttr = "";
         var isRequired = $(this).attr('required');
         var optionsText = $(this).attr('data-optiontext');
@@ -933,26 +954,27 @@ function populateHookRelation(x, y, z, w, k, a, b, arObj2, rel) {
         sel.append($("<option>").attr('value', "").text(""));
         if (typeof optionsText !== typeof undefined && optionsText !== false) {
             var tempArrList = [];
-            $.each(listRelationForm[rel], function(ind, value) {
-                tempArrList.push({ "id": value._id, "txt": value[optionsText] });
+            $.each(listRelationForm[rel], function (ind, value) {
+                tempArrList.push({"id": value._id, "txt": value[optionsText]});
             });
             var orderdList = sortByKeyAsc(tempArrList, "txt");
-            $.each(orderdList, function(ind, value) {
+            $.each(orderdList, function (ind, value) {
                 sel.append($("<option>").attr('value', value.id).text(value.txt));
             });
         } else {
-            $.each(listRelationForm[rel], function(ind, value) {
+            $.each(listRelationForm[rel], function (ind, value) {
                 sel.append($("<option>").attr('value', value._id).text(value.title));
             });
         }
     });
 }
+
 var listTaxonomyForm = {};
-const hookTaxonomy_Promise = function(item) {
-    return new Promise(function(resolve, reject) {
+const hookTaxonomy_Promise = function (item) {
+    return new Promise(function (resolve, reject) {
         var loadedList = {};
         listTaxonomyForm = loadedList;
-        $('.senderForm [data-totaxonomy]').each(async function(index) {
+        $('.senderForm [data-totaxonomy]').each(async function (index) {
             var taxID = $(this).attr('data-totaxonomy');
             if (loadedList[taxID] == undefined) {
 
@@ -966,10 +988,11 @@ const hookTaxonomy_Promise = function(item) {
         resolve();
     });
 }
+
 /***********/
 function populateHookTaxonomy(x, y, z, w, k, a, b, arObj2, tax) {
     listTaxonomyForm[tax] = arObj2.data;
-    $('.senderForm [data-totaxonomy="' + tax + '"]').each(function(inde) {
+    $('.senderForm [data-totaxonomy="' + tax + '"]').each(function (inde) {
         var esxtraAttr = "";
         var taxName = $(this).attr('name');
         var isRequired = $(this).attr('required');
@@ -1011,15 +1034,15 @@ function populateHookTaxonomy(x, y, z, w, k, a, b, arObj2, tax) {
         //sel.append($("<option>").attr('value', "").text(""));
         if (typeof optionsText !== typeof undefined && optionsText !== false) {
             var tempArrList = [];
-            $.each(listTaxonomyForm[tax], function(ind, value) {
-                tempArrList.push({ "id": "value._id", "txt": "value[optionsText]" });
+            $.each(listTaxonomyForm[tax], function (ind, value) {
+                tempArrList.push({"id": "value._id", "txt": "value[optionsText]"});
             });
             var orderdList = sortByKeyAsc(tempArrList, "txt");
-            $.each(orderdList, function(ind, value) {
+            $.each(orderdList, function (ind, value) {
                 sel.append($("<option>").attr('value', value.id).text(value.txt));
             });
         } else {
-            $.each(listTaxonomyForm[tax].nodes, function(ind, value) {
+            $.each(listTaxonomyForm[tax].nodes, function (ind, value) {
                 console.log("listTaxonomyForm[tax].nodes: ", listTaxonomyForm[tax].nodes)
 
                 //sel.append($("<optgroup>").attr("label", value.value));
@@ -1040,7 +1063,7 @@ function populateHookTaxonomy(x, y, z, w, k, a, b, arObj2, tax) {
 }
 
 function sortByKeyAsc(array, key) {
-    return array.sort(function(a, b) {
+    return array.sort(function (a, b) {
         var x = a[key];
         var y = b[key];
         return ((x < y) ? -1 : ((x > y) ? 1 : 0));
@@ -1055,7 +1078,7 @@ function relChngd(el) {
 }
 
 function loadFilterModel(index, tagFilterObj) {
-    var datapost = { "query": { "instance._index": index }, "act": "update" };
+    var datapost = {"query": {"instance._index": index}, "act": "update"};
     var sourceUrl = getendpoint('form');
     // loadFormList(geturl, $('#cont-btnadd'), myQuery);
     var temp_config_call = {
@@ -1070,8 +1093,8 @@ function loadFilterModel(index, tagFilterObj) {
         ajax_temp_call.addparams(datapost);
     var ret = ajax_temp_call.send();
     if (ret.success) {
-        (ret.data).forEach(function(item, i) {
-            (item.files).forEach(function(fl, i) {
+        (ret.data).forEach(function (item, i) {
+            (item.files).forEach(function (fl, i) {
                 if (fl.contentType == "text/html") {
                     dom_to_render = "content/" + index + "/" + fl._id + "?dmts=2";
                 }
@@ -1096,7 +1119,7 @@ function loadFilterModel(index, tagFilterObj) {
         $('#d_entityfilter').append(searchIndex);
         var idGen = new GeneratorId();
         let usePlaceholder = ($('#d_entityfilter').attr("useplaceholder") == "true") ? true : false;
-        $(itemValue).find("[searchable-label]").each(function() {
+        $(itemValue).find("[searchable-label]").each(function () {
             var newId = idGen.getId();
             let filterpos = ($(this).data('filterpos') == undefined) ? 0 : $(this).data('filterpos');
             var singleEl = "";
@@ -1105,8 +1128,8 @@ function loadFilterModel(index, tagFilterObj) {
                 //console.log('==> loadFilterModel data-torelation ',rel);
                 var esxtraAttr = "";
                 var datapost = {
-                    instance: { "index": rel },
-                    qoptions: { relations: false }
+                    instance: {"index": rel},
+                    qoptions: {relations: false}
                 };
                 var listToselect = actionPostMultipartForm("entity.search", undefined, datapost, undefined, undefined, undefined, false, undefined);
                 //mr rel fix
@@ -1117,7 +1140,7 @@ function loadFilterModel(index, tagFilterObj) {
                 var $sel = $('<select class="form-control span12 col-12"  searchable-multiple="' + ismulti + '"  searchable-override="data[relationdymer][' + rel + ']" searchable="" searchable-label="' + $(this).attr('searchable-label') + '" name="data[relation][' + rel + '][' + inde + '][to]"  ' + esxtraAttr + '>').appendTo($(this));
                 if (usePlaceholder)
                     $sel.append($('<option value="" disabled selected>').attr('value', "").text($(this).attr('searchable-label')));
-                $.each(listToselect.data, function(ind, value) {
+                $.each(listToselect.data, function (ind, value) {
                     $sel.append($("<option>").attr('value', value._id).text(value.title));
                 });
                 $sel.attr("filter-id", newId);
@@ -1162,7 +1185,7 @@ function loadFilterModel(index, tagFilterObj) {
             e.stopPropagation();
         });
         var $wrapper = $('#d_entityfilter');
-        $wrapper.find('.grpfilter').sort(function(a, b) {
+        $wrapper.find('.grpfilter').sort(function (a, b) {
             return +$(a).data('filterpos') - +$(b).data('filterpos');
         }).appendTo($wrapper);
     }
@@ -1212,7 +1235,7 @@ async function loadHtmlForm(sourceUrl, target, datapost, delaytime, action) {
 
 function getendpoint(type) {
     var ret = "";
-    (kmsconfig.endpoints).forEach(function(item, i) {
+    (kmsconfig.endpoints).forEach(function (item, i) {
         if (item.type == type)
             ret = item.endpoint;
     });
@@ -1222,7 +1245,7 @@ function getendpoint(type) {
 function getendpointnested(type, mod) {
     var ret = "";
     var types = type.split(".");
-    (kmsconfig.endpoints).forEach(function(item, i) {
+    (kmsconfig.endpoints).forEach(function (item, i) {
         if (item.type == types[0]) {
             ret = item.endpoint;
             if (types.length > 1) {
@@ -1233,6 +1256,7 @@ function getendpointnested(type, mod) {
     });
     return ret;
 }
+
 var listLoadedAdm = {};
 
 function loadModelListToModal(target, index, action) {
@@ -1257,7 +1281,7 @@ function loadModelListToModal(target, index, action) {
     if ($('#entityAdd').length == 0)
         $('body').append(insertmodal);
     // var datapost = { "query": { "instance._index": index }, "act": "update" };
-    var datapost = { "query": { "instance._index": index } };
+    var datapost = {"query": {"instance._index": index}};
     var sourceUrl = getendpoint('form');
     // loadFormList(geturl, $('#cont-btnadd'), myQuery);
     var temp_config_call = {
@@ -1281,14 +1305,14 @@ function loadModelListToModal(target, index, action) {
     var listToLoad = [];
     if (ret.success) {
         listToLoad = ret.data;
-        (ret.data).forEach(function(item, i) {
+        (ret.data).forEach(function (item, i) {
             var typeIndex = item.instance[0]["_index"];
             var dom_to_render = "content/" + typeIndex + "/";
             var old_dupd = undefined;
             listLoadedAdm[item._id] = {
                 tftemp: []
             };
-            (item.files).forEach(function(fl, i) {
+            (item.files).forEach(function (fl, i) {
                 var dupd = new Date(fl.uploadDate);
                 if (fl.contentType == "text/html") {
                     if (old_dupd == undefined) {
@@ -1305,15 +1329,19 @@ function loadModelListToModal(target, index, action) {
                     var lkpath = indport + "content/" + typeIndex + "/" + fl._id;
                     ftype = (ftype == "css") ? "link" : ftype;
                     if (ftype != "octet-stream")
-                        listLoadedAdm[item._id].tftemp.push({ domtype: ftype, filename: lkpath, extrattr: [{ key: 'tftemp', value: "rt" }] });
+                        listLoadedAdm[item._id].tftemp.push({
+                            domtype: ftype,
+                            filename: lkpath,
+                            extrattr: [{key: 'tftemp', value: "rt"}]
+                        });
                 }
             });
             dom_to_render = indport + dom_to_render;
-            newHtml += '<button id="addEntityBtn" onclick="loadAddEntityForm(\'' + dom_to_render + '\',\'' + item._id + '\');" type="button" class="btn btn-outline-secondary ' + listClass + '">' + listIcon+' '+ item.title + '</button>'
+            newHtml += '<button id="addEntityBtn" onclick="loadAddEntityForm(\'' + dom_to_render + '\',\'' + item._id + '\');" type="button" class="btn btn-outline-secondary ' + listClass + '">' + listIcon + ' ' + item.title + '</button>'
         });
         newHtml += " ";
         if (!listToLoad.length)
-            newHtml = '<div  class="alert alert-info  "> No '+item.title+' data available  </div>';
+            newHtml = '<div  class="alert alert-info  "> No ' + item.title + ' data available  </div>';
         if (action == undefined) {
             $(target).html("");
             $(target).html(newHtml);
@@ -1378,14 +1406,14 @@ function loadFormListInModal(sourceUrl, target, datapost, action) {
     var listToLoad = [];
     if (ret.success) {
         listToLoad = ret.data;
-        (ret.data).forEach(function(item, i) {
+        (ret.data).forEach(function (item, i) {
             console.log("itemitemitem", item);
             var dom_to_render = "content/";
             var old_dupd = undefined;
             listLoadedAdm[item._id] = {
                 tftemp: []
             }; //bbbbbb
-            (item.files).forEach(function(fl, i) {
+            (item.files).forEach(function (fl, i) {
                 var dupd = new Date(fl.uploadDate);
                 if (fl.contentType == "text/html") {
                     if (old_dupd == undefined) {
@@ -1402,7 +1430,11 @@ function loadFormListInModal(sourceUrl, target, datapost, action) {
                     var lkpath = indport + "content/" + fl._id;
                     ftype = (ftype == "css") ? "link" : ftype;
                     if (ftype != "octet-stream")
-                        listLoadedAdm[item._id].tftemp.push({ domtype: ftype, filename: lkpath, extrattr: [{ key: 'tftemp', value: "rt" }] });
+                        listLoadedAdm[item._id].tftemp.push({
+                            domtype: ftype,
+                            filename: lkpath,
+                            extrattr: [{key: 'tftemp', value: "rt"}]
+                        });
                 }
             });
             dom_to_render = indport + dom_to_render;
@@ -1448,13 +1480,13 @@ function loadFormList(sourceUrl, target, datapost, action) {
     var listToLoad = [];
     if (ret.success) {
         listToLoad = ret.data;
-        (ret.data).forEach(function(item, i) {
+        (ret.data).forEach(function (item, i) {
             var dom_to_render = "content/";
             var old_dupd = undefined;
             listLoadedAdm[item._id] = {
                 tftemp: []
             };
-            (item.files).forEach(function(fl, i) {
+            (item.files).forEach(function (fl, i) {
                 var dupd = new Date(fl.uploadDate);
                 if (fl.contentType == "text/html") {
                     if (old_dupd == undefined) {
@@ -1471,7 +1503,11 @@ function loadFormList(sourceUrl, target, datapost, action) {
                     var lkpath = indport + "content/" + fl._id;
                     ftype = (ftype == "css") ? "link" : ftype;
                     if (ftype != "octet-stream")
-                        listLoadedAdm[item._id].tftemp.push({ domtype: ftype, filename: lkpath, extrattr: [{ key: 'tftemp', value: "rt" }] });
+                        listLoadedAdm[item._id].tftemp.push({
+                            domtype: ftype,
+                            filename: lkpath,
+                            extrattr: [{key: 'tftemp', value: "rt"}]
+                        });
                 }
                 // dom_to_render = (fl.mimetype == "text/html") ? fl.path : dom_to_render;
             });
@@ -1495,24 +1531,26 @@ function loadFormList(sourceUrl, target, datapost, action) {
 }
 
 async function ldFormFiles2(id) {
-    let rs = await removeTempImport('tftemp').then(async function() {
+    let rs = await removeTempImport('tftemp').then(async function () {
         //  console.log("inizio caricamento file");
         // return onloadFiles((listLoadedAdm[id].tftemp).slice());
-        let onl2=onloadFiles2((listLoadedAdm[id].tftemp).slice());
+        let onl2 = onloadFiles2((listLoadedAdm[id].tftemp).slice());
         if (typeof afterLoadForm !== "undefined") {
-            setTimeout(function() {
+            setTimeout(function () {
                 afterLoadForm(); //marco after
-            }, 3000);  }
+            }, 3000);
+        }
         return onl2;
     });
     //  console.log("ritorno ldFormFiles2");
     return rs;
 }
+
 async function ldFormFiles(id) {
-    removeTempImport('tftemp').then(function() {
+    removeTempImport('tftemp').then(function () {
         console.log("inizio caricamento file");
         onloadFiles((listLoadedAdm[id].tftemp).slice());
-        setTimeout(function() {
+        setTimeout(function () {
             if (typeof afterLoadForm !== "undefined") {
                 afterLoadForm(); //marco after
             }
@@ -1600,90 +1638,14 @@ function actionEventPostMultipartForm(type, el, senderForm, callbackfunction, ca
     }
     return false;
 }
+
 //-----------------END FORM-----------------
 
 // -----------------START VIEW---------------
 async function loadRequireView() {
     let ckaddimport = [];
-    if ( typeof dymerconf !== 'undefined' ) {
+    if (typeof dymerconf !== 'undefined') {
         ckaddimport = dymerconf.notImport;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }
@@ -1691,190 +1653,46 @@ async function loadRequireView() {
     let arr = [];
 
 
-
-
     // Load libraries from the database
     try {
-        const response = await fetch( serverUrl + '/api/dservice/api/v1/library/' );
+        const response = await fetch(serverUrl + '/api/dservice/api/v1/library/');
         const libraries = await response.json();
 
 
+        libraries.filter(({loadtype, activated}) => loadtype === 'view' && activated).forEach(library => {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        libraries.filter( ( { loadtype, activated } ) => loadtype === 'view' && activated ).forEach( library => {
-
-            const { domtype, filename, callback, useonload, group, name } = library;
+            const {domtype, filename, callback, useonload, group, name} = library;
 
 
             // Valuta la callback solo se non è nulla (attenzione: eval può comportare rischi di sicurezza)
-            const evalCallback = callback !== null ? eval( `${ callback }` ) : null;
+            const evalCallback = callback !== null ? eval(`${callback}`) : null;
 
-            if ( ckaddimport.indexOf( group ) <= -1 ) {
-                arr.push( new Elfile( domtype, kmsconfig.cdn + filename, evalCallback, useonload, group ) );
+            if (ckaddimport.indexOf(group) <= -1) {
+                arr.push(new Elfile(domtype, kmsconfig.cdn + filename, evalCallback, useonload, group));
                 // console.log( `Add ${ library.name } at arr array:` )
-
-
-
-
-
-
-
-
-
-
 
 
             }
 
-        } )
+        })
 
-    } catch ( error ) {
-        console.error( 'Error fetching and loading libraries:', error );
+    } catch (error) {
+        console.error('Error fetching and loading libraries:', error);
     }
 
-    await onloadFiles( arr );
+    await onloadFiles(arr);
 
 }
+
 //-----------------END VIEW---------------
 
 //-----------------SART MAP-----------------
 async function loadRequireMap() {
 
 
-
-
-
     let ckaddimport = [];
-    if ( typeof dymerconf !== 'undefined' ) {
+    if (typeof dymerconf !== 'undefined') {
         ckaddimport = dymerconf.notImport;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }
@@ -1883,179 +1701,52 @@ async function loadRequireMap() {
 
     // Load libraries from the database
     try {
-        const response = await fetch( serverUrl + '/api/dservice/api/v1/library/' );
+        const response = await fetch(serverUrl + '/api/dservice/api/v1/library/');
         const libraries = await response.json();
 
-        libraries.filter( ( { loadtype, activated } ) => loadtype === 'map' && activated ).forEach( library => {
+        libraries.filter(({loadtype, activated}) => loadtype === 'map' && activated).forEach(library => {
 
 
-
-
-
-
-
-
-
-
-
-
-            const { domtype, filename, callback, useonload, group, name } = library;
+            const {domtype, filename, callback, useonload, group, name} = library;
 
             // Valuta la callback solo se non è nulla (attenzione: eval può comportare rischi di sicurezza)
-            const evalCallback = callback !== null ? eval( `${ callback }` ) : null;
+            const evalCallback = callback !== null ? eval(`${callback}`) : null;
 
 
-
-
-
-
-
-
-
-
-
-
-            if ( ckaddimport.indexOf( group ) <= -1 ) {
-                arr.push( new Elfile( domtype, kmsconfig.cdn + filename, evalCallback, useonload, group ) );
+            if (ckaddimport.indexOf(group) <= -1) {
+                arr.push(new Elfile(domtype, kmsconfig.cdn + filename, evalCallback, useonload, group));
                 //console.log( `Add ${ library.name } at arr array:` )
-
-
-
-
-
-
-
-
-
-
-
 
 
             }
 
-        } )
+        })
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    } catch ( error ) {
-        console.error( 'Error fetching and loading libraries:', error );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    } catch (error) {
+        console.error('Error fetching and loading libraries:', error);
 
 
     }
 
-    await onloadFiles( arr );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    await onloadFiles(arr);
 
 
 }
+
 //-----------------END MAP------------------
 //-----------------SART ENTITY--------------
 
 
 function resetMapFiltered() {
-    reloadMarker(undefined).then(function(ars) {
+    reloadMarker(undefined).then(function (ars) {
         // populateMap(ars);
         //populateDT(kmsdataset);
     });
 }
 
 function getEntities2(el, senderForm, callbackfunction, callerForm, useGritter) {
-    reloadMarker(el).then(function(ars) {
+    reloadMarker(el).then(function (ars) {
         populateMap(ars);
         //populateDT(kmsdataset);
     });
@@ -2072,6 +1763,7 @@ function getEntities2(el, senderForm, callbackfunction, callerForm, useGritter) 
     console.log("getEntities2 dataMp", dataMp);
     return false;*/
 }
+
 //Marco To delete?
 function searchEntity(sourceUrl, target, datapost, action) {
     var temp_config_call = {
@@ -2089,9 +1781,9 @@ function searchEntity(sourceUrl, target, datapost, action) {
     ajaxcall_getEntities.addcontainer_ids(senderForm);
     var ret = ajaxcall_getEntities.send();
     if (ret.success) {
-        (ret.data).forEach(function(item, i) {
+        (ret.data).forEach(function (item, i) {
             var dom_to_render = undefined;
-            (item.files).forEach(function(fl, i) {
+            (item.files).forEach(function (fl, i) {
                 dom_to_render = (fl.mimetype == "text/html") ? fl.path : dom_to_render;
             });
             dom_to_render = replaceAll(dom_to_render, '\\', '/');
@@ -2260,7 +1952,7 @@ function checkPermission(actualItem, act) {
     let d_uid = localStorage.getItem("d_uid");
     let d_gid = localStorage.getItem("d_gid");
     let d_rl = localStorage.getItem("d_rl");
-    let d_lp =  JSON.parse(atob( localStorage.getItem("d_lp")));
+    let d_lp = JSON.parse(atob(localStorage.getItem("d_lp")));
     //console.log("d_lp",d_lp);
     var entPerm = {
         isowner: false,
@@ -2269,7 +1961,7 @@ function checkPermission(actualItem, act) {
         delete: false,
         managegrant: false,
         isadmin: false,
-        iscurator:false
+        iscurator: false
     };
     if (typeof d_uid == 'undefined') {
         entPerm.view = true;
@@ -2317,20 +2009,20 @@ function checkPermission(actualItem, act) {
         entPerm.managegrant = true;
         return entPerm;
     }
-    let is_spr=false;
-    let actualIndex=actualItem._index;
-    if(d_lp.edit.includes(actualIndex) ){
+    let is_spr = false;
+    let actualIndex = actualItem._index;
+    if (d_lp.edit.includes(actualIndex)) {
         entPerm.view = true;
         entPerm.edit = true;
-        entPerm.iscurator =true;
+        entPerm.iscurator = true;
     }
-    if(d_lp.delete.includes(actualIndex) ){
+    if (d_lp.delete.includes(actualIndex)) {
         entPerm.view = true;
         entPerm.delete = true;
-        entPerm.iscurator =true;
+        entPerm.iscurator = true;
 
     }
-    if( entPerm.iscurator ){
+    if (entPerm.iscurator) {
 
         return entPerm;
     }
@@ -2375,35 +2067,36 @@ function checkSatus(actualItem, hookCheckSatusconf) {
         hookCheckSatusconf = JSON.parse(hookCheckSatusconf);
     var statusDiv = "";
     switch (actualItem.properties.status) {
-        case '1':
-        {
-            if (hookCheckSatusconf == undefined) {} else {
+        case '1': {
+            if (hookCheckSatusconf == undefined) {
+            } else {
                 if (hookCheckSatusconf.allstatus == true) {
                     statusDiv = 'PUBLISHED';
-                    if (hookCheckSatusconf.style == 'text') {} else
+                    if (hookCheckSatusconf.style == 'text') {
+                    } else
                         statusDiv = '<div class="span12 col-12 alert alert-info" style="text-align:center" > <b>' + statusDiv + '</b> </div>';
                 }
             }
             break;
         }
-        case '2':
-        {
+        case '2': {
             statusDiv = 'UNPUBLISHED';
             if (hookCheckSatusconf == undefined) {
                 statusDiv = '<div class="span12 col-12 alert alert-info" style="text-align:center" > <b>' + statusDiv + '</b> </div>';
             } else {
-                if (hookCheckSatusconf.style == 'text') {} else
+                if (hookCheckSatusconf.style == 'text') {
+                } else
                     statusDiv = '<div class="span12 col-12 alert alert-info" style="text-align:center" > <b>' + statusDiv + '</b> </div>';
             }
             break;
         }
-        case '3':
-        {
+        case '3': {
             statusDiv = 'DRAFT';
             if (hookCheckSatusconf == undefined) {
                 statusDiv = '<div class="span12 col-12 alert alert-info" style="text-align:center"> <b>' + statusDiv + '</b> </div>';
             } else {
-                if (hookCheckSatusconf.style == 'text') {} else
+                if (hookCheckSatusconf.style == 'text') {
+                } else
                     statusDiv = '<div class="span12 col-12 alert alert-info" style="text-align:center"> <b>' + statusDiv + '</b> </div>';
             }
             break;
@@ -2442,7 +2135,7 @@ function kmsrenderEl(ar, rendertype) {
     var target = kmsconf.target;
     actualTemplateType = rendertype;
     dymphases.setSubPhase('view', true, '', rendertype);
-    removeTempImport('tftemp').then(function() {
+    removeTempImport('tftemp').then(function () {
         var action = ""; // target[rendertype].action;
         var targetId = "#noexsist"; //target[rendertype].id;
         var tid = "mll";
@@ -2467,7 +2160,7 @@ function kmsrenderEl(ar, rendertype) {
             $('body').hideLoader();
             return;
         }
-        (ar).forEach(function(item, i) {
+        (ar).forEach(function (item, i) {
             // item.cdnpath = baseurlcd;
             //TODO check
             //var tmpl = item._index + "@" + item._type;
@@ -2498,7 +2191,10 @@ function kmsrenderEl(ar, rendertype) {
                 //TODO check
                 //var datapost = { "query": { "instance._index": itemToEdit._index, "instance._type": itemToEdit._type }, "act": "update" };
 
-                var datapost = { "query": { "instance._index": itemToEdit._index, "instance._type": itemToEdit._index }, "act": "update" };
+                var datapost = {
+                    "query": {"instance._index": itemToEdit._index, "instance._type": itemToEdit._index},
+                    "act": "update"
+                };
 
                 //var datapost = { "query": { "instance._index": itemToEdit._index }, "act": "update" };
 
@@ -2519,18 +2215,19 @@ function kmsrenderEl(ar, rendertype) {
                         var stone = Handlebars.compile(mytemplate)(itemToEdit);
                         $(targetId)[action](stone);
                     } else
-                        (ret.data).forEach(function(item, i) {
+                        (ret.data).forEach(function (item, i) {
                             var model_form = "";
-                            (item.files).forEach(function(fl, i) {
+                            (item.files).forEach(function (fl, i) {
                                 if (fl.contentType == "text/html") {
                                     model_form = fl.data;
-                                    var stone = '<h1 class="text-info text-left">No template exists</h1> ' + model_form;;
+                                    var stone = '<h1 class="text-info text-left">No template exists</h1> ' + model_form;
+                                    ;
                                     $(targetId)[action](stone);
                                     $(targetId).multidisable();
-                                    setTimeout(function() {
+                                    setTimeout(function () {
                                         duplicateRepeatable(targetId, itemToEdit);
                                     }, 1000);
-                                    setTimeout(function() {
+                                    setTimeout(function () {
                                         populateFormEdit(targetId, itemToEdit, undefined, undefined, itemToEdit);
                                         $(targetId).multidisable();
 
@@ -2551,7 +2248,7 @@ function kmsrenderEl(ar, rendertype) {
             if (action == "html")
                 $(targetId).empty();
             action = "append";
-            (ar).forEach(function(item, i) {
+            (ar).forEach(function (item, i) {
                 //TODO check
 
                 //var tmpl = item._index + "@" + item._type;
@@ -2568,7 +2265,7 @@ function kmsrenderEl(ar, rendertype) {
             });
             $('body').hideLoader();
         }
-    }).then(function(string) {
+    }).then(function (string) {
         dymerPaginatorSetReset()
     });
 }
@@ -2578,7 +2275,10 @@ function getModelEntity(el) {
     var sourceUrl = getendpoint('form');
     //TODO check
     //var datapost = { "query": { "instance._index": itemToEdit._index, "instance._type": itemToEdit._type }, "act": "update" };
-    var datapost = { "query": { "instance._index": itemToEdit._index, "instance._type": itemToEdit._index }, "act": "update" };
+    var datapost = {
+        "query": {"instance._index": itemToEdit._index, "instance._type": itemToEdit._index},
+        "act": "update"
+    };
     //var datapost = { "query": { "instance._index": itemToEdit._index}, "act": "update" };
 
     var temp_config_call = {
@@ -2592,9 +2292,9 @@ function getModelEntity(el) {
         ajax_temp_call.addparams(datapost);
     var ret = ajax_temp_call.send();
     if (ret.success) {
-        (ret.data).forEach(function(item, i) {
+        (ret.data).forEach(function (item, i) {
             var model_form = "";
-            (item.files).forEach(function(fl, i) {
+            (item.files).forEach(function (fl, i) {
                 if (fl.contentType == "text/html") {
                     model_form = fl.data;
                     return model_form;
@@ -2605,28 +2305,26 @@ function getModelEntity(el) {
 }
 
 
-
-async function exportPDFEntity(id,title) {
+async function exportPDFEntity(id, title) {
     console.log("Exporting PDF: ", id)
 
     //let entireHTML = document.documentElement.outerHTML;
     var entireHTML;
-    var domain= location.hostname;
+    var domain = location.hostname;
 
-   
 
     if (typeof dviewtype !== 'undefined') {
-        if(dviewtype=="dymermap"){
-            entireHTML=$('#cont-MyEnt').html();
-       }else{
-            entireHTML=$('#cont-MyList').html();
-       }
-    }else{
-         
-        entireHTML=$('#cont-RenderForm').html();
+        if (dviewtype == "dymermap") {
+            entireHTML = $('#cont-MyEnt').html();
+        } else {
+            entireHTML = $('#cont-MyList').html();
+        }
+    } else {
+
+        entireHTML = $('#cont-RenderForm').html();
     }
 
-     
+
     let $tempContainer = $('<div>').html(entireHTML);
 
     $tempContainer.find('#primodfil').remove();
@@ -2639,16 +2337,15 @@ async function exportPDFEntity(id,title) {
     entireHTML = $tempContainer.html();
 
     html2pdf(entireHTML, {
-        margin:       1,
-        enableLinks:  true,
-        pagebreak:{mode: ['css', 'legacy']},
-        filename:     `${domain}-${title}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        margin: 1,
+        enableLinks: true,
+        pagebreak: {mode: ['css', 'legacy']},
+        filename: `${domain}-${title}.pdf`,
+        image: {type: 'jpeg', quality: 0.98},
+        html2canvas: {scale: 2},
+        jsPDF: {unit: 'in', format: 'letter', orientation: 'portrait'}
     });
 }
-
 
 
 // function editEntity(id) {
@@ -2656,7 +2353,7 @@ async function exportPDFEntity(id,title) {
 async function editEntity(id) {
     var itemToEdit = actualItem;
     if (actualTemplateType == "teaserlist" || actualTemplateType == "datatable") {
-        (kmsdataset).forEach(function(el, i) {
+        (kmsdataset).forEach(function (el, i) {
             if (el._id == id) {
                 itemToEdit = el;
             }
@@ -2664,7 +2361,7 @@ async function editEntity(id) {
     }
     const perm = checkPermission(actualItem, 'update');
     var sourceUrl = getendpoint('form');
-    var datapost = { "query": { "instance._index": itemToEdit._index }, "act": "update" };
+    var datapost = {"query": {"instance._index": itemToEdit._index}, "act": "update"};
     var indport = sourceUrl + "/";
     var temp_config_call = {
         url: sourceUrl,
@@ -2720,16 +2417,16 @@ async function editEntity(id) {
         } else {
             dymphases.setModal("edit", true);
             $('#entityEdit .onputform').show();
-            $('#entityEdit').on('hidden.bs.modal', function() {
+            $('#entityEdit').on('hidden.bs.modal', function () {
                 removeTempImport("tftemp");
                 $('#entityEdit').unbind('hidden.bs.modal');
             });
-            (ret.data).forEach(async function(item, i) {
+            (ret.data).forEach(async function (item, i) {
                 listLoadedAdm[item._id] = {
                     tftemp: []
                 };
                 var model_form = "";
-                (item.files).forEach(function(fl, i) {
+                (item.files).forEach(function (fl, i) {
                     if (fl.contentType == "text/html") {
                         model_form = fl.data;
                         // dom_to_render = (fl.mimetype == "text/html") ? fl.path : dom_to_render;
@@ -2739,7 +2436,11 @@ async function editEntity(id) {
                         var lkpath = indport + "content/" + itemToEdit._index + "/" + fl._id;
                         ftype = (ftype == "css") ? "link" : ftype;
                         if (ftype != "octet-stream")
-                            listLoadedAdm[item._id].tftemp.push({ domtype: ftype, filename: lkpath, extrattr: [{ key: 'tftemp', value: "rt" }] });
+                            listLoadedAdm[item._id].tftemp.push({
+                                domtype: ftype,
+                                filename: lkpath,
+                                extrattr: [{key: 'tftemp', value: "rt"}]
+                            });
                     }
                 });
                 dymphases.setSubPhase("edit", true, "loadedform");
@@ -2815,13 +2516,9 @@ async function editEntity(id) {
 }
 
 
-
-
-
-
-function closeDymerModal(id,r) {
+function closeDymerModal(id, r) {
     //   if ($('#' + id).trackisChanged()) {
-    var r = (r==undefined)?confirm("Without saving the changes will be lost"):r;
+    var r = (r == undefined) ? confirm("Without saving the changes will be lost") : r;
     if (r == true) {
         $('#' + id).modal('hide');
         let typephase = dymphases.getType();
@@ -2846,7 +2543,7 @@ function deleteEntity(id, indexentity) {
         itemToEdit.title;
     if (actualTemplateType == "teaserlist") {
         if (kmsdataset != undefined)
-            (kmsdataset).forEach(function(el, i) {
+            (kmsdataset).forEach(function (el, i) {
                 if (el._id == id) {
                     nameEntity = el.title;
                 }
@@ -2895,7 +2592,7 @@ function duplicateRepeatable(frm, item, basename) {
                 listRelation[value[i]._index] = [];
             listRelation[value[i]._index].push(value[i]._id);
         }
-        $(frm + ' .repeatable [data-torelation]').each(function(index) {
+        $(frm + ' .repeatable [data-torelation]').each(function (index) {
             var rel_type = $(this).attr('data-torelation');
             //console.log('==> duplicateRepeatable data-torelation ',rel_type);
             if (listRelation[rel_type] != undefined) {
@@ -2911,7 +2608,7 @@ function duplicateRepeatable(frm, item, basename) {
             }
         });
     }
-    $(frm + ' .repeatable').each(function(index) {
+    $(frm + ' .repeatable').each(function (index) {
         var name = ($(this).find('[name^="data"]').prop("name"));
         if (name == undefined)
             return true;
@@ -2947,8 +2644,8 @@ function duplicateRepeatable(frm, item, basename) {
     });
 }
 
-const duplicateRepeatable_Promise = function(frm, item, basename) {
-    return new Promise(function(resolve, reject) {
+const duplicateRepeatable_Promise = function (frm, item, basename) {
+    return new Promise(function (resolve, reject) {
         var listRelation = {};
         var value = item.relations;
         if (value != undefined) {
@@ -2958,7 +2655,7 @@ const duplicateRepeatable_Promise = function(frm, item, basename) {
                     listRelation[value[i]._index] = [];
                 listRelation[value[i]._index].push(value[i]._id);
             }
-            $(frm + ' .repeatable [data-torelation]').each(function(index) {
+            $(frm + ' .repeatable [data-torelation]').each(function (index) {
                 var rel_type = $(this).attr('data-torelation');
                 //console.log('==> duplicateRepeatable_Promise data-torelation ',rel_type);
                 if (listRelation[rel_type] != undefined) {
@@ -2974,7 +2671,7 @@ const duplicateRepeatable_Promise = function(frm, item, basename) {
                 }
             });
         }
-        $(frm + ' .repeatable').each(function(index) {
+        $(frm + ' .repeatable').each(function (index) {
             var name = ($(this).find('[name^="data"]').prop("name"));
             if (name == undefined)
                 return true;
@@ -3073,7 +2770,7 @@ function populateFormEdit(frm, item, basename, wasarr, origitem) {
                       }
                   });*/
                 //console.log("listRelation ", listRelation);
-                Object.keys(listRelation).forEach(function(k) {
+                Object.keys(listRelation).forEach(function (k) {
                     var r_list = listRelation[k];
 
                     let vs = '[name="data[relation][' + k + '][0][to]"]';
@@ -3097,7 +2794,7 @@ function populateFormEdit(frm, item, basename, wasarr, origitem) {
                     if (value.length > 0) {
                         if (elPop.hasClass('summernote')) {
                             if (typeof elPop.summernote === 'function')
-                                elPop.summernote({ dialogsInBody: true });
+                                elPop.summernote({dialogsInBody: true});
 
                         } else if (elPop.hasClass('selectpicker')) {
 
@@ -3127,7 +2824,7 @@ function populateFormEdit(frm, item, basename, wasarr, origitem) {
                                 }
                                 elPop.attr('onchange', 'appendTodeleteId("' + value.id + '","' + $(elPop).attr("name") + '")');
                                 var to_append = '<div style="display:none"  id="contattach_' + elName + '"> ';
-                                Object.keys(value).forEach(function(valueObjkey) {
+                                Object.keys(value).forEach(function (valueObjkey) {
                                     var attrOblName = elName + '[' + valueObjkey + ']';
                                     to_append += '<input type="hidden"  name="' + attrOblName + '" value="' + value[valueObjkey] + '">';
                                 });
@@ -3161,7 +2858,7 @@ function populateFormEdit(frm, item, basename, wasarr, origitem) {
                     elPop.val(value);
                     if (elPop.hasClass('summernote')) {
                         if (typeof elPop.summernote === 'function')
-                            elPop.summernote({ dialogsInBody: true });
+                            elPop.summernote({dialogsInBody: true});
                     }
                 }
             }
@@ -3170,6 +2867,7 @@ function populateFormEdit(frm, item, basename, wasarr, origitem) {
         console.error(error);
     }
 }
+
 async function populateFormEdit_await(frm, item, basename, wasarr, origitem) {
     try {
         //console.log('item++', frm, item, basename, wasarr);
@@ -3214,7 +2912,7 @@ async function populateFormEdit_await(frm, item, basename, wasarr, origitem) {
                           }
                       });*/
 
-                    Object.keys(listRelation).forEach(function(k) {
+                    Object.keys(listRelation).forEach(function (k) {
                         //console.log("nome relation k ", k);
                         var r_list = listRelation[k];
                         let vs = '[name="data[relation][' + k + '][0][to]"]';
@@ -3238,7 +2936,7 @@ async function populateFormEdit_await(frm, item, basename, wasarr, origitem) {
                         if (value.length > 0) {
                             if (elPop.hasClass('summernote')) {
                                 if (typeof elPop.summernote === 'function')
-                                    elPop.summernote({ dialogsInBody: true });
+                                    elPop.summernote({dialogsInBody: true});
 
                             } else if (elPop.hasClass('selectpicker')) {
 
@@ -3268,7 +2966,7 @@ async function populateFormEdit_await(frm, item, basename, wasarr, origitem) {
                                     }
                                     elPop.attr('onchange', 'appendTodeleteId("' + value.id + '","' + $(elPop).attr("name") + '")');
                                     var to_append = '<div style="display:none"  id="contattach_' + elName + '"> ';
-                                    Object.keys(value).forEach(function(valueObjkey) {
+                                    Object.keys(value).forEach(function (valueObjkey) {
                                         var attrOblName = elName + '[' + valueObjkey + ']';
                                         to_append += '<input type="hidden"  name="' + attrOblName + '" value="' + value[valueObjkey] + '">';
                                     });
@@ -3302,7 +3000,7 @@ async function populateFormEdit_await(frm, item, basename, wasarr, origitem) {
                         elPop.val(value);
                         if (elPop.hasClass('summernote')) {
                             if (typeof elPop.summernote === 'function')
-                                elPop.summernote({ dialogsInBody: true });
+                                elPop.summernote({dialogsInBody: true});
                         }
                     }
                 }
@@ -3312,8 +3010,9 @@ async function populateFormEdit_await(frm, item, basename, wasarr, origitem) {
         console.error(error);
     }
 }
-const populateFormEdit_Promise = function(frm, item, basename, wasarr) {
-    return new Promise(async function(resolve, reject) {
+
+const populateFormEdit_Promise = function (frm, item, basename, wasarr) {
+    return new Promise(async function (resolve, reject) {
         try {
             for (var [key, value] of Object.entries(item)) {
                 var tmp = $(frm + ' [name^="data' + basename + '[' + key + ']' + '"]');
@@ -3342,7 +3041,7 @@ const populateFormEdit_Promise = function(frm, item, basename, wasarr) {
                         listRelation[value[i]._index].push(value[i]._id);
                         //console.log("value ",value[i]);
                     }
-                    Object.keys(listRelation).forEach(function(k) {
+                    Object.keys(listRelation).forEach(function (k) {
                         var r_list = listRelation[k];
                         for (var i = 0; i < r_list.length; i++) {
                             var vs = ' [name="data[relation][' + k + '][' + i + '][to]"]';
@@ -3376,7 +3075,7 @@ const populateFormEdit_Promise = function(frm, item, basename, wasarr) {
                                     }
                                     elPop.attr('onchange', 'appendTodeleteId("' + value.id + '","' + $(elPop).attr("name") + '")');
                                     var to_append = '<div style="display:none"  id="contattach_' + elName + '"> ';
-                                    Object.keys(value).forEach(function(valueObjkey) {
+                                    Object.keys(value).forEach(function (valueObjkey) {
                                         var attrOblName = elName + '[' + valueObjkey + ']';
                                         to_append += '<input type="hidden"  name="' + attrOblName + '" value="' + value[valueObjkey] + '">';
                                     });
@@ -3402,7 +3101,7 @@ const populateFormEdit_Promise = function(frm, item, basename, wasarr) {
                         elPop.val(value);
                         if (elPop.hasClass('summernote')) {
                             if (typeof elPop.summernote === 'function')
-                                elPop.summernote({ dialogsInBody: true });
+                                elPop.summernote({dialogsInBody: true});
                         }
                     }
                 }
@@ -3428,7 +3127,7 @@ function getPagePath() {
 }
 
 function getPageJsonPath() {
-    return { 'protocol': window.location.protocol, 'host': window.location.host, 'pathname': window.location.pathname }
+    return {'protocol': window.location.protocol, 'host': window.location.host, 'pathname': window.location.pathname}
 }
 
 function getAllUrlParams(url) {
@@ -3447,7 +3146,7 @@ function getAllUrlParams(url) {
             var a = arr[i].split('=');
             // set parameter name and value (use 'true' if empty)
             var paramName = a[0];
-            var paramValue = typeof(a[1]) === 'undefined' ? true : a[1];
+            var paramValue = typeof (a[1]) === 'undefined' ? true : a[1];
             // (optional) keep case consistent
             //   paramName = paramName.toLowerCase();
             //      if (typeof paramValue === 'string') paramValue = paramValue.toLowerCase();
@@ -3520,11 +3219,11 @@ function kmsrenderdetail(_id) {
     removeTempImport('tftemp');
     var arObj = new Array();
     //console.log("kmsrenderdetail pre", arObj, templateslist);
-    (kmsdataset).forEach(function(item, i) {
+    (kmsdataset).forEach(function (item, i) {
         if (item._id == _id) {
             arObj.push(item);
-            idx=item._index;
-            tit=item.title;
+            idx = item._index;
+            tit = item.title;
             /*	obj = item;
                 tmpl = item._index + "@" + item._type;
                 mytemplate = templateslist[tmpl]['viewtype'][typetemplateToRender];*/
@@ -3550,7 +3249,7 @@ function kmsrenderdetail(_id) {
         kmsrenderEl(arObj, 'fullcontent');
     }
 
-    addView( _id,idx,tit);
+    addView(_id, idx, tit);
 }
 
 function checkbreadcrumb(arObj, fnct, linklabel) {
@@ -3605,6 +3304,7 @@ function checkbreadcrumb(arObj, fnct, linklabel) {
     else
         $('#dymer_breadcrumb span').hide();
 }
+
 //-----------------END ENTITY--------------
 
 //-----------------START GLOBAL------------
@@ -3686,8 +3386,8 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
         if (callback != undefined) {
             /*MG - Creazione organizzazione in LR - Inizio*/
             //callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret, callbackEstraData);
-            window[callback]((ret.data[1].title),(ret.data[0]._id));
-        } 
+            window[callback]((ret.data[1].title), (ret.data[0]._id));
+        }
         /*
         else {
             if (senderForm == undefined && el != undefined) {
@@ -3717,7 +3417,7 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
             if (senderForm != undefined) {
                 resetContainer(senderForm[0]);
                 useAlert(senderForm[0], gr_title, gr_text, success);
-                setTimeout(function() {
+                setTimeout(function () {
                     $('#entityAdd').modal('hide');
                     $('#entityEdit .modal-body .contbody').empty();
                     $('#entityAdd .modal-body').empty();
@@ -3733,8 +3433,8 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
         if (callback != undefined) {
             /*MG - Creazione organizzazione in LR - Inizio*/
             //callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret, callbackEstraData);
-            window[callback]((ret.data[1].title),(ret.data[0]._id));
-        } 
+            window[callback]((ret.data[1].title), (ret.data[0]._id));
+        }
         /*
         else {
             if (useGritter) {
@@ -3751,12 +3451,13 @@ function actionPostMultipartForm(type, el, datapost, senderForm, callback, calle
             else
                 useGritterTool(gr_title, gr_text, "error");
         }
-         /*MG - Creazione organizzazione in LR - Fine*/
+        /*MG - Creazione organizzazione in LR - Fine*/
     }
     return ret;
 }
-const actionPostMultipartForm_Promise = function(type, el, datapost, senderForm, callback, callerForm, useGritter, callbackEstraData) {
-    return new Promise(function(resolve, reject) {
+
+const actionPostMultipartForm_Promise = function (type, el, datapost, senderForm, callback, callerForm, useGritter, callbackEstraData) {
+    return new Promise(function (resolve, reject) {
         var posturl = getendpointnested(type, 'post');
         var temp_config_call = {
             url: posturl,
@@ -3830,7 +3531,7 @@ const actionPostMultipartForm_Promise = function(type, el, datapost, senderForm,
                     if (senderForm != undefined) {
                         resetContainer(senderForm[0]);
                         useAlert(senderForm[0], gr_title, gr_text, success);
-                        setTimeout(function() {
+                        setTimeout(function () {
                             $('#entityAdd').modal('hide');
                             $('#entityEdit .modal-body .contbody').empty();
                             $('#entityAdd .modal-body').empty();
@@ -3918,7 +3619,7 @@ function actionPutMultipartForm(type, el, datapost, senderForm, callback, caller
             /*MG - Associazione utente all'organizzazione in LR - Inizio*/
             //callback.call(this, type, el, datapost, senderForm, callback, callerForm, useGritter, ret);
             window[callback]((ret.data[0]));
-        } 
+        }
         /*
         else {
             if (senderForm == undefined && el != undefined) {
@@ -3949,12 +3650,12 @@ function actionPutMultipartForm(type, el, datapost, senderForm, callback, caller
         if (useGritter) {
             useAlert("#entityEdit", gr_title, gr_text, success);
         }
-        setTimeout(function() {
+        setTimeout(function () {
             $('#entityEdit').modal('hide');
             if (actualTemplateType == "fullcontent")
                 reloadEntityEdited(actualItem);
             if (actualTemplateType == "datatable") {
-                setTimeout(function() {
+                setTimeout(function () {
                     var tmp_conf = kmsconf;
                     // resetDymerStart();
                     //  generateMapDT(tmp_conf);
@@ -4047,11 +3748,11 @@ function actionPatchMultipartForm(type, el, datapost, senderForm, callback, call
             if (useGritter) {
                 useAlert(senderForm, gr_title, gr_text, success);
             }
-            setTimeout(function() {
+            setTimeout(function () {
                 if (actualTemplateType == "fullcontent")
                     reloadEntityEdited(actualItem);
                 if (actualTemplateType == "datatable") {
-                    setTimeout(function() {
+                    setTimeout(function () {
                         var tmp_conf = kmsconf;
                         // resetDymerStart();
                         //  generateMapDT(tmp_conf);
@@ -4069,7 +3770,7 @@ function actionPatchMultipartForm(type, el, datapost, senderForm, callback, call
 }
 
 function showAddEntityBindReload() {
-    setTimeout(function() {
+    setTimeout(function () {
         $('#entityAdd').modal({
             show: true,
             keyboard: false,
@@ -4079,17 +3780,17 @@ function showAddEntityBindReload() {
         var actToAppend = oldact;
         $('#entityAdd').find("[onclick^='actionPostMultipartForm']").attr('onclick', actToAppend);
         if ($('#entityAdd').find(".summernote").length > 0)
-            $('#entityAdd').find(".summernote").summernote({ dialogsInBody: true });
+            $('#entityAdd').find(".summernote").summernote({dialogsInBody: true});
         try {
             $('.selectpicker').selectpicker();
-        } catch(e) {
+        } catch (e) {
 
         }
     }, 1000);
 }
 
 function reloadLatestRenderedList() {
-    setTimeout(function() {
+    setTimeout(function () {
         kmsdataset = undefined;
         if ($.isFunction(window.actionReloadOnCrud)) {
             actionReloadOnCrud();
@@ -4163,7 +3864,7 @@ function actionDeleteMultipartForm(type, el, datapost, senderForm, callback, cal
     var personalauthdata = { "authdata": getbaseEntityConfig() };
     ajax_temp_call.addparams(personalauthdata);
     */
-    ajax_temp_call.addparams({ 'indexentity': indexentityDelete });
+    ajax_temp_call.addparams({'indexentity': indexentityDelete});
     var ret = ajax_temp_call.send();
     var success = ret.success;
     if (useGritter != undefined) {
@@ -4178,14 +3879,14 @@ function actionDeleteMultipartForm(type, el, datapost, senderForm, callback, cal
             $(kmsconf.target["fullcontent"].id + " [data-component-entitystatus]").remove(); //.multidisable();
             $('#deleteEdit').modal('hide');
             var new_kmsdataset = [];
-            (kmsdataset).forEach(function(el, i) {
+            (kmsdataset).forEach(function (el, i) {
                 if (el._id != elid)
                     new_kmsdataset.push(el);
             });
             kmsdataset = new_kmsdataset;
         }
         if (actualTemplateType == "datatable") {
-            setTimeout(function() {
+            setTimeout(function () {
                 var tmp_conf = kmsconf;
                 //  resetDymerStart();
                 //  generateMapDT(tmp_conf);
@@ -4198,6 +3899,7 @@ function actionDeleteMultipartForm(type, el, datapost, senderForm, callback, cal
     }
     return false;
 }
+
 //-----------------END GLOBAL--------------
 function manageTamplateList(ar) {
     if (templateslist == undefined)
@@ -4266,9 +3968,10 @@ function getHtmlFormFile(sourceUrl, datapost) {
     var ret = ajax_temp_call.send();
     return ret;
 }
-let getKmsTemplateMap = function(ar, rendertype) {
-    var promise = new Promise(function(resolve, reject) {
-        removeTempImport("tftemp").then(function() {
+
+let getKmsTemplateMap = function (ar, rendertype) {
+    var promise = new Promise(function (resolve, reject) {
+        removeTempImport("tftemp").then(function () {
             var item = ar[0];
             //TODO check
 
@@ -4285,7 +3988,7 @@ let getKmsTemplateMap = function(ar, rendertype) {
                 mytemplate = templateslist[tmpl]["viewtype"][rendertype];
             }
             onloadFiles(templateslist[tmpl]["files"][rendertype].slice());
-            var ret = { template: mytemplate, type: rendertype }
+            var ret = {template: mytemplate, type: rendertype}
             resolve(ret);
         });
     });
@@ -4313,7 +4016,7 @@ function getDymerTemplateMultiple() {
 
 function getKmsTemplateMapStatic(obj) {
     var geturl = getendpointnested('template');
-    var myQuery = { "query": { title: "Form Pilot" } };
+    var myQuery = {"query": {title: "Form Pilot"}};
     myQuery = {}
     var geturl = getendpoint('form');
     loadFormList(geturl, $('#cont-FormList'), myQuery);
@@ -4410,7 +4113,8 @@ function convertStructToTemplate(el, strRet, preconcat) {
 }
 
 function switchQuery(jj, el, vT) {
-    if (actualTemplateType == "fullcontent") {}
+    if (actualTemplateType == "fullcontent") {
+    }
     var confbase_ = Object.assign({}, kmsconf);
     confbase_.query.query.query = jj;
     kmsdataset = undefined;
@@ -4465,7 +4169,7 @@ function dymerPaginatorChangePage(act_page) {
 
 function dymerPaginatorSetReset() {
     d_curpage = 1;
-    $('[d-pagegroup]').each(function(i, el) {
+    $('[d-pagegroup]').each(function (i, el) {
         if ($(this).attr('d-pagegroup') != d_curpage)
             $(this).hide();
     });
@@ -4476,9 +4180,10 @@ function refreshDTagFilter(el) {
     manageDTagFilter($('.switchfilter [filter-rel="' + el.attr('filter-rel') + '"] '), 'update');
 }
 
-function GeneratorId() {};
+function GeneratorId() {
+};
 GeneratorId.prototype.rand = Math.floor(Math.random() * 26) + Date.now();
-GeneratorId.prototype.getId = function() {
+GeneratorId.prototype.getId = function () {
     return this.rand++;
 };
 
@@ -4536,22 +4241,50 @@ function manageDTagFilter(el, op) {
     var filter_label = el.attr('filter-label');
     var lbl = filter_label + ' = ' + filter_label_value;
     if (op == 'update')
-        dTagFilter.dymertagsinput('update', { id: filter_relid, filterquery: filter_rel, label: lbl, value: filter_value, typeqr: filter_type, });
+        dTagFilter.dymertagsinput('update', {
+            id: filter_relid,
+            filterquery: filter_rel,
+            label: lbl,
+            value: filter_value,
+            typeqr: filter_type,
+        });
     else {
         if (op == 'add')
-            dTagFilter.dymertagsinput('add', { id: filter_relid, filterquery: filter_rel, label: lbl, value: filter_value, typeqr: filter_type });
+            dTagFilter.dymertagsinput('add', {
+                id: filter_relid,
+                filterquery: filter_rel,
+                label: lbl,
+                value: filter_value,
+                typeqr: filter_type
+            });
         else {
             if (isChecked) {
-                dTagFilter.dymertagsinput('add', { id: filter_relid, filterquery: filter_rel, label: lbl, value: filter_value, typeqr: filter_type });
+                dTagFilter.dymertagsinput('add', {
+                    id: filter_relid,
+                    filterquery: filter_rel,
+                    label: lbl,
+                    value: filter_value,
+                    typeqr: filter_type
+                });
             } else
-                dTagFilter.dymertagsinput('remove', { id: filter_relid, filterquery: filter_rel, label: lbl, value: filter_value, typeqr: filter_type });
+                dTagFilter.dymertagsinput('remove', {
+                    id: filter_relid,
+                    filterquery: filter_rel,
+                    label: lbl,
+                    value: filter_value,
+                    typeqr: filter_type
+                });
         }
     }
 }
 
 function toggleFilter() {
     var x = document.getElementById('d_entityfilter');
-    if (x.style.display === 'none' || x.style.display === '') { x.style.display = 'block'; } else { x.style.display = 'none'; }
+    if (x.style.display === 'none' || x.style.display === '') {
+        x.style.display = 'block';
+    } else {
+        x.style.display = 'none';
+    }
 }
 
 function switchByGeneralText(cc) {
@@ -4564,7 +4297,7 @@ function switchByGeneralText(cc) {
     var valToSearch = $('#dTagFilter').val();
     if (valToSearch != "") {
         valToSearch = "*" + valToSearch + "*";
-        var singleFilter = { "query_string": { "query": valToSearch, "default_operator": "AND" } };
+        var singleFilter = {"query_string": {"query": valToSearch, "default_operator": "AND"}};
         querycreator.bool.must.push(singleFilter);
     }
     switchQuery(querycreator, $(this));
@@ -4625,7 +4358,7 @@ function getFilterQueryType(filter) {
             }
             if (searchableOverride == "_all") {
                 filter_value = "*" + filter_value + "*";
-                filter_value = { "query": filter_value, "default_operator": "AND" };
+                filter_value = {"query": filter_value, "default_operator": "AND"};
                 filterKey = "";
                 filter_type = "query_string";
             }
@@ -4641,8 +4374,16 @@ function getFilterQueryType(filter) {
         if (filterKey.substr(filterKey.length - 1) == ".")
             filterKey = filterKey.substring(0, filterKey.length - 1);
     }
-    return { addtoquery: addToQuery, filterquery: filterKey, value: filter_value, typeqr: filter_type, filter_cond: filter_condition, ismultiple: filter_multiple };
+    return {
+        addtoquery: addToQuery,
+        filterquery: filterKey,
+        value: filter_value,
+        typeqr: filter_type,
+        filter_cond: filter_condition,
+        ismultiple: filter_multiple
+    };
 }
+
 /*
 function opencloseDSAF(el) {
     basefilter
@@ -4667,6 +4408,7 @@ function mergeDeep(...objects) {
         return prev;
     }, {});
 }
+
 /*fcnflow.edit
     preloadform
     loadedform
@@ -4707,19 +4449,19 @@ function dymerphases(options) {
     //options = {...defaultOptions, ...options };
     options = (options == undefined || options == null) ? {} : options;
     let properties = mergeDeep(defaultProperties, options);
-    this.init = function() { //console.log('tpbase', properties)
+    this.init = function () { //console.log('tpbase', properties)
     }
-    this.getAllPhases = function(type, subphase, typesubphase) {
+    this.getAllPhases = function (type, subphase, typesubphase) {
         return properties;
     }
-    this.enableSubPhase = function(type, subphase, typesubphase) {
+    this.enableSubPhase = function (type, subphase, typesubphase) {
         properties.type = type; //view/create/edit/delete
         properties[type].active = true;
         properties[type].subphase = subphase;
         if ((properties[type]).hasOwnProperty("type") && typephase != undefined)
             properties[type].type = typesubphase;
     }
-    this.disablePhase = function(type) {
+    this.disablePhase = function (type) {
         properties.type = "";
         properties[type].subphase = "";
         properties[type].active = false;
@@ -4727,13 +4469,13 @@ function dymerphases(options) {
             properties[type].type = "";
         console.log('disablePhase', properties)
     }
-    this.getPhaseDetail = function() {
+    this.getPhaseDetail = function () {
         return properties[properties.type];
     }
-    this.getActualSubPhase = function() {
+    this.getActualSubPhase = function () {
         return properties[properties.type].subphase;
     }
-    this.setSubPhase = function(type, active, subphase, typephase) {
+    this.setSubPhase = function (type, active, subphase, typephase) {
         // console.log('setSubPhase',type, active, subphase, typephase);
         properties.type = type; //view/create/edit/delete
         properties[type].active = active;
@@ -4742,38 +4484,38 @@ function dymerphases(options) {
             properties[type].type = typephase;
 
     }
-    this.resetPhases = function() {
+    this.resetPhases = function () {
         properties = defaultProperties;
     }
-    this.isActivePhase = function(type) {
+    this.isActivePhase = function (type) {
         return properties[type].active;
     }
-    this.setModal = function(type, active) {
+    this.setModal = function (type, active) {
         properties.modal.active = active;
         properties.modal.type = type;
     }
-    this.resetModal = function() {
+    this.resetModal = function () {
         properties.modal.active = false;
         properties.modal.type = "";
     }
-    this.isModal = function() {
+    this.isModal = function () {
         return properties.modal.active;
     }
-    this.getModalType = function() {
+    this.getModalType = function () {
         return properties.modal.type;
     }
-    this.setType = function(type) {
+    this.setType = function (type) {
         // console.log('setType', type)
         properties.type = type;
     }
-    this.getType = function() {
+    this.getType = function () {
         // console.log('getType', properties.type)
         return properties.type;
     }
-    this.getViewtSubPhase = function() {
+    this.getViewtSubPhase = function () {
         return properties.view.subphase;
     }
-    this.getViewtType = function() {
+    this.getViewtType = function () {
         return properties.view.type;
     }
     /*
@@ -4845,7 +4587,7 @@ function dymerSearch(options) {
     }
     //options = {...defaultOptions, ...options };
     options = mergeDeep(defaultOptions, options);
-    this.init = function() {
+    this.init = function () {
         //   console.log('options', options);
         if (options.showFilterBtn) {
             $("#" + options.formid).append('<i class="fa fa-filter dsearchAdvFilterBtn" aria-hidden="true" title="advanced filter" onclick="' + options.objname + '.showFilter()"></i>');
@@ -4898,21 +4640,21 @@ function dymerSearch(options) {
          this.orderElement();*/
         $('.selectpicker').selectpicker();
     }
-    this.setConditioQuery = function(val) {
+    this.setConditioQuery = function (val) {
         options.conditionQuery = val;
         $("#" + options.formid + ' .dsearchAdvOptionBtn .optsconditionQuery a').removeClass("active");
         $("#" + options.formid + ' .dsearchAdvOptionBtn .optsconditionQuery a[data-value="' + val + '"]').addClass("active");
     }
-    this.getOptions = function(val) {
+    this.getOptions = function (val) {
         return options;
     }
-    this.loadFilterModel = function() {
+    this.loadFilterModel = function () {
         let d_uid = localStorage.getItem("d_uid");
 
         let index = options.filterModel;
         if (index == undefined)
             return;
-        let datapost = { "query": { "instance._index": index }, "act": "view" };
+        let datapost = {"query": {"instance._index": index}, "act": "view"};
         let sourceUrl = getendpoint('form');
         let temp_config_call = {
             url: sourceUrl,
@@ -4934,8 +4676,8 @@ function dymerSearch(options) {
             let myform_innerContainer = $(idcontainerfiler);
 
             let myform = $("#" + options.formid);
-            (ret.data).forEach(function(item, i) {
-                (item.files).forEach(function(fl, i) {
+            (ret.data).forEach(function (item, i) {
+                (item.files).forEach(function (fl, i) {
                     if (fl.contentType == "text/html") {
                         dom_to_render += "content/" + index + "/" + fl._id + "?dmts=2";
                     }
@@ -4973,7 +4715,7 @@ function dymerSearch(options) {
 
 
             }
-            $(itemValue).find('[searchable-element="true"]').each(function() {
+            $(itemValue).find('[searchable-element="true"]').each(function () {
                 //let newId = idGen.getId();
                 let filterpos = ($(this).data('filterpos') == undefined) ? 0 : $(this).data('filterpos');
                 let singleEl = "";
@@ -4986,8 +4728,8 @@ function dymerSearch(options) {
                         let rel = $(this).attr('data-torelation');
                         let esxtraAttr = "";
                         let datapost = {
-                            instance: { "index": rel },
-                            qoptions: { relations: false }
+                            instance: {"index": rel},
+                            qoptions: {relations: false}
                         };
                         let listToselect = actionPostMultipartForm("entity.search", undefined, datapost, undefined, undefined, undefined, false, undefined);
                         let inde = 0;
@@ -5008,7 +4750,7 @@ function dymerSearch(options) {
                         let $sel = $('<select name="data[relationdymer][' + rel + ']" searchable-label="' + $(this).attr('searchable-label') + '" class="selectpicker form-control"  data-live-search="true"  ' + ismulti + ' ' + isactionsbox + ' data-selected-text-format="count"  ></select>').appendTo($(this));
                         /*if (usePlaceholder)
                             $sel.append($('<option value="" disabled selected>').attr('value', "").text($(this).attr('searchable-label')));*/
-                        $.each(listToselect.data, function(ind, value) {
+                        $.each(listToselect.data, function (ind, value) {
                             // $sel.append($("<option>").attr('value', value._id).text(value.title));
                             // $sel.append($("<option>").attr('data-tokens', value._id).attr('value', value.title).text(value.title));
                             $sel.append($("<option>").attr('value', value._id).text(value.title));
@@ -5043,7 +4785,7 @@ function dymerSearch(options) {
 
 
                         // $sel.append($("<option>").attr('value', "").text(""));
-                        $.each(listToselect.data.nodes, function(ind, value) {
+                        $.each(listToselect.data.nodes, function (ind, value) {
 
                             $sel.append($("<option>").attr('value', value.value).text(value.locales.en.value));
 
@@ -5076,13 +4818,15 @@ function dymerSearch(options) {
                             let $sel = $('<select name="' + nameVal + '" ' + '  searchable-label="' + $(this).attr('searchable-label') + '"  class="selectpicker form-control "  data-live-search="true" multiple ' + ismulti + ' data-selected-text-format="count"  data-actions-box="true"></select>').appendTo($(this));
                             //  $(this).addClass('selectpicker').attr('data-live-search', 'true').attr('multiple').att(ismulti);;
 
-                            $(this).find("option").each(function() {
+                            $(this).find("option").each(function () {
                                 //alert(this.text + ' ' + this.value);
                                 //  $sel.append($("<option>").attr('data-tokens', this.value).attr('value', this.text).text(this.text));
                                 $sel.append($("<option>").attr('value', this.value).text(this.text));
                             });
                             singleEl = $sel;
-                        } else { singleEl = $(this); }
+                        } else {
+                            singleEl = $(this);
+                        }
                     } else {
                         singleEl = $(this); //.attr("filter-id", newId);
                     }
@@ -5133,12 +4877,12 @@ function dymerSearch(options) {
                    e.stopPropagation();
                });*/
             let $wrapper = myform_innerContainer;
-            $wrapper.find('.grpfilter').sort(function(a, b) {
+            $wrapper.find('.grpfilter').sort(function (a, b) {
                 return +$(a).data('filterpos') - +$(b).data('filterpos');
             }).appendTo($wrapper);
         }
     }
-    this.getFilterQueryType = function(filter) {
+    this.getFilterQueryType = function (filter) {
         let filter_value = filter.val();
         let filterKey = filter.attr('name');
         let filter_type = "wildcard";
@@ -5192,7 +4936,7 @@ function dymerSearch(options) {
                 }
                 if (searchableOverride == "_all") {
                     filter_value = "*" + filter_value + "*";
-                    filter_value = { "query": filter_value, "default_operator": "AND" };
+                    filter_value = {"query": filter_value, "default_operator": "AND"};
                     filterKey = "";
                     filter_type = "query_string";
                 }
@@ -5220,9 +4964,17 @@ function dymerSearch(options) {
 
             }
         }
-        return { addtoquery: addToQuery, filterquery: filterKey, value: filter_value, typeqr: filter_type, filter_cond: filter_condition, ismultiple: filter_multiple, 'isRelation': isRelation };
+        return {
+            addtoquery: addToQuery,
+            filterquery: filterKey,
+            value: filter_value,
+            typeqr: filter_type,
+            filter_cond: filter_condition,
+            ismultiple: filter_multiple,
+            'isRelation': isRelation
+        };
     }
-    this.search = function() {
+    this.search = function () {
         let myform = $("#" + options.formid + "");
         //let filterList = myform.serializeArray();
         let els = myform.find(':input').get();
@@ -5248,7 +5000,7 @@ function dymerSearch(options) {
         };
         subquerycreator.bool[conditionQ] = [];
         let addsubquery = false;
-        $.each(els, function() {
+        $.each(els, function () {
             if (this.name /*&& !this.disabled*/ && (this.checked || /select|input|textarea/i.test(this.nodeName) || /text|hidden|password/i.test(this.type)) && (!/file/i.test(this.type))) {
                 let val = $(this).val();
                 let addToQuery = false;
@@ -5309,7 +5061,7 @@ function dymerSearch(options) {
         switchQuery(querycreator);
         $('#dymer_breadcrumb').empty();
     }
-    this.showFilter = function() {
+    this.showFilter = function () {
         let myform = $("#" + options.formid + "");
         let tp = 'base';
         let btnAdvFilter = myform.children('.dsearchAdvFilterBtn');
@@ -5360,13 +5112,11 @@ function switchByFilterBase() {
           }
       };*/
     let subquerycreator = {
-        "bool": {
-
-        }
+        "bool": {}
     };
     subquerycreator.bool[conditionQ] = [];
     let addsubquery = false;
-    $.each(els, function() {
+    $.each(els, function () {
         if (this.name /*&& !this.disabled*/ && (this.checked || /select|input|textarea/i.test(this.nodeName) || /text|hidden|password/i.test(this.type)) && (!/file/i.test(this.type))) {
             let val = $(this).val();
             let addToQuery = false;
@@ -5436,7 +5186,7 @@ function switchByFilter(cc, vType) {
     var filterList = cc.dymertagsinput('items');
     console.log('listndex', listndex);
     console.log('filterList', filterList);
-    $.each(filterList, function(k, v) {
+    $.each(filterList, function (k, v) {
         var filterKey = v.filterquery;
         var regex = /@@(\d*)@@/;
         var typeqr_ = v.typeqr;
@@ -5514,12 +5264,16 @@ function dymerFormatDate(val, format) {
         format = format.replace("ss", date.getSeconds().toString().padL(2, "0"));
     return format;
 }
-String.repeat = function(chr, count) {
+
+String.repeat = function (chr, count) {
     var str = "";
-    for (var x = 0; x < count; x++) { str += chr };
+    for (var x = 0; x < count; x++) {
+        str += chr
+    }
+    ;
     return str;
 }
-String.prototype.padL = function(width, pad) {
+String.prototype.padL = function (width, pad) {
     if (!width || width < 1)
         return this;
 
@@ -5529,7 +5283,7 @@ String.prototype.padL = function(width, pad) {
 
     return (String.repeat(pad, length) + this).substr(0, width);
 }
-String.prototype.padR = function(width, pad) {
+String.prototype.padR = function (width, pad) {
     if (!width || width < 1)
         return this;
     if (!pad) pad = " ";
@@ -5542,7 +5296,8 @@ String.prototype.padR = function(width, pad) {
 function sort_li(a, b) {
     return ($(b).data('ordtitle')) < ($(a).data('ordtitle')) ? 1 : -1;
 }
-Object.byString = function(o, s) {
+
+Object.byString = function (o, s) {
     s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
     s = s.replace(/^\./, ''); // strip a leading dot
     var a = s.split('.');
@@ -5627,7 +5382,6 @@ function showDatasetContainer() {
     }
 }
 
- 
 
 // Mongo Update Likes
 async function likeMongoUpdate(entityId, act, email, roles, type, title) {
@@ -5640,7 +5394,14 @@ async function likeMongoUpdate(entityId, act, email, roles, type, title) {
         addDataBody: true
     };
 
-    let data_service_post = { "act": act, "email": email, "roles": roles, "resourceId": entityId, "type": type, "title": title}
+    let data_service_post = {
+        "act": act,
+        "email": email,
+        "roles": roles,
+        "resourceId": entityId,
+        "type": type,
+        "title": title
+    }
 
     let ajax_temp_call = new Ajaxcall(service_config_call);
     ajax_temp_call.addparams(data_service_post)
@@ -5661,11 +5422,11 @@ async function addView(id, index, title) {
     let ajax_temp_call = new Ajaxcall(temp_config_call);
     ajax_temp_call.addparams(datapost);
     let addViewCallRet = ajax_temp_call.send();
-    
+
     //console.log("addView response ===> ",addViewCallRet);
-    
+
     sourceUrl = serverUrl + "/api/dservice/api/v1/stats/savestats";
-    datapost = {"resourceId" : id, "type" : index, "act": "views", "title":title}
+    datapost = {"resourceId": id, "type": index, "act": "views", "title": title}
 
     temp_config_call = {
         url: sourceUrl,
@@ -5676,14 +5437,15 @@ async function addView(id, index, title) {
     ajax_temp_call = new Ajaxcall(temp_config_call);
     ajax_temp_call.addparams(datapost);
     let statsCallRet = ajax_temp_call.send();
-    
+
     //console.log("savestats response ===> ",statsCallRet);
 }
+
 /*MG - Gestione visualizzazioni - FINE*/
 
 
 /*********************/
-async function like(entityId, title, index, loggedUsrMail = "notLogged", roles,iconup,icondown) {
+async function like(entityId, title, index, loggedUsrMail = "notLogged", roles, iconup, icondown) {
 
     if (loggedUsrMail === "guest@dymer.it" || loggedUsrMail === "admin@dymer.it" || loggedUsrMail === "notLogged") {
         useGritterTool("User not Logged", "Please log in", "danger")
@@ -5697,7 +5459,7 @@ async function like(entityId, title, index, loggedUsrMail = "notLogged", roles,i
         return
     }
     const sourceUrl = getendpoint("entity") + "/" + "entitylike"
-    let datapost = {"element": entityId, title:title, index: index, "loggedUser": loggedUsrMail}
+    let datapost = {"element": entityId, title: title, index: index, "loggedUser": loggedUsrMail}
 
     let temp_config_call = {
         url: sourceUrl,
@@ -5706,14 +5468,14 @@ async function like(entityId, title, index, loggedUsrMail = "notLogged", roles,i
         addDataBody: true
     };
 
-   // console.log(temp_config_call)
+    // console.log(temp_config_call)
     let ajax_temp_call = new Ajaxcall(temp_config_call);    // inviare anche l'email dell'utente -> controllo che non sia guest né admin
     ajax_temp_call.addparams(datapost)
     let ret = ajax_temp_call.send();
 
     if (ret.message.action == "dislike") {
         useGritterTool("<b><i class='fa fa-thumbs-down'></i> DISLIKE</b>", ret.message.action, "warning")
-    }else{
+    } else {
         useGritterTool("<b><i class='fa fa-thumbs-up'></i> LIKE</b> ", ret.message.action, "success")
     }
 
