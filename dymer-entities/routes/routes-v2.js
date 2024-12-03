@@ -1570,7 +1570,7 @@ function getAllIdsRelations(listIds) {
                         }
                     }]
                 }
-            }
+            },
         };
 
         qparams["body"].size = 10000;
@@ -1641,7 +1641,7 @@ function getAllIdsRelationsById1(listIds) {
     });
 };
 
-function getAllEntitiesFromIDS(listIds) {
+function getAllEntitiesFromIDS(listIds,fieldsList) {
     // console.log('fetchSingleRelation', element);
     return new Promise(function(resolve, reject) {
         let qparams = {};
@@ -1663,6 +1663,7 @@ function getAllEntitiesFromIDS(listIds) {
                   }
               }
           };*/
+          qparams["body"]._source = fieldsList   
         qparams["body"].size = 10000;
         //entity_relation
         //qparams = { index: 'entity_relation',
@@ -1716,7 +1717,7 @@ function mapRelationToEntity(listEntities, listmap, listEnRel) {
     });
 }
 
-var checkUnionRelationV2 = function(originalList, filterRelationDymer) {
+var checkUnionRelationV2 = function(originalList, filterRelationDymer,fieldsRelList) {
     return new Promise(async function(resolve, reject) {
         /*
         if (redisEnabled) {
@@ -1774,7 +1775,8 @@ var checkUnionRelationV2 = function(originalList, filterRelationDymer) {
         }).filter(x => x != undefined && x != ''))];
 
         // console.log('listIdsRelations ', listIdsRelations)
-        let listEntitiesRelations = await getAllEntitiesFromIDS(listIdsRelations);
+      //  let listEntitiesRelations = await getAllEntitiesFromIDS(listIdsRelations);
+        let listEntitiesRelations = await getAllEntitiesFromIDS(listIdsRelations, fieldsRelList);
         //   console.log('listEntitiesRelations[0]', listEntitiesRelations[0])
         let listEntities = await mapRelationToEntity(originalList, listDocsRelations, listEntitiesRelations);
         //console.log('old listEntities', listEntities.length)
@@ -3761,19 +3763,19 @@ router.post('/dih4industryCounters', (req, res) => {
 
 
 /* AC new endpoint start */
-router.post('/dih4industryConstraints', (req, res) => {
+let up = multer()
+router.post('/dih4industryConstraints', up.none(), (req, res) => {
     let origin=req.get('origin');
     var fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     logger.info(nameFile + '|_search| dymeruser :' + JSON.stringify(dymeruser));
-
     var act = "view";
-    var index = req.params.enttype;
-    let requestedFields = req.body.fields
-    console.log(requestedFields)
-    let getRelations = req.body.getrelations
+    const requestedFields = req.body['fields']; // "title"
+    const getRelations = req.body['getrelations']; // "true"
+    const index = req.body['index']; // "service"
+    const fieldsRelList = req.body['relFields']
     var queryString = "";
     var hasperm = false;
     var isadmin = false;
@@ -3786,19 +3788,31 @@ router.post('/dih4industryConstraints', (req, res) => {
     url += act + "/";
     url += index + "/";
     url += queryString;
-
+    console.log("requested fields ===>>> ", requestedFields)
     upload(req, res, async function(err) {
         if (err) {
             return res.end("Error!!!!");
         }
-        let callData = util.getAllQuery(req);
+        //let callData = util.getAllQuery(req);
+        let callData = { //util.getAllQuery(req);
+            "query": {
+                "query": {
+                    "bool": {
+                        "must": [{
+                            "term": {
+                                "_index": index
+                            }
+                        }]
+                    }
+                }
+            }
+        }
         let instance = callData.instance;
         let query = callData.query;
         let source = callData.query.getfields;
         let _source = callData.source;
-
         let qoptions = callData.qoptions;
-        
+        // let recoverRelation = true;
         let recoverRelation = getRelations || false;
         let size = 10000;
         let sort = ["title.keyword:asc"];
@@ -3815,20 +3829,14 @@ router.post('/dih4industryConstraints', (req, res) => {
         var req_gid = 0;
         req_uid = dymeruser.id;
         req_gid = dymeruser.gid;
-
         logger.info(nameFile + '|_search| dymeruser:' + dymeruser.id + "/" + dymeruser.roles + "/" + JSON.stringify(dymeruser.extrainfo));
         logger.info(nameFile + '|_search| callData :' + JSON.stringify(callData));
         var rr = [];
-
         var rr = { indextosearch: [], query: [] };
         rr = retriveIndex_Query_ToSearch(rr, query.query);
-        console.log("requestedFields.index",requestedFields.index);
-        rr=requestedFields.index;
-        console.log("rrr******************",rr);
         var bridgeConf = undefined;
         if (rr != undefined)
             bridgeConf = bE.findByIndex(rr.indextosearch[0]);
-
         if (bridgeConf != undefined) {
             logger.info(nameFile + '|_search| bridgeConf :' + JSON.stringify(bridgeConf));
             bridgeEsternalEntities(bridgeConf, "search", undefined, rr).then(function(callresp) {
@@ -3853,14 +3861,12 @@ router.post('/dih4industryConstraints', (req, res) => {
             });
         } else {
             let filterRelationDymer = {};
-
             if (query.query != undefined) {
                 if (query.query.relationdymer != undefined) {
                     filterRelationDymer = query.query.relationdymer;
                     delete query.query.relationdymer;
                 }
             }
-
             if (!isadmin) {
                 var my_oldquery = query.query;
                 let permFilterByAction = await checkPermissionByAction(dymeruser, params.index, act)
@@ -3975,23 +3981,17 @@ router.post('/dih4industryConstraints', (req, res) => {
                     if (source == undefined)
                         params["_source"] = qoptions.fields.include;
                 }
-
             params["sort"] = sort;
             params["body"] = query;
             params["body"].size = size;
             params["body"]._source = requestedFields
-
-
             if (redisEnabled) {
                 cachedResponse = await redisClient.readCacheByKey(params, redisEnabled)
                 if (cachedResponse && Object.keys(cachedResponse).length != 0) {
                     logger.info(nameFile + '|_search| cachedResponse ');
-
                     return res.send(cachedResponse)
-
                 }
             }
-
             client.search(params).then(function(resp) {
                 if (err) {
                     console.error("ERROR | " + nameFile + '|_search| search:', err);
@@ -4002,23 +4002,17 @@ router.post('/dih4industryConstraints', (req, res) => {
                     return res.send(ret);
                 }
                 let msg = (resp.hits.total > 0) ? "List entities" : "Empty list";
-
                 ret.setMessages(msg);
                 if (resp.hits.total == 0) {
                     logger.info(nameFile + '|_search| resp:count 0');
                     return res.send(ret);
                 }
-
                 const unique = [...new Set((resp.hits.hits).map(item => item._index))];
-
                 let minmodelist = [];
                 minmodelist = unique;
-
                 if (recoverRelation == 'false' || recoverRelation == false) {
                     filertEntitiesFields(resp.hits.hits, minmodelist, hdymeruser).then(async function(nlist) {
-                        console.log("nlist AC 1*******************", nlist);
                         ret.setData(nlist);
-
                         logger.info(nameFile + '|_search| resp no relations: count:' + resp.hits.hits.length);
                         if (redisEnabled) {
                             let ids = await redisClient.extractIds(ret, redisEnabled)
@@ -4031,8 +4025,7 @@ router.post('/dih4industryConstraints', (req, res) => {
                         logger.error(nameFile + '|_search| checkUnionRelation : ' + err);
                     });
                 } else {
-
-                    checkUnionRelationV2(resp.hits.hits, filterRelationDymer).then(function(meatch) {
+                    checkUnionRelationV2(resp.hits.hits, filterRelationDymer, fieldsRelList).then(function(meatch) {
                         var fileterdList = meatch; //temp
                         // console.log('meatch', meatch);
                         (meatch).map(item => item.relations).filter(
@@ -4041,19 +4034,15 @@ router.post('/dih4industryConstraints', (req, res) => {
                                 minmodelist = cc.filter((item, pos) => cc.indexOf(item) === pos)
                             }
                         );
-
                         if (Object.keys(filterRelationDymer).length > 0) {
                             filertEntitiesFields(fileterdList, minmodelist, hdymeruser).then(async function(nlist) {
-
                                 logger.info(nameFile + '|_search| resp filter relations:count ' + nlist.length);
-                                console.log("nlist AC 2*******************", nlist);
                                 ret.setData(nlist);
                                 if (redisEnabled) {
                                     let ids = await redisClient.extractIds(ret, redisEnabled)
                                     let indexes = await redisClient.extractIndexes(ret, redisEnabled)
                                     await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)
                                 }
-
                                 logger.info(nameFile + '|_search| resp filter relations: response cached  ');
                                 return res.send(ret);
                             }).catch(function(err) {
@@ -4063,7 +4052,6 @@ router.post('/dih4industryConstraints', (req, res) => {
                         } else {
                             logger.info(nameFile + '|_search| resp no detected relations :count ' + resp.hits.hits.length);
                             filertEntitiesFields(meatch, minmodelist, hdymeruser).then(async function(nlist) {
-                                console.log("nlist AC 3*******************", nlist);
                                 ret.setData(nlist);
                                 if (redisEnabled) {
                                     let ids = await redisClient.extractIds(ret, redisEnabled)
@@ -4090,6 +4078,7 @@ router.post('/dih4industryConstraints', (req, res) => {
         }
     });
 });
+ 
 /* AC new endpoint end */
 
  
