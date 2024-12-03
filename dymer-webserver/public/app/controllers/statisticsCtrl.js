@@ -19,6 +19,18 @@ angular.module('statisticsCtrl', [])
               params: {}
             }).then(function(ret) {
                 $scope[lista] = ret.data.data[0]; 
+                /*
+                for (var i = 0; i < ret.data.data[0].length; i++) { 
+                    let timestamps = ret.data.data[0][i].timestamps;
+                    for (var l = 0; l < timestamps.length; l++) { 
+                      let todate=new Date(parseInt(timestamps[l])).getDate();
+                      let tomonth=new Date(parseInt(timestamps[l])).getMonth()+1;
+                      let toyear=new Date(parseInt(timestamps[l])).getFullYear();
+                      timestamps[l] = todate+'/'+tomonth+'/'+toyear;   
+                      ret.data.data[0][i].timestamps[l] = timestamps[l];
+                  } 
+                }
+                */
                 let results = ret.data.data[0], 
                 typesObject = Object.groupBy(results, ({ type }) => type);    
                 $scope[types] = typesObject;

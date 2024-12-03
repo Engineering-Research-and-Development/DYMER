@@ -812,9 +812,6 @@ router.get('/fromjson', util.checkIsAdmin, (req, res) => {
 
 function appendFormdata(FormData, data, name) {
     var name = name || '';
-    console.log("Ciao, io sono append FromData e il name è ====> ", name)
-    console.log("Ciao, io sono append FromData e il data è ====> ", data)
-    console.log("Ciao, io sono append FromData e il FormData è ====> ", FormData)
     if (typeof data === 'object') {
         var index = 0
         for (var key in data) {
@@ -964,9 +961,19 @@ const removeDir = function(path) {
 
 function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action, fileurl) {
     console.log("############ EL ", el)
+
+    /*PER TESTARE IN LOCALE*/
+    /*
+    var posturl = "http://192.168.1.52:8080/api/entities/api/v1/entity/" + index;
+    if (action == "put")
+        posturl = "'http://192.168.1.52:8080/api/entities/api/v1/entity/" + el.instance.id;
+    */
+    
     var posturl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/" + index;
     if (action == "put")
         posturl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/" + el.instance.id;
+    
+
     var formdata = new FormData();
     let arrlistFiles = [];
     let dest = 'tempfolder';
@@ -1028,8 +1035,19 @@ function postMyDataAndFiles(el, index, DYM, DYM_EXTRA, action, fileurl) {
 
 /*MG - Funzione di import MODEL e TEMPLATES - Inizio*/
 function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_objJsonB64_admin, extrainfo_objJsonB64_admin, originalrelquery, newentityType){
+    
+    /*PER TESTARE IN LOCALE*/
+    //let localApiUrl = 'http://192.168.1.52:8080/api/' + formTemplate + 's/api/v1/' + formTemplate + "/";
     let localApiUrl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + '/api/' + formTemplate + 's/api/v1/' + formTemplate + "/";
     let externalApiUrl = sourcepath +'/api/' + formTemplate + 's/api/v1/' + formTemplate + "/";
+    
+    /*Per gestire il query.query di utility.js dei templates*/
+    let modelTemplateParameters ="";
+    if (formTemplate==="form")
+        modelTemplateParameters = { "query": { "instance._index": { "$eq": newentityType } } };
+    if (formTemplate==="template")
+        modelTemplateParameters = { "query": { "query": { "instance._index": { "$eq": newentityType } } } };
+
     /*Verifico se i moduli da importare sono già presenti nella destinazione*/
     let modulesIds = [];
     let titleId = {};
@@ -1038,11 +1056,11 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
     let config = {
         method: 'GET',
         url: localApiUrl,
-        params: { "query": { "instance._index": { "$eq": newentityType } } },
+        params: modelTemplateParameters,
         headers: {
             ...formdata_admin.getHeaders(),
             'dymeruser': userinfo_objJsonB64_admin,
-            'Referer': 'http://localhost/',
+            //'Referer': 'http://localhost/',
             'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
             'extrainfo': `${extrainfo_objJsonB64_admin}`,
         } 
@@ -1054,7 +1072,8 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
                 console.log("ROUTES-D-IMPORTS.JS - Import " + formTemplate + " - " + formTemplate + " Id", data._id);
                 titleId.id = data._id;
                 titleId.title = data.title;
-                titleId.changed = data.properties.changed;
+                /*DA RIPRISTINARE DOPO AVER AGGIORNATO LA MACCHINA VIRTUALE*/
+                //titleId.changed = data.properties.changed;
                 modulesIds.push(titleId);
                 titleId = {};
             //}
@@ -1078,15 +1097,17 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
                     if (element.contentType == "text/html"){
                         /*Se i moduli HTML sono già presenti nella destinazione, li elimino*/
                         if (modulesIds.length > 0){
-                            modulesIds.forEach(titleId => {    
-                                if (data.title == titleId.title && (data.properties.changed > titleId.changed || forceimport)){ 
+                            modulesIds.forEach(titleId => {  
+                                /*DA RIPRISTINARE DOPO AVER AGGIORNATO LA MACCHINA VIRTUALE*/
+                                //if (data.title == titleId.title && (data.properties.changed > titleId.changed || forceimport)){   
+                                if (data.title == titleId.title){ 
                                     var config = {
                                         method: 'delete',
                                         url: localApiUrl + titleId.id,
                                         headers: {
                                             ...postData.getHeaders(),
                                             'dymeruser': userinfo_objJsonB64_admin,
-                                            "Referer": "http://localhost/",
+                                            //"Referer": "http://localhost/",
                                             'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
                                             'extrainfo': `${extrainfo_objJsonB64_admin}`,
                                         }
@@ -1102,7 +1123,7 @@ function modelTemplatesImport(formTemplate, forceimport, sourcepath, userinfo_ob
                                                     headers: {
                                                         ...postData.getHeaders(),
                                                         'dymeruser': userinfo_objJsonB64_admin,
-                                                        "Referer": "http://localhost/",
+                                                        //"Referer": "http://localhost/",
                                                         'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
                                                         'extrainfo': `${extrainfo_objJsonB64_admin}`,
                                                     }
@@ -1157,7 +1178,7 @@ function createModules(formTemplate, userinfo_objJsonB64_admin, extrainfo_objJso
         headers: {
             ...postData.getHeaders(),
             'dymeruser': userinfo_objJsonB64_admin,
-            "Referer": "http://localhost/",
+            //"Referer": "http://localhost/",
             'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
             'extrainfo': `${extrainfo_objJsonB64_admin}`,
         },
@@ -1172,7 +1193,7 @@ function createModules(formTemplate, userinfo_objJsonB64_admin, extrainfo_objJso
             headers: {
                 ...formdata_admin.getHeaders(),
                 'dymeruser': userinfo_objJsonB64_admin,
-                "Referer": "http://localhost/",
+                //"Referer": "http://localhost/",
                 'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
                 'extrainfo': `${extrainfo_objJsonB64_admin}`,
             }
@@ -1193,7 +1214,7 @@ function createModules(formTemplate, userinfo_objJsonB64_admin, extrainfo_objJso
                             headers: {
                                 ...postData.getHeaders(),
                                 'dymeruser': userinfo_objJsonB64_admin,
-                                "Referer": "http://localhost/",
+                                //"Referer": "http://localhost/",
                                 'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
                                 'extrainfo': `${extrainfo_objJsonB64_admin}`,
                             },
@@ -1707,8 +1728,12 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
     var myfilter = { "_id": id };
     DymRule.find(myfilter).then((els) => {
         let crnrule = els[0];
-        var pt_external = crnrule.sourcepath + crnrule.apisearchpath; //"http://localhost:8080/api/entities/api/v1/entity/_search";
+        
+        /*PER TESTARE IN LOCALE*/
+        //var pt_internal = "http://192.168.1.52:8080/api/entities/api/v1/entity/_search";
         var pt_internal = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/_search";
+        var pt_external = crnrule.sourcepath + crnrule.apisearchpath; //"http://localhost:8080/api/entities/api/v1/entity/_search";
+
         const fileurl = crnrule.sourcepath; //"http://195.201.83.104"
         const originalrelquery = crnrule.sourceindex; //."";
         const crnruletitle = crnrule.title; //."";
@@ -1811,7 +1836,7 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
                     headers: {
                         ...formdata_admin.getHeaders(),
                         'dymeruser': userinfo_objJsonB64_admin,
-                        'Referer': 'http://localhost/',
+                        //'Referer': 'http://localhost/',
                         'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
                         'extrainfo': `${extrainfo_objJsonB64_admin}`,
                     },

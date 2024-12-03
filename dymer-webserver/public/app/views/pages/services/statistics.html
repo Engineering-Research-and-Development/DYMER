@@ -111,7 +111,8 @@
                                 {{ el.act }}
                             </td>
                             <td class="text-center">
-                                {{ el.timestamps.length }}
+                                <a href="#" data-toggle="tooltip" title="{{ el.timestamps.join('\n') }}">{{ el.timestamps.length }}</a>
+                                
                             </td>
                             <td class="text-center actmodindexdash">
                                 <i class="fa fa-trash deleteAction" title="Flush this statistic" ng-click="deleteStatistics(el._id)"></i>
