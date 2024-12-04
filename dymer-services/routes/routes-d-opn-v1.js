@@ -347,11 +347,11 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
             }
         })
     }).catch((e) => {
-        console.error("ERROR | " + nameFile + " | dym.dymerentry/OpenSearch User ", error);
-        logger.error(nameFile + " | dym.dymerentry/OpenSearch User " + error);
+        console.error("ERROR | " + nameFile + " | dym.dymerentry/OpenSearch User ", e);
+        logger.error(nameFile + " | dym.dymerentry/OpenSearch User " + e);
         ret.setMessages("Get OpenSearch User Error");
         ret.setSuccess(false);
-        ret.setExtraData({"log": error.stack});
+        ret.setExtraData({"log": e.stack});
         return res.send(ret);
     })
 });
