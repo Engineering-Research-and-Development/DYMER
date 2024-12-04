@@ -51,16 +51,25 @@ $(document).ready(function() {
             $('#back-to-top').fadeOut();
         }
     });
-
-    $('#newviewtype').on('change', function() {
-        console.log( this.value );
-        if(!(this.value=="fullcontent")){
-            $("#autogen").attr("disabled", true);
-        }else{
-            $("#autogen").attr("disabled", true);
-        }
-      });
+   
+     
 });
+
+
+ 
+$(document).on('change','#newviewtype',function(){
+    console.log($(this).val());
+
+     if(!(this.value=="fullcontent")){
+        $("#autogen").attr("disabled", true);
+    }else{
+        $("#autogen").attr("disabled", false);
+    }
+});
+
+
+
+
 
 function toggleDarkMode() {
     let isDark = document.body.classList.toggle('dark-mode');
