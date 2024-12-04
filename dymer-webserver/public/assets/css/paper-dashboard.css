@@ -455,7 +455,7 @@
 }
 
 .table td,.table th {
-    vertical-align: middle
+    vertical-align: middle;
     /*FS*/ border-top: 1px solid #dee2e6;
 }
 
@@ -10823,8 +10823,16 @@ img {
 }
 
 .off-canvas-sidebar[data-active-color=danger] .nav li.active>a,.off-canvas-sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse],.off-canvas-sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse] i,.off-canvas-sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse]~div>ul>li.active .sidebar-mini-icon,.off-canvas-sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse]~div>ul>li.active>a,.off-canvas-sidebar[data-active-color=danger] .nav li.active>a i,.sidebar[data-active-color=danger] .nav li.active>a,.sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse],.sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse] i,.sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse]~div>ul>li.active .sidebar-mini-icon,.sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse]~div>ul>li.active>a,.sidebar[data-active-color=danger] .nav li.active>a i {
-    color: /*FS #ef8157;*/#3d85c6;
+     /*FS #ef8157;*/
+    color: #3d85c6;
     opacity: 1
+}
+
+/*FS ADD*/
+.off-canvas-sidebar[data-active-color=danger] .nav li.active>a,.off-canvas-sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse],.off-canvas-sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse]~div>ul>li.active .sidebar-mini-icon,.off-canvas-sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse]~div>ul>li.active>a,.sidebar[data-active-color=danger] .nav li.active>a,.sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse],.sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse]~div>ul>li.active .sidebar-mini-icon,.sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse]~div>ul>li.active>a {
+   color: #3d85c6;
+    border-radius: 8px;
+    border: 1px solid #3d85c6;
 }
 
 .off-canvas-sidebar .user,.sidebar .user {
@@ -13154,7 +13162,9 @@ img {
         padding-right: 15px
     }
 
-    .sidebar .sidebar-wrapper li.active>[data-toggle=collapse]+div .nav li:before,.sidebar .sidebar-wrapper li.active>a:not([data-toggle=collapse]):before {
+   /* FS REM 
+   
+   .sidebar .sidebar-wrapper li.active>[data-toggle=collapse]+div .nav li:before,.sidebar .sidebar-wrapper li.active>a:not([data-toggle=collapse]):before {
         border-right: 17px solid #ddd;
         border-top: 17px solid transparent;
         border-bottom: 17px solid transparent;
@@ -13182,7 +13192,7 @@ img {
 
     .sidebar .sidebar-wrapper li.active>[data-toggle=collapse]+div .nav li a:after,.sidebar .sidebar-wrapper li.active>[data-toggle=collapse]+div .nav li a:before {
         top: 0
-    }
+    } */
 }
 
 @media screen and (max-width: 768px) {
