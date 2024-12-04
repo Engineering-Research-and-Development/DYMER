@@ -249,16 +249,6 @@ input-import.form-control {
     padding: 0.4rem;
     box-sizing: border-box;
 }
-
-
-.fa-trash {
-    cursor: pointer;
-    color: #dc3545;
-}
- 
-.fa-trash:hover {
-    color: #ff6b6b;
-}
  
 .text-center {
     text-align: center;
