@@ -48,6 +48,10 @@
     },
     "development": {
         "config_id": "development",
+        "dymer":{
+            "version":"2.0.1",
+            "updated":"2024-10-16"
+        },
         "services": {
             "webserver": {
                 "app_name": "webserver",
@@ -62,7 +66,7 @@
                  "library":{
                     "type": "mongodb",
                     "protocol": "http",
-                    "ip": "mongodb",
+                    "ip": "localhost",
                     "port": 27017,
                     "index_ref": "dservice"
                 }
@@ -70,24 +74,20 @@
             "entity": {
                 "protocol": "http",
                 "ip": "localhost",
-                "context-path": "",
                 "port": 1358
             },
             "template": {
                 "protocol": "http",
                 "ip": "localhost",
-                "context-path": "",
                 "port": 4545
             },
             "form": {
                 "protocol": "http",
-                "context-path": "",
                 "ip": "localhost",
                 "port": 4747
             },
             "dservice": {
                 "protocol": "http",
-                "context-path": "",
                 "ip": "localhost",
                 "port": 5050
             }
