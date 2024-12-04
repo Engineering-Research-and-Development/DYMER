@@ -55,6 +55,16 @@ $(document).ready(function() {
  
 });
 
+
+$(document).on('change','#newviewtype',function(){
+       if(!(this.value=="fullcontent")){
+        $("#autogen").attr("disabled", true);
+    }else{
+        $("#autogen").attr("disabled", false);
+    }
+});
+
+
 function toggleDarkMode() {
     let isDark = document.body.classList.toggle('dark-mode');
     localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
