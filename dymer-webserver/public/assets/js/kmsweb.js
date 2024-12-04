@@ -52,7 +52,14 @@ $(document).ready(function() {
         }
     });
 
- 
+    $('#newviewtype').on('change', function() {
+        console.log( this.value );
+        if(!(this.value=="fullcontent")){
+            $("#autogen").attr("disabled", true);
+        }else{
+            $("#autogen").attr("disabled", true);
+        }
+      });
 });
 
 function toggleDarkMode() {
