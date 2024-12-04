@@ -455,7 +455,7 @@
 }
 
 .table td,.table th {
-    vertical-align: middle
+    vertical-align: middle;
     /*FS*/ border-top: 1px solid #dee2e6;
 }
 
