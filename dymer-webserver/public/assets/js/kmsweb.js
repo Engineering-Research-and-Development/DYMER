@@ -51,7 +51,7 @@ $(document).ready(function() {
             $('#back-to-top').fadeOut();
         }
     });
-    $("#autogen").attr("disabled", true);
+   
      
 });
 
