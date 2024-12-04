@@ -211,10 +211,20 @@ angular.module( 'libraryCtrl', [] )
 			   actionCell.className = 'text-center';
 			   actionCell.style.width = '50px';
 
-			   // Pulsante di delete
-			   const deleteButton = createIconButton( 'fa fa-trash deleteAction',
-													  () => $scope.removeLibrary( library )
-			   );
+			   let deleteButton;
+       
+			   if(!(library.mandatory)){
+                       // Pulsante di delete
+                         deleteButton = createIconButton( 'fa fa-trash deleteAction',
+      													  () => $scope.removeLibrary( library )
+      			           );
+          } else{
+            const icon = document.createElement( 'i' );
+        			   icon.className = 'fa fa-ban deleteAction';
+        			   icon.setAttribute('aria-hidden', 'true');
+            deleteButton = icon;
+          
+          }
 			   actionCell.appendChild( deleteButton );
 
 			   /* // Pulsante di update
