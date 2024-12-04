@@ -1065,12 +1065,12 @@
 										</label>
 										<div class="col-sm-9 input">
 											<div>
-												<select class="form-control" name="viewtype">
-													<option value="fullcontent">Full content</option>
-													<option value="teaserlist">Preview in List</option>
-													<option value="teasermap">Preview in Map</option>
-													<option value="teaser">General Preview</option>
-											</select>
+												<select class="form-control" name="viewtype" id="newviewtype">
+						                                                    <option value="teaserlist">Preview in List</option>
+						                                                    <option value="teasermap">Preview in Map</option>
+						                                                    <option value="fullcontent">Full content</option>
+						                                                    <option value="teaser">General Preview</option>
+						                                               </select>
 											</div>
 										</div>
 									</div>
@@ -1102,7 +1102,8 @@
 											</label>
 										<div class="col-sm-9 input">
 											<div>
-												<input name="autogeneration" id="autogen" type="checkbox" unchecked><!--VL-->
+											   <input name="autogeneration" id="autogen" type="checkbox" class="form-control" unchecked disabled>
+                                                <label>Use <strong>only</strong> for fullcontent template generation</label>
 											</div>
 										</div>
 									</div>
