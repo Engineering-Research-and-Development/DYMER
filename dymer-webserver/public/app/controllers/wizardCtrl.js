@@ -93,7 +93,7 @@ angular.module('wizardCtrl', [])
             console.log($scope.wizardObj);
         };
 
-        $scope.removeRepeatable = function () {
+        $scope.removeRepeatable = function (index) {
             if ($scope.wizardObj.modelFields.length > 1) {
                 $scope.wizardObj.modelFields.splice(index, 1);
             }
