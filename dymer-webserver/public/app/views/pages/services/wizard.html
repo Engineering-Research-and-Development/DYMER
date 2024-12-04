@@ -299,7 +299,7 @@
 
                                     <div class="form-group clearfix">
                                         <button type="button" class="form-wizard-previous-btn float-left btn btn-primary" ng-click="previousStep()">Previous</button>
-                                        <button type="submit" class="form-wizard-submit float-right btn btn-primary" ng-click="fillTmplNamesAndSubmit()">Submit</button>
+                                        <button type="submit" class="form-wizard-submit float-right btn btn-primary" ng-click="fillTmplNamesAndSubmit()" ng-disabled="!wizardObj.previewTemplateType">Submit</button>
                                     </div>
                                 </fieldset>
                             </form>
