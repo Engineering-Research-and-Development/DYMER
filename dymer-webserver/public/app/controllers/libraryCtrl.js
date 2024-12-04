@@ -229,6 +229,8 @@ angular.module( 'libraryCtrl', [] )
 		   $scope.removeLibrary = library => {
 			   const libraryId = library._id;
 
+			   /*MG - Eliminazione solo logica (da Mongo) e non anche fisica (da File System) - Inizio*/  
+			   /*  
 			   $http.delete( `${ contextPath }/public/filelibrary/${ libraryId }` )
 					.then( response => {
 						console.log(`Library [${ library.name }] has been deleted from disk!`)
@@ -248,6 +250,21 @@ angular.module( 'libraryCtrl', [] )
 					   );
 				   } );
 			   } );
+			   */   
+			  $http.delete( `${ libsURL }${ libraryId }` ).then( response => {
+					   console.log( `Library deleted successfully: ${ response.data.message }` );
+					   useGritterTool( "<b><i class='fa fa-refresh'></i> Reload page to see changes</b>",
+									   `Library deleted successfully: ${ response.data.message }
+								   Reload page to see changes`
+					   );
+		      } ).catch( error => {
+					console.error( 'Error while deleting library:', error );
+					useGritterTool( "<b><i class='fa fa-exclamation-triangle'></i> Error deleting library</b>",
+									error.data.error,
+									"danger"
+					);
+			  } );
+			  /*MG - Eliminazione solo logica (da Mongo) e non anche fisica (da File System) - Fine*/  
 		   }
 
 		   /* $scope.setupdateLibrary = library => {
