@@ -4085,7 +4085,12 @@ function showAddEntityBindReload() {
             keyboard: false,
             backdrop: 'static'
         }
-        new bootstrap.Modal($("#entityAdd"), options).show();
+        //TODO switch
+        if (bootstrap.Tooltip.VERSION=="4.1.1"){
+            $('#entityAdd').modal();
+        } else {
+            new bootstrap.Modal($("#entityAdd"), options).show();
+        }
 
         var oldact = $('#entityAdd').find("[onclick^='actionPostMultipartForm']").attr('onclick');
         var actToAppend = oldact;
