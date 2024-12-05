@@ -4086,7 +4086,7 @@ function showAddEntityBindReload() {
             backdrop: 'static'
         }
         //TODO switch
-        if (bootstrap.Tooltip.VERSION="4.1.1"){
+        if (bootstrap.Tooltip.VERSION=="4.1.1"){
             $('#entityAdd').modal();
         } else {
             new bootstrap.Modal($("#entityAdd"), options).show();
