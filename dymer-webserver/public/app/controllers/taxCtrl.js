@@ -5,7 +5,7 @@ angular.module('taxCtrl', [])
         var newPageModal;
         var nodeDataVocab;
         $scope.showAddVocab = false;
- $scope.tab = 1;
+        $scope.tab = 1;
         function actionShowHideAddVocab($scope) {
             $scope.showAddVocab = true;
         }
@@ -131,7 +131,11 @@ angular.module('taxCtrl', [])
                 method: "DELETE"
             }).then(function(ret) {
                 $scope.vocabularies.splice(selectedVocabulary, 1)
-                $scope.selectVocab(0, $scope.vocabularies[0])
+                /*MG - Refresh dei dati della pagina - Inizio*/
+                //$scope.selectVocab(0, $scope.vocabularies[0])
+                $scope.data = [];
+                $scope.selectedVocab = -1;
+                /*MG - Refresh dei dati della pagina - Fine*/
 
             }).catch((err) => {
                 console.log(err)
@@ -154,10 +158,9 @@ angular.module('taxCtrl', [])
                 $scope.vocabularies.push(ret.data.data)
                 useGritterTool("Vocabulary", "new vocabulary with success")
                 console.log(ret.data.data)
-                /*MG - Inizio*/
-                $scope.form.title = "";
-                $scope.form.description = "";
-                /*MG - Fine*/
+                /*MG - Inizializzazione dopo la creazione - Inizio*/
+                $scope.form = {};
+                /*MG - Inizializzazione dopo la creazione - Fine*/
             }).catch((err) => {
                 console.log(err)
             });
@@ -223,6 +226,9 @@ angular.module('taxCtrl', [])
                 console.log(err);
                 useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>Error during import. Try Again !</b>", "Check the source path !", "danger");
             });
+            /*MG - Inizializzazione dopo l'import - Inizio*/
+            $scope.restForm = {};
+            /*MG - Inizializzazione dopo l'import - Fine*/
         };
 
         $scope.importVocabularyFromCSV = async function (frm) {
@@ -256,7 +262,11 @@ angular.module('taxCtrl', [])
                         r = r.replace(/["]/g, "");
                         r = r.replace(/^\s+/g, '');                     
                         r = r.replace(/\s+$/, '');
-                        vocabulary.push(r); 
+                        /*MG - Il vocabolo non può essere vuoto - Inizio*/
+                        if (r != ""){
+                            vocabulary.push(r); 
+                        }
+                        /*MG - Il vocabolo non può essere vuoto - Fine*/
                     }
                 }   
             }
@@ -282,6 +292,11 @@ angular.module('taxCtrl', [])
                     updateVocabulary(vocabulary, frm);
                 }
             });
+            /*MG - Inizializzazione dopo l'import - Inizio*/
+            $scope.csvForm = {};
+            document.getElementById('fileName').value = "";
+            document.getElementById('files').value = "";
+            /*MG - Inizializzazione dopo l'import - Fine*/
         };
         function updateVocabulary(vocabulary, frm){
             /*Acquisisco il vocabolario dalla sorgente*/

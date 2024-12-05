@@ -39,7 +39,10 @@
     <div class="col-md-12">
         <ul class="nav nav-tabs nav-justified navtab-noborder">
             <li class="nav-item">
-                <a class="nav-link  " ng-class="{'active': tab === 1}" aria-current="page" ng-click="tab = tab==1 ? a : 1">
+                <!-- MG - Refresh della pagina - INIZIO -->
+                <!-- <a class="nav-link  " ng-class="{'active': tab === 1}" aria-current="page" ng-click="tab = tab==1 ? a : 1"> -->
+                <a class="nav-link  " ng-class="{'active': tab === 1}" aria-current="page" ng-click="tab = tab==1 ? a : 1; loadVocabularies()">
+                <!-- MG - Refresh della pagina - FINE -->
                     <h5 class="card-title text-warning"><i class="nc-icon nc-tile-56 text-warning"></i> Manage Vocabulary</h5>
                 </a>
             </li>
@@ -199,7 +202,7 @@
                                                 <label>Description</label>
                                                 <input type="text" required class="form-control" size="1" ng-model="csvForm.description"/>
                                                 <div>
-                                                    <label for="files" class="btn">CSV File</label>
+                                                    <label for="files" class="btn">Upload CSV File</label>
                                                     <input style="background-color:#f4f3ef;" type="text" id="fileName" class="form-control" required onkeypress="return false;"/>
                                                     <input id="files" style="visibility:hidden;" type="file" accept=".csv" required file-model="csvFile" onchange="document.getElementById('fileName').value = document.getElementById('files').files.item(0).name">
                                                 </div>
