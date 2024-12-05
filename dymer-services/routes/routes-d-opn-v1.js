@@ -653,7 +653,7 @@ function postAssettOpenness(typeaction, obj, rule, extraInfo) {
 
         //VL
         if (typeof user !== "undefined"){
-           
+
             let openSearchUser = {
                 cid: user["cid"],
                 gid: user["gid"],
