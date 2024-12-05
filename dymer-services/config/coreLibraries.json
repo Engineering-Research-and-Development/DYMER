@@ -5,7 +5,7 @@
 		"filename"  : "css/lib/bootstrap/4.1.3/bootstrap.min.css",
 		"callback"  : null,
 		"useonload" : false,
-		"group"     : "bootstrap",
+		"group"     : "bootstrap 4",
 		"activated" : false,
 		"loadtype"  : "view",
 		"mandatory" : false
@@ -16,7 +16,7 @@
 		"filename"  : "css/lib/bootstrap/4.1.3/bootstrap.min.css",
 		"callback"  : null,
 		"useonload" : false,
-		"group"     : "bootstrap",
+		"group"     : "bootstrap 4",
 		"activated" : false,
 		"loadtype"  : "map",
 		"mandatory" : false
@@ -27,7 +27,7 @@
 		"filename"  : "css/lib/bootstrap/4.1.3/bootstrap.min.css",
 		"callback"  : null,
 		"useonload" : false,
-		"group"     : "bootstrap",
+		"group"     : "bootstrap 4",
 		"activated" : false,
 		"loadtype"  : "form",
 		"mandatory" : false
@@ -38,7 +38,7 @@
 		"filename"  : "css/lib/bootstrap/5.3.3/bootstrap.min.css",
 		"callback"  : null,
 		"useonload" : false,
-		"group"     : "bootstrap",
+		"group"     : "bootstrap 5",
 		"activated" : true,
 		"loadtype"  : "view",
 		"mandatory" : false
@@ -49,7 +49,7 @@
 		"filename"  : "css/lib/bootstrap/5.3.3/bootstrap.min.css",
 		"callback"  : null,
 		"useonload" : false,
-		"group"     : "bootstrap",
+		"group"     : "bootstrap 5",
 		"activated" : true,
 		"loadtype"  : "map",
 		"mandatory" : false
@@ -60,7 +60,7 @@
 		"filename"  : "css/lib/bootstrap/5.5.3/bootstrap.min.css",
 		"callback"  : null,
 		"useonload" : false,
-		"group"     : "bootstrap",
+		"group"     : "bootstrap 5",
 		"activated" : true,
 		"loadtype"  : "form",
 		"mandatory" : false
@@ -149,7 +149,7 @@
 		"filename"  : "js/lib/bootstrap/4.1.3/bootstrap.min.js",
 		"callback"  : null,
 		"useonload" : true,
-		"group"     : "bootstrap",
+		"group"     : "bootstrap 4",
 		"activated" : false,
 		"loadtype"  : "view",
 		"mandatory" : false
@@ -160,7 +160,7 @@
 		"filename"  : "js/lib/bootstrap/4.1.3/bootstrap.min.js",
 		"callback"  : null,
 		"useonload" : true,
-		"group"     : "bootstrap",
+		"group"     : "bootstrap 4",
 		"activated" : false,
 		"loadtype"  : "map",
 		"mandatory" : false
@@ -171,7 +171,7 @@
 		"filename"  : "js/lib/bootstrap/4.1.3/bootstrap.min.js",
 		"callback"  : null,
 		"useonload" : true,
-		"group"     : "bootstrap",
+		"group"     : "bootstrap 4",
 		"activated" : false,
 		"loadtype"  : "form",
 		"mandatory" : false
@@ -182,7 +182,7 @@
 		"filename"  : "js/lib/bootstrap/5.3.3/bootstrap.min.js",
 		"callback"  : null,
 		"useonload" : true,
-		"group"     : "bootstrap",
+		"group"     : "bootstrap 5",
 		"activated" : true,
 		"loadtype"  : "view",
 		"mandatory" : false
@@ -193,7 +193,7 @@
 		"filename"  : "js/lib/bootstrap/5.3.3/bootstrap.min.js",
 		"callback"  : null,
 		"useonload" : true,
-		"group"     : "bootstrap",
+		"group"     : "bootstrap 5",
 		"activated" : true,
 		"loadtype"  : "map",
 		"mandatory" : false
@@ -204,7 +204,7 @@
 		"filename"  : "js/lib/bootstrap/5.3.3/bootstrap.min.js",
 		"callback"  : null,
 		"useonload" : true,
-		"group"     : "bootstrap",
+		"group"     : "bootstrap 5",
 		"activated" : true,
 		"loadtype"  : "form",
 		"mandatory" : false
@@ -281,7 +281,7 @@
 		"filename"  : "css/lib/bootstrap-select/1.13.1/bootstrap-select.css",
 		"callback"  : null,
 		"useonload" : false,
-		"group"     : "bootstrap-select",
+		"group"     : "bootstrap-select - b4",
 		"activated" : false,
 		"loadtype"  : "view",
 		"mandatory" : false
@@ -292,7 +292,7 @@
 		"filename"  : "css/lib/bootstrap-select/1.13.1/bootstrap-select.css",
 		"callback"  : null,
 		"useonload" : false,
-		"group"     : "bootstrap-select",
+		"group"     : "bootstrap-select - b4",
 		"activated" : false,
 		"loadtype"  : "map",
 		"mandatory" : false
@@ -303,7 +303,7 @@
 		"filename"  : "css/lib/bootstrap-select/1.14.0-beta3/bootstrap-select.css",
 		"callback"  : null,
 		"useonload" : false,
-		"group"     : "bootstrap-select",
+		"group"     : "bootstrap-select - b5",
 		"activated" : true,
 		"loadtype"  : "view",
 		"mandatory" : false
@@ -314,7 +314,7 @@
 		"filename"  : "css/lib/bootstrap-select/1.14.0-beta3/bootstrap-select.css",
 		"callback"  : null,
 		"useonload" : false,
-		"group"     : "bootstrap-select",
+		"group"     : "bootstrap-select - b5",
 		"activated" : true,
 		"loadtype"  : "map",
 		"mandatory" : false
@@ -413,7 +413,7 @@
 		"filename"  : "js/lib/bootstrap/4.1.3/bootstrap.bundle.min.js",
 		"callback"  : null,
 		"useonload" : true,
-		"group"     : "bootstrap",
+		"group"     : "bootstrap 4",
 		"activated" : false,
 		"loadtype"  : "view",
 		"mandatory" : false
@@ -424,7 +424,7 @@
 		"filename"  : "js/lib/bootstrap/5.3.3/bootstrap.bundle.min.js",
 		"callback"  : null,
 		"useonload" : true,
-		"group"     : "bootstrap",
+		"group"     : "bootstrap 5",
 		"activated" : true,
 		"loadtype"  : "view",
 		"mandatory" : false
@@ -435,7 +435,7 @@
 		"filename"  : "js/lib/bootstrap-select/1.13.1/bootstrap-select.min.js",
 		"callback"  : null,
 		"useonload" : true,
-		"group"     : "bootstrap-select",
+		"group"     : "bootstrap-select - b4",
 		"activated" : false,
 		"loadtype"  : "view",
 		"mandatory" : false
@@ -446,7 +446,7 @@
 		"filename"  : "js/lib/bootstrap-select/1.14.0-beta3/bootstrap-select.min.js",
 		"callback"  : null,
 		"useonload" : true,
-		"group"     : "bootstrap-select",
+		"group"     : "bootstrap-select - b5",
 		"activated" : false,
 		"loadtype"  : "view",
 		"mandatory" : false
