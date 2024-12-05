@@ -1861,12 +1861,15 @@ function loadRequireMap() {
         ckaddimport = dymerconf.notImport;
     var group = "mandatory";
     group = "bootstrap";
-    filename = kmsconfig.cdn + "css/lib/bootstrap/5.3.3/bootstrap.min.css";
+    filename = kmsconfig.cdn + "css/lib/bootstrap/4.1.3/bootstrap.min.css";
+    ///TODO boostrap 5 filename = kmsconfig.cdn + "css/lib/bootstrap/5.3.3/bootstrap.min.css";
+
     if (!(ckaddimport.indexOf(group) > -1))
         arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    //filename = "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css";
     group = "bootstrap-select";
-    filename = kmsconfig.cdn + "css/lib/bootstrap-select/1.14.0-beta3/bootstrap-select.css";//VL
+    filename = kmsconfig.cdn + "css/lib/bootstrap-select/1.13.1/bootstrap-select.css";
+    // TODO boostrap 5 filename = kmsconfig.cdn + "css/lib/bootstrap-select/1.14.0-beta3/bootstrap-select.css";//VL
+
     if (!(ckaddimport.indexOf(group) > -1))
         arr.push(new Elfile(domtype, filename, callback, useonload, group));
     group = "font-awesome";
@@ -1880,7 +1883,7 @@ function loadRequireMap() {
     arr.push(new Elfile(domtype, filename, callback, useonload, group));
     group = "jquery.dataTables";
     if (!(ckaddimport.indexOf(group) > -1))
-        filename = kmsconfig.cdn + "css/lib/datatables/jquery.dataTables.min.css";
+        filename = kmsconfig.cdn + "css/lib/datatables/1.10.20/jquery.dataTables.min.css";
     arr.push(new Elfile(domtype, filename, callback, useonload, group));
     filename = kmsconfig.cdn + "lib/leaflet/plugin/markercluster/MarkerCluster.Default.css";//VL
     arr.push(new Elfile(domtype, filename, callback, useonload, group));
@@ -1929,23 +1932,23 @@ function loadRequireMap() {
 
     group = "jquery.dataTables";
     if (!(ckaddimport.indexOf(group) > -1)) {
-        filename = kmsconfig.cdn + "js/lib/datatables/jquery.dataTables.min.js";
+        filename = kmsconfig.cdn + "js/lib/datatables/1.10.20/jquery.dataTables.min.js";
         // filename = "https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js";
         arr.push(new Elfile(domtype, filename, callback, useonload, group));
         //filename = 'https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js';
         filename = kmsconfig.cdn + 'js/lib/buttons/buttons.print.min.js';
         arr.push(new Elfile(domtype, filename, callback, true, group));
         //filename = 'https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js';
-        filename = kmsconfig.cdn + 'js/lib/datatables/dataTables.buttons.min.js';
+        filename = kmsconfig.cdn + 'js/lib/datatables/1.10.20/dataTables.buttons.min.js';
         arr.push(new Elfile(domtype, filename, callback, true, group));
         //filename = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js';
         filename = kmsconfig.cdn + 'js/lib/jszip.min.js';
         arr.push(new Elfile(domtype, filename, callback, false, group));
         //filename = 'https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css';
-        filename = kmsconfig.cdn + 'css/lib/datatables/dataTables.bootstrap4.min.css';
+        filename = kmsconfig.cdn + 'css/lib/datatables/1.10.20/dataTables.bootstrap4.min.css';
         arr.push(new Elfile("link", filename, callback, false, group));
         //filename = 'https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js';
-        filename = kmsconfig.cdn + 'js/lib/datatables/dataTables.bootstrap4.min.js';
+        filename = kmsconfig.cdn + 'js/lib/datatables/1.10.20/dataTables.bootstrap4.min.js';
         arr.push(new Elfile(domtype, filename, callback, false, group));
         filename = kmsconfig.cdn + "js/lib/pdfmake.min.js";
         arr.push(new Elfile(domtype, filename, callback, true, group));
@@ -1961,7 +1964,8 @@ function loadRequireMap() {
     filename = kmsconfig.cdn + "js/lib/jquery/popper.min.js";
     if (!(ckaddimport.indexOf(group) > -1))
         arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    filename = kmsconfig.cdn + "js/lib/bootstrap/5.3.3/bootstrap.min.js";//VL
+    //TODO bootstrap 5 filename = kmsconfig.cdn + "js/lib/bootstrap/5.3.3/bootstrap.min.js";//VL
+    filename = kmsconfig.cdn + "js/lib/bootstrap/4.1.3/bootstrap.min.js";//VL
     group = "bootstrap";
     if (!(ckaddimport.indexOf(group) > -1))
         arr.push(new Elfile(domtype, filename, callback, useonload, group));
@@ -1979,9 +1983,11 @@ function loadRequireMap() {
     arr.push(new Elfile(domtype, filename, callback, useonload, group));
     filename = kmsconfig.cdn + "lib/leaflet/plugin/sidebar/L.Control.Sidebar.js";//VL
     arr.push(new Elfile(domtype, filename, callback, useonload, group));
-    //filename = 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js';
+
     group = "bootstrap-select";
-    filename = kmsconfig.cdn + 'js/lib/bootstrap-select/1.14.0-beta3/bootstrap-select.min.js';//VL
+    //TODO boostrap 5 filename = kmsconfig.cdn + 'js/lib/bootstrap-select/1.14.0-beta3/bootstrap-select.min.js';//VL
+    filename = kmsconfig.cdn + 'js/lib/bootstrap-select/1.13.1/bootstrap-select.min.js';//VL
+    //filename = 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js';
     arr.push(new Elfile(domtype, filename, mycallback, useonload));
     group = "mandatory";
     filename = kmsconfig.cdn + "js/handlebars.min.js";
