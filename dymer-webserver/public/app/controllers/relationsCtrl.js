@@ -97,6 +97,7 @@ angular.module('relationsCtrl', [])
                     } else {
                         useGritterTool("<b><i class='fa fa-exclamation-triangle'></i> Manage Relation</b>", response.data.message, "danger");
                     }
+                    loadtable(listEntity);
                 },
                 function errorCallback(response) {
                     console.log("Error. while save Try Again!", response);
