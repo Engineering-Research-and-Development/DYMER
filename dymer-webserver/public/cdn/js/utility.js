@@ -4091,8 +4091,9 @@ function showAddEntityBindReload() {
             keyboard: false,
             backdrop: 'static'
         }
-        //TODO switch
-        if (bootstrap.Tooltip.VERSION=="4.1.1"){
+
+        let bootstrap_version = Number(bootstrap.Tooltip.VERSION.charAt(0));
+        if (bootstrap_version<5){
             $('#entityAdd').modal();
         } else {
             new bootstrap.Modal($("#entityAdd"), options).show();
