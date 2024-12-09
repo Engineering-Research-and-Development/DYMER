@@ -75,5 +75,6 @@ connectToDatabase().then( () => {
 	} );
 
 module.exports = {
-	connectToDatabase
+	connectToDatabase,
+	initLibraries // AC - Reload Libraries - export to use in route-d-library
 }
