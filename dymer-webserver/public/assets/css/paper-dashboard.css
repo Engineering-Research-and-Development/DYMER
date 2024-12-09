@@ -455,7 +455,7 @@
 }
 
 .table td,.table th {
-    vertical-align: middle;
+    vertical-align: middle
     /*FS*/ border-top: 1px solid #dee2e6;
 }
 
@@ -10513,7 +10513,10 @@ img {
     overflow: auto;
     width: 260px;
     z-index: 4;
-    padding-bottom: 100px
+    padding-bottom: 100px;
+    /* FS*/
+    background: #3d85c6 !important;
+    color:#ffffff;
 }
 
 .off-canvas-sidebar .sidebar-wrapper .dropdown .dropdown-backdrop,.sidebar .sidebar-wrapper .dropdown .dropdown-backdrop {
@@ -10684,7 +10687,10 @@ img {
 .off-canvas-sidebar .logo,.sidebar .logo {
     position: relative;
     padding: 7px .7rem;
-    z-index: 4
+    z-index: 4;
+    /*FS*/
+    
+    background: #3d85c6 !important;
 }
 
 .off-canvas-sidebar .logo a.logo-mini,.sidebar .logo a.logo-mini {
@@ -10772,7 +10778,8 @@ img {
 }
 
 .off-canvas-sidebar[data-color=white] .nav li a,.off-canvas-sidebar[data-color=white] .nav li a[data-toggle=collapse],.off-canvas-sidebar[data-color=white] .nav li a[data-toggle=collapse] i,.off-canvas-sidebar[data-color=white] .nav li a[data-toggle=collapse]~div>ul>li .sidebar-mini-icon,.off-canvas-sidebar[data-color=white] .nav li a[data-toggle=collapse]~div>ul>li>a,.off-canvas-sidebar[data-color=white] .nav li a i,.sidebar[data-color=white] .nav li a,.sidebar[data-color=white] .nav li a[data-toggle=collapse],.sidebar[data-color=white] .nav li a[data-toggle=collapse] i,.sidebar[data-color=white] .nav li a[data-toggle=collapse]~div>ul>li .sidebar-mini-icon,.sidebar[data-color=white] .nav li a[data-toggle=collapse]~div>ul>li>a,.sidebar[data-color=white] .nav li a i {
-    color: #66615b;
+   /* color: #66615b; */
+    color:#ffffff;
     opacity: .7
 }
 
@@ -10824,16 +10831,17 @@ img {
 
 .off-canvas-sidebar[data-active-color=danger] .nav li.active>a,.off-canvas-sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse],.off-canvas-sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse] i,.off-canvas-sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse]~div>ul>li.active .sidebar-mini-icon,.off-canvas-sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse]~div>ul>li.active>a,.off-canvas-sidebar[data-active-color=danger] .nav li.active>a i,.sidebar[data-active-color=danger] .nav li.active>a,.sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse],.sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse] i,.sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse]~div>ul>li.active .sidebar-mini-icon,.sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse]~div>ul>li.active>a,.sidebar[data-active-color=danger] .nav li.active>a i {
      /*FS #ef8157;*/
-    color: #3d85c6;
+    /*color: #3d85c6;*/
+    color: #ffffff;
     opacity: 1
 }
 
 /*FS ADD*/
-.off-canvas-sidebar[data-active-color=danger] .nav li.active>a,.off-canvas-sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse],.off-canvas-sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse]~div>ul>li.active .sidebar-mini-icon,.off-canvas-sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse]~div>ul>li.active>a,.sidebar[data-active-color=danger] .nav li.active>a,.sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse],.sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse]~div>ul>li.active .sidebar-mini-icon,.sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse]~div>ul>li.active>a {
+/*.off-canvas-sidebar[data-active-color=danger] .nav li.active>a,.off-canvas-sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse],.off-canvas-sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse]~div>ul>li.active .sidebar-mini-icon,.off-canvas-sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse]~div>ul>li.active>a,.sidebar[data-active-color=danger] .nav li.active>a,.sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse],.sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse]~div>ul>li.active .sidebar-mini-icon,.sidebar[data-active-color=danger] .nav li.active>a[data-toggle=collapse]~div>ul>li.active>a {
    color: #3d85c6;
     border-radius: 8px;
     border: 1px solid #3d85c6;
-}
+}*/
 
 .off-canvas-sidebar .user,.sidebar .user {
     padding-bottom: 20px;
