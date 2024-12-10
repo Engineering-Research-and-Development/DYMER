@@ -1,0 +1,138 @@
+version: "3.3"
+
+ 
+
+volumes:
+    mongo_data:
+    mongo_conf:
+    elasticsearch_data:
+    kibana_data:
+ 
+services:
+    mongodb:                        # ports: 27017
+        hostname: mongodb
+        image: mongo:7.0.4
+        ports:
+          - published: 27017
+            target: 27017
+        volumes:
+          - mongo_data:/data/db
+          - mongo_conf:/data/configdb
+          - ./backups_mongo:/opt/backups
+
+    elasticsearch:                  # ports: 9200 9300
+        hostname: elasticsearch
+        image: elasticsearch:8.11.0
+        ports:
+          - 9200:9200
+          - 9300:9300
+        environment:
+          - discovery.type=single-node
+          - xpack.security.enabled=false
+        volumes:
+            - elasticsearch_data:/usr/share/elasticsearch/data
+
+    kibana:
+      depends_on:
+        - elasticsearch
+      image: docker.elastic.co/kibana/kibana:8.11.0
+      container_name: kibana
+      volumes:
+        - kibana_data:/usr/share/kibana/data
+      ports:
+        - 8083:5601
+      restart: always
+      environment:
+        - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+        
+    ollama:
+      image: ollama/ollama:latest
+      container_name: ollama
+      volumes:
+        - ./ollama/ollama:/root/.ollama
+      ports:
+        - 7869:11434
+      pull_policy: always
+      tty: true
+      restart: always
+      environment:
+        - OLLAMA_KEEP_ALIVE=24h
+        - OLLAMA_HOST=0.0.0.0
+
+    kms_webserver:                  # ports: 8080
+        hostname: kms_webserver
+        image: node:20.10.0-alpine3.18
+        ports:
+          - published: 80
+            target: 8080
+        volumes:
+            - ./dymer-webserver:/usr/src/app
+        environment:
+          - NODE_ENV=production
+          - DYMER_UUID=${DYM_UUID}
+        working_dir: /usr/src/app
+        command: "npm start"
+        
+    kms_services:                   # ports: 5050
+        hostname: kms_services
+        image: node:20.10.0-alpine3.18
+        extra_hosts:
+          - "${DIH_PORTAL_NAME}:${DIH_PORTAL_ADDR}"
+        volumes:
+          - ./dymer-services:/usr/src/app
+        environment:
+          - NODE_ENV=production
+          - DYMER_UUID=${DYM_UUID}
+        working_dir: /usr/src/app
+        command: "npm start"
+
+    kms_templates:                 # ports 4545
+        hostname: kms_templates
+        image: node:20.10.0-alpine3.18
+        depends_on:
+          - mongodb
+        volumes:
+            - ./dymer-templates:/usr/src/app
+        environment:
+          - NODE_ENV=production
+          - DYMER_UUID=${DYM_UUID}
+        working_dir: /usr/src/app
+        command: "npm start"
+
+    kms_forms:                     # ports: 4747
+        hostname: kms_forms
+        image: node:20.10.0-alpine3.18
+        depends_on:
+          - mongodb
+        volumes:
+            - ./dymer-forms:/usr/src/app
+        environment:
+          - NODE_ENV=production
+          - DYMER_UUID=${DYM_UUID}
+        working_dir: /usr/src/app
+        command: "npm start"
+
+    kms_entities:                  # ports: 1358
+        hostname: kms_entities
+        image: node:20.10.0-alpine3.18
+        depends_on:
+          - elasticsearch
+        volumes:
+            - ./dymer-entities:/usr/src/app
+        environment:
+          - NODE_ENV=production
+          - DYMER_UUID=${DYM_UUID}
+        working_dir: /usr/src/app
+        command: "npm start"
+        
+    cache:
+        image: redis:7.0.10-alpine3.17
+        restart: always
+        command: redis-server  --loglevel warning
+        volumes: 
+           - ./datacache:/data
+
+
+    
+   
+ 

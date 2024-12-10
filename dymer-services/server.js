@@ -44,6 +44,7 @@ var routes_dymer_configtool = require('./routes/routes-d-configtool');
 var routes_dymer_authconfig = require('./routes/routes-d-authconfig');
 var routes_dymer_duser = require('./routes/routes-d-users');
 var routes_dymer_stats = require('./routes/routes-d-stats');
+var routes_dymer_ollama = require('./routes/routes-d-ollama');
 app.use(express.json())
     //app.use(cors());
 app.use(function(req, res, next) {
@@ -102,6 +103,7 @@ app.use('/api/v1/duser', routes_dymer_duser
 // #swagger.tags = ['Services']
 );
 app.use('/api/v1/stats', routes_dymer_stats);
+app.use('/api/v1/llm', routes_dymer_ollama);//NEW
 app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     var filetype = req.params.filetype;
