@@ -70,6 +70,7 @@ angular.module('entitiesImportControllers', [])
         }
 
         $scope.myDropdownSettings = {
+            checkBoxes: true, // AC fix to new library
             smartButtonTextProvider: [],
             smartButtonMaxItems: 3,
             smartButtonTextProvider(selectionArray) {
@@ -81,7 +82,8 @@ angular.module('entitiesImportControllers', [])
             }
         };
 
-        $scope.myDropdownModel = [{id: "ciao_test"}]
+        // $scope.myDropdownModel = [{id: "ciao_test"}]
+        $scope.myDropdownModel = []
 
         $scope.selectOptions = function () {
             let index = $scope.selectedEntity
