@@ -2707,18 +2707,23 @@ async function editEntity(id) {
 
         dymodalmode = "edit";
         if (!ret.data.length) {
-            /*VL $('#entityEdit').modal({
-                show: true,
-                keyboard: false,
-                backdrop: 'static'
-            }); VL*/
+
             //VL
-            let options = {
-                show: true,
-                keyboard: false,
-                backdrop: 'static'
+            let bootstrap_version3 = Number(bootstrap.Tooltip.VERSION.charAt(0));
+            if (bootstrap_version3<5){
+                $('#entityEdit').modal({
+                    show: true,
+                    keyboard: false,
+                    backdrop: 'static'
+                });
+            } else {
+                let options = {
+                    show: true,
+                    keyboard: false,
+                    backdrop: 'static'
+                }
+                new bootstrap.Modal($("#entityEdit"), options).show();
             }
-            new bootstrap.Modal($("#entityEdit"), options).show();
             //VL
             $('#entityEdit .onputform').hide();
         } else {
@@ -2749,20 +2754,22 @@ async function editEntity(id) {
                 dymphases.setSubPhase("edit", true, "loadedform");
                 $('#entityEdit .modal-body .contbody').html(model_form); //.find('form').append('<input name="data[idedit]" type="hidden" value="' + id + '">');
                 $(grtHtml).insertBefore($('#entityEdit .modal-body .contbody .alert.alertaction'));
-
-                /*VL $('#entityEdit').modal({
-                    show: true,
-                    keyboard: false,
-                    backdrop: 'static'
-                }); VL*/
-
                 //VL
-                let options1 = {
-                    show: true,
-                    keyboard: false,
-                    backdrop: 'static'
+                let bootstrap_version2 = Number(bootstrap.Tooltip.VERSION.charAt(0));
+                if (bootstrap_version2<5){
+                    $('#entityEdit').modal({
+                        show: true,
+                        keyboard: false,
+                        backdrop: 'static'
+                    });
+                } else {
+                    let options1 = {
+                        show: true,
+                        keyboard: false,
+                        backdrop: 'static'
+                    }
+                    new bootstrap.Modal($("#entityEdit"), options1).show();
                 }
-                new bootstrap.Modal($("#entityEdit"), options1).show();
                 //VL
 
                 /*VL $('#entityEdit .modal-body').showLoader();*/
