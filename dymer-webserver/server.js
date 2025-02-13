@@ -340,38 +340,40 @@ app.get('/info/:key?', (req, res, next) => {
     
     // let infodymer = { "version": global.gConfig.dymer.version };
     let infodymer =  global.gConfig.dymer ;
-    let htmlsend_hd =
-        '<!DOCTYPE html>' +
-        '<html lang="en"><head>' +
-        '<meta charset="utf-8">' +
-        '<meta http-equiv="X-UA-Compatible" content="IE=edge">' +
-        '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">' +
-        '<meta name="description" content="DYnamic Information ModElling & Rendering">' +
-        '<meta name="author" content="marco romano">' +
-        '<title> DYMER</title> ' +
-        '<link rel="icon" type="image/png" href="public\cdn\img\dymer-logo.png"/>' +
-        '<link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">' +
-        '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">' +
-        '<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>' +
-        '<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous" ></script>' +
-        '<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>' + '</script>' +
-        ' </head > ' +
-        '<body  style="background-color:#ebecf2;"> ';
+     let htmlsend_hd =
+            '<!DOCTYPE html>' +
+            '<html lang="en"><head>' +
+            '<meta charset="utf-8">' +
+            '<meta http-equiv="X-UA-Compatible" content="IE=edge">' +
+            '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">' +
+            '<meta name="description" content="DYnamic Information ModElling & Rendering">' +
+            '<meta name="author" content="ENG">' +
+            '<title> DYMER</title> ' +
+            '<link rel="icon" type="image/png" href="public\\cdn\\img\\dymer-logo.png"/>' +
+                              
+            '<link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">' +
+            '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" integrity="sha512-jnSuA4Ss2PkkikSOLtYs8BlYIeeIK1h99ty4YfvRPAlzr377vr3CXDb7sb7eEEBYjDtcYj+AjBH3FLv5uSJuXg==" crossorigin="anonymous" referrerpolicy="no-referrer" />' +
+            '<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>' +
+            '<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js" integrity="sha512-TPh2Oxlg1zp+kz3nFA0C5vVC6leG/6mm1z9+mA81MI5eaUVqasPLO8Cuk4gMF4gUfP5etR73rgU/8PNMsSesoQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>' +
+            '<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js" integrity="sha512-ykZ1QQr0Jy/4ZkvKuqWn4iF3lqPZyij9iRv6sGqLRdTPkY69YX6+7wvVGmsdBbiIfN/8OdsI7HABjvEok6ZopQ==" crossorigin="anonymous" referrerpolicy="no-referrer">' + '</script>' +
+            ' </head > ' +
+
+            '<body  style="background-color:#ebecf2;"> ';
     let htmlcontainer = '<div class="container"> <div class="row justify-content-center">' +
         '<div class="col-xl-10 col-lg-12 col-md-9" > ' +
         '<div class="card o-hidden border-0 shadow-lg my-5">' +
         '<div class="card-body p-0">' +
         '<div class="row">' +
-        '<div class="col-lg-6 d-none d-lg-block bg-login-image" style=\'background:url("public/cdn/img/bg-ver.jpg");background-position: center;background-size: cover; min-height: 280px; \'>' + '</div>' +
+        '<div class="col-lg-6 d-none d-lg-block bg-login-image" style=\'background:url("public\cdn\img\bg-ver.jpg");background-position: center;background-size: cover; min-height: 280px; \'>' + '</div>' +
         '<div class="col-lg-6">' +
         '<div class="p-5">' + '<div class="row">' +
         '<div class=" col-12">' +
         '<h1 class="h4   mb-4 text-center"  style="color:#023d7d;">Welcome to DYMER</h1>' +
-       '<div class="text-center">' + '<img class="" src="public\\\cdn\\\img\\\dymer-logo.png" style="width: 220px;" title="DYMER LOGO">' + '<div>' +
+        '<div class="text-center">' + '<img class="" src="public\\\cdn\\\img\\\dymer-logo.png" style="width: 220px;" title="DYMER LOGO">' + '<div>' +
         '<br><small style="color: #8c8985;">DYnamic Information ModElling & Rendering</small>' +
         '</div>' +
         '<div class="  	col-12 p-2" style="color: #8c8985;">' +
-        '<br> version ' + infodymer.version +
+        // '<br> version ' + infodymer.version +
         '<br> <small style="color: #8c8985;"> updated date ' + infodymer.updated  + '</small></div>' +
         '<div class="text-center col-12 p-2">' +
         '<span style=" font-size: 12px;">&#169; 2024, Powered by <a href="https://www.eng.it/" target="_blank">' + '<img src="https://www.eng.it/resources/images/logo%20eng.png" style="width: 20px;bottom: 3px;position: relative; "> Engineering</a>' + '</span>' +
