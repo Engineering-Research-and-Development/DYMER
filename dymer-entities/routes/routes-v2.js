@@ -6647,6 +6647,9 @@ router.patch("/addView", (req, res) => {
     dymeruser.roles.forEach(function(value){   
         admin = dymeruser.roles.some(value => value === 'app-admin');
     });
+    console.log("***********dymeruser",dymeruser);
+    console.log("**********admin",admin);
+
     /*Partecipa all'incremento delle visualizzazioni l'utente NON admin*/ 
     if (!admin){
         let params = {};

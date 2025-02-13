@@ -58,9 +58,7 @@ $(document).ready(function() {
 
  
 $(document).on('change','#newviewtype',function(){
-    console.log($(this).val());
-
-     if(!(this.value=="fullcontent")){
+       if(!(this.value=="fullcontent")){
         $("#autogen").attr("disabled", true);
     }else{
         $("#autogen").attr("disabled", false);
