@@ -57,7 +57,7 @@ angular.module('entitiesImportControllers', [])
 
         $scope.ExportJSON = function () {
             console.log("Exporting JSON")
-            exportEntities.exportJSONFormat(baseContextPath, {index: $scope.selectedEntity})
+            exportEntities.exportJSONFormat(baseContextPath, { index: $scope.selectedEntity })
         }
 
         $scope.ExportCSV = function () {
@@ -66,7 +66,7 @@ angular.module('entitiesImportControllers', [])
             let selectedOptions = $scope.myDropdownModel.map(el => el.id)
 
             let excluededFields = options.filter(element => !selectedOptions.includes(element))
-            exportEntities.exportCSVFormat(baseContextPath, {index: $scope.selectedEntity, exclude: excluededFields})
+            exportEntities.exportCSVFormat(baseContextPath, { index: $scope.selectedEntity, exclude: excluededFields })
         }
 
         $scope.myDropdownSettings = {
@@ -91,7 +91,7 @@ angular.module('entitiesImportControllers', [])
 
             $http.get(baseContextPath + '/api/entities/api/v1/entity/getstructure/' + index).then(function (rt) {
                 for (let el of rt.data) {
-                    fields.push({id: el, label: el})
+                    fields.push({ id: el, label: el })
                 }
                 $scope.myDropdownOptions = fields
             }).catch(function (e) {
@@ -144,29 +144,35 @@ angular.module('entitiesImportControllers', [])
                 $scope.currentStep--;
             }
         };
-      //  $scope.submitForm = function () {
-     //       console.log('Form submitted:', $scope.infoDetails);
-     //   };
+        //  $scope.submitForm = function () {
+        //       console.log('Form submitted:', $scope.infoDetails);
+        //   };
 
         $scope.getFieldByCSV = async function () {
+            if (!$scope.myFile) {
+                useGritterTool("<b><i class='fa fa-exclamation-triangle'></i>CSV Import</b>", "Please, select a file", "danger");
+                console.log("no file selected");
+                return;
+            }
+
             Papa.parse($scope.myFile, {
-                    header: true,
-                    delimiter: $scope.infoDetails.separator || "", // separator or autodetect
-                    complete: function (result) {
-                        $scope.metadata = {
-                            delimiter: result.meta.delimiter,
-                            linebreak: result.meta.linebreak,
-                            truncated: result.meta.truncated,
-                            cursor: result.meta.cursor,
-                        }
-
-                        $scope.CSVFields = result.meta.fields
-                        $scope.CSVData = result.data
-                        $scope.errors = result.errors
-
-                        $scope.$apply();
+                header: true,
+                delimiter: $scope.infoDetails.separator || "", // separator or autodetect
+                complete: function (result) {
+                    $scope.metadata = {
+                        delimiter: result.meta.delimiter,
+                        linebreak: result.meta.linebreak,
+                        truncated: result.meta.truncated,
+                        cursor: result.meta.cursor,
                     }
+
+                    $scope.CSVFields = result.meta.fields
+                    $scope.CSVData = result.data
+                    $scope.errors = result.errors
+
+                    $scope.$apply();
                 }
+            }
             )
         }
 
@@ -183,7 +189,7 @@ angular.module('entitiesImportControllers', [])
         $scope.removeHeader = function (index) {
             $scope.infoDetails.fields.splice(index, 1);
         };
-        
+
         $scope.getIndexStructure = function () {
             if (!$scope.infoDetails.index) return;
 
@@ -218,9 +224,64 @@ angular.module('entitiesImportControllers', [])
             })
         }
 
-       function runMapping() {
+        // function runMapping() {
+        //     // Get selected fields
+        //     const selectedFields = $scope.selectedFields //$scope.infoDetails.fields.filter(field => field.isSelected);
+        //
+        //     // header Map
+        //     let headerMap = {};
+        //     $scope.arrayFields = []
+        //
+        //     selectedFields.forEach(field => {
+        //         const originalName = field.originalName;
+        //         const newName = field.newName;
+        //
+        //         if(field.isArrayField) {
+        //             $scope.arrayFields.push(originalName)
+        //         }
+        //
+        //         headerMap[newName] = originalName;
+        //     });
+        //
+        //     // selected Data in CSV
+        //     const filteredData = $scope.CSVData.map(row => {
+        //         let newRow = {};
+        //         Object.keys(row).forEach(key => {
+        //             if (headerMap[key]) {
+        //                 newRow[headerMap[key]] = row[key]; // Use new name
+        //             }
+        //         });
+        //         return newRow;
+        //     });
+        //
+        //     // Filter headers map based
+        //     // const filteredHeaders = $scope.CSVFields.filter(header => headerMap[header])
+        //     //     .map(header => headerMap[header]);
+        //
+        //     $scope.MappedData = filteredData
+        //     console.log("arrayFields ==> ", $scope.arrayFields)
+        //
+        //     /****/
+        //     // Get relations fields
+        //     $scope.infoDetails.relationsList.forEach(rel => {
+        //         //console.log($scope.CSVData.map(headerData => headerData[rel.searchingField]))
+        //         rel["relationData"] = $scope.CSVData.map(headerData => headerData[rel.searchingField])
+        //     })
+        //     /****/
+        //
+        //     // console.log("filteredData", filteredData);
+        //     // console.log("filteredHeaders", filteredHeaders);
+        //     //
+        //     // console.log("Header Map:", headerMap);
+        //     // console.log("CSV Data:", $scope.CSVData);
+        //     // console.log("CSV Fields:", $scope.CSVFields);
+        // }
+
+        /******************************************************************************/
+        /* AC upadate START */
+        function runMapping() {
             // Get selected fields
-            const selectedFields = $scope.selectedFields //$scope.infoDetails.fields.filter(field => field.isSelected);
+            const selectedFields = $scope.selectedFields
 
             // header Map
             let headerMap = {};
@@ -230,31 +291,38 @@ angular.module('entitiesImportControllers', [])
                 const originalName = field.originalName;
                 const newName = field.newName;
 
-                if(field.isArrayField) {
+                if (field.isArrayField) {
                     $scope.arrayFields.push(originalName)
                 }
 
-                headerMap[newName] = originalName;
+                if (!headerMap[newName]) {
+                    headerMap[newName] = []
+                }
+                //headerMap[newName] = originalName;
+                headerMap[newName].push(originalName);
             });
-
+            
             // selected Data in CSV
             const filteredData = $scope.CSVData.map(row => {
                 let newRow = {};
+                
                 Object.keys(row).forEach(key => {
                     if (headerMap[key]) {
-                        newRow[headerMap[key]] = row[key]; // Use new name
+                        // newRow[headerMap[key]] = row[key]; // Use new name
+                        headerMap[key].forEach(originalName => {
+                            newRow[originalName] = row[key]; 
+                        });
                     }
                 });
                 return newRow;
             });
-
+            
             // Filter headers map based
             // const filteredHeaders = $scope.CSVFields.filter(header => headerMap[header])
             //     .map(header => headerMap[header]);
-
             $scope.MappedData = filteredData
             console.log("arrayFields ==> ", $scope.arrayFields)
-
+            
             /****/
             // Get relations fields
             $scope.infoDetails.relationsList.forEach(rel => {
@@ -262,7 +330,7 @@ angular.module('entitiesImportControllers', [])
                 rel["relationData"] = $scope.CSVData.map(headerData => headerData[rel.searchingField])
             })
             /****/
-
+            
             // console.log("filteredData", filteredData);
             // console.log("filteredHeaders", filteredHeaders);
             //
@@ -270,6 +338,8 @@ angular.module('entitiesImportControllers', [])
             // console.log("CSV Data:", $scope.CSVData);
             // console.log("CSV Fields:", $scope.CSVFields);
         }
+        /* AC upadate END */
+        /******************************************************************************/
 
         $scope.importMappedData = function () {
             // Build object
@@ -310,5 +380,5 @@ angular.module('entitiesImportControllers', [])
             }
         };
 
-// AC - new import end
+        // AC - new import end
     });
