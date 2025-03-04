@@ -271,7 +271,7 @@ router.post('/fromcsv', util.checkIsAdmin, (req, res) => {
         dataToImport.forEach((element, i) => {
             let propert_ = {
                 owner: {
-                    uid: element["properties.owner"],
+                    uid: element["properties.owner"] ? element["properties.owner"] : "admin@dymer.com",
                     gid: 20121
                 },
                 "grant": {
@@ -306,7 +306,7 @@ router.post('/fromcsv', util.checkIsAdmin, (req, res) => {
             propert_.visibility = "0";
             propert_.extrainfo = {
                 lastupdate: {
-                    uid: element["properties.owner"],
+                    uid: element["properties.owner"] ? element["properties.owner"] : "admin@dymer.com",
                     origin: util.getServiceUrl('webserver') + util.getContextPath('webserver')
                 }
             }
