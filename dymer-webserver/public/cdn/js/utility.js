@@ -4831,11 +4831,11 @@ function dymerSearch(options) {
          this.orderElement();*/
 
         /*MG - Reset dei filtri - Inizio*/ 
-        window[options.objname] = this; // Assicura che l'oggetto sia accessibile globalmente
+        window[options.objname] = this;
         /*MG - Reset dei filtri - Fine*/ 
         $('.selectpicker').selectpicker();
     }
-    
+
     /*MG - Reset dei filtri - Inizio*/
     this.resetFilters = function() {
         let myform = $("#" + options.formid);
