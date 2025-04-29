@@ -4360,7 +4360,8 @@ function reloadTotalMap() {
 }
 
 //paginator
-var d_curpage = 1;
+//var d_curpage = 1; VL bug fix
+let d_curpage = localStorage.getItem('dp') ? parseInt(localStorage.getItem('dp')) : 1;//VL bug fix
 
 function getMod(index, mod, veq) {
     if (index % mod === veq)
@@ -4383,11 +4384,13 @@ function dymerPaginatorChangePage(act_page) {
     $('[d-pagegroup="' + act_page + '"]').show();
     $('#dymerpaginator .page-item[d-pageref].active').removeClass('active');
     $('#dymerpaginator .page-item[d-pageref="' + act_page + '"]').addClass("active");
+    localStorage.setItem('dp',act_page);//VL bug fix
     d_curpage = act_page;
 }
 
 function dymerPaginatorSetReset() {
-    d_curpage = 1;
+    //d_curpage = 1; VL bug fix
+    let d_curpage = localStorage.getItem('dp') ? parseInt(localStorage.getItem('dp')) : 1;//VL bug fix
     $('[d-pagegroup]').each(function(i, el) {
         if ($(this).attr('d-pagegroup') != d_curpage)
             $(this).hide();
