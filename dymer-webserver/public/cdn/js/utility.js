@@ -4835,42 +4835,35 @@ function dymerSearch(options) {
         /*MG - Reset dei filtri - Fine*/ 
         $('.selectpicker').selectpicker();
     }
+    
     /*MG - Reset dei filtri - Inizio*/
     this.resetFilters = function() {
         let myform = $("#" + options.formid);
         let els = myform.find(':input').get();
-    
         $.each(els, function() {
             let $el = $(this);
-            // Ignora bottoni e campi nascosti che non dovrebbero essere resettati in questo modo
             if ($el.is(':button') || $el.attr('type') === 'hidden' || $el.attr('type') === 'submit') {
                 return;
             }
-    
-            // Resetta i diversi tipi di input
             if ($el.is('select')) {
                 if ($el.hasClass('selectpicker')) {
-                    $el.selectpicker('val', ''); // Resetta selectpicker
+                    $el.selectpicker('val', ''); 
                     $el.selectpicker('refresh');
                 } else {
-                    $el.prop('selectedIndex', 0); // Resetta select standard
+                    $el.prop('selectedIndex', 0);
                 }
-                $el.trigger('change'); // Scatena l'evento change se necessario
+                $el.trigger('change'); 
             } else if ($el.is(':checkbox') || $el.is(':radio')) {
-                $el.prop('checked', false); // Deseleziona checkbox/radio
+                $el.prop('checked', false); 
                 $el.trigger('change');
             } else {
-                $el.val(''); // Pulisce input di testo, textarea, ecc.
-                $el.trigger('input'); // Scatena l'evento input se necessario
+                $el.val(''); 
+                $el.trigger('input'); 
             }
         });
-    
-        // Opzionale: riesegui la ricerca per mostrare tutti i risultati dopo il reset
-        // this.search();
-    
-        console.log("Filtri resettati per il form:", options.formid);
     }
     /*MG - Reset dei filtri - Fine*/
+
     this.setConditioQuery = function(val) {
         options.conditionQuery = val;
         $("#" + options.formid + ' .dsearchAdvOptionBtn .optsconditionQuery a').removeClass("active");
