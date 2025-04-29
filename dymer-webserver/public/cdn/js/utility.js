@@ -644,6 +644,10 @@ async function onloadFiles2(arr) {
     if (tk != null)
         toperm = "?tkdymat=" + tk + "&tkextra=" + tk_extra;
     tk = localStorage.getItem('DYM');
+
+    //TODO dELETE
+    //tk =  "eyJpc0dyYXZhdGFyRW5hYmxlZCI6ZmFsc2UsImF1dGhvcml6YXRpb25fZGVjaXNpb24iOiIiLCJyb2xlcyI6W3sicm9sZSI6IlVzZXIiLCJpZCI6IjM3NTE0In0seyJyb2xlIjoiYXBwLWRpaCIsImlkIjoiMzgxNTMifSx7InJvbGUiOiJhcHAtc2VydmljZSIsImlkIjoiMzgxNTQifSx7InJvbGUiOiJjYXRhbG9ndWUtdmlld2VyIiwiaWQiOiIzODE1NSJ9LHsicm9sZSI6ImNoYXQtcm9sZSIsImlkIjoiMzgxNTYifV0sImFwcF9hemZfZG9tYWluIjoiIiwiaWQiOiIiLCJhcHBfaWQiOiIiLCJlbWFpbCI6InZpdmlhbmEubGF0aW5vQGVuZy5pdCIsImV4dHJhaW5mbyI6eyJjb21wYW55SWQiOiIzNzUwMSIsImdyb3VwSWQiOiIzNzUyOSIsImNtcyI6ImxmciIsInVzZXJJZCI6IjQyODA1IiwidmlydHVhbGhvc3QiOiJsb2NhbGhvc3QifSwidXNlcm5hbWUiOiJWaXZpYW5hIExhdGlubyJ9Cg==";
+
     if (tk != null)
         toperm = "?tkdym=" + tk + "&tkextra=" + tk_extra;
 
@@ -654,6 +658,9 @@ async function onloadFiles2(arr) {
             var script = null;
             //  var filename = obj.filename + "?dmts=1";
             var filename = obj.filename;
+
+            //console.log('utility.js | onloadFiles2, filename ', filename);
+
             // filename += "?dmts=1";
             if (!filename.includes('cdn'))
                 filename += toperm;
@@ -674,7 +681,8 @@ async function onloadFiles2(arr) {
             }
             script.setAttribute(attr, filename);
             script.onerror = () => {
-                reject('cannot load script ' + url)
+                //reject('cannot load script ' + url)
+                reject('cannot load script ' + filename)
             }
             var exsist = scriptExists(obj.domtype, attr, filename);
             if (exsist) {
@@ -726,10 +734,13 @@ async function onloadFiles(arr) {
         var script = null;
         //  var filename = obj.filename + "?dmts=1";
         var filename = obj.filename;
-        console.log(filename);
+        //console.log('utility.js | onloadFiles, filename ', filename);
+        //console.log(filename);
         //    filename += "?dmts=1";
-        if (!filename.includes('cdn'))
+        if (!filename.includes('cdn')){
             filename += toperm;
+        }
+
         script = document.createElement(obj.domtype);
         if (obj.domtype == "script" || obj.domtype == 'javascript') { //if filename is a external JavaScript file
             script = document.createElement("script");
@@ -749,6 +760,9 @@ async function onloadFiles(arr) {
         var exsist = scriptExists(obj.domtype, attr, filename);
         if (exsist) {
             if (obj.callback != null) {
+                //console.log('utility.js | filename con callback 1 ', filename);
+                //console.log('utility.js | onloadFiles, callback 1 ', obj.callback.toString());
+
                 obj.callback();
             }
             return onloadFiles(arr);
@@ -756,6 +770,8 @@ async function onloadFiles(arr) {
         if (obj.useonload) {
             script.onload = function() {
                 if (obj.callback != null) {
+                    //console.log('utility.js | filename con callback 2 ', filename);
+                    //console.log('utility.js | onloadFiles, callback 2 ', obj.callback.toString());
                     obj.callback();
                     //window[obj.callback];
                 }
@@ -1053,7 +1069,7 @@ function populateHookTaxonomy(x, y, z, w, k, a, b, arObj2, tax) {
         var optionsText = $(this).attr('data-optiontext');
         var label = $(this).attr('searchable-label');
 
-        console.log("LABEL: ", $(this).attr('searchable-label'))
+        //console.log("LABEL: ", $(this).attr('searchable-label'))
         if (typeof isRequired !== typeof undefined && isRequired !== false) {
             esxtraAttr += ' required ';
             $(this).removeAttr('required');
@@ -1456,7 +1472,7 @@ function loadFormListInModal(sourceUrl, target, datapost, action) {
     if (ret.success) {
         listToLoad = ret.data;
         (ret.data).forEach(function(item, i) {
-            console.log("itemitemitem", item);
+            //console.log("itemitemitem", item);
             var dom_to_render = "content/";
             var old_dupd = undefined;
             listLoadedAdm[item._id] = {
@@ -1515,7 +1531,7 @@ function loadFormList(sourceUrl, target, datapost, action) {
     var ret = ajax_temp_call.send();
     var newHtml = "<ul>";
     var indport = sourceUrl + "/";
-    console.log('sourceUrl', sourceUrl);
+    //console.log('sourceUrl', sourceUrl);
     var listClass = "listAddEntityli";
     var listIcon = '<i class="fa fa-eye listAddEntityicon" aria-hidden="true" ></i>';
     if (sourceUrl.indexOf('form') != -1) {
@@ -1587,7 +1603,7 @@ async function ldFormFiles2(id) {
 }
 async function ldFormFiles(id) {
     removeTempImport('tftemp').then(function() {
-        console.log("inizio caricamento file");
+        //console.log("inizio caricamento file");
         onloadFiles((listLoadedAdm[id].tftemp).slice());
         setTimeout(function() {
             if (typeof afterLoadForm !== "undefined") {
@@ -1684,139 +1700,16 @@ async function loadRequireView() {
     let ckaddimport = [];
     if ( typeof dymerconf !== 'undefined' ) {
         ckaddimport = dymerconf.notImport;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
-
     let arr = [];
-
-
-
-
     // Load libraries from the database
     try {
         const response = await fetch( serverUrl + '/api/dservice/api/v1/library/' );
         const libraries = await response.json();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         libraries.filter( ( { loadtype, activated } ) => loadtype === 'view' && activated ).forEach( library => {
 
             const { domtype, filename, callback, useonload, group, name } = library;
-
 
             // Valuta la callback solo se non è nulla (attenzione: eval può comportare rischi di sicurezza)
             const evalCallback = callback !== null ? eval( `${ callback }` ) : null;
@@ -1824,17 +1717,6 @@ async function loadRequireView() {
             if ( ckaddimport.indexOf( group ) <= -1 ) {
                 arr.push( new Elfile( domtype, kmsconfig.cdn + filename, evalCallback, useonload, group ) );
                 // console.log( `Add ${ library.name } at arr array:` )
-
-
-
-
-
-
-
-
-
-
-
 
             }
 
@@ -1851,6 +1733,7 @@ async function loadRequireView() {
 
 //-----------------START MAP------------------
 function loadRequireMap() {
+    //console.log(">>>loadRequireMap");
     var domtype = "link";
     var filename = "";
     var callback = null;
@@ -1995,7 +1878,7 @@ function loadRequireMap() {
     filename = kmsconfig.cdn + "js/handlebarshook.js";
     arr.push(new Elfile(domtype, filename, callback, useonload));
     filename = kmsconfig.cdn + "lib/leaflet/plugin/markercluster/leaflet.markercluster.js";//VL
-    var mycallback = function() { // Method which will display type of Animal
+    var mycallback = function() {
         var temp_config_call = {
             url: csd + "/api2/retriveinfo",
             type: 'POST',
@@ -2004,13 +1887,17 @@ function loadRequireMap() {
         var ajax_temp_call = new Ajaxcall(temp_config_call);
         ajax_temp_call.flush();
         var ret = ajax_temp_call.send();
-		 document.cookie = "DYMDOC=" + ret["DYM"];
+
+        document.cookie = "DYMDOC=" + ret["DYM"];
         for (const [key, value] of Object.entries(ret)) {
             if (key == "DYMisi")
                 document.cookie = "DYMisi=" + value;
             else {
-                localStorage.removeItem(key);
-                localStorage.setItem(key, value);
+                if(key!='DYM') { //TODO to prevent overwriting, coreLib.js
+                    localStorage.removeItem(key);
+                    localStorage.setItem(key, value);
+                }
+
             }
         }
         mainMapOnLoad();
@@ -2071,7 +1958,7 @@ function searchEntity(sourceUrl, target, datapost, action) {
                 dom_to_render = (fl.mimetype == "text/html") ? fl.path : dom_to_render;
             });
             dom_to_render = replaceAll(dom_to_render, '\\', '/');
-            console.log('dom_to_render', dom_to_render);
+            //console.log('dom_to_render', dom_to_render);
             dom_to_render = "http://localhost:4747/" + dom_to_render;
             newHtml += '<li onclick="loadHtmlForm(\'' + dom_to_render + '\', $(\'#cont-RenderForm\'))">' + item.title + '</li>'
         });
@@ -2236,6 +2123,7 @@ function checkPermission(actualItem, act) {
     let d_uid = localStorage.getItem("d_uid");
     let d_gid = localStorage.getItem("d_gid");
     let d_rl = localStorage.getItem("d_rl");
+
     let d_lp =  JSON.parse(atob( localStorage.getItem("d_lp")));
     //console.log("d_lp",d_lp);
     var entPerm = {
@@ -2535,7 +2423,7 @@ function kmsrenderEl(ar, rendertype) {
             }
             $('body').hideLoader();
         } else {
-            console.log("ELSE rendertype ==  ", rendertype);
+            //console.log("ELSE rendertype ==  ", rendertype);
             if (action == "html")
                 $(targetId).empty();
             action = "append";
@@ -2595,7 +2483,7 @@ function getModelEntity(el) {
 // function editEntity(id) {
 //const editEntity = async function(id) {
  async function exportPDFEntity(id,title) {
-    console.log("Exporting PDF: ", id)
+    //console.log("Exporting PDF: ", id)
     var entireHTML;
     var domain= location.hosthame;
     if (typeof dviewtype !== 'undefined') {
@@ -3042,8 +2930,12 @@ function createpathFile(eid, fid) {
     if (tk != null)
         return ret += "?tkdymat=" + tk;
     tk = localStorage.getItem('DYM');
-    if (tk != null)
-        return ret += "?tkdym=" + tk;
+    if (tk != null){
+        ret += "?tkdym=" + tk;
+        //console.log('createpathFile | ret ', ret);
+        return ret;
+    }
+
 }
 
 function populateFormEdit(frm, item, basename, wasarr, origitem) {
@@ -3152,17 +3044,17 @@ function populateFormEdit(frm, item, basename, wasarr, origitem) {
                                 to_append += ' </div>';
                                 elPop.after(to_append);
                             } else {
-                                console.log("non e file ");
+                                //console.log("non e file ");
                                 if ((elPop).attr("type") == "checkbox") {
                                     if (value != null && value != "" && value != undefined)
                                         (elPop).prop('checked', true);
                                 } else {
-                                    console.log('(elPop)', (elPop).is("select"));
+                                    //console.log('(elPop)', (elPop).is("select"));
                                     elPop.val(value);
                                 }
                             }
                         } else if ((elPop).is("select")) {
-                            console.log("is select");
+                            //console.log("is select");
                             elPop.val(value).change();
                         }
                     } else {
@@ -3293,17 +3185,17 @@ async function populateFormEdit_await(frm, item, basename, wasarr, origitem) {
                                     to_append += ' </div>';
                                     elPop.after(to_append);
                                 } else {
-                                    console.log("non e file ");
+                                    //console.log("non e file ");
                                     if ((elPop).attr("type") == "checkbox") {
                                         if (value != null && value != "" && value != undefined)
                                             (elPop).prop('checked', true);
                                     } else {
-                                        console.log('(elPop)', (elPop).is("select"));
+                                        //console.log('(elPop)', (elPop).is("select"));
                                         elPop.val(value);
                                     }
                                 }
                             } else if ((elPop).is("select")) {
-                                console.log("is select");
+                                //console.log("is select");
                                 elPop.val(value).change();
                             }
                         } else {
@@ -3401,7 +3293,7 @@ const populateFormEdit_Promise = function(frm, item, basename, wasarr) {
                                     to_append += ' </div>';
                                     elPop.after(to_append);
                                 } else {
-                                    console.log("non e file ");
+                                    //("non e file ");
                                     if ((elPop).attr("type") == "checkbox") {
                                         if (value != null && value != "" && value != undefined)
                                             (elPop).prop('checked', true);
@@ -4538,7 +4430,7 @@ function manageDTagFilter(el, op) {
         filter_type = "term";
         filter_rel = filter_rel + ".keyword";
         filter_value = filter.val();
-        console.log("mm");
+        //console.log("mm");
     }
     if (filter.is(':checkbox')) {
         filter_type = "match";
@@ -4757,7 +4649,7 @@ function dymerphases(options) {
         properties[type].active = false;
         if ((properties[type]).hasOwnProperty("type"))
             properties[type].type = "";
-        console.log('disablePhase', properties)
+        //console.log('disablePhase', properties)
     }
     this.getPhaseDetail = function() {
         return properties[properties.type];
@@ -4917,6 +4809,11 @@ function dymerSearch(options) {
         }
 
         $("#" + options.formid).append('<span   class="btn btn-primary btn-block" onclick="' + options.objname + '.search()">' + options.translations.und.submit.text + '</span>');
+        
+        /*MG - Reset dei filtri - Inizio*/
+        $("#" + options.formid).append('<span   class="btn btn-primary btn-block" onclick="' + options.objname + '.resetFilters()">' + 'Reset' + '</span>');
+        /*MG - Reset dei filtri - Fine*/
+
         window[options.objname] = options.objname;
         /* document.querySelector(options.container).className += " too-slide-slider-container";
          document.querySelectorAll(options.slidesClass).forEach((slide, index) => {
@@ -4929,8 +4826,48 @@ function dymerSearch(options) {
          this.goToSlide(0)
          this.prepareControls();
          this.orderElement();*/
+
+        /*MG - Reset dei filtri - Inizio*/ 
+        window[options.objname] = this; // Assicura che l'oggetto sia accessibile globalmente
+        /*MG - Reset dei filtri - Fine*/ 
         $('.selectpicker').selectpicker();
     }
+    /*MG - Reset dei filtri - Inizio*/
+    this.resetFilters = function() {
+        let myform = $("#" + options.formid);
+        let els = myform.find(':input').get();
+    
+        $.each(els, function() {
+            let $el = $(this);
+            // Ignora bottoni e campi nascosti che non dovrebbero essere resettati in questo modo
+            if ($el.is(':button') || $el.attr('type') === 'hidden' || $el.attr('type') === 'submit') {
+                return;
+            }
+    
+            // Resetta i diversi tipi di input
+            if ($el.is('select')) {
+                if ($el.hasClass('selectpicker')) {
+                    $el.selectpicker('val', ''); // Resetta selectpicker
+                    $el.selectpicker('refresh');
+                } else {
+                    $el.prop('selectedIndex', 0); // Resetta select standard
+                }
+                $el.trigger('change'); // Scatena l'evento change se necessario
+            } else if ($el.is(':checkbox') || $el.is(':radio')) {
+                $el.prop('checked', false); // Deseleziona checkbox/radio
+                $el.trigger('change');
+            } else {
+                $el.val(''); // Pulisce input di testo, textarea, ecc.
+                $el.trigger('input'); // Scatena l'evento input se necessario
+            }
+        });
+    
+        // Opzionale: riesegui la ricerca per mostrare tutti i risultati dopo il reset
+        // this.search();
+    
+        console.log("Filtri resettati per il form:", options.formid);
+    }
+    /*MG - Reset dei filtri - Fine*/
     this.setConditioQuery = function(val) {
         options.conditionQuery = val;
         $("#" + options.formid + ' .dsearchAdvOptionBtn .optsconditionQuery a').removeClass("active");
@@ -4993,19 +4930,23 @@ function dymerSearch(options) {
             // myform_innerContainer.append(searchIndex);
             let idGen = new GeneratorId();
             let usePlaceholder = (myform.attr("useplaceholder") == "true") ? true : false;
+            
+            /*MG - Ricerca con il tasto "invio" - Inizio*/
             if (options.addfreesearch) {
                 let groupEl = $('<div class="grpfilter ' + options.groupfilterclass + ' basefilter"><div><label class="control-label"> ' + options.translations.und.freesearch.label + ' </label></div> </div>');
                 $(groupEl).attr('data-filterpos', -10);
-                $(groupEl).append('<input type="text" class="form-control  " placeholder="' + options.translations.und.freesearch.placeholder + '" name="data[_all]" searchable-override="_all" >');
-
-                //if (options.innerContainerid == options.formid) {
+                let searchInput = $('<input type="text" class="form-control  " placeholder="' + options.translations.und.freesearch.placeholder + '" name="data[_all]" searchable-override="_all" >');
+                searchInput.on('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    _this.search();
+                }
+                });
+                $(groupEl).append(searchInput);
                 myform_innerContainer.append(groupEl);
-                //  } else {
-                //      $(groupEl).insertBefore(myform_innerContainer);
-                //  }
-
-
             }
+            /*MG - Ricerca con il tasto "invio" - Fine*/
+
             $(itemValue).find('[searchable-element="true"]').each(function() {
                 //let newId = idGen.getId();
                 let filterpos = ($(this).data('filterpos') == undefined) ? 0 : $(this).data('filterpos');
@@ -5060,7 +5001,7 @@ function dymerSearch(options) {
 
                         let listToselect = actionPostMultipartForm("taxonomy.search", undefined, datapost, undefined, undefined, undefined, false, taxID);
                         // let listToselect = await actionPostMultipartForm_Promise("taxonomy.search", undefined, datapost, undefined, undefined, undefined, false, taxID);
-                        console.log("listToselect", listToselect)
+                        //console.log("listToselect", listToselect)
                         let inde = 0;
                         let ismulti = ($(this).attr('searchable-multiple') == "true") ? "multiple" : 'data-max-options="1"';
                         let isactionsbox = "";
@@ -5370,7 +5311,7 @@ function dymerSearch(options) {
 
 function switchByFilterBase() {
     let filterList = $("#myfilter").serializeArray();
-    console.log("#myfilter", filterList);
+    //console.log("#myfilter", filterList);
     let listindex = {
         "bool": {
             "must": [{
@@ -5418,9 +5359,9 @@ function switchByFilterBase() {
                 //let isMultiple = ($(this).attr('multiple') || $(this).attr('repeatable')) ? true : false;
                 // let name = $(this).attr('name');
                 // console.log("-", name, val, isMultiple, this.nodeName, val instanceof String);
-                console.log(getFilterQueryType($(this)));
+                //console.log(getFilterQueryType($(this)));
                 let sfilter = getFilterQueryType($(this));
-                console.log('sfilter', sfilter);
+                //console.log('sfilter', sfilter);
                 if (sfilter.addtoquery) {
                     let listValues = [];
                     if (sfilter.ismultiple) {
@@ -5446,11 +5387,11 @@ function switchByFilterBase() {
 
         }
     });
-    console.log('subquerycreator', subquerycreator);
+    //console.log('subquerycreator', subquerycreator);
     if (addsubquery)
         querycreator.bool.must.push(subquerycreator);
 
-    console.log('querycreator', querycreator);
+    //console.log('querycreator', querycreator);
     switchQuery(querycreator);
 
 }
@@ -5467,8 +5408,8 @@ function switchByFilter(cc, vType) {
         }
     };
     var filterList = cc.dymertagsinput('items');
-    console.log('listndex', listndex);
-    console.log('filterList', filterList);
+    //('listndex', listndex);
+    //console.log('filterList', filterList);
     $.each(filterList, function(k, v) {
         var filterKey = v.filterquery;
         var regex = /@@(\d*)@@/;
@@ -5498,7 +5439,7 @@ function switchByFilter(cc, vType) {
             querycreator.bool.must.push(singleFilter);
         }
     });
-    console.log('querycreator', querycreator);
+    //console.log('querycreator', querycreator);
     switchQuery(querycreator, $(this), vType);
 }
 
@@ -5702,7 +5643,7 @@ async function addView(id, index,title) {
     let ajax_temp_call = new Ajaxcall(temp_config_call);
     ajax_temp_call.addparams(datapost);
     let addViewCallRet = ajax_temp_call.send();
-     console.log("addView response",addViewCallRet);
+    //console.log("addView response",addViewCallRet);
     sourceUrl = serverUrl + "/api/dservice/api/v1/stats/savestats";
     datapost = {"resourceId" : id, "type" : index, "act": "views","title":title}
     temp_config_call = {
@@ -5754,11 +5695,11 @@ async function like(entityId, title, index, loggedUsrMail = "notLogged", roles,i
     }
 
     let newCounter = Number(ret.message.count)
-    console.log("inizial counter  ", newCounter)
+    //console.log("inizial counter  ", newCounter)
 
     if (ret.message.action == "dislike") {
         let newTitle = ret.message.likes.join('<br>')
-        console.log("decremento ", newCounter)
+        //console.log("decremento ", newCounter)
         $(`#likeBtn-${entityId}`).removeClass(icondown)
         $(`#likeBtn-${entityId}`).addClass(iconup)
         $(`#likeBtn-${entityId}`).html(' ' + newCounter + ' ')
@@ -5769,12 +5710,12 @@ async function like(entityId, title, index, loggedUsrMail = "notLogged", roles,i
 
 
         let mongoUpdateRet = await likeMongoUpdate(entityId, "dislike", loggedUsrMail, roles, index, title)
-        console.log(mongoUpdateRet)
+        //console.log(mongoUpdateRet)
 
 
     } else if (ret.message.action == "like") {
         let newTitle = ret.message.likes.join('<br>')
-        console.log("incremento ", newCounter)
+        //console.log("incremento ", newCounter)
         $(`#likeBtn-${entityId}`).removeClass(icondown)
         $(`#likeBtn-${entityId}`).addClass(iconup)
         $(`#likeBtn-${entityId}`).html(' ' + newCounter + ' ')
@@ -5785,7 +5726,7 @@ async function like(entityId, title, index, loggedUsrMail = "notLogged", roles,i
 
 
         let mongoUpdateRet = await likeMongoUpdate(entityId, "like", loggedUsrMail, roles, index, title)
-        console.log(mongoUpdateRet)
+        //console.log(mongoUpdateRet)
 
     }
 }
