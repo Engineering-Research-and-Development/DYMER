@@ -4752,21 +4752,24 @@ return properties.phase;
 
 function dymerSearch(options) {
     let _this = this;
-    let defaultOptions = {
+     let defaultOptions = {
         "conditionQuery": "AND",
         "groupfilterclass": "span12 col-12",
         "addfreesearch": false,
         "showFilterBtn": false,
         "showAdvOptionBtn": false,
+        "formbuttonid":"cont-addentity",
         "translations": {
             und: {
                 freesearch: {
                     label: "Search",
-                    placeholder: "Enter any term"
+                    placeholder: "Live Search"
                 },
                 submit: {
-                    text: "SEARCH"
-
+                    text: "Search"
+                },
+				reset: {
+                    text: "Reset"
                 }
             }
         }
@@ -4811,11 +4814,7 @@ function dymerSearch(options) {
 
         }
 
-        $("#" + options.formid).append('<span   class="btn btn-primary btn-block" onclick="' + options.objname + '.search()">' + options.translations.und.submit.text + '</span>');
-        
-        /*MG - Reset dei filtri - Inizio*/
-        $("#" + options.formid).append('<span   class="btn btn-primary btn-block" onclick="' + options.objname + '.resetFilters()">' + 'Reset' + '</span>');
-        /*MG - Reset dei filtri - Fine*/
+         $("#" + options.formid).append('<div class="btn-group col-12" role="group" aria-label="search group" style="margin-top: 10px;"><span class="btn btn-primary  " onclick="' + options.objname + '.search()"><i class="fas fa-search"></i> ' + options.translations.und.submit.text + '</span><span class="btn btn-danger  " onclick="' + options.objname + '.resetFilters()"><i class="fa fa-eraser"></i> ' + options.translations.und.reset.text + '</span></div>');
 
         window[options.objname] = options.objname;
         /* document.querySelector(options.container).className += " too-slide-slider-container";
