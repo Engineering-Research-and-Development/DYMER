@@ -4844,7 +4844,7 @@ function dymerSearch(options) {
 
         }
         /*MG - Reset dei filtri - Inizio*/ 
-        $("#" + options.formid).append('<div class="btn-group col-12" role="group" aria-label="search group" style="margin-top: 10px;"><span class="btn btn-primary  " onclick="' + options.objname + '.search()"><i class="fas fa-search"></i> ' + options.translations.und.submit.text + '</span><span class="btn btn-danger  " onclick="' + options.objname + '.resetFilters()"><i class="fa fa-eraser"></i> ' + options.translations.und.reset.text + '</span></div>');
+        $("#" + options.formid).append('<div class="btn-group col-12" role="group" aria-label="search group" style="margin-top: 10px;"><span class="btn btn-primary w-50 " onclick="' + options.objname + '.search()"><i class="fas fa-search"></i> ' + options.translations.und.submit.text + '</span><span class="btn btn-danger w-50 " onclick="' + options.objname + '.resetFilters()"><i class="fa fa-eraser"></i> ' + options.translations.und.reset.text + '</span></div>');
         window[options.objname] = this;
         /*MG - Reset dei filtri - Fine*/ 
         window[options.objname] = options.objname;
