@@ -4766,14 +4766,18 @@ function dymerSearch(options) {
             und: {
                 freesearch: {
                     label: "Search",
+                    /*MG - Implementazione filtro "search-as-you-type" - Inizio*/
                     placeholder: "Live Search"
+                    /*MG - Implementazione filtro "search-as-you-type" - Fine*/
                 },
                 submit: {
                     text: "Search"
                 },
+                /*MG - Implementazione filtro "search-as-you-type" - Inizio*/
 				reset: {
                     text: "Reset"
                 }
+                /*MG - Implementazione filtro "search-as-you-type" - Fine*/
             }
         }
     }
