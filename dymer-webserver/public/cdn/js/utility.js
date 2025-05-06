@@ -4778,20 +4778,34 @@ function dymerSearch(options) {
         "addfreesearch": false,
         "showFilterBtn": false,
         "showAdvOptionBtn": false,
+		"formbuttonid":"cont-addentity",
+        /*MG - Implementazione filtro "search-as-you-type" - Inizio*/
+        "debounceDelay": 300, 
+        /*MG - Implementazione filtro "search-as-you-type" - Fine*/
         "translations": {
             und: {
                 freesearch: {
                     label: "Search",
-                    placeholder: "Enter any term"
+                    /*MG - Implementazione filtro "search-as-you-type" - Inizio*/
+                    placeholder: "Live Search"
+                    /*MG - Implementazione filtro "search-as-you-type" - Fine*/
                 },
                 submit: {
-                    text: "SEARCH"
+                    text: "Search"
+                },
+                /*MG - Implementazione filtro "search-as-you-type" - Inizio*/
+				reset: {
+                    text: "Reset"
                 }
+                /*MG - Implementazione filtro "search-as-you-type" - Fine*/
             }
         }
     }
     //options = {...defaultOptions, ...options };
     options = mergeDeep(defaultOptions, options);
+	/*MG - Implementazione filtro "search-as-you-type" - Inizio*/
+    let debounceTimer; 
+    /*MG - Implementazione filtro "search-as-you-type" - Fine*/
     this.init = function() {
         //   console.log('options', options);
         if (options.showFilterBtn) {
@@ -4829,8 +4843,10 @@ function dymerSearch(options) {
             _this.loadFilterModel(options.filterModel);
 
         }
-
-        $("#" + options.formid).append('<span   class="btn btn-primary btn-block" onclick="' + options.objname + '.search()">' + options.translations.und.submit.text + '</span>');
+        /*MG - Reset dei filtri - Inizio*/ 
+        $("#" + options.formid).append('<div class="btn-group col-12" role="group" aria-label="search group" style="margin-top: 10px;"><span class="btn btn-primary  " onclick="' + options.objname + '.search()"><i class="fas fa-search"></i> ' + options.translations.und.submit.text + '</span><span class="btn btn-danger  " onclick="' + options.objname + '.resetFilters()"><i class="fa fa-eraser"></i> ' + options.translations.und.reset.text + '</span></div>');
+        window[options.objname] = this;
+        /*MG - Reset dei filtri - Fine*/ 
         window[options.objname] = options.objname;
         /* document.querySelector(options.container).className += " too-slide-slider-container";
          document.querySelectorAll(options.slidesClass).forEach((slide, index) => {
@@ -4845,6 +4861,38 @@ function dymerSearch(options) {
          this.orderElement();*/
         $('.selectpicker').selectpicker();
     }
+	/*MG - Reset dei filtri - Inizio*/
+    this.resetFilters = function() {
+        let myform = $("#" + options.formid);
+        let els = myform.find(':input').get();
+        $.each(els, function() {
+            let $el = $(this);
+            if ($el.is(':button') || $el.attr('type') === 'hidden' || $el.attr('type') === 'submit') {
+                return; 
+            }
+            if ($el.is('select')) {
+                if ($el.hasClass('selectpicker')) {
+                    $el.selectpicker('val', ''); 
+                    $el.selectpicker('refresh'); 
+                } else {
+                    $el.prop('selectedIndex', 0); 
+                }
+                $el.trigger('change'); 
+            }
+            else if ($el.is(':checkbox') || $el.is(':radio')) {
+                $el.prop('checked', false); 
+                $el.trigger('change');
+            }
+            else {
+                $el.val(''); 
+                $el.trigger('input');
+            }
+        });
+        myform.removeClass('was-validated');
+        myform.find('.is-invalid').removeClass('is-invalid');
+        _this.search(true);
+    }
+    /*MG - Reset dei filtri - Fine*/
     this.setConditioQuery = function(val) {
         options.conditionQuery = val;
         $("#" + options.formid + ' .dsearchAdvOptionBtn .optsconditionQuery a').removeClass("active");
@@ -4907,19 +4955,32 @@ function dymerSearch(options) {
             // myform_innerContainer.append(searchIndex);
             let idGen = new GeneratorId();
             let usePlaceholder = (myform.attr("useplaceholder") == "true") ? true : false;
+             /*MG - Implementazione filtro "search-as-you-type" - Inizio*/
             if (options.addfreesearch) {
                 let groupEl = $('<div class="grpfilter ' + options.groupfilterclass + ' basefilter"><div><label class="control-label"> ' + options.translations.und.freesearch.label + ' </label></div> </div>');
                 $(groupEl).attr('data-filterpos', -10);
-                $(groupEl).append('<input type="text" class="form-control  " placeholder="' + options.translations.und.freesearch.placeholder + '" name="data[_all]" searchable-override="_all" >');
-
-                //if (options.innerContainerid == options.formid) {
+                let searchInput = $('<input type="text" class="form-control  " placeholder="' + options.translations.und.freesearch.placeholder + '" name="data[_all]" searchable-override="_all" >');
+                /*
+                searchInput.on('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        _this.search(false);
+                    }
+                });
+                */
+                searchInput.on('input', function(e) {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(() => {
+                        _this.search(false);
+                    }, options.debounceDelay);
+                });
+                $(groupEl).append(searchInput);
                 myform_innerContainer.append(groupEl);
-                //  } else {
-                //      $(groupEl).insertBefore(myform_innerContainer);
-                //  }
-
-
+                $("#" + options.formid + " #" + options.innerContainerid).append(groupEl); 
             }
+            window[options.objname] = this;
+            $('.selectpicker').selectpicker();
+            /*MG - Implementazione filtro "search-as-you-type" - Fine*/
             $(itemValue).find('[searchable-element="true"]').each(function() {
                 //let newId = idGen.getId();
                 let filterpos = ($(this).data('filterpos') == undefined) ? 0 : $(this).data('filterpos');
@@ -5169,22 +5230,17 @@ function dymerSearch(options) {
         }
         return { addtoquery: addToQuery, filterquery: filterKey, value: filter_value, typeqr: filter_type, filter_cond: filter_condition, ismultiple: filter_multiple, 'isRelation': isRelation };
     }
-    this.search = function() {
+    /*MG - Reset dei filtri - Inizio*/
+    //this.search = function(isReset = false) {
+    this.search = function(isReset = false) {
+    /*MG - Reset dei filtri - Fine*/    
+        /*MG - Implementazione filtro "search-as-you-type" - Inizio*/
+        clearTimeout(debounceTimer);
+        /*MG - Implementazione filtro "search-as-you-type" - Fine*/
         let myform = $("#" + options.formid + "");
-        //let filterList = myform.serializeArray();
         let els = myform.find(':input').get();
         let conditionQ = ((options.conditionQuery).toLowerCase() == "or") ? "should" : "must";
-        //console.log("#myfilter", filterList);
         let listindex = options.query;
-        /* let listindex = {
-             "bool": {
-                 "must": [{
-                     "terms": {
-                         "_index": ["demproduct"]
-                     }
-                 }]
-             }
-         };*/
         let querycreator = {
             "bool": {
                 "must": [listindex]
@@ -5195,64 +5251,75 @@ function dymerSearch(options) {
         };
         subquerycreator.bool[conditionQ] = [];
         let addsubquery = false;
-        $.each(els, function() {
-            if (this.name /*&& !this.disabled*/ && (this.checked || /select|input|textarea/i.test(this.nodeName) || /text|hidden|password/i.test(this.type)) && (!/file/i.test(this.type))) {
-                let val = $(this).val();
-                let addToQuery = false;
-                if (val instanceof Array) {
-                    if (val.length) {
-                        addToQuery = true;
-                    }
-                }
-                if ((typeof val) === 'string') {
-                    val = val.trim();
-                    if (!!val) {
-                        addToQuery = true;
-                    }
-                }
-                if (addToQuery) {
-                    //let isMultiple = ($(this).attr('multiple') || $(this).attr('repeatable')) ? true : false;
-                    // let name = $(this).attr('name');
-                    // console.log("-", name, val, isMultiple, this.nodeName, val instanceof String);
-                    let sfilter = _this.getFilterQueryType($(this));
-                    //    console.log('sfilter', sfilter);
-                    if (sfilter.addtoquery) {
-                        let listValues = [];
-                        if (sfilter.ismultiple) {
-                            listValues = sfilter.value;
-                        } else {
-                            listValues.push(sfilter.value);
+        /*MG - Reset dei filtri - Inizio*/
+        if (!isReset) {
+            let els = myform.find(':input').get();
+            let conditionQ = ((options.conditionQuery).toLowerCase() == "or") ? "should" : "must";
+            let subquerycreator = { "bool": {} };
+            subquerycreator.bool[conditionQ] = [];
+            let addsubquery = false;
+            /*MG - Reset dei filtri - Fine*/
+            $.each(els, function() {
+                if (this.name /*&& !this.disabled*/ && (this.checked || /select|input|textarea/i.test(this.nodeName) || /text|hidden|password/i.test(this.type)) && (!/file/i.test(this.type))) {
+                    let val = $(this).val();
+                    let addToQuery = false;
+                    if (val instanceof Array) {
+                        if (val.length > 0 && val[0] != "") {
+                            addToQuery = true;
                         }
-                        listValues.forEach(elvalue => {
-                            let typeqr_ = sfilter.typeqr;
-                            let filterKey = sfilter.filterquery;
-                            let singleFilter = {};
-                            if (sfilter.isRelation) {
-                                if (querycreator.hasOwnProperty('relationdymer')) {
+                    }
+                    if ((typeof val) === 'string') {
+                        val = val.trim();
+                        if (!!val) {
+                            addToQuery = true;
+                        }
+                    }
+                    if ($(this).is(':checkbox') || $(this).is(':radio')) {
+                        if (!this.checked) {
+                            addToQuery = false;
+                        }
+                    }
+                    if (addToQuery) {
+                        let sfilter = _this.getFilterQueryType($(this));
+                        if (sfilter.addtoquery) {
+                            let listValues = [];
+                            if (sfilter.ismultiple) {
+                                listValues = sfilter.value;
+                            } else {
+                                listValues.push(sfilter.value);
+                            }
+                            listValues.forEach(elvalue => {
+                                let typeqr_ = sfilter.typeqr;
+                                let filterKey = sfilter.filterquery;
+                                let singleFilter = {};
+                                if (sfilter.isRelation) {
+                                    if (!querycreator.hasOwnProperty('relationdymer')) {
+                                        querycreator['relationdymer'] = {};
+                                    }
+                                    if (!querycreator['relationdymer'][filterKey]) {
+                                        querycreator['relationdymer'][filterKey] = [];
+                                    }
                                     querycreator['relationdymer'][filterKey].push(elvalue);
                                 } else {
-                                    querycreator['relationdymer'] = {};
-                                    querycreator['relationdymer'][filterKey] = [elvalue];
+                                    singleFilter[typeqr_] = {};
+                                    if (filterKey != "") {
+                                        singleFilter[typeqr_][filterKey] = elvalue;
+                                    } else { 
+                                        singleFilter[typeqr_] = elvalue; 
+                                    }
+                                    subquerycreator.bool[conditionQ].push(singleFilter);
+                                    addsubquery = true;
                                 }
-                            } else {
-                                singleFilter[typeqr_] = {};
-                                if (filterKey != "")
-                                    singleFilter[typeqr_][filterKey] = elvalue;
-                                else
-                                    singleFilter[typeqr_] = elvalue;
-                                subquerycreator.bool[conditionQ].push(singleFilter);
-                                addsubquery = true;
-                            }
-
-                        });
+                            });
+                        }
                     }
                 }
-            }
-        });
-        //  console.log('subquerycreator', subquerycreator);
-        if (addsubquery)
-            querycreator.bool.must.push(subquerycreator);
-        //  console.log('querycreator', querycreator);
+            });
+            if (addsubquery)
+                querycreator.bool.must.push(subquerycreator);
+        /*MG - Reset dei filtri - Inizio*/    
+        }
+        /*MG - Reset dei filtri - Fine*/
         switchQuery(querycreator);
         $('#dymer_breadcrumb').empty();
     }
