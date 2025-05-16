@@ -173,15 +173,13 @@ app.get('/api2/retriveinfoidpadmin', (req, res, next) => {
     if (true) {
        
         var objuser = {
-            isGravatarEnabled:      false,
-            authorization_decision: '',
             roles:                  [{role: 'app-admin'}],
             app_azf_domain:         '',
             id:                     'admin@dymer.it',
             gid:                    0,
             app_id:                 'dymer',
             email:                  'admin@dymer.it',
-            username:               'admin@dymer.it'
+            
         };
 
         var obj_isi = {};
@@ -224,8 +222,8 @@ app.get('/api2/retriveinfoidp', (req, res, next) => {
                 groupId:   'ccc',
                 cms:       'lfr',
                 userId:    'ccc'
-            },
-            username:               pp.email
+            }
+             
         };
         (pp.realm_access.roles).forEach(element => {
             objuser.roles.push({'role': element, id: ''});
