@@ -14,10 +14,9 @@ const cors = require('cors');
 const nameFile = path.basename(__filename);
 const logger = require('./routes/dymerlogger');
 var jsonResponse = require('./jsonResponse');
-//USO OIDC  
-//var passport = require('passport')
+ 
 const router = express.Router();
-//const appRoutes=require('./app/routes/api')(router);
+ 
 const jwt = require('jsonwebtoken');
 var axios = require('axios');
 var qs = require('qs');
@@ -28,10 +27,10 @@ var entityRoutes = require('./routes/entity');
 var system = require('./routes/routes-v1');
 var publicRoutes = require('./routes/publicfiles');
 var appRoutes = require('./routes/appRoutes');
-//var dauthRoutes = require('./routes/dauth');
+ 
 var authenticateRoutes = require('./routes/authenticate');
 var dohtmlpage = require('./routes/dohtmlpage');
-//const ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn;
+ 
 const session = require('express-session');
 var cookieParser = require('cookie-parser');
 var memoryStore = new session.MemoryStore();
@@ -102,10 +101,9 @@ app.get('/deletelog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) =>
 
     var ret = new jsonResponse();
     var filetype = req.params.filetype;
-    // const dymeruser = util.getDymerUser(req, res);
-    // const dymerextrainfo = dymeruser.extrainfo;
+   
     logger.flushfile(filetype);
-    // logger.i
+  
     ret.setSuccess(true);
     ret.setMessages("Deleted");
     return res.send(ret);
@@ -119,7 +117,7 @@ app.get('/openLog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {
     return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
 });
 app.get('/checkservice', [loadUserInfo, util.checkIsPortalUser], (req, res) => {
-    // #swagger.tags = ['Webserver']
+    
 
     var ret = new jsonResponse();
     let infosize = logger.filesize("info");
@@ -144,42 +142,14 @@ app.get('/checkservice', [loadUserInfo, util.checkIsPortalUser], (req, res) => {
 });
 
 app.use(express.static(__dirname + '/public'));
-//app.use(express.static(__dirname + global.gConfig.services.webserver["context-path"] + 'public'));
-//app.use(express.static(global.gConfig.services.webserver["context-path"] + 'public'));
-//app.use('/public', express.static('public'));
+ 
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    //    res.header("X-Frame-Option", "allow-from http://localhost:8080/");
+   
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     res.setHeader('Access-Control-Allow-Credentials', true);
     var pathname = req.url;
-    //  console.log(pathname);
-    /*if (pathname == ("/login")) {
-
-        res.setHeader(
-            'Content-Security-Policy',
-            "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:; script-src 'self'  ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
-        );
-    }*/
-
-    // if (pathname.includes('/app/views/authentication/views/login.html')) {
-    /* if (pathname == ("/login")) {
-         console.log(pathname);
-         res.setHeader(
-             'Content-Security-Policy',
-             "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:; script-src 'self' 'nonce-8IBTHwOdqNKAWeKl7plt8g==' ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
-         );
-       //res.setHeader(
-       //      'Content-Security-Policy',
-      //       "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:; script-src 'self'  ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
-       //  )
-       //res.setHeader(
-       //      'Content-Security-Policy',
-      //       "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
-       //  );
-         return res.sendFile(path.join(__dirname + "/public/app/views/authentication/views/login.html"));
-     }*/
     next();
 });
 
@@ -201,7 +171,7 @@ app.get('/api2/retriveinfoidpadmin', (req, res, next) => {
     // #swagger.tags = ['Webserver']
 
     if (true) {
-        //      console.log("retriveinfo.AAAAAAAAAAAAAAA", pp);
+       
         var objuser = {
             isGravatarEnabled:      false,
             authorization_decision: '',
@@ -236,19 +206,12 @@ app.get('/api2/retriveinfoidpadmin', (req, res, next) => {
 
 app.get('/api2/retriveinfoidp', (req, res, next) => {
     // #swagger.tags = ['Webserver']
-
-    //   console.log("--------INIZIO retriveinfoIDP--------------");
-    //   console.log("retriveinfo", req.session);
-    //   console.log("retriveinfo req.isAuthenticated()", req.isAuthenticated());
     const authHeader = req.headers.authorization;
 
     var pp = jwt.decode(req.session.passport.user.access_token);
-    //   console.log("retriveinfo pp", pp);
-    //var pp = jwt.decode(JSON.parse(token));
+   
     if (pp != undefined) {
-
-        //      console.log("retriveinfo.AAAAAAAAAAAAAAA", pp);
-        var objuser = {
+       var objuser = {
             isGravatarEnabled:      false,
             authorization_decision: '',
             roles:                  [],
@@ -290,20 +253,14 @@ app.get('/api2/retriveinfoidp', (req, res, next) => {
 
 app.post('/api2/retriveinfo', loadUserInfo, async (req, res, next) => {
     // #swagger.tags = ['Webserver']
-
-    //   res.send({ "ttttttt": "rrrrrrrrr" });
-
-    // console.log("retriveinfo", req.headers);
-    // console.log("session1.userid", req.session);
-    // console.log("req.originalUrl", req.originalUrl);
-    // console.log("req.hostname", req.hostname);
+ 
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
-    //console.log('hdymeruser2',hdymeruser);
+     
     res.clearCookie("DYMisi");
     res.cookie("dymercookie", 'value', {expire: 360000 + Date.now()});
     res.cookie("dymerdoc", hdymeruser, {expire: 360000 + Date.now()});
-    //   console.log("retriveinfo req.isAuthenticated()", req.isAuthenticated());
+  
     const authHeader = req.headers.authorization;
     var obj_isi = {};
     let dr_value = new Buffer(JSON.stringify(dymeruser.roles)).toString("base64");
@@ -325,10 +282,10 @@ app.post('/api2/retriveinfo', loadUserInfo, async (req, res, next) => {
 app.get('/info/:key?', (req, res, next) => {
     // #swagger.tags = ['Webserver']
 
-    // var pjson = require('./package.json');
+    
     var key = req.params.key;
 
-    //  let infodymer = { "version": global.gConfig.dymer.version };
+  
     let infodymer = global.gConfig.dymer;
     let htmlsend_hd =
             '<!DOCTYPE html>' +
@@ -366,7 +323,7 @@ app.get('/info/:key?', (req, res, next) => {
         // '<br> version ' + infodymer.version +
         '<br> <small style="color: #8c8985;"> updated date ' + infodymer.updated  + '</small></div>' +
         '<div class="text-center col-12 p-2">' +
-        '<span style=" font-size: 12px;">&#169; 2024, Powered by <a href="https://www.eng.it/" target="_blank">' + '<img src="https://www.eng.it/resources/images/logo%20eng.png" style="width: 20px;bottom: 3px;position: relative; "> Engineering</a>' + '</span>' +
+        '<span style=" font-size: 12px;">&#169; 2024, Powered by Engineering</span>' +
         '</div>' +
         '</div>' +
         '</div>' +
@@ -390,14 +347,8 @@ app.get('/info/:key?', (req, res, next) => {
     }
 });
 
-/*
-app.use(session({
-    secret: 'secret squirrel',
-    resave: false,
-    saveUninitialized: true
-}))*/
-
-/**/
+ 
+ 
 function checkAuthentication(req, res, next) {
     console.log('isAuthenticated', req.isAuthenticated());
     if (req.isAuthenticated()) {
@@ -409,23 +360,6 @@ function checkAuthentication(req, res, next) {
 
 function loadUserInfo(req, res, next) {
     cookie = req.cookies;
-
-    // console.log('TESTSESSION', req.session.cc, req.session.cc == undefined);
-    //   console.log('TESTSESSION req ', req);
-    //  var isLocal = (req.connection.localAddress === req.connection.remoteAddress);
-    //  console.log('TESTSESSION isLocal ', isLocal);
-    // console.log('TESTSESSION req referer', req);
-    // console.log('TESTSESSION req referer', req.headers);
-
-    // console.log('TESTSESSION req referer', req.headers.referer);
-    // console.log('TESTSESSION req req.headers.authorization', req.headers.authorization);
-    // console.log('TESTSESSION req req.headers.Authorization', req.headers.Authorization);
-    //  console.log('TESTSESSION req dservice', util.getServiceUrl("dservice"));
-    //  console.log('TESTSESSION  req.protocol', req.protocol);
-    //console.log('TESTSESSION req host', req.get('host'));
-    //logger.info(nameFile + ' | loadUserInfo : req host, originalUrl: ' + req.get('host') + " , " + req.originalUrl);
-    // logger.info(nameFile + ' | loadUserInfo : req headers' + JSON.stringify(req.headers) + " , " + req.url);
-
     var authuserUrl = util.getServiceUrl("dservice") + "/api/v1/authconfig/userinfo";
     var dymtoken = (req.headers.authorization != undefined) ? req.headers.authorization.split(' ')[1] : undefined;
     var dymtokenAT = req.headers.authorizationtk;
@@ -439,25 +373,15 @@ function loadUserInfo(req, res, next) {
 
     if (req.query.tkdym != undefined)
         dymtoken = req.query.tkdym;
-    // console.log('loadUserInfo req.query.tkdymat', req.query.tkdymat);
-    //  console.log('loadUserInfo req.query.tkdym', req.query.tkdym);
-
-    //console.log('loadUserInfo authuserUrl', authuserUrl);
-    // console.log('loadUserInfo dymtoken', dymtoken);
-    //logger.info(nameFile + ' | loadUserInfo : dymtoken' + JSON.stringify(dymtoken));
-    //console.log('loadUserInfo dymtokenAT', dymtokenAT);
+    
     var idsadm = false;
     if (req.cookies["lll"] != undefined) {
         dymtoken = req.cookies["lll"];
         idsadm = true;
     }
-    // console.log('TESTSESSION req dymtoken', dymtoken);
-    //if (token == undefined || token == 'null')
-
+    
     var referer = req.headers.referer;
-    //console.log('loadUserInfo referer', referer);
-    //console.log('loadUserInfo referrer', req.headers.referrer);
-
+   
     if (referer != undefined) {
         if ((referer).includes(req.hostname))
             referer = req.get('host');
@@ -467,18 +391,7 @@ function loadUserInfo(req, res, next) {
         }*/
     let originalRef = (req.headers["reqfrom"] == undefined) ? req.headers.referer : req.headers.reqfrom;
     originalRef = (originalRef == undefined) ? req.get('host') : originalRef;
-    //console.log('loadUserInfo post-req.headers', req.headers);
-    /* logger.info(nameFile + ' | loadUserInfo : post-referer' + req.headers.referer);
-     logger.info(nameFile + ' | loadUserInfo : post-reqfrom' + req.headers["reqfrom"]);
-     logger.info(nameFile + ' | loadUserInfo : originalRef' + originalRef + " , " + typeof originalRef);*/
-    //logger.info(nameFile + ' | --------------------------');
-
-    //logger.info(nameFile + ' | loadUserInfo : requestjsonpath' + requestjsonpath);
-    /*console.log('loadUserInfo post-referer', req.headers.referer);
-    console.log('loadUserInfo post-reqfrom', req.headers["reqfrom"]);
-    console.log('loadUserInfo originalRef', originalRef, typeof originalRef);
-    console.log('--------------------------');*/
-    logger.info(nameFile + ' |loadUserInfo|req url :' + originalRef + "|" + req.method + req.url);
+       logger.info(nameFile + ' |loadUserInfo|req url :' + originalRef + "|" + req.method + req.url);
     var config = {
         method:  'get',
         url:     authuserUrl,
@@ -513,32 +426,20 @@ function loadUserInfo(req, res, next) {
 
 app.use("/api/portalweb/", authenticateRoutes);
 
-/*app.use("/public/", express.static(path.join(__dirname.replace('\routes', ""), "..")));
-app.use("/app/", express.static(path.join(__dirname.replace('\routes', ""), "..")));
-*/ //
-
-//app.use('/',appRoutes); 
-//var index = require('./routes/index');
-//app.use('/', index); // mount the index route at the / path
-// mount the routers 
-//app.use('/portalweb/', portalwebRoutes);
-//console.log('global.gConfig.services.webserver["context-path"]', util.getContextPath('webserver'));
-//console.log('__dirname', __dirname);
+ 
 app.use('/api/templates/', loadUserInfo, templateRoutes);
 app.use("/api/forms/", loadUserInfo, formRoutes);
 app.use("/api/entities/", loadUserInfo, entityRoutes);
-//app.use("/api/entities/", checkAuthentication, entityRoutes);
-//app.use("/api/entities/", keycloak.protect('realm:app-user'), entityRoutes);
-//m 2021_20_20 app.use("/api/private/dservice/", ensureLoggedInOpen, dserviceRoutes);
+ 
 app.use("/api/dservice/", loadUserInfo, dserviceRoutes);
 app.use("/api/system/", loadUserInfo, system);
 app.post("/api/test/", loadUserInfo, (req, res, next) => {
     // #swagger.tags = ['Webserver']
     console.log("test");
     next();
-    //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
+   
 });
-//app.use("/api/auth/", dauthRoutes);
+ 
 
 const parseToken = raw => {
     if (!raw || typeof raw !== 'string') return null;
@@ -553,18 +454,9 @@ const parseToken = raw => {
     }
 };
 
-//app.use(global.gConfig.services.webserver["context-path"] + '/public/cdn/', publicRoutes);
-//app.use(global.gConfig.services.webserver["context-path"] + 'public/cdn/', publicRoutes);
-//app.use('/public/cdn', publicRoutes);
-//app.use('/public/cdn', publicRoutes);
-//app.use('/public/', publicRoutes);
+ 
 app.use("/demodownload/", publicdemoDonwlonad);
-//app.use("/recoverForms/", recoverForms);0
-/*app.get("/login", ensureLoggedIn, (req, res, next) => {
-    // console.log("app.get");
-    next();
-    //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
-});
+ 
 */
 
 app.get("/public/cdn/*", (req, res, next) => {
@@ -572,61 +464,23 @@ app.get("/public/cdn/*", (req, res, next) => {
 
     // console.log("app.get");
     next();
-    //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
+    
 });
 
 const testRules = (req) => {
-    // keycloak.get
-    // var pp = jwt.decode(JSON.parse(req.session['keycloak-token'])); //['access_token']
-    // console.log('pppppppppppppppppppppp', pp);
+   
     return 'realm:app-user';
-    // return t
+   
 }
 
-//app.get('*', keycloak.protect(testRules(req)), (req, res) => {
-//app.get('*', keycloak.protect('realm:app-user'), (req, res) => {
-
-//app.get('*', require('connect-ensure-login').ensureLoggedIn('/'), (req, res) => {
-//app.get('*', ensureLoggedInOpen, (req, res) => {
+ 
 
 app.get('*', (req, res) => {
-    // #swagger.tags = ['Webserver']
-
-    //app.get('*', passport.authenticate("oidc"), (req, res) => {
-    //app.get('*', keycloak.protect('realm:app-user'), (req, res) => {
-    /*console.log(
-         "session server", req.session
-     ); */
-    /* const details = parseToken(req.session['keycloak-token']);
-     var token = req.kauth.grant.access_token.content;
-     var permissions = token.authorization ? token.authorization.permissions : undefined;
-     console.log("userDT", details);
-     console.log(" keycloak.token", token);
-     console.log(" keycloak permissions", permissions);*/
-    //+ path.join(__dirname + global.gConfig.services.webserver["context-path"]
+  
     var realPath = (req.originalUrl).split("?");
     var listdata = fs.readFileSync(path.join(__dirname, '/public/app/views/index.html'));
     var pathname = req.url;
-    //  console.log('listdatapathname', pathname, pathname == ("/login"));
-    /* if (listdata) {
-         listdata = listdata.toString();
-         console.log('listdata', listdata, pathname);
-         res.send(listdata.replace('site_prefix_value', util.getContextPath('webserver')));
-     }*/
-    /*if (pathname == ("/login")) {
-        var listdata = fs.readFileSync(path.join(__dirname, '/public/app/views/authentication/views/login.html'));
-        listdata = listdata.toString();
-        res.send(listdata.replace('site_prefix_value', util.getContextPath('webserver')));
-        listdata = listdata.replace('site_prefix_value', util.getContextPath('webserver'))
-        res.send(listdata);
-    } else {
-        console.log('listdatapathname2', pathname, pathname == ("/"));
-        //if (pathname == (util.getContextPath('webserver'))) {
-        var listdata = fs.readFileSync(path.join(__dirname, '/public/app/views/index.html'));
-        listdata = listdata.toString();
-        listdata = listdata.replace('site_prefix_value', util.getContextPath('webserver'))
-        res.send(listdata);
-    }*/
+    
     var listdata = fs.readFileSync(path.join(__dirname, '/public/app/views/index.html'));
     listdata = listdata.toString();
     listdata = listdata.replace('site_prefix_value', contextPath);
@@ -634,35 +488,12 @@ app.get('*', (req, res) => {
     //  r = "dymzmpky";
     listdata = listdata.replace(/noncevalue/g, r);
 
-    /* res.setHeader(
-         'Content-Security-Policy',
-         "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:; script-src 'self' 'nonce-" + r + "'  ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
-     );*/
-    /* if (pathname == ("/login")) {
-         listdata = fs.readFileSync(path.join(__dirname, '/public/app/views/login.html'));
-         listdata = listdata.toString();
-         listdata = listdata.replace('site_prefix_value', util.getContextPath('webserver'))
-         r = 'dym' + (Math.random() + 1).toString(36).substring(7);
-         listdata = listdata.replace(/noncevalue/g, r);
-         res.setHeader(
-             'Content-Security-Policy',
-             "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:; script-src 'self' 'nonce-" + r + "'  ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
-         );/*
-         /* res.setHeader(
-              'Content-Security-Policy',
-              "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:;script-src 'self' 'unsafe-inline' 'unsafe-eval' ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
-          );*/
-    /*
-        }*/
+   
     res.send(listdata);
-    // }
-    //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
-    // res.sendFile(global.gConfig.services.webserver["context-path"] + '/public/app/views/index.html');
+    
 });
 
-//global.gConfig.services.webserver["context-path"]
-
-//app.use(contextPath, router)
+ 
 const root = express();
 root.use(contextPath, app);
 
