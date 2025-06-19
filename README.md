@@ -196,11 +196,10 @@ The application image doesn't contain any data, so for the use of DYMER features
 **TO DO**
 
 
-## Contributors
+## keyword
+headless CMS, API, template delivery, content management, decoupled CMS, JSON, omnichannel, dynamic rendering.
 
-
-* [Marco Bernandino Romano](https://github.com/marco-romano-eng) 
-* [Marko Stojanovic](https://github.com/marest94) 
+ 
 
 ### Top contributors:
 
