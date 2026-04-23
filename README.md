@@ -5,85 +5,148 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 
- 
+
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
   <a href="https://github.com/Engineering-Research-and-Development/DYMER">
     <img src="https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/dymer-logo.png?raw=true" alt="Logo">
-  </a>
-
-  <h3 align="center">DYnamic Information ModElling & Rendering</h3>
-
-  <p align="center">
-    The DYMER is a suite for resource catalog visualization. DYMER provides advanced mapping capabilities between a data model in JSON format and its graphic template on the one hand, and on the other hand, it provides a JavaScript framework for integrating the DYMER template into a web-based application. The software is flexible because it adopts open technologies and can be used in various environments without considerable requirements. 
-    <br />
-    <a href="https://github.com/Engineering-Research-and-Development/DYMER/edit/master/README.md"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-   <img src="https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/Dymer.jpg?raw=true" title="Dymer" alt="Dymer"> 
- 
-  </p>
+  </a> 
 </div>
 
+ # DYMER - DYnamic Information ModElling & Rendering
+
+[![Release](https://img.shields.io/badge/release-v3.0.1-brightgreen)](https://github.com/Engineering-Research-and-Development/DYMER/releases/tag/v3.0.1)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Docker](https://img.shields.io/badge/docker-compose-2496ED?logo=docker)](https://www.docker.com/)
+[![Node.js](https://img.shields.io/badge/node.js-20.x-339933?logo=nodedotjs)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-8.8%25-3178C6?logo=typescript)](https://www.typescriptlang.org/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](docs/developers/04-contributing.md)
+
+**DYMER** is a comprehensive suite for dynamic resource catalog visualization. It combines the power of a **Headless CMS** with a robust **template delivery engine**, enabling seamless mapping between JSON data models and graphic templates, with an out-of-the-box JavaScript viewer for web application integration.
+
+## 🎯 Key Features
+
+- **Dynamic Data Modeling** - Create and modify data schemas (JSON Schema) without writing code
+- **Drag&Drop Modeling & templating** - Create data model and template with drag&drop integrated builder
+- **Logic-less Templates** - Generate graphic templates using Handlebars syntax
+- **Powerful Search Engine** - Full-text search on textual, numerical, and geospatial data via Elasticsearch
+- **RESTful API** - Clean, documented APIs for any frontend or backend integration
+- **Ready-to-use JavaScript Viewer** - Drop-in library for instant entity rendering
+- **Microservices Architecture** - Scalable, containerized services orchestrated with Docker
+- **Admin GUI** - Modern TypeScript-based administration interface
+- **Multi-tenant Ready** - Support for multiple models, templates, and entity types
+
+## 🏗️ Architecture Overview
+
+DYMER consists of six microservices, each running in its own Docker container:
+
+Client Application (React, Vue, Angular, or Vanilla JS)
+-> DYMER-Viewer (JS Library)
+-> dymer-webserver (API Gateway)
+-> Individual services: dymer-entities, dymer-forms, dymer-templates, dymer-gui, dymer-services
+-> Databases: Elasticsearch and MongoDB
+
+
+┌─────────────────────────────────────────────────────────────┐
+│ Client Application 									      │
+│ Angular                                                     │
+└────────────────────┬────────────────────────────────────────┘
+	   				 │
+				 	 ▼
+┌─────────────────────────────────────────────────────────────┐
+│ DYMER-Viewer (JS Library)                                   │
+│ Handles rendering & user interaction                        │
+└────────────────────┬────────────────────────────────────────┘
+				  	 │ HTTP/REST
+					 ▼
+┌───────────────────────────────────────────────────────────┐
+│ dymer-webserver (API Gateway)                             │
+└────┬────────┬────────┬────────┬────────┬──────────────────┘
+	 │		  │		   │	    │        │
+     ▼        ▼        ▼        ▼        ▼
+┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐
+│ dymer-  │ │ dymer-  │ │ dymer-  │ │ dymer-  │ │ dymer-  │
+│ entities│ │ forms   │ │templates│ │ gui     │ │services │
+└────┬────┘ └────┬────┘ └────┬────┘ └────┬────┘ └────┬────┘
+     │           │           │           │           │
+     ▼           ▼           ▼           ▼           ▼
+┌─────────┐ ┌─────────┐ ┌─────────┐
+│Elastic- │ │ MongoDB │ │ MongoDB │
+│ search  │ │         │ │         │
+└─────────┘ └─────────┘ └─────────┘
+
+### Component Breakdown
+
+| Service | Purpose | Port (default) | Technology |
+|---------|---------|----------------|-------------|
+| `dymer-webserver` | API Gateway & routing | 8888 | Node.js + Express |
+| `dymer-entities` | Entity CRUD + search | 3001 | Node.js + Elasticsearch |
+| `dymer-forms` | Data model management | 3002 | Node.js + MongoDB |
+| `dymer-templates` | Template storage & rendering | 3003 | Node.js + Handlebars |
+| `dymer-gui` | Admin interface | 4200 | TypeScript + Modern Framework |
+| `dymer-services` | Auxiliary services | variable | Node.js |
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Docker (version >= 20.10)
+- Docker Compose (version >= 2.0)
+- Git
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/Engineering-Research-and-Development/DYMER.git
+cd DYMER
+
+# Configure port (optional)
+echo "HOST_PORT=8080" > .env
+
+# Start all services
+docker-compose up -d
+
+# Wait for services to be ready (approx. 30 seconds)
+docker-compose ps
+```
+
+
+#First Access
+Open your browser and navigate to: http://localhost:8080 (or your configured port)
+
+Login with default credentials:
+
+*Username: admin
+*Password: dymer
+
+Change your password immediately after first login
  
+#Verify Installation
+```bash
+# Check if all services are running
+docker-compose ps
 
-## Table of contents
-* [**Architecture**](#architecture)
-* [**Technologies**](#technologies)
-* [**Features**](#features)
-* [**Requirements**](#requirements)
-* [**Setup**](#setup)
-* [**How to use**](#how-to-use)
-* [**Important Notes**](#important-notes)
-* [**Troubleshoot**](#troubleshoot)
-* [**Contributors**](#contributors)
-* [**Status**](#status)
-* [**Licence**](#licence)
+# Test the API
+curl http://localhost:8080/api/v1/health
+
+# Expected response:
+# {"status":"ok","version":"3.0.1"}
+```
 
 
-## Architecture
 
-The DYMER consists of two main components:  
+# Check if all services are running
+docker-compose ps
 
-* DYMER-Core
-* DYMER-Viewer  
+# Test the API
+curl http://localhost:8080/api/v1/health
 
-**DYMER-Core** is based on a microservice architectural style with an approach to develop a single application as a suite of small services, each running in its own process and communicating with lightweight mechanisms using HTTP/REST protocols alongside JSON.  
-
-The diagram in Figure depicts the building block components: 
-![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/DymerArchitecture.png?raw=true)
-
-Each microservice is developed with a specific role, however among the main ones we can identify three that have the most impact on DEH:  
-
-- Templates microservice is responsible for generating graphic templates that can be used in order to display products and services using logic-less templates.  
-
-- Forms microservice is responsible for modeling data and metadata inherent to the products and services offered in DEH.  
-
-- Entities microservice is responsible for managing the storage and usage of the product and its services. 
-
-These microservice are developed with Express.js framework for Node.js, designed for building web applications and APIs, released as free and open-source software under the MIT License. 
-
-The information is stored in NoSQL Database that provides high performance, high availability, and automatic scaling. Service-Entities use Elasticsearch that is a distributed, open-source search and analytics engine for all types of data, including textual, numerical, geospatial, structured, and unstructured that stores data in JSON format.  
-
-Interaction with the **DYMER-Core** takes place through the **DYMER-Viewer** which is a fast, small, and feature-rich JavaScript library. Thanks to it, it is possible to interact with the platform facilitating the user in the use of data by offering a single search point and displaying the results in special graphic templates.  
-![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/render-list.png?raw=true)
-![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/render-list-detail.png?raw=true)
-![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/html_map.jpg?raw=true)
-![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/html_map_table.jpg.jpg?raw=true)
-![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/html_mapdetail.jpg?raw=true)
-![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/example_formrender.png?raw=true)
-The user will also be able to perform a search among the resources in the list, using a special search function. The search will obviously be gradually refined in the implementation, in its technical details and as a web module by adding the necessary filters that will become necessary from time to time. Next Figure shows how a user can access the search filters :  
-![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/render-list-filtersnippets.png?raw=true)
-The DYMER also implements administration functionality represented by a web-based application, to allow a user with Admin role to have complete management of Templates, Models or Forms and Entities. The next Figure shows the administration dashboard of DYMER component:
-![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/ws-dashboard.png?raw=true)
-
-By clicking on the Templates link menu, on the left in the drop-down list, the user can access to the list of the currently registered Templates, in order to view them or create new templates through Manage Template  functionality or modify the existing ones. 
-![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/ws-template-editor.png?raw=true)
-The same management features are available respectively for the models/forms 
-![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/ws-model-editor.png?raw=true)
-![](https://github.com/Engineering-Research-and-Development/DYMER/blob/master/screenshots/ws-manageEntity.png?raw=true)
-
+# Expected response:
+# {"status":"ok","version":"3.0.1"}
+  
+ 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
@@ -91,15 +154,15 @@ The same management features are available respectively for the models/forms
 
 | Description                                     | Language    | Version          |
 | :---------------------------------------------- | :---------: | :--------------: |
-| [Node.js][1]                                    | JavaScript  | 10.13.0          |
+| [Node.js][1]                                    | JavaScript  | 20.19.6         |
 | [Express][2]                                    | JavaScript  | 4.16.4           |
 | [Docker][3]                                     |             | 19.03.8          |
-| [AngularJS][4]                                  | JavaScript  | 1.7.9            |
-| [JQuery][5]                                     |             | 3.3              |
-| [Bootstrap][6]                                  |             | 3/4              |
+| [AngularJS][4]                                  | JavaScript  | 20          |
+| [JQuery][5]                                     |             | 3.7              |
+| [Bootstrap][6]                                  |             | 4/5              |
 | [Handlebars][7]                                 |             |                  |
-| [MongoDB][8]                                    |             | 3.6.9            |
-| [ElasticSearch][9]                              |             | 6.5.1            |
+| [MongoDB][8]                                    |             | 7.0.4          |
+| [ElasticSearch][9]                              |             | 8.11           |
 
 
 
@@ -111,7 +174,7 @@ The same management features are available respectively for the models/forms
 [6]:  https://getbootstrap.com/
 [7]:  https://handlebarsjs.com/
 [8]:  https://www.mongodb.com/try/download/community
-[9]:  https://www.elastic.co/downloads/past-releases/elasticsearch-6-5-1
+[9]:  https://www.elastic.co/
 
 
 ## Features
@@ -120,87 +183,24 @@ The same management features are available respectively for the models/forms
 * Generation of Graphics Templates that can be used in the display of products and services using logic-less templates
 * Managing the storage and use of the product and services.
 * Displaying and searching all types of data, including textual, numerical, geospatial, structured, and unstructured data. 
+ 
 
+## 🐛 Troubleshooting
 
+### Table of Contents
 
-## Requirements
+| Issue                                           | Solution  							  |
+| :---------------------------------------------- | :---------:							  |
+| [Port already in use]                           | Change HOST_PORT in .env file         |  
+| [Services not starting]                         | Run docker-compose logs to see errors |  
+| [Cannot connect to database]                    | Ensure MongoDB/Elasticsearch containers are healthy: docker-compose ps |  
 
-* Installed Docker (version >= 18) 
-* Installed Docker Compose
-
-
-## Setup
-
-After pulling the source code, open terminal, and go to the root folder and follow the next steps:
-
-* _Change_ `HOST_PORT` _in_ `.env` _if you want to run DYMER on a specific port. Default value is_ `HOST_PORT=8888`. 
-* _Run_ `docker-compose up` _in order to start DYMER services._
-* _If you want to run containers in the background run the next command_ `docker-compose up -d`
-
-
-
-## How to use
-
-After containers are up and running, you can access to DYMER admin panel at the next URL: `http://localhost:[HOST_PORT]`
-
-Default user credentials:
-
-* username: **_admin_**
-* password: **_dymer_**
-
-To use DYMER on the client-side and render Graphic templates, Dymer.viewer library should be included in the client application with proper configuration.
-
-
-
-#### _Example of configuration:_  
-
-```javascript
-<script>
-    var jsonDymerConfig = {
-        query: { // define the query to do in dymer
-            "instance": {
-                "index": index-entity  
-                "type":  type-entity  
-            }
-        },
-        endpoint: 'entity.search', // set the endpoint to execute the query of entities
-        viewtype: 'teaserlist', // set to use the 'Preview in List' template
-        target: {
-            teaserlist: { // configure where and how to render the preview of entities
-                    id: "#cont-MyList", // the entities will be render inside the element with id "#cont-MyList"
-                    action: "html", // set the method to insert the content (html/append/prepend)
-                    reload: false // if false the query will be executed only on page load 
-            },
-            fullcontent: {// configure where and how to render the detail of an entity
-                id: "#cont-MyList", // the entity will be rendered inside the element with id "#cont-MyList"
-                action: "html" // set the method to insert the content (html/append/prepend)
-            }
-        }
-    };
-    function mainDymerView() {
-        drawEntities(jsonDymerConfig);
-    }
- </script>
-```
-<script id="dymerurl" src="<dymerip>/public/cdn/js/dymer.viewer.js"> </script>
- <div id="cont-MyList"></div>
-
-
-
-## Important Notes
-
-The application image doesn't contain any data, so for the use of DYMER features, first you need to create Template, Model, and Entity.
-
-
-## Troubleshoot
-**TO DO**
-
+ 
 
 ## Contributors
 
-
-* [Marco Bernandino Romano](https://github.com/marco-romano-eng) 
-* [Marko Stojanovic](https://github.com/marest94) 
+* 
+* 
 
 ### Top contributors:
 
