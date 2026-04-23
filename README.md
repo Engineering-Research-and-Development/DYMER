@@ -42,39 +42,41 @@
 DYMER consists of six microservices, each running in its own Docker container:
 
 Client Application (React, Vue, Angular, or Vanilla JS)
--> DYMER-Viewer (JS Library)
--> dymer-webserver (API Gateway)
--> Individual services: dymer-entities, dymer-forms, dymer-templates, dymer-gui, dymer-services
--> Databases: Elasticsearch and MongoDB
+-DYMER-Viewer (JS Library)
+-dymer-webserver (API Gateway)
+-Individual services: dymer-entities, dymer-forms, dymer-templates, dymer-gui, dymer-services
+-Databases: Elasticsearch and MongoDB
 
 
-┌─────────────────────────────────────────────────────────────┐
-│ Client Application 									      │
-│ Angular                                                     │
-└────────────────────┬────────────────────────────────────────┘
-	   				 │
-				 	 ▼
-┌─────────────────────────────────────────────────────────────┐
-│ DYMER-Viewer (JS Library)                                   │
-│ Handles rendering & user interaction                        │
-└────────────────────┬────────────────────────────────────────┘
-				  	 │ HTTP/REST
-					 ▼
-┌───────────────────────────────────────────────────────────┐
-│ dymer-webserver (API Gateway)                             │
-└────┬────────┬────────┬────────┬────────┬──────────────────┘
-	 │		  │		   │	    │        │
-     ▼        ▼        ▼        ▼        ▼
-┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐
-│ dymer-  │ │ dymer-  │ │ dymer-  │ │ dymer-  │ │ dymer-  │
-│ entities│ │ forms   │ │templates│ │ gui     │ │services │
-└────┬────┘ └────┬────┘ └────┬────┘ └────┬────┘ └────┬────┘
-     │           │           │           │           │
-     ▼           ▼           ▼           ▼           ▼
-┌─────────┐ ┌─────────┐ ┌─────────┐
-│Elastic- │ │ MongoDB │ │ MongoDB │
-│ search  │ │         │ │         │
-└─────────┘ └─────────┘ └─────────┘
+```mermaid
+graph TB
+    Client[Client Application<br/>Angular]
+    Viewer[DYMER-Viewer JS Library<br/>Handles rendering & user interaction]
+    Gateway[dymer-webserver<br/>API Gateway]
+    
+    Entities[dymer-entities]
+    Forms[dymer-forms]
+    Templates[dymer-templates]
+    GUI[dymer-gui]
+    Services[dymer-services]
+    
+    Elasticsearch[Elasticsearch]
+    MongoDB1[MongoDB]
+    MongoDB2[MongoDB]
+    
+    Client --> Viewer
+    Viewer -->|HTTP/REST| Gateway
+    
+    Gateway --> Entities
+    Gateway --> Forms
+    Gateway --> Templates
+    Gateway --> GUI
+    Gateway --> Services
+    
+    Entities --> Elasticsearch
+    Forms --> MongoDB1
+    Templates --> MongoDB2
+```
 
 ### Component Breakdown
 
