@@ -134,7 +134,7 @@ docker-compose ps
 curl http://localhost:8080/api/v1/health
 
 # Expected response:
-# {"status":"ok","version":"3.0.1"}
+{"status":"ok","version":"3.0.1"}
 ```
 
 
@@ -179,13 +179,36 @@ curl http://localhost:8080/api/v1/health
 [9]:  https://www.elastic.co/
 
 
-## Features
 
-* Dynamic modeling of data and metadata inherent to the products and services offered
-* Generation of Graphics Templates that can be used in the display of products and services using logic-less templates
-* Managing the storage and use of the product and services.
-* Displaying and searching all types of data, including textual, numerical, geospatial, structured, and unstructured data. 
- 
+# DYMER - Documentation
+
+## Quick Links
+
+| Type | Guide |
+|------|-------|
+| 👥 **User Guide** | [Getting Started](docs/users/01-getting-started.md) → |
+| 👨‍💻 **Developer Guide** | [API Reference](docs/developers/02-api-reference.md) → |
+| ❓ **Help** | [FAQ](docs/users/07-faq.md) → |
+
+---
+
+## User Documentation
+
+Start here if you want to use DYMER to manage and display content:
+
+### 📖 Core Guides
+
+| # | Guide | What you'll learn |
+|---|-------|-------------------|
+| 1 | [Getting Started](docs/users/01-getting-started.md) | First login, basic concepts |
+| 2 | [Admin Guide](docs/users/02-admin-guide.md) | Admin panel features |
+| 3 | [Model Definition](docs/users/03-model-definition.md) | Create data structures |
+| 4 | [Template Creation](docs/users/04-template-creation.md) | Design visual layouts |
+| 5 | [Entity Management](docs/users/05-entity-management.md) | Add and edit content |
+| 6 | [Viewer Integration](docs/users/06-viewer-integration.md) | Show content on your website |
+| 7 | [FAQ](docs/users/07-faq.md) | Common questions solved |
+
+
 
 ## 🐛 Troubleshooting
 
