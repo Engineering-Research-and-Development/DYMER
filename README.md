@@ -28,7 +28,7 @@
 ## 🎯 Key Features
 
 - **Dynamic Data Modeling** - Create and modify data schemas (JSON Schema) without writing code
-- **Drag&Drop Modeling & templating** - Create data model and template with drag&drop integrated builder
+- **Drag&Drop Modeling & Templating** - Create data model and template with drag&drop integrated builder
 - **Logic-less Templates** - Generate graphic templates using Handlebars syntax
 - **Powerful Search Engine** - Full-text search on textual, numerical, and geospatial data via Elasticsearch
 - **RESTful API** - Clean, documented APIs for any frontend or backend integration
@@ -115,7 +115,7 @@ docker-compose ps
 ```
 
 
-#First Access
+## First Access
 Open your browser and navigate to: http://localhost:8080 (or your configured port)
 
 Login with default credentials:
@@ -125,7 +125,7 @@ Login with default credentials:
 
 Change your password immediately after first login
  
-#Verify Installation
+## Verify Installation
 ```bash
 # Check if all services are running
 docker-compose ps
