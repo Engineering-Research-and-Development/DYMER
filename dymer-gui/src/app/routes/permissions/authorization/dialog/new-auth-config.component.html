@@ -1,0 +1,149 @@
+<div class="bg-white dark:bg-zinc-950 rounded-2xl overflow-hidden shadow-xl border border-zinc-200 dark:border-zinc-800">
+  
+  <header class="px-6 py-5 border-b border-zinc-100 dark:border-zinc-900 bg-zinc-50/50 dark:bg-zinc-900/50">
+    <h2 class="text-sm font-bold uppercase tracking-widest text-zinc-800 dark:text-zinc-200">
+      {{ 'menu.permissions.authorizationAuthentication' | translate }}
+    </h2>
+  </header>
+
+  <div class="p-6">
+    <div class="flex items-center gap-1 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-xl w-fit mb-8">
+      <button (click)="activeTab = 'jwt'"
+              [class]="activeTab === 'jwt' 
+                ? 'px-6 py-2 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm rounded-lg transition-all' 
+                : 'px-6 py-2 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-all'"
+              class="text-xs font-bold uppercase tracking-wider">
+        JWT
+      </button>
+      <button (click)="activeTab = 'oidc'"
+              [class]="activeTab === 'oidc' 
+                ? 'px-6 py-2 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm rounded-lg transition-all' 
+                : 'px-6 py-2 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-all'"
+              class="text-xs font-bold uppercase tracking-wider">
+        OIDC
+      </button>
+    </div>
+
+
+
+@switch (activeTab) {
+  
+  @case ('jwt') {
+      <div class="animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden">
+          <header class="px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/30 dark:bg-zinc-900/30">
+            <h2 class="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 italic">
+              {{ 'menu.permissions.jwtConfig' | translate }}
+            </h2>
+          </header>
+          <div class="p-6">
+            <form [formGroup]="jwtConfigForm" class="space-y-6">
+          <div class="grid grid-cols-1 gap-6">
+            <div class="space-y-2">
+              <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em]">
+                {{ 'menu.permissions.requestUrl' | translate }}
+              </label>
+              <input formControlName="host" type="text"
+                     class="w-full h-10 px-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all">
+            </div>
+
+            <div formGroupName="prop" class="space-y-2">
+              <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em]">Secret Key</label>
+              <input formControlName="secretkey" type="password"
+                     class="w-full h-10 px-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all">
+            </div>
+
+            <label class="flex items-center gap-3 cursor-pointer group w-fit">
+              <div class="relative">
+                <input type="checkbox" formControlName="active" class="sr-only peer">
+                <div class="w-9 h-5 bg-zinc-200 dark:bg-zinc-800 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+              </div>
+              <span class="text-xs font-bold text-zinc-500 group-hover:text-zinc-800 dark:group-hover:text-zinc-200 uppercase tracking-wider transition-colors">
+                {{ 'menu.permissions.enabled' | translate }}
+              </span>
+            </label>
+          </div>
+
+          <div class="flex items-center justify-end gap-3 pt-6 border-t border-zinc-100 dark:border-zinc-900">
+            <button mat-dialog-close class="h-9 px-4 text-xs font-bold uppercase text-zinc-400 hover:text-zinc-600 transition-colors">
+              {{ 'menu.actions.cancel' | translate }}
+            </button>
+            <button (click)="submitJWTForm()" class="h-9 px-6 bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold uppercase rounded-lg hover:opacity-90 transition-all shadow-sm">
+              {{ 'menu.actions.save' | translate }}
+            </button>
+          </div>
+        </form>
+          </div>
+        </div>
+      </div>
+    }
+
+    @case ('oidc') {
+     <div class="animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden">
+          <header class="px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/30 dark:bg-zinc-900/30">
+            <h2 class="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 italic">
+              {{ 'menu.permissions.oidcConfig' | translate }}
+            </h2>
+          </header>
+            <div class="space-y-6">
+<form [formGroup]="OIDCConfigForm" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <div class="space-y-2 col-span-full">
+               <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em]">Request URL</label>
+               <input formControlName="host" type="text" class="w-full h-10 px-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all">
+            </div>
+
+            <div formGroupName="prop" class="grid grid-cols-1 md:grid-cols-2 gap-6 col-span-full">
+              <div class="space-y-2">
+                <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em]">Client ID</label>
+                <input formControlName="clientID" type="text" class="w-full h-10 px-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm outline-none focus:ring-2 focus:ring-zinc-100">
+              </div>
+              <div class="space-y-2">
+                <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em]">Client Secret</label>
+                <input formControlName="clientSecret" type="password" class="w-full h-10 px-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm outline-none focus:ring-2 focus:ring-zinc-100">
+              </div>
+              <div class="space-y-2 col-span-full">
+                <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em]">Authorization URL</label>
+                <input formControlName="authorizationURL" type="text" class="w-full h-10 px-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm outline-none">
+              </div>
+              </div>
+          </div>
+
+          <label class="flex items-center gap-3 cursor-pointer group w-fit">
+            <div class="relative">
+              <input type="checkbox" formControlName="active" class="sr-only peer">
+              <div class="w-9 h-5 bg-zinc-200 dark:bg-zinc-800 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+            </div>
+            <span class="text-xs font-bold text-zinc-500 group-hover:text-zinc-800 dark:group-hover:text-zinc-200 uppercase tracking-wider transition-colors">
+              Enabled
+            </span>
+          </label>
+
+          <div class="flex items-center justify-end gap-3 pt-6 border-t border-zinc-100 dark:border-zinc-900">
+            <button mat-dialog-close class="h-9 px-4 text-xs font-bold uppercase text-zinc-400 transition-colors">
+              {{ 'menu.actions.cancel' | translate }}
+            </button>
+            <button (click)="submitOIDCForm()" class="h-9 px-6 bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold uppercase rounded-lg hover:opacity-90 transition-all shadow-sm">
+              {{ 'menu.actions.save' | translate }}
+            </button>
+          </div>
+        </form>
+           </div>
+        </div>
+      </div>
+    }
+
+    @default {
+      <div class="py-20 text-center text-zinc-400">
+        <p class="text-xs uppercase tracking-widest font-bold">Seleziona un'opzione per visualizzare i dati</p>
+      </div>
+    }
+  }
+
+
+
+     
+  </div>
+</div>

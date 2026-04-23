@@ -1,0 +1,13 @@
+// Import the highlight.js theme directly into the component's styles.
+// This is the recommended way to handle styles for encapsulated components.
+// Sass will automatically look inside the `node_modules` folder.
+
+@import "highlight.js/styles/atom-one-dark.css";
+
+/*
+ * Aggiunge un offset per lo scroll degli anchor link per evitare
+ * che vengano coperti dall'header fisso.
+ */
+[id] {
+  scroll-margin-top: 100px; /* Regola questo valore in base all'altezza del tuo header */
+}

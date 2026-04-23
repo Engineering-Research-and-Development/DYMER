@@ -1,0 +1,139 @@
+.vocab-list .mat-mdc-list-item {
+  cursor: pointer;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  height: auto !important;
+  padding-top: 10px;
+  padding-bottom: 10px;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  &.selected-vocab {
+    background-color: #e8f0fe;
+  }
+}
+
+.vocab-item {
+  &:last-child {
+    border-bottom: none;
+  }
+}
+.vocab-details {
+  padding: 16px;
+  background-color: #fafafa;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.vocab-title {
+  font-weight: 500;
+}
+
+.vocab-toggle-icon {
+  margin-left: auto;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.vocab-description-details {
+  font-style: italic;
+  color: rgba(0, 0, 0, 0.6);
+  margin-bottom: 16px;
+}
+
+.ui-tree-handle {
+  padding: 8px;
+  border-radius: 4px;
+  &:hover {
+    background-color: #f5f5f5;
+  }
+}
+
+.node-value {
+  font-style: italic;
+  margin-left: 8px;
+  margin-right: 16px;
+}
+
+.node-locales-container {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: #555;
+}
+
+.node-locale {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+textarea[matInput] {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.add-vocab-form {
+  padding-top: 16px;
+  padding-bottom: 16px;
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    button[type='submit'] {
+      width: 100%;
+    }
+  }
+}
+
+.add-vocab-form-import {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+
+  .csv-upload-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    > button {
+      flex-shrink: 0;
+    }
+
+    > mat-form-field {
+      flex-grow: 1;
+    }
+  }
+
+  > div:last-child > button[type='submit'] {
+    width: 100%;
+  }
+}
+
+.item-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.language-fields-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.custom-tab-label {
+  display: flex;
+  align-items: center;
+  
+  span {
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+}
+.csv-upload-wrapper {
+  align-items: baseline;
+}

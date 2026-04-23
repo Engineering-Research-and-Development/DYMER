@@ -1,0 +1,7 @@
+<div class="matero-page-header-inner">
+  <h1 class="matero-page-title">{{title | translate}}</h1>
+  <small>{{subtitle}}</small>
+  @if (!hideBreadcrumb) {
+    <breadcrumb [nav]="nav" />
+  }
+</div>

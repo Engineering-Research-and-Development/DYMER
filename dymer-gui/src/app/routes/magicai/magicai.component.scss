@@ -1,0 +1,499 @@
+.header, .chat-list .message, .typing-form {
+    margin: 0 auto;
+    max-width: 900px !important; /* aumentata la larghezza massima del layout principale */
+}
+.header {
+    margin-top: 6vh;
+    padding: 1rem;
+    overflow-x: hidden;
+}
+body.hide-header .header {
+    margin: 0;
+    display: none;
+}
+.header :where(.title, .subtitle) {
+    color: var(--text-color);
+    font-weight: 500;
+    line-height: 4rem;
+}
+.header .title {
+    width: fit-content;
+    font-size: 3rem;
+    background-clip: text;
+    background: linear-gradient(to right, #4285f4, #d96570);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.header .subtitle {
+    font-size: 2.6rem;
+    color: var(--subheading-color);
+} 
+.suggestion-list {
+    width: 100%;
+    list-style: none;
+    display: flex;
+    gap: 1.25rem;
+    margin-top: 9.5vh;
+    overflow: hidden;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+}
+.suggestion-list .suggestion {
+    cursor: pointer;
+    padding: 1.25rem;
+    width: 222px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    border-radius: 0.75rem;
+    justify-content: space-between;
+    background: #f0f0f0;
+    transition: 0.2s ease;
+    border: 1px solid #cccccc;
+}
+.suggestion-list .suggestion:hover {
+    background: var(--secondary-hover-color);
+}
+.suggestion-list .suggestion :where(.text, .icon) {
+    font-weight: 400;
+    color: var(--text-color);
+}
+.suggestion-list .suggestion .icon {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    font-size: 1.3rem;
+    margin-top: 2.5rem;
+    align-self: flex-end;
+    align-items: center;
+    border-radius: 50%;
+    justify-content: center;
+    color: var(--text-color);
+    background: var(--primary-color);
+}
+.chat-list {
+    padding: 2rem 1rem 12rem;
+    height: 100vh;
+    overflow-y: scroll;
+    scrollbar-width: thin;
+    scrollbar-color: #999 transparent;
+}
+.chat-list .message.incoming {
+    margin-top: 1.5rem;
+}
+.chat-list .message .message-content {
+    display: flex;
+    gap: 1.5rem;
+    width: 100%;
+    align-items: center;
+}
+.chat-list .message .text {
+    color: var(--text-color);
+    white-space: pre-wrap;
+}
+.chat-list .message.error .text {
+    color: #e55865;
+}
+.chat-list .message.loading .text {
+    display: none;
+}
+.chat-list .message .avatar {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    align-self: flex-start;
+}
+.chat-list .message.loading .avatar {
+    animation: rotate 3s linear infinite;
+}
+@keyframes rotate {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+.chat-list .message .icon {
+    color: var(--text-color);
+    cursor: pointer;
+    height: 35px;
+    width: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    font-size: 1.25rem;
+    margin-left: 3.5rem;
+    visibility: hidden;
+}
+.chat-list .message .icon.hide {
+    visibility: hidden;
+}
+.chat-list .message:not(.loading, .error):hover .icon:not(.hide){
+    visibility: visible;
+}
+.chat-list .message .icon:hover {
+    background: var(--secondary-hover-color);
+}
+.chat-list .message .loading-indicator {
+    display: none;
+    gap: 0.8rem;
+    width: 100%;
+    flex-direction: column;
+}
+.chat-list .message.loading .loading-indicator {
+    display: flex;
+}
+.chat-list .message .loading-indicator .loading-bar {
+    height: 11px;
+    width: 100%;
+    border-radius: 0.135rem;
+    background-position: -800px 0;
+    background: linear-gradient(to right, #4285f4, var(--primary-color), #4285f4);
+    animation: loading 3s linear infinite;
+}
+.chat-list .message .loading-indicator .loading-bar:last-child {
+    width: 70%;
+}
+@keyframes loading {
+    0% {
+        background-position: -800px 0;
+    }
+    100% {
+        background-position: 800px 0;
+    }
+}
+.typing-area :where(.typing-form, .action-buttons) {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.input-wrapper {
+    flex-grow: 1;
+    width: 100%;
+    height: 56px;
+    display: flex;
+    position: relative;
+}
+.typing-form .typing-input {
+    height: 100%;
+    width: 100%;
+    border: 1px solid #cccccc;
+    outline: none;
+    resize: none;
+    font-size: 1rem;
+    color: var(--text-color);
+    padding: 1.1rem 4rem 1.1rem 1.5rem;
+    border-radius: 100px;
+    background: #f0f0f0;
+}
+:host-context(.theme-dark) .typing-form .typing-input {
+    background: #3a3b48;
+    border-color: #4a4b58;
+    color: #ffffff;
+}
+.typing-form .typing-input:focus {
+    background: var(--secondary-hover-color);
+}
+.typing-form .typing-input::placeholder {
+    color: var(--placeholder-color);
+}
+.typing-area .icon {
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    font-size: 1.4rem;
+    color: var(--text-color);
+    align-items: center;
+    justify-content: center;
+    background: var(--secondary-color);
+    transition: 0.2s ease;
+}
+.typing-area .icon:hover {
+    background: var(--secondary-hover-color);
+}
+.typing-form #send-message-button {
+    position: static !important;
+    right: auto !important;
+    outline: none;
+    border: none;
+    transform: none !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    margin: 0 !important;
+    background: transparent;
+    transition: transform 0.2s ease;
+}
+.typing-form .typing-input:valid ~ #send-message-button {
+    transform: none !important;
+}
+.typing-area .disclaimer-text {
+    text-align: center;
+    font-size: 0.85rem;
+    margin-top: 1rem;
+    color: var(--placeholder-color);
+}
+.typing-area .input-wrapper {
+  flex-grow: 1;
+  height: 56px;
+  display: flex;
+  position: relative;
+}
+.typing-area .action-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+.prompt-main-controls {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%; 
+  
+}
+
+.chat-response { 
+  max-height: 50vh; /* Imposta un'altezza massima per l'area della chat */ 
+  overflow-y: scroll; /* Mostra sempre la barra di scorrimento verticale */
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Responsive media query code for small screen */
+@media (max-width: 768px) {
+    .header :is(.title, .subtitle) {
+        font-size: 2rem;
+        line-height: 2.6rem;
+    }
+    .header .subtitle {
+        font-size: 1.7rem;
+    }
+    .typing-area :where(.typing-form, .action-buttons) {
+        gap: 0.4rem;
+    }
+    .typing-form .input-wrapper {
+        height: 50px;
+    }
+    .typing-form .typing-input {
+        padding: 1.1rem 3.5rem 1.1rem 1.2rem;
+    }
+    .typing-area .icon {
+        height: 50px;
+        width: 50px;
+    }
+    .typing-area .disclaimer-text {
+        font-size: 0.75rem;
+        margin-top: 0.5rem;
+    }
+}
+ 
+
+
+
+.ai-card { max-width: 600px; }
+.messages { max-height: 320px; overflow: auto; padding: 8px; }
+.message { margin-bottom: 12px; padding: 8px; border-radius: 6px; }
+.message.user { background: #e8f1ff; text-align: right; }
+.message.bot { background: #f3f3f3; text-align: left; }
+.message .meta { font-size: 11px; color: #666; margin-bottom: 6px; }
+.send-form { display:flex; gap:8px; align-items:center; width:100%; }
+.send-form .full { flex:1; }
+
+.chat {
+  .message { margin: 12px 0; }
+  .meta { font-size: 0.75rem; color: #666; margin-bottom: 6px; }
+
+  .text {
+    margin-bottom: 20px; /* spazio tra testo e header del codice */
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--text-color, #222);
+  }
+
+  .code-block-wrapper {
+    margin-top: 12px;
+    border-radius: 8px;
+    background: var(--code-bg, #0b1220);
+    padding: 12px;
+    color: #e6edf3;
+    position: relative;
+    overflow: visible;
+  }
+
+  /* header ora nel flusso: crea spazio sopra/pre del codice e allinea il pulsante a destra */
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* spinge il pulsante all'estrema destra del wrapper */
+    width: 100%;               /* garantisce tutta la larghezza */
+    margin-top: 10px;         /* spazio sopra il pulsante */
+    margin-bottom: 18px;      /* spazio tra header (pulsante) e il codice */
+    padding: 0 4px;
+  }
+
+  .copy-area {
+    /* rimane nel flusso e viene spinta a destra */
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: static;
+    padding-top: 6px;   /* ulteriore spazio sopra il pulsante */
+    padding-bottom: 6px;/* spazio sotto il pulsante */
+  }
+
+  .copy-button {
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    padding: 0 10px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.06);
+    float: none; /* evita che il pulsante venga flottato da altre regole */
+    margin-top: 2px;  /* piccolo offset per non aderire al bordo superiore */
+    margin-bottom: 2px;
+  }
+
+  pre.hljs {
+    margin: 0;
+    padding: 14px;
+    padding-top: 12px;   /* meno spazio sopra: header ora gestisce lo spazio */
+    padding-bottom: 18px;
+    border-radius: 6px;
+    background: transparent;
+    overflow: auto;
+    position: relative;
+  }
+}
+
+/* opzionale: contrasto icona/material */
+.material-icons { font-size: 18px; vertical-align: middle; }
+
+/* regole di fallback più specifiche nel caso altre definizioni sovrascrivano */
+.code-block-wrapper > .code-header {
+  display: flex !important;
+  width: 100% !important;
+  justify-content: flex-end !important;
+}
+.code-block-wrapper > .code-header .copy-area {
+  margin-left: auto !important;
+  position: static !important;
+}
+
+/* Bottone icona per delete */
+.icon-button {
+  background: transparent;
+  border: none;
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+}
+
+/* Nasconde il testo ma lo lascia disponibile per screen reader */
+.visually-hidden {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+  border: 0;
+  padding: 0;
+  margin: -1px;
+}
+
+/* assicurati che le material icons siano visibili come icona */
+.material-symbols-rounded { font-size: 20px; line-height: 1; }
+
+.prompt-main-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;         /* spazio tra input, send e delete */
+}
+
+.input-wrapper {
+  flex: 1 1 auto;    /* input occupa lo spazio disponibile */
+  min-width: 0;      /* evita overflow in flexbox */
+}
+
+.typing-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* mantieni aspetto precedente del pulsante INVIA */
+.send-button {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 12px;
+  font-size: 0.9rem;
+}
+
+/* icona delete rimane a destra */
+.icon-button {
+  flex: 0 0 auto;
+  background: transparent;
+  border: none;
+  padding: 6px;
+  border-radius: 4px;
+}
+
+/* piccolo aggiustamento su schermi stretti */
+@media (max-width: 520px) {
+  .prompt-main-controls { gap: 6px; }
+  .btn-label { display: none; } /* nasconde la label testuale se manca spazio */
+}
+
+/* Reduce vertical space between the top border of the card and the header title */
+.card-body .header {
+  padding-top: 0px; /* was larger before — lower value brings title closer to the top */
+}
+
+/* Remove extra default margin the title may add */
+.card-body .header .title {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+/* If subtitle still creates gap, tighten its margins */
+.card-body .header .subtitle {
+  margin-top: 4px;
+}
+
+/* Wrapper specifico per la pagina MagicAI: garantisce larghezza ridotta e centratura */
+.magicai-container,
+.magicai-container > mat-card,
+.magicai-container mat-card,
+.magicai-container .card-body,
+.magicai-container .ai-card {
+  max-width: 1100px !important;
+  width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box !important;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+/* fallback altamente specifico se altre regole sovrascrivono */
+:host ::ng-deep .magicai-container > mat-card,
+:host ::ng-deep .magicai-container mat-card {
+  max-width: 900px !important;
+  width: 100% !important;
+}

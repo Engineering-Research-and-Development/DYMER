@@ -1,688 +1,721 @@
-// Load express
-//const Keycloak = require('keycloak-connect');
+// ===========================================================================
+// IMPORTS
+// ===========================================================================
 const express = require("express");
-var url = require("url");
-require("./config/config.js");
-const util = require("./utility");
-const app = express();
+const session = require('express-session');
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
-const morgan = require('morgan');
 const cors = require('cors');
-const nameFile = path.basename(__filename);
-const logger = require('./routes/dymerlogger');
-var jsonResponse = require('./jsonResponse');
-//USO OIDC  
-//var passport = require('passport')
-const router = express.Router();
-//const appRoutes=require('./app/routes/api')(router);
+const helmet = require('helmet');
+const axios = require('axios');
+const mongoose = require("mongoose");
+const swaggerUi = require('swagger-ui-express');
 const jwt = require('jsonwebtoken');
-var axios = require('axios');
-var qs = require('qs');
-var dserviceRoutes = require('./routes/dservice');
-var templateRoutes = require('./routes/template');
-var formRoutes = require('./routes/form');
-var entityRoutes = require('./routes/entity');
-var system = require('./routes/routes-v1');
-var publicRoutes = require('./routes/publicfiles');
-var appRoutes = require('./routes/appRoutes');
-//var dauthRoutes = require('./routes/dauth');
-var authenticateRoutes = require('./routes/authenticate');
-var dohtmlpage = require('./routes/dohtmlpage');
-//const ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn;
-const session = require('express-session');
-var cookieParser = require('cookie-parser');
-var memoryStore = new session.MemoryStore();
+const readline = require('readline');
 
+// ===========================================================================
+// LOCAL IMPORTS & CONFIG
+// ===========================================================================
+require("./config/config.js"); // Populates global.configService (Legacy approach)
+const util = require("./utility.js");
+const logger = require('./routes/dymerlogger.js');
+const jsonResponse = require('./jsonResponse.js');
+
+// Models
+require("./models/DymerUser.js");
+const DymerUser = mongoose.model("DymerUser");
+
+// Routes Import
+const dserviceRoutes = require('./routes/dservice.js');
+const templateRoutes = require('./routes/template.js');
+const formRoutes = require('./routes/form.js');
+const entityRoutes = require('./routes/entity.js');
+const system = require('./routes/routes-v1.js');
+const publicRoutes = require('./routes/publicfiles.js');
+const appRoutes = require('./routes/appRoutes.js');
+const authenticateRoutes = require('./routes/authenticate.js');
+const dohtmlpage = require('./routes/dohtmlpage.js');
+const publicdemoDonwlonad = require("./routes/demodownloads.js");
+// const recoverForms = require("./routes/formfiles"); // present in the legacy server
+
+// Swagger JSON (Load once in memory)
+const swaggerFileOriginal = require('./swagger_webserver.json');
+
+// Constants & Env
+const app = express();
+const router = express.Router();
+const nameFile = path.basename(__filename);
 const gblConfigService = global.configService;
-const portExpress = gblConfigService.port;
+const portExpress = process.env.PORT || gblConfigService.port;
 const protocol = gblConfigService.protocol;
 const appName = gblConfigService.app_name;
-const contextPath = util.getContextPath( 'webserver' );
-
- const swaggerUi = require( 'swagger-ui-express' )
- const swaggerFile = require( './swagger_webserver.json' )  
-
+const contextPath = util.getContextPath('webserver');
 const host = gblConfigService.ip + ":" + portExpress;
-const serverUrl = protocol + "://" + host + contextPath
+const serverUrl = protocol + "://" + host + contextPath;
 const docPath = '/api/doc';
+const SESSION_SECRET = process.env.SESSION_SECRET || 'eb3292aa242ba35c9122be4f52cd25efa4dd0a9f';
 
-const options = {
-	 swaggerOptions : {
-		docExpansion : 'none'
-	} 
+// ===========================================================================
+// MIDDLEWARE SETUP
+// ===========================================================================
+// 1. Security Headers (Helmet)
+app.use(helmet({
+  contentSecurityPolicy: false, // Disable default CSP (configure via reverse-proxy or templates if needed)
+  crossOriginEmbedderPolicy: false,
+  /*AC - Cross Origin*/
+  crossOriginResourcePolicy: { policy: 'cross-origin' }
+}));
+
+// 2. CORS Configuration (prefer allow-list if available)
+const allowedOrigins = (util.getAllowedOrigins && util.getAllowedOrigins("dymer-websever")) || ["*"]; // fallback
+const useOpenCors = process.env.OPEN_CORS === 'true' || allowedOrigins.includes("*");
+if (useOpenCors) {
+  app.use(cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE","PATCH", "OPTIONS"],
+  }));
+  app.options('*', cors());
+} else {
+  // const corsOptions = {
+  //   origin: (origin, callback) => {
+  //     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+  //       callback(null, true);
+  //     } else {
+  //       logger.warn(`CORS blocked request from: ${origin}`);
+  //       callback(new Error('Not allowed by CORS'));
+  //     }
+  //   },
+  //   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  //   allowedHeaders: ['Content-Type', 'Authorization', 'x-xsrf-token', 'extrainfo', 'dymertoken', 'requestjsonpath', 'reqfrom'],
+  //   credentials: true,
+  // };
+  // app.use(cors(corsOptions));
+  // app.options('*', cors(corsOptions));
+  const corsOptions = { // CAMBIATO QUESTO
+  origin: (origin, cb) => cb(null, true),
+  credentials: true,
+  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'x-xsrf-token',
+    'extrainfo',
+    'dymertoken',
+    'requestjsonpath',
+    'reqfrom'
+  ]
 };
 
-app.use(cookieParser());
-app.use(session({
-                    secret:            'thisShouldBeLongAndSecret',
-                    resave:            false,
-                    saveUninitialized: true,
-                    store:             memoryStore,
-                    name:              "nodejscookie",
-                    cookie:            {
-                        path: '/'
-                    },
-                }));
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
-var recoverForms = require("./routes/formfiles");
-var updatejson=false;
-var publicdemoDonwlonad = require("./routes/demodownloads");
-//const swaggerAutogen = require( "swagger-autogen" );
-
- app.use( docPath, [loadUserInfo, util.checkIsAdmin], swaggerUi.serve, swaggerUi.setup( swaggerFile, options ) );
- 
- app.get( '/swaggerdoc', [ loadUserInfo, util.checkIsAdmin ], ( req, res ) => {
-   
-    let originalRef = req.get('host');
-    var serverUrl_ = protocol + "://" + originalRef + contextPath
-    if(!updatejson){
-        let content = JSON.parse(fs.readFileSync('swagger_webserver.json', 'utf8'));
-       
-        content.servers[0].url = serverUrl_;
-        content.servers[1].url = serverUrl_+'/api/templates';
-        content.servers[2].url = serverUrl_+'/api/dservice';
-        content.servers[3].url = serverUrl_+'/api/forms';
-        content.servers[4].url = serverUrl_+'/api/entities';
-        
-        fs.writeFileSync('swagger_webserver.json', JSON.stringify(content));
-        
-        updatejson=true;
-    }
-
-    const data = {swaggerDocUrl : serverUrl_ + docPath};
-    res.json( data );
-} );
- 
-
-app.get('/deletelog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {
-    // #swagger.tags = ['Webserver']
-
-    var ret = new jsonResponse();
-    var filetype = req.params.filetype;
-    // const dymeruser = util.getDymerUser(req, res);
-    // const dymerextrainfo = dymeruser.extrainfo;
-    logger.flushfile(filetype);
-    // logger.i
-    ret.setSuccess(true);
-    ret.setMessages("Deleted");
-    return res.send(ret);
-});
-
-app.get('/openLog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {
-    // #swagger.tags = ['Webserver']
-
-    var filetype = req.params.filetype;
-    //console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
-    return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
-});
-app.get('/checkservice', [loadUserInfo, util.checkIsPortalUser], (req, res) => {
-    // #swagger.tags = ['Webserver']
-
-    var ret = new jsonResponse();
-    let infosize = logger.filesize("info");
-    let errorsize = logger.filesize("error");
-    let regex = /(?<!^).(?!$)/g;
-    let infomserv = JSON.parse( JSON.stringify( gblConfigService ) );
-    infomserv.adminPass = (infomserv.adminPass).replace(regex, '*');
-    infomserv.adminUser = (infomserv.adminUser).replace(regex, '*');
-    ret.setData({
-                    info:             {
-                        size: infosize
-                    },
-                    error:            {
-                        size: errorsize
-                    },
-                    infomicroservice: infomserv
-                });
-    ret.setMessages("Service is up");
-    res.status(200);
-    ret.setSuccess(true);
-    return res.send(ret);
-});
-
-app.use(express.static(__dirname + '/public'));
-//app.use(express.static(__dirname + global.gConfig.services.webserver["context-path"] + 'public'));
-//app.use(express.static(global.gConfig.services.webserver["context-path"] + 'public'));
-//app.use('/public', express.static('public'));
-app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    //    res.header("X-Frame-Option", "allow-from http://localhost:8080/");
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    var pathname = req.url;
-    //  console.log(pathname);
-    /*if (pathname == ("/login")) {
-
-        res.setHeader(
-            'Content-Security-Policy',
-            "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:; script-src 'self'  ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
-        );
-    }*/
-
-    // if (pathname.includes('/app/views/authentication/views/login.html')) {
-    /* if (pathname == ("/login")) {
-         console.log(pathname);
-         res.setHeader(
-             'Content-Security-Policy',
-             "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:; script-src 'self' 'nonce-8IBTHwOdqNKAWeKl7plt8g==' ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
-         );
-       //res.setHeader(
-       //      'Content-Security-Policy',
-      //       "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:; script-src 'self'  ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
-       //  )
-       //res.setHeader(
-       //      'Content-Security-Policy',
-      //       "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
-       //  );
-         return res.sendFile(path.join(__dirname + "/public/app/views/authentication/views/login.html"));
-     }*/
-    next();
-});
-
-app.use(cors());
-app.set('trust proxy', true);
-
-// 
-app.use("/public/", express.static(path.join(__dirname.replace(contextPath, ""), "public/")));
-
-app.use("/app/", express.static(path.join(__dirname.replace(contextPath, ""), "app/")));
-
-app.use("/public/", publicRoutes);
-
-app.use("/app/", appRoutes);
-
-app.use("/api/portalwebpage/", dohtmlpage);
-
-app.get('/api2/retriveinfoidpadmin', (req, res, next) => {
-    // #swagger.tags = ['Webserver']
-
-    if (true) {
-        //      console.log("retriveinfo.AAAAAAAAAAAAAAA", pp);
-        var objuser = {
-            isGravatarEnabled:      false,
-            authorization_decision: '',
-            roles:                  [{role: 'app-admin'}],
-            app_azf_domain:         '',
-            id:                     'admin@dymer.it',
-            gid:                    0,
-            app_id:                 'dymer',
-            email:                  'admin@dymer.it',
-            username:               'admin@dymer.it'
-        };
-
-        var obj_isi = {};
-        obj_isi.roles = objuser.roles;
-        let base64DYM = new Buffer(JSON.stringify(objuser)).toString("base64")
-        let base64DYMisi = new Buffer(JSON.stringify(obj_isi)).toString("base64")
-        let dr_value = new Buffer(JSON.stringify(obj_isi.roles)).toString("base64");
-        var objtoSend = {"DYM": base64DYM, "DYMisi": base64DYMisi, "d_rl": dr_value}
-        objtoSend.d_uid = objuser.id;
-        objtoSend.d_appuid = 0;
-        objtoSend.d_gid = objuser.gid;
-        res.send(objtoSend);
-
-    } else {
-
-        res.send({objuser});
-    }
-    //   console.log("---------FINE-------------");
-    // res.send(req.session.passport.user);
-
-});
-
-app.get('/api2/retriveinfoidp', (req, res, next) => {
-    // #swagger.tags = ['Webserver']
-
-    //   console.log("--------INIZIO retriveinfoIDP--------------");
-    //   console.log("retriveinfo", req.session);
-    //   console.log("retriveinfo req.isAuthenticated()", req.isAuthenticated());
-    const authHeader = req.headers.authorization;
-
-    var pp = jwt.decode(req.session.passport.user.access_token);
-    //   console.log("retriveinfo pp", pp);
-    //var pp = jwt.decode(JSON.parse(token));
-    if (pp != undefined) {
-
-        //      console.log("retriveinfo.AAAAAAAAAAAAAAA", pp);
-        var objuser = {
-            isGravatarEnabled:      false,
-            authorization_decision: '',
-            roles:                  [],
-            app_azf_domain:         '',
-            id:                     '',
-            app_id:                 '',
-            email:                  'test@test.it',
-            extrainfo:              {
-                companyId: 'ccc',
-                groupId:   'ccc',
-                cms:       'lfr',
-                userId:    'ccc'
-            },
-            username:               pp.email
-        };
-        (pp.realm_access.roles).forEach(element => {
-            objuser.roles.push({'role': element, id: ''});
-        });
-        var obj_isi = {};
-        obj_isi.roles = objuser.roles;
-        let base64DYM = new Buffer(JSON.stringify(objuser)).toString("base64")
-        let base64DYMisi = new Buffer(JSON.stringify(obj_isi)).toString("base64")
-        //  console.log("retriveinfo objuser", objuser);
-
-        var objtoSend = {"DYM": base64DYM, "DYMisi": base64DYMisi}
-        objtoSend.d_uid = pp.email;
-        objtoSend.d_appuid = pp.sub;
-        objtoSend.d_gid = 0;
-        res.send(objtoSend);
-
-    } else {
-
-        res.send({objuser});
-    }
-    //   console.log("---------FINE-------------");
-    // res.send(req.session.passport.user);
-
-});
-
-app.post('/api2/retriveinfo', loadUserInfo, async (req, res, next) => {
-    // #swagger.tags = ['Webserver']
-
-    //   res.send({ "ttttttt": "rrrrrrrrr" });
-
-    // console.log("retriveinfo", req.headers);
-    // console.log("session1.userid", req.session);
-    // console.log("req.originalUrl", req.originalUrl);
-    // console.log("req.hostname", req.hostname);
-    const hdymeruser = req.headers.dymeruser;
-    const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
-    //console.log('hdymeruser2',hdymeruser);
-    res.clearCookie("DYMisi");
-    res.cookie("dymercookie", 'value', {expire: 360000 + Date.now()});
-    res.cookie("dymerdoc", hdymeruser, {expire: 360000 + Date.now()});
-    //   console.log("retriveinfo req.isAuthenticated()", req.isAuthenticated());
-    const authHeader = req.headers.authorization;
-    var obj_isi = {};
-    let dr_value = new Buffer(JSON.stringify(dymeruser.roles)).toString("base64");
-    var url_dservice = util.getServiceUrl("dservice") + '/api/v1/perm/permbyroles'; // Get micro-service endpoint
-    let response_perm = await axios.get(url_dservice, {params: {role: dymeruser.roles}})
-    let listprm_value = new Buffer(JSON.stringify(response_perm.data.data)).toString("base64");
-    var objuser = {
-        "d_uid":    dymeruser.id,
-        "d_appuid": dymeruser.app_id,
-        "d_gid":    dymeruser.gid,
-        "d_rl":     dr_value,
-        "DYM":      hdymeruser,
-        "d_lp":     listprm_value
-    };
-    // console.log("api retriveinfo", JSON.stringify(objuser));
-    logger.info(nameFile + ' | /api2/retriveinfo :' + JSON.stringify(objuser));
-    res.send(objuser);
-});
-app.get('/info/:key?', (req, res, next) => {
-    // #swagger.tags = ['Webserver']
-
-    // var pjson = require('./package.json');
-    var key = req.params.key;
-
-    //  let infodymer = { "version": global.gConfig.dymer.version };
-    let infodymer = global.gConfig.dymer;
-    let htmlsend_hd =
-            '<!DOCTYPE html>' +
-            '<html lang="en"><head>' +
-            '<meta charset="utf-8">' +
-            '<meta http-equiv="X-UA-Compatible" content="IE=edge">' +
-            '<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">' +
-            '<meta name="description" content="DYnamic Information ModElling & Rendering">' +
-            '<meta name="author" content="ENG">' +
-            '<title> DYMER</title> ' +
-            '<link rel="icon" type="image/png" href="public\\cdn\\img\\dymer-logo.png"/>' +
-                              
-            '<link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">' +
-            '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" integrity="sha512-jnSuA4Ss2PkkikSOLtYs8BlYIeeIK1h99ty4YfvRPAlzr377vr3CXDb7sb7eEEBYjDtcYj+AjBH3FLv5uSJuXg==" crossorigin="anonymous" referrerpolicy="no-referrer" />' +
-            '<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>' +
-            '<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js" integrity="sha512-TPh2Oxlg1zp+kz3nFA0C5vVC6leG/6mm1z9+mA81MI5eaUVqasPLO8Cuk4gMF4gUfP5etR73rgU/8PNMsSesoQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>' +
-            '<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js" integrity="sha512-ykZ1QQr0Jy/4ZkvKuqWn4iF3lqPZyij9iRv6sGqLRdTPkY69YX6+7wvVGmsdBbiIfN/8OdsI7HABjvEok6ZopQ==" crossorigin="anonymous" referrerpolicy="no-referrer">' + '</script>' +
-            ' </head > ' +
-
-            '<body  style="background-color:#ebecf2;"> ';
-    let htmlcontainer = '<div class="container"> <div class="row justify-content-center">' +
-        '<div class="col-xl-10 col-lg-12 col-md-9" > ' +
-        '<div class="card o-hidden border-0 shadow-lg my-5">' +
-        '<div class="card-body p-0">' +
-        '<div class="row">' +
-        '<div class="col-lg-6 d-none d-lg-block bg-login-image" style=\'background:url("public\cdn\img\bg-ver.jpg");background-position: center;background-size: cover; min-height: 280px; \'>' + '</div>' +
-        '<div class="col-lg-6">' +
-        '<div class="p-5">' + '<div class="row">' +
-        '<div class=" col-12">' +
-        '<h1 class="h4   mb-4 text-center"  style="color:#023d7d;">Welcome to DYMER</h1>' +
-        '<div class="text-center">' + '<img class="" src="public\\\cdn\\\img\\\dymer-logo.png" style="width: 220px;" title="DYMER LOGO">' + '<div>' +
-        '<br><small style="color: #8c8985;">DYnamic Information ModElling & Rendering</small>' +
-        '</div>' +
-        '<div class="  	col-12 p-2" style="color: #8c8985;">' +
-        // '<br> version ' + infodymer.version +
-        '<br> <small style="color: #8c8985;"> updated date ' + infodymer.updated  + '</small></div>' +
-        '<div class="text-center col-12 p-2">' +
-        '<span style=" font-size: 12px;">&#169; 2024, Powered by <a href="https://www.eng.it/" target="_blank">' + '<img src="https://www.eng.it/resources/images/logo%20eng.png" style="width: 20px;bottom: 3px;position: relative; "> Engineering</a>' + '</span>' +
-        '</div>' +
-        '</div>' +
-        '</div>' +
-        '</div>' +
-        '</div>' +
-        '</div>' +
-        '</div>' + '</div>' + '</div>' + '</div>';
-    let htmlsend_fo = '</body><link href="public/assets/css/kmsweb.css" rel="stylesheet">' + '</html>';
-
-    switch (key) {
-        case 'json':
-            res.send(infodymer);
-            break;
-        case 'html':
-            res.send(htmlcontainer);
-            break;
-        default:
-            let htmlsend = htmlsend_hd + htmlcontainer + htmlsend_fo;
-            res.send(htmlsend);
-            break;
-    }
-});
-
-/*
-app.use(session({
-    secret: 'secret squirrel',
-    resave: false,
-    saveUninitialized: true
-}))*/
-
-/**/
-function checkAuthentication(req, res, next) {
-    console.log('isAuthenticated', req.isAuthenticated());
-    if (req.isAuthenticated()) {
-        next();
-    } else {
-        res.redirect("/");
-    }
 }
 
+// 3. Parsers
+app.use(cookieParser());
+// app.use(bodyParser.json({ limit: '50mb' }));
+// app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
+
+// 4. Session (NOTE: MemoryStore is NOT for production)
+const memoryStore = new session.MemoryStore();
+app.use(session({
+  secret: SESSION_SECRET,
+  resave: false,
+  saveUninitialized: true,
+  store: memoryStore,
+  name: "nodejscookie",
+  cookie: {
+    httpOnly: true,
+    secure: protocol === 'https',
+    path: '/',
+    sameSite: 'Lax',
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+  },
+}));
+app.set('trust proxy', true); // behind Nginx/Docker proxy
+
+// 5. Static Files (Angular & Public)
+const angularDistPath = path.join(__dirname, "public");
+app.use("/public/", express.static(path.join(__dirname.replace(contextPath, ""), "public/")));
+app.use("/app/", express.static(path.join(__dirname.replace(contextPath, ""), "app/")));
+app.use(express.static(angularDistPath));
+
+// ===========================================================================
+// API ROUTES
+// ===========================================================================
+// Swagger Documentation (Dynamic URL injection - No FS Write)
+app.get('/swaggerdoc', [loadUserInfo, util.checkIsAdmin], (req, res) => {
+  const originalRef = req.get('host');
+  const currentServerUrl = protocol + "://" + originalRef + contextPath;
+  const content = JSON.parse(JSON.stringify(swaggerFileOriginal)); // deep copy
+  content.servers[0].url = currentServerUrl;
+  content.servers[1].url = currentServerUrl + '/api/templates';
+  content.servers[2].url = currentServerUrl + '/api/dservice';
+  content.servers[3].url = currentServerUrl + '/api/forms';
+  content.servers[4].url = currentServerUrl + '/api/entities';
+  // Return UI base URL; swagger-ui-express setup below serves static JSON
+  res.json({ swaggerDocUrl: currentServerUrl + docPath });
+});
+app.use(docPath, [loadUserInfo, util.checkIsAdmin], swaggerUi.serve, swaggerUi.setup(swaggerFileOriginal));
+
+// Log Management
+app.get('/deletelog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {
+  const filetype = req.params.filetype;
+  logger.flushfile(filetype);
+  const ret = new jsonResponse();
+  ret.setSuccess(true);
+  ret.setMessages("Deleted");
+  return res.send(ret);
+});
+app.get('/openLog/:filetype', [loadUserInfo, util.checkIsAdmin], (req, res) => {
+  const filetype = req.params.filetype;
+  // Avoid Path Traversal
+  if (filetype.includes('..') || filetype.includes('/')) {
+    return res.status(400).send("Invalid filename");
+  }
+  return res.sendFile(path.join(__dirname, "logs", filetype + ".log"));
+});
+
+app.get('/tailLog/:filetype', [loadUserInfo, util.checkIsAdmin], async (req, res) => {
+  const filetype = req.params.filetype;
+
+  // Protezione Path Traversal
+  if (filetype.includes('..') || filetype.includes('/') || filetype.includes('\\')) {
+    return res.status(400).send("Invalid filename");
+  }
+
+  const filePath = path.join(__dirname, "logs", `${filetype}.log`);
+
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).send("Log file not found");
+  }
+
+  try {
+    const MAX_LINES = 50;
+    const lines = [];
+    
+    // Creiamo un'interfaccia di lettura riga per riga (Stream)
+    const rl = readline.createInterface({
+      input: fs.createReadStream(filePath),
+      terminal: false
+    });
+
+    // Leggiamo tutto lo stream, ma teniamo solo le ultime N righe
+    // Nota: Per file GIGANTESCHI (>1GB) si userebbe fs.read con seek finale,
+    // ma readline su stream è sicura per la memoria (non carica tutto il file in RAM).
+    for await (const line of rl) {
+      lines.push(line);
+      if (lines.length > MAX_LINES) {
+        lines.shift(); // Rimuove la riga più vecchia
+      }
+    }
+
+    res.json({
+      file: `${filetype}.log`,
+      lines: lines,
+      count: lines.length
+    });
+
+  } catch (err) {
+    console.error("Error reading log:", err);
+    res.status(500).send("Internal Server Error during log parsing");
+  }
+});
+
+
+
+
+// System Health Check
+app.get('/checkservice', [loadUserInfo, util.checkIsPortalUser], (req, res) => {
+  let ret = new jsonResponse();
+  let infosize = logger.filesize("info");
+  let errorsize = logger.filesize("error");
+  let infomserv = JSON.parse(JSON.stringify(gblConfigService));
+  // Redact sensitive info
+  infomserv.adminPass = "*****";
+  infomserv.adminUser = "*****";
+  ret.setData({
+    info: { size: infosize },
+    error: { size: errorsize },
+    infomicroservice: infomserv,
+  });
+  ret.setMessages("Service is up");
+  ret.setSuccess(true);
+  res.status(200).send(ret);
+});
+
+// Info Endpoint (keeps legacy HTML option)
+app.get('/info/:key?', (req, res) => {
+  const key = req.params.key;
+  const infodymer = global.gConfig.dymer;
+  if (key === 'json') {
+    return res.send(infodymer);
+  }
+  if (key === 'html') {
+    const htmlcontainer = '<div class="container"> <div class="row justify-content-center">' +
+      '<div class="col-xl-10 col-lg-12 col-md-9" > ' +
+      '<div class="card o-hidden border-0 shadow-lg my-5">' +
+      '<div class="card-body p-0">' +
+      '<div class="row">' +
+      '<div class="col-lg-6 d-none d-lg-block bg-login-image" style=\'background:url("public/cdn/img/bg-ver.jpg");background-position: center;background-size: cover; min-height: 280px; \'>' + '</div>' +
+      '<div class="col-lg-6">' +
+      '<div class="p-5">' + '<div class="row">' +
+      '<div class=" col-12">' +
+      '<h1 class="h4 mb-4 text-center" style="color:#023d7d;">Welcome to DYMER</h1>' +
+      '<div class="text-center">' + '<img class="" src="public\\\\cdn\\\\img\\\\dymer-logo.png" style="width: 220px;" title="DYMER LOGO">' + '<div>' +
+      '<br><small style="color: #8c8985;">DYnamic Information ModElling & Rendering</small>' +
+      '</div>' +
+      '<div class=" \tcol-12 p-2" style="color: #8c8985;">' +
+      '<br> version ' + infodymer.version +
+      '<br> <small style="color: #8c8985;"> updated date ' + infodymer.updated + '</small></div>' +
+      '<div class="text-center col-12 p-2">' +
+      '<span style=" font-size: 12px;">&copy; 2024, Powered by <a href="https://www.eng.it/" target="_blank">' +
+      '<img src="https://www.eng.it/resources/images/logo%20eng.png" style="width: 20px;bottom: 3px;position: relative; "> Engineering</a>' + '</span>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '</div>' + '</div>' + '</div>';
+    return res.send(htmlcontainer);
+  }
+  return res.send({ version: infodymer.version, updated: infodymer.updated });
+});
+
+// ===========================================================================
+// APPLICATION ROUTES MOUNTING
+// ===========================================================================
+app.use("/public/", publicRoutes);
+app.use("/app/", appRoutes);
+app.use("/api/portalwebpage/", dohtmlpage);
+app.use("/api/portalweb/", authenticateRoutes);
+app.use("/demodownload/", publicdemoDonwlonad);
+// app.use("/recoverForms/", recoverForms); // legacy, uncomment if route exists
+
+// API Core Routes
+app.use('/api/templates/', loadUserInfo, templateRoutes);
+app.use("/api/forms/", loadUserInfo, formRoutes);
+app.use("/api/entities/", loadUserInfo, entityRoutes);
+app.use("/api/dservice/", loadUserInfo, dserviceRoutes);
+app.use("/api/system/", loadUserInfo, system);
+
+// Mount legacy admin pages (guarded)
+function mountAdminPageRoutes() {
+  const guarded = util.checkIsDymerAdmin;
+  const pages = [
+    '/dashboard','/mclgs','/tester','/about','/addentity','/listentities','/relations',
+    '/bridge-entities-conf','/importfromfile','/configurator','/listconfig','/templates',
+    '/hooks','/opennessearch','/fwadapter','/eaggregation','/managetemplate','/models',
+    '/managemodel','/modeldoc','/demolist','/demosearchbar','/demosingle','/singlebyurl',
+    '/demomap','/demomanager','/fixproblems','/templatesdoc','/modelsdoc','/redisdoc',
+    '/querybuilder','/taxonomy','/permissionmanage','/authenticationconfig','/importcronjob',
+    '/sync','/workflow','/dusernmanage','/library','/swaggerapi','/wizard','/statistics',
+    '/magicAI','/agents'
+  ];
+  pages.forEach(p => app.get(contextPath + p, guarded, (req, res, next) => next()));
+}
+mountAdminPageRoutes();
+
+// User Info Retrieval (clean)
+app.post('/api2/retriveinfo', loadUserInfo, async (req, res) => {
+  try {
+    const hdymeruser = req.headers.dymeruser;
+    if (!hdymeruser) throw new Error("Missing dymeruser header");
+    const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+    res.clearCookie("DYMisi");
+    res.cookie("dymercookie", 'value', { expire: 360000 + Date.now() });
+    const url_dservice = util.getServiceUrl("dservice") + '/api/v1/perm/permbyroles';
+    const response_perm = await axios.get(url_dservice, { params: { role: dymeruser.roles } });
+    const dr_value = Buffer.from(JSON.stringify(dymeruser.roles)).toString("base64");
+    const listprm_value = Buffer.from(JSON.stringify(response_perm.data.data)).toString("base64");
+    const objuser = {
+      d_uid: dymeruser.id,
+      d_appuid: dymeruser.app_id,
+      d_gid: dymeruser.gid,
+      d_rl: dr_value,
+      d_lp: listprm_value,
+    };
+    logger.info(`${nameFile} \n /api2/retriveinfo: User retrieved successfully`);
+    res.send(objuser);
+  } catch (error) {
+    logger.error(`${nameFile} \n /api2/retriveinfo error: ${error.message}`);
+    res.status(500).send({ error: "Internal Server Error" });
+  }
+});
+
+// ===========================================================================
+// SPA FALLBACK (Angular)
+// ===========================================================================
+app.get('*', (req, res) => {
+  // Do not serve HTML for APIs/public static paths
+  if (req.url.startsWith('/api/') || req.url.startsWith('/public/')) {
+    return res.status(404).send('Not found');
+  }
+  const indexPath = path.join(__dirname, 'public/app/views/index.html');
+  const loginPath = path.join(__dirname, 'public/app/views/indexLogin.html');
+  let token = req.cookies.token;
+  const secretKey = process.env.JWT_SECRET_KEY;
+  let isValidToken = false;
+  if (token) {
+    try {
+      jwt.verify(token, secretKey);
+      isValidToken = true;
+    } catch (err) {
+      console.log("Invalid or Expired Token:", err.message);
+      res.clearCookie('token', { path: '/' });
+      token = "";
+    }
+  }
+  console.log(" isValidToken token", isValidToken);
+  // For now always serve index.html (legacy behaviour); switch to loginPath if needed
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+app.get("/public/cdn/*", (req, res, next) => next());
+
+// ===========================================================================
+// CORE FUNCTIONS (LoadUserInfo & Server Start)
+// ===========================================================================
+
+
+/*Funzione presa dal "vecchio server.js : questa funzione NON chiama la funzione proceedWithAuth*/
 function loadUserInfo(req, res, next) {
+  let skipCsrfToken = process.env.SKIP_CSRF_TOKEN === 'true';
+    skipCsrfToken = true;
+  console.log(nameFile + ' | loadUserInfo | skipCsrfToken: ', skipCsrfToken);
     cookie = req.cookies;
-
-    // console.log('TESTSESSION', req.session.cc, req.session.cc == undefined);
-    //   console.log('TESTSESSION req ', req);
-    //  var isLocal = (req.connection.localAddress === req.connection.remoteAddress);
-    //  console.log('TESTSESSION isLocal ', isLocal);
-    // console.log('TESTSESSION req referer', req);
-    // console.log('TESTSESSION req referer', req.headers);
-
-    // console.log('TESTSESSION req referer', req.headers.referer);
-    // console.log('TESTSESSION req req.headers.authorization', req.headers.authorization);
-    // console.log('TESTSESSION req req.headers.Authorization', req.headers.Authorization);
-    //  console.log('TESTSESSION req dservice', util.getServiceUrl("dservice"));
-    //  console.log('TESTSESSION  req.protocol', req.protocol);
-    //console.log('TESTSESSION req host', req.get('host'));
-    //logger.info(nameFile + ' | loadUserInfo : req host, originalUrl: ' + req.get('host') + " , " + req.originalUrl);
-    // logger.info(nameFile + ' | loadUserInfo : req headers' + JSON.stringify(req.headers) + " , " + req.url);
-
     var authuserUrl = util.getServiceUrl("dservice") + "/api/v1/authconfig/userinfo";
-    var dymtoken = (req.headers.authorization != undefined) ? req.headers.authorization.split(' ')[1] : undefined;
+
+    //VL var dymtoken = (req.headers.authorization != undefined) ? req.headers.authorization.split(' ')[1] : undefined;
+    var dymtoken = req.headers.authorization;
+
+    //console.log(nameFile + ' | loadUserInfo | req.headers.authorization ', dymtoken);
+    //logger.info(nameFile + ' | loadUserInfo | req.headers.authorization '+ dymtoken);
+    let lsrole = [];//210325
+    if (dymtoken != undefined) {
+
+        dymtoken = req.headers.authorization.split(' ')[1];
+
+        if (util.isCrypted(dymtoken)) {
+            let dymtokenDecryptedLfr = util.decryptLfr(dymtoken);
+            // let dymtokenDecryptedLfr = util.decryptLfr(process.env.ENCRYPTION_SECRET_KEY, dymtoken);
+            console.log(nameFile + ' | loadUserInfo | decrypted: ', dymtokenDecryptedLfr);
+            dymtoken = new Buffer(dymtokenDecryptedLfr).toString("base64");
+            console.log(nameFile + ' | loadUserInfo | coded in base64: ', dymtoken);
+        }
+    }
+
     var dymtokenAT = req.headers.authorizationtk;
     var dymtoExtraInfo = req.headers.extrainfo;
+    //console.log(nameFile + ' | loadUserInfo | req.headers.extrainfo '+ req.headers.extrainfo);
+    //logger.info(nameFile + ' | loadUserInfo | req.headers.extrainfo '+ req.headers.extrainfo);
     let requestjsonpath = (req.headers.requestjsonpath != undefined) ? JSON.parse(req.headers.requestjsonpath) : undefined;
 
+    //console.log(nameFile + ' | loadUserInfo | req.query ' + JSON.stringify(req.query));
+    //logger.info(nameFile + ' | loadUserInfo | req.query ' + JSON.stringify(req.query));
     if (req.query.tkdymat != undefined) {
         dymtokenAT = req.query.tkdymat;
         dymtoExtraInfo = req.query.tkextra;
     }
 
-    if (req.query.tkdym != undefined)
+    if (req.query.tkdym != undefined){
         dymtoken = req.query.tkdym;
-    // console.log('loadUserInfo req.query.tkdymat', req.query.tkdymat);
-    //  console.log('loadUserInfo req.query.tkdym', req.query.tkdym);
+        //console.log(nameFile + " | loadUserInfo | dymtoken ", dymtoken);
+        //logger.info(nameFile + " | loadUserInfo | dymtoken "+ dymtoken);
 
-    //console.log('loadUserInfo authuserUrl', authuserUrl);
-    // console.log('loadUserInfo dymtoken', dymtoken);
-    //logger.info(nameFile + ' | loadUserInfo : dymtoken' + JSON.stringify(dymtoken));
-    //console.log('loadUserInfo dymtokenAT', dymtokenAT);
-    var idsadm = false;
-    if (req.cookies["lll"] != undefined) {
-        dymtoken = req.cookies["lll"];
-        idsadm = true;
+        dymtoken = dymtoken.replace(/[\t\n\r]/g, '').replace(/ /g, '+');
+        //console.log(nameFile + " | loadUserInfo | dymtoken after replace ", dymtoken);
+
+        if (util.isCrypted(dymtoken)) {
+            let dymtokenDecryptedLfr = util.decryptLfr(process.env.ENCRYPTION_SECRET_KEY, dymtoken);
+            //console.log(nameFile + ' | loadUserInfo | decrypted: ', dymtokenDecryptedLfr);
+            dymtoken = new Buffer(dymtokenDecryptedLfr).toString("base64");
+            //console.log(nameFile + ' | loadUserInfo | coded in base64: ', dymtoken);
+        }
+
     }
-    // console.log('TESTSESSION req dymtoken', dymtoken);
-    //if (token == undefined || token == 'null')
+
+    var idsadm = false;
+    //VL O_Day START
+    //let lsrole = []; 210325
+    if (req.cookies["token"] != undefined) {
+    console.log(req.url)
+    //VL new gui
+        if (!skipCsrfToken){//set SKIP_CSRF_TOKEN
+            console.log('CSRF token check');
+            const csrfToken = req.headers['x-xsrf-token'];
+            DymerUser.findOne({ "roles.role" : 'app-admin' }).then(el => {
+                if (!el) {
+                    console.log("find admin");
+                    return res.status(401).send("Admin not found");
+                }
+                const storedCsrfToken = el.csrfToken;
+                console.log(nameFile + ' | loadUserInfo | storedCsrfToken ', csrfToken);
+                if (csrfToken !== storedCsrfToken) {
+                    console.log(nameFile + ' | loadUserInfo | Invalid CSRF token ', csrfToken);
+                    logger.error(nameFile + ' | loadUserInfo | Invalid CSRF token');
+                    //return res.status(403).send({ message: 'Invalid CSRF token' });
+                    var ret = new jsonResponse();
+                    ret.setMessages("Sorry, invalid CSRF token");
+                    ret.setSuccess(false);
+                    return res.send(ret);
+                } else {
+                    console.log(nameFile + ' | loadUserInfo | Valid CSRF token ', csrfToken);
+                    logger.info(nameFile + ' | loadUserInfo | Valid CSRF token ', csrfToken );
+                }
+                next() // CAMBIATO QUESTO
+            }).catch(err => {
+                console.error("ERROR " + nameFile + " | loadUserInfo | error :", err);
+                return res.status(500).send("Internal server error");
+            });
+        }
+        //VL new gui
+    
+        let jwt = req.cookies["token"];
+        //console.log(nameFile + ' | loadUserInfo | Admin jwt from cookie ', jwt);
+        let dymtokenDecrypted = util.getDecryptedPayload(jwt);
+        //console.log(nameFile + ' | loadUserInfo | Payload of admin jwt decrypted ', dymtokenDecrypted);
+        let dymtokenDecryptedBase64 = new Buffer(JSON.stringify(dymtokenDecrypted)).toString("base64")
+        dymtoken = dymtokenDecryptedBase64;
+        //console.log(nameFile + ' |  loadUserInfo | DYM coded in base64 ', dymtoken);
+        //TODO check  invoke service to check roles?
+        //let dymtokenDecoded = JSON.parse(Buffer.from(jwt.split('.')[1], 'base64').toString('utf-8'));
+    //let dymtokenDecoded = util.getDecryptedPayload(jwt)
+        let loggedUserRoles = dymtokenDecrypted.roles || [];
+        //console.log("loggedUserRoles ", loggedUserRoles);
+        lsrole= [loggedUserRoles[0].role];
+
+        if(lsrole.includes("app-admin")) {
+            idsadm = true;
+        } else {
+            idsadm = false;
+        }
+        //console.log(nameFile + ' |  loadUserInfo | check if is admin: ', idsadm);
+    }
+    //VL AC MG O_Day END
 
     var referer = req.headers.referer;
-    //console.log('loadUserInfo referer', referer);
-    //console.log('loadUserInfo referrer', req.headers.referrer);
 
     if (referer != undefined) {
         if ((referer).includes(req.hostname))
             referer = req.get('host');
     }
-    /* else {
-            referer = "testimport";
-        }*/
+
     let originalRef = (req.headers["reqfrom"] == undefined) ? req.headers.referer : req.headers.reqfrom;
     originalRef = (originalRef == undefined) ? req.get('host') : originalRef;
-    //console.log('loadUserInfo post-req.headers', req.headers);
-    /* logger.info(nameFile + ' | loadUserInfo : post-referer' + req.headers.referer);
-     logger.info(nameFile + ' | loadUserInfo : post-reqfrom' + req.headers["reqfrom"]);
-     logger.info(nameFile + ' | loadUserInfo : originalRef' + originalRef + " , " + typeof originalRef);*/
-    //logger.info(nameFile + ' | --------------------------');
 
-    //logger.info(nameFile + ' | loadUserInfo : requestjsonpath' + requestjsonpath);
-    /*console.log('loadUserInfo post-referer', req.headers.referer);
-    console.log('loadUserInfo post-reqfrom', req.headers["reqfrom"]);
-    console.log('loadUserInfo originalRef', originalRef, typeof originalRef);
-    console.log('--------------------------');*/
-    logger.info(nameFile + ' |loadUserInfo|req url :' + originalRef + "|" + req.method + req.url);
+  logger.info(nameFile + ' | loadUserInfo | req url: ' + originalRef + "|" + req.method + "|" + req.url);
     var config = {
-        method:  'get',
-        url:     authuserUrl,
+        method: 'get',
+        url: authuserUrl,
         headers: {
             'Content-Type': 'application/json'
         },
-        data:    {
-            'DYM':             dymtoken,
-            'DYMAT':           dymtokenAT,
-            'referer':         originalRef,
-            'dymtoExtraInfo':  dymtoExtraInfo,
+        data: {
+            'DYM': dymtoken,
+            'DYMAT': dymtokenAT,
+            'referer': originalRef,
+            'dymtoExtraInfo': dymtoExtraInfo,
             'requestjsonpath': requestjsonpath,
-            'idsadm':          idsadm
+            'idsadm': idsadm
         }
     };
 
+    //console.log(nameFile + ' | loadUserInfo | invoke userinfo service: ', config);
+
     axios(config)
-        .then(function (response) {
-            console.log('dymeruserAA', response.data.data);
+        .then(function(response) {
+            //console.log(nameFile + ' | userinfo response : ', response.data.data);
             req.headers["dymeruser"] = new Buffer(JSON.stringify(response.data.data)).toString("base64");
-            //if (req.headers["reqfrom"] == undefined || req.headers["reqfrom"] == 'undefined')
+            //logger.info(nameFile + ' | loadUserInfo | dymeruser: ', req.headers.dymeruser);
             if (req.headers["reqfrom"] == undefined)
                 req.headers["reqfrom"] = originalRef;
             next();
         })
-        .catch(function (error) {
-            logger.error(nameFile + ' |loadUserInfo | axios authuserUrl : ' + error);
+        .catch(function(error) {
+            logger.error(nameFile + ' | loadUserInfo | axios authuserUrl: ' + error);
             console.log(error);
             next();
         });
 }
 
-app.use("/api/portalweb/", authenticateRoutes);
-
-/*app.use("/public/", express.static(path.join(__dirname.replace('\routes', ""), "..")));
-app.use("/app/", express.static(path.join(__dirname.replace('\routes', ""), "..")));
-*/ //
-
-//app.use('/',appRoutes); 
-//var index = require('./routes/index');
-//app.use('/', index); // mount the index route at the / path
-// mount the routers 
-//app.use('/portalweb/', portalwebRoutes);
-//console.log('global.gConfig.services.webserver["context-path"]', util.getContextPath('webserver'));
-//console.log('__dirname', __dirname);
-app.use('/api/templates/', loadUserInfo, templateRoutes);
-app.use("/api/forms/", loadUserInfo, formRoutes);
-app.use("/api/entities/", loadUserInfo, entityRoutes);
-//app.use("/api/entities/", checkAuthentication, entityRoutes);
-//app.use("/api/entities/", keycloak.protect('realm:app-user'), entityRoutes);
-//m 2021_20_20 app.use("/api/private/dservice/", ensureLoggedInOpen, dserviceRoutes);
-app.use("/api/dservice/", loadUserInfo, dserviceRoutes);
-app.use("/api/system/", loadUserInfo, system);
-app.post("/api/test/", loadUserInfo, (req, res, next) => {
-    // #swagger.tags = ['Webserver']
-    console.log("test");
-    next();
-    //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
-});
-//app.use("/api/auth/", dauthRoutes);
-
-const parseToken = raw => {
-    if (!raw || typeof raw !== 'string') return null;
-
-    try {
-        raw = JSON.parse(raw);
-        const token = raw.id_token ? raw.id_token : raw.access_token;
-        const content = token.split('.')[1];
-        return JSON.parse(Buffer.from(content, 'base64').toString('utf-8'));
-    } catch (e) {
-        console.error('Error while parsing token: ', e);
+/*Funzione rivista, che chiama la funzione proceedWithAuth*/
+/*
+function loadUserInfo(req, res, next) {
+    // // 1. CSRF Check
+    // const skipCsrfToken = process.env.SKIP_CSRF_TOKEN === 'true';
+    // const csrfToken = req.headers['x-xsrf-token'];
+   
+    // Controllo CSRF solo se c'è un token nei cookie e non siamo in skip mode
+    // if (req.cookies["token"] && !skipCsrfToken) {
+    if (req.cookies["token"]) {
+        DymerUser.findOne({ "roles.role": 'app-admin' })
+            .then(el => {
+                if (!el) return res.status(401).send("Admin config not found");
+               
+                // if (csrfToken !== el.csrfToken) {
+                //     logger.error(`${nameFile} | loadUserInfo | Invalid CSRF token: ${csrfToken}`);
+                //     let ret = new jsonResponse();
+                //     ret.setMessages("Sorry, invalid CSRF token");
+                //     ret.setSuccess(false);
+                //     return res.status(403).send(ret);
+                // }
+                // CSRF OK
+                proceedWithAuth(req, res, next);
+            })
+            .catch(err => {
+                // logger.error(`${nameFile} | loadUserInfo | CSRF check error: ${err}`);
+                return res.status(500).send("Internal server error");
+            });
+    } else {
+        // Nessun token o skip abilitato
+        proceedWithAuth(req, res, next);
     }
-};
-
-//app.use(global.gConfig.services.webserver["context-path"] + '/public/cdn/', publicRoutes);
-//app.use(global.gConfig.services.webserver["context-path"] + 'public/cdn/', publicRoutes);
-//app.use('/public/cdn', publicRoutes);
-//app.use('/public/cdn', publicRoutes);
-//app.use('/public/', publicRoutes);
-app.use("/demodownload/", publicdemoDonwlonad);
-//app.use("/recoverForms/", recoverForms);0
-/*app.get("/login", ensureLoggedIn, (req, res, next) => {
-    // console.log("app.get");
-    next();
-    //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
-});
+}
 */
+ 
+function proceedWithAuth(req, res, next) {
+    // Logica originale per chiamare il servizio di auth esterno
+    // ... Recupero token da header o query ...
+    let dymtoken = req.headers.authorization ? req.headers.authorization.split(' ')[1] : req.query.tkdym;
+    let originalRef = req.headers["reqfrom"] || req.headers.referer || req.get('host');
+    let dymtoExtraInfo = req.headers.extrainfo;
+   
+    // Decrypt logica legacy (se presente)
+    if (dymtoken && util.isCrypted(dymtoken)) {
+         let decrypted = util.decryptLfr(process.env.ENCRYPTION_SECRET_KEY, dymtoken);
+         dymtoken = Buffer.from(decrypted).toString("base64");
+    }
+ 
+    var authuserUrl = util.getServiceUrl("dservice") + "/api/v1/authconfig/userinfo";
+   
+    var config = {
+        method: 'get',
+        url: authuserUrl,
+        headers: { 'Content-Type': 'application/json' },
+        data: {
+            'DYM': dymtoken,
+            'referer': originalRef,
+            'dymtoExtraInfo': dymtoExtraInfo,
+            'requestjsonpath': requestjsonpath
+        }
+    };
+ 
+    axios(config)
+        .then(function(response) {
+            req.headers["dymeruser"] = Buffer.from(JSON.stringify(response.data.data)).toString("base64");
+            if (!req.headers["reqfrom"]) req.headers["reqfrom"] = originalRef;
+            next();
+        })
+        .catch(function(error) {
+            // Se fallisce l'auth service, logghiamo ma proseguiamo (o blocchiamo, dipende dalla logica di business)
+            // L'originale faceva next(), il che è rischioso, ma mantengo compatibilità.
+            logger.error(`${nameFile} | loadUserInfo | Auth Service Error: ${error.message}`);
+            next();
+        });
+}
+function proceedWithAuth(req, res, next) {
+  // Gather tokens/headers (legacy compatible)
+  // let dymtoken = req.headers.authorization ? req.headers.authorization.split(' ')[1] : req.query.tkdym;
+  let jwt = req.cookies.token
+  let dymtokenDecrypted = util.getDecryptedPayload(jwt);
+  let dymtoken = new Buffer(JSON.stringify(dymtokenDecrypted)).toString("base64")
 
-app.get("/public/cdn/*", (req, res, next) => {
-    // #swagger.tags = ['Webserver']
+  let dymtokenAT = req.headers.authorizationtk || req.query.tkdymat;
+  const dymtoExtraInfo = req.headers.extrainfo || req.query.tkextra;
+  const requestjsonpath = req.headers.requestjsonpath ? JSON.parse(req.headers.requestjsonpath) : undefined;
+  let originalRef = req.headers["reqfrom"] || req.headers.referer || req.get('host');
 
-    // console.log("app.get");
-    next();
-    //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
-});
+  // Decrypt legacy token if needed
+  // if (dymtoken && util.isCrypted(dymtoken)) {
+  //   const decrypted = util.decryptLfr(process.env.ENCRYPTION_SECRET_KEY, dymtoken);
+  //   dymtoken = Buffer.from(decrypted).toString("base64");
+  // }
+  // Compute idsadm from cookie token (kept for backward compat)
+  let idsadm = false;
+  try {
+    const jwtCookie = req.cookies["token"];
+    if (jwtCookie) {
+      const payload = util.getDecryptedPayload(jwtCookie);
+      const roles = payload?.roles || [];
+      idsadm = roles.some(r => r.role === 'app-admin');
+    }
+  } catch (e) {
+    logger.warn(`${nameFile} \n loadUserInfo \n cannot decode cookie token: ${e}`);
+  }
 
-const testRules = (req) => {
-    // keycloak.get
-    // var pp = jwt.decode(JSON.parse(req.session['keycloak-token'])); //['access_token']
-    // console.log('pppppppppppppppppppppp', pp);
-    return 'realm:app-user';
-    // return t
+  const authuserUrl = util.getServiceUrl("dservice") + "/api/v1/authconfig/userinfo";
+  const config = {
+    method: 'get',
+    url: authuserUrl,
+    headers: { 'Content-Type': 'application/json' },
+    data: {
+      DYM: dymtoken,
+      DYMAT: dymtokenAT,
+      referer: originalRef,
+      dymtoExtraInfo: dymtoExtraInfo,
+      requestjsonpath,
+      idsadm,
+    }
+  };
+/****************************************************************************/
+console.group("***** DEBUG TOKEN DOCKER START *****")
+console.log("config ==>> ", config)
+console.groupEnd()
+/****************************************************************************/
+  axios(config)
+    .then(response => {
+      req.headers["dymeruser"] = Buffer.from(JSON.stringify(response.data.data)).toString("base64");
+      if (!req.headers["reqfrom"]) req.headers["reqfrom"] = originalRef;
+      next();
+    })
+    .catch(error => {
+      logger.error(`${nameFile} \n loadUserInfo \n Auth Service Error: ${error.message}`);
+      next(); // keep legacy behaviour
+    });
 }
 
-//app.get('*', keycloak.protect(testRules(req)), (req, res) => {
-//app.get('*', keycloak.protect('realm:app-user'), (req, res) => {
 
-//app.get('*', require('connect-ensure-login').ensureLoggedIn('/'), (req, res) => {
-//app.get('*', ensureLoggedInOpen, (req, res) => {
 
-app.get('*', (req, res) => {
-    // #swagger.tags = ['Webserver']
-
-    //app.get('*', passport.authenticate("oidc"), (req, res) => {
-    //app.get('*', keycloak.protect('realm:app-user'), (req, res) => {
-    /*console.log(
-         "session server", req.session
-     ); */
-    /* const details = parseToken(req.session['keycloak-token']);
-     var token = req.kauth.grant.access_token.content;
-     var permissions = token.authorization ? token.authorization.permissions : undefined;
-     console.log("userDT", details);
-     console.log(" keycloak.token", token);
-     console.log(" keycloak permissions", permissions);*/
-    //+ path.join(__dirname + global.gConfig.services.webserver["context-path"]
-    var realPath = (req.originalUrl).split("?");
-    var listdata = fs.readFileSync(path.join(__dirname, '/public/app/views/index.html'));
-    var pathname = req.url;
-    //  console.log('listdatapathname', pathname, pathname == ("/login"));
-    /* if (listdata) {
-         listdata = listdata.toString();
-         console.log('listdata', listdata, pathname);
-         res.send(listdata.replace('site_prefix_value', util.getContextPath('webserver')));
-     }*/
-    /*if (pathname == ("/login")) {
-        var listdata = fs.readFileSync(path.join(__dirname, '/public/app/views/authentication/views/login.html'));
-        listdata = listdata.toString();
-        res.send(listdata.replace('site_prefix_value', util.getContextPath('webserver')));
-        listdata = listdata.replace('site_prefix_value', util.getContextPath('webserver'))
-        res.send(listdata);
-    } else {
-        console.log('listdatapathname2', pathname, pathname == ("/"));
-        //if (pathname == (util.getContextPath('webserver'))) {
-        var listdata = fs.readFileSync(path.join(__dirname, '/public/app/views/index.html'));
-        listdata = listdata.toString();
-        listdata = listdata.replace('site_prefix_value', util.getContextPath('webserver'))
-        res.send(listdata);
-    }*/
-    var listdata = fs.readFileSync(path.join(__dirname, '/public/app/views/index.html'));
-    listdata = listdata.toString();
-    listdata = listdata.replace('site_prefix_value', contextPath);
-    let r = 'dym' + (Math.random() + 1).toString(36).substring(7);
-    //  r = "dymzmpky";
-    listdata = listdata.replace(/noncevalue/g, r);
-
-    /* res.setHeader(
-         'Content-Security-Policy',
-         "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:; script-src 'self' 'nonce-" + r + "'  ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
-     );*/
-    /* if (pathname == ("/login")) {
-         listdata = fs.readFileSync(path.join(__dirname, '/public/app/views/login.html'));
-         listdata = listdata.toString();
-         listdata = listdata.replace('site_prefix_value', util.getContextPath('webserver'))
-         r = 'dym' + (Math.random() + 1).toString(36).substring(7);
-         listdata = listdata.replace(/noncevalue/g, r);
-         res.setHeader(
-             'Content-Security-Policy',
-             "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:; script-src 'self' 'nonce-" + r + "'  ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
-         );/*
-         /* res.setHeader(
-              'Content-Security-Policy',
-              "default-src 'self'; font-src 'self' https://fonts.gstatic.com/s/montserrat/v23/ ; img-src 'self' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/ data:;script-src 'self' 'unsafe-inline' 'unsafe-eval' ; style-src 'self' 'unsafe-inline' https://raw.githubusercontent.com/Engineering-Research-and-Development/DYMER/; frame-src 'self'"
-          );*/
-    /*
-        }*/
-    res.send(listdata);
-    // }
-    //res.sendFile(path.join(__dirname + '/public/app/views/index.html'));
-    // res.sendFile(global.gConfig.services.webserver["context-path"] + '/public/app/views/index.html');
-});
-
-//global.gConfig.services.webserver["context-path"]
-
-//app.use(contextPath, router)
+// ===========================================================================
+// START SERVER
+// ===========================================================================
 const root = express();
 root.use(contextPath, app);
+const defaultAdminUrl = util.getServiceUrl("dservice") + '/api/v1/duser/defaultadmin';
+const defaultAdminData = {
+  username: global.configService['adminUser'],
+  password: global.configService['adminPass'],
+  active: true,
+  email: global.configService['adminEmail'],
+  roles: [{ role: "app-admin" }]
+};
 
-if (util.ishttps('webserver')) {
-    const Httpsoptions = {
-        key:  fs.readFileSync(path.join(__dirname, 'ssl', 'server.key')),
+async function startServer() {
+  try {
+    await util.defaultAdmin(defaultAdminUrl, defaultAdminData, { 'Content-Type': 'application/json' });
+    if (util.ishttps('webserver')) {
+      const httpsOptions = {
+        key: fs.readFileSync(path.join(__dirname, 'ssl', 'server.key')),
         cert: fs.readFileSync(path.join(__dirname, 'ssl', 'server.crt'))
-    };
-    https.createServer(Httpsoptions, root).listen(portExpress, () => {
-        logger.info( nameFile + " | Up and running-- this is " + appName + " service on port:" + portExpress + " context-path: " + contextPath );
-        console.log( "Up and running-- this is " + protocol + " " + appName + " service on port:" + portExpress + " context-path:" + contextPath );
-        // console.log(`${global.gConfig.services.webserver.port} listening on port ${global.gConfigt}`);
-    });
-} else {
-    root.listen(portExpress, () => {
-        // logger.error("testtt");
-        logger.info( nameFile + " | Up and running-- this is " + protocol + " " + appName + " service on port:" + portExpress + " context-path:" + contextPath );
-        console.log( "Up and running-- this is " + protocol + " " + appName + " service on port:" + portExpress + " context-path:" + contextPath );
-        console.log("Server on :", serverUrl);
-        console.log("See Documentation at:", serverUrl + docPath);
-        // console.log(`${global.gConfig.services.webserver.port} listening on port ${global.gConfigt}`);
-    });
+      };
+      https.createServer(httpsOptions, root).listen(portExpress, () => {
+        logger.info(`${nameFile} \n HTTPS Service ${appName} started on port ${portExpress}`);
+      });
+    } else {
+      root.listen(portExpress, () => {
+        logger.info(`${nameFile} \n HTTP Service ${appName} started on port ${portExpress}`);
+        console.log(`Server running at: ${serverUrl}`);
+        console.log(`See Documentation at: ${serverUrl + docPath}`);
+      });
+    }
+  } catch (error) {
+    logger.error(`${nameFile} \n Fatal Error starting server: ${error.toString()}`);
+    console.error("Fatal Error:", error);
+    process.exit(1);
+  }
 }
+startServer();

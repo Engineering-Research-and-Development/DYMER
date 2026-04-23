@@ -133,7 +133,7 @@ router.post('/addrule', util.checkIsAdmin, function (req, res) {
     var ret = new jsonResponse();
     var newObj = {
         _index: data.op_index,
-        _type: data.op_type,
+        _type: data.op_index,//VL
         mapping: data.op_mapping,
         sendnotification: data.sendnotification
     }
@@ -210,7 +210,8 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
             gid: user["gid"],
             uid: user["uid"],
             email: user["d_mail"],
-            password: util.decrypt("", user["d_pwd"])
+            //password: util.decrypt("", user["d_pwd"])
+            password: util.decrypt(user["d_pwd"])
         }
 
         /*Recupero i dati dell'utente Openness dai cookies*/
@@ -347,11 +348,11 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
             }
         })
     }).catch((e) => {
-        console.error("ERROR | " + nameFile + " | dym.dymerentry/OpenSearch User ", error);
-        logger.error(nameFile + " | dym.dymerentry/OpenSearch User " + error);
+        console.error("ERROR | " + nameFile + " | dym.dymerentry/OpenSearch User ", e);
+        logger.error(nameFile + " | dym.dymerentry/OpenSearch User " + e);
         ret.setMessages("Get OpenSearch User Error");
         ret.setSuccess(false);
-        ret.setExtraData({"log": error.stack});
+        ret.setExtraData({"log": e.stack});
         return res.send(ret);
     })
 });
@@ -507,7 +508,7 @@ function del(ind, el, dymerentry, hook, dymeruser) {
         "emailAddress": dymeruser.email,
         "companyId": Number(dymeruser.extrainfo.companyId),
         "index": el._index,
-        "type": el._type,
+        "type": el._index,//VL
         "id": dymerentry.id_,
         "notify": el.sendNotification
     };
@@ -563,7 +564,7 @@ router.post('/listener', function (req, res) {
     var eventSource = (data.eventSource).split('_');
     var queryFind = {
         "_index": data.obj._index,
-        "_type": data.obj._type
+        "_type": data.obj._index//VL
     };
     OpnSearchRule.find(queryFind).then((els) => {
         ret.setMessages("List");
@@ -582,7 +583,7 @@ router.post('/listener', function (req, res) {
     });
 });
 
-router.get('/users', (req, res) => {
+router.get('/users', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -612,6 +613,7 @@ router.post('/setuser', util.checkIsAdmin, function (req, res) {
     let id = obj._id;
     delete obj._id;
     let userModel = new OpnUserModel(obj);
+
     if (id != '' && id != undefined) {
         const objId = {"_id": mongoose.Types.ObjectId(id)};
         OpnUserModel.updateOne(objId, obj,
@@ -650,134 +652,228 @@ router.post('/setuser', util.checkIsAdmin, function (req, res) {
 function postAssettOpenness(typeaction, obj, rule, extraInfo) {
     OpnUserModel.find().then(el => {
         let user = el[0]
-        let openSearchUser = {
-            cid: user["cid"],
-            gid: user["gid"],
-            uid: user["uid"],
-            email: user["d_mail"],
-            password: util.decrypt("", user["d_pwd"])
-        }
-        //console.log(nameFile + ' | postAssettOpenness | extraInfo', JSON.stringify(extraInfo));
-        var queryFind = {'servicetype': typeaction};
-        OpnSearchConfig.find(queryFind).then((els) => {
-            //console.log('postAssettOpenness els', els);
-            if (els.length > 0) {
-                try {
-                    let notify = true;
-                    if (rule.sendnotification === false)
-                        notify = rule.sendnotification;
-                    var el = els[0];
-                    var companyId = (extraInfo != undefined) ? extraInfo.companyId : openSearchUser.gid;
-                    var userId = (extraInfo != undefined) ? extraInfo.userId : openSearchUser.uid;
-                    // var groupId = (obj._source.properties.owner.uid == "admin@dymer.it") ? opnConfUtil.user.d_gid : obj._source.properties.owner.gid;
-                    // var emailAddress = (obj._source.properties.owner.uid == "admin@dymer.it") ? opnConfUtil.user.d_mail : obj._source.properties.owner.uid;
-                    var groupId = (obj._source.properties.owner.uid == "admin@dymer.it") ? openSearchUser.gid : extraInfo.groupId;
-                    var emailAddress = (obj._source.properties.owner.uid == "admin@dymer.it") ? openSearchUser.email : extraInfo.emailAddress;
-                    if (el.servicetype == 'insert' || el.servicetype == 'update') {
-                        var assetTitle = obj._source[rule.mapping.title];
-                        var assetextContent = "";
-                        (rule.mapping.extContent).forEach(element => {
-                            assetextContent += obj._source[element] + "+";
-                        });
-                        assetextContent = assetextContent.substring(0, assetextContent.length - 1);
-                        if (obj._source.properties.owner.gid == undefined || obj._source.properties.owner.gid == "")
-                            obj._source.properties.owner.gid = openSearchUser.gid;
-                        if (obj._source.properties.owner.uid == undefined || obj._source.properties.owner.uid == "")
-                            obj._source.properties.owner.uid = openSearchUser.uid;
-                        let url_base_entity = ""; //https://dym.dih4industry.eu
-                        // url_base_entity = obj._source.properties.ipsource;
-                        url_base_entity = (el.configuration.dymerpath == undefined) ? "" : el.configuration.dymerpath;
-                        if (url_base_entity.endsWith("/")) {
-                            url_base_entity = url_base_entity.slice(0, -1);
-                        }
-                        var objToAssett = {
-                            //"elasticSearchResourceId": -1,
-                            "dymerDomainName": "",
-                            "emailAddress": emailAddress,
-                            "companyId": Number(companyId),
-                            "groupId": Number(groupId), //20121
-                            "userId": Number(userId),
-                            "index": obj._index,
-                            "type": obj._type,
-                            "id": obj._id,
-                            "url": url_base_entity, //url del dymer
-                            "title": assetTitle,
-                            "extContent": assetextContent,
-                            "notify": notify
-                        };
-                        logger.info(nameFile + ' | postAssettOpenness | insert/update Json openness: ' + JSON.stringify(objToAssett));
-                        // console.log(nameFile + ' | postAssettOpenness | insert/update Json openness', JSON.stringify(objToAssett));
-                        callOpennessJsw(el, objToAssett);
-                    }
-                    if (el.servicetype == 'delete') {
-                        var objToAssett = {
-                            "emailAddress": emailAddress,
-                            "companyId": Number(companyId),
-                            "index": obj._index,
-                            "type": obj._type,
-                            "id": obj._id,
-                            "notify": notify
-                        };
-                        logger.info(nameFile + ' | postAssettOpenness | delete Json openness: ' + JSON.stringify(objToAssett));
-                        // console.log(nameFile + ' | postAssettOpenness | delete Json openness', JSON.stringify(objToAssett));
-                        callOpennessJsw(el, objToAssett);
-                    }
-                } catch (error) {
-                    logger.error(nameFile + ' | postAssettOpenness | find obj,extraInfo: ' + JSON.stringify(obj) + ',' + JSON.stringify(extraInfo) + ',' + error);
-                }
+
+        //VL
+        if (typeof user !== "undefined"){
+
+            let openSearchUser = {
+                cid: user["cid"],
+                gid: user["gid"],
+                uid: user["uid"],
+                email: user["d_mail"],
+                //password: util.decrypt("", user["d_pwd"])
+                password: util.decrypt(user["d_pwd"])
             }
-        }).catch((err) => {
-            logger.error(nameFile + ' | postAssettOpenness | find obj,extraInfo: ' + JSON.stringify(obj) + ',' + JSON.stringify(extraInfo) + ',' + err);
-            console.error("ERROR | " + nameFile + " | postAssettOpenness | find : ", err);
-        })
-    }).catch((error) => {
-        console.error("ERROR | " + nameFile + " | dym.dymerentry/OpenSearch User ", error);
-        logger.error(nameFile + " | dym.dymerentry/OpenSearch User " + error);
+            //console.log(nameFile + ' | postAssettOpenness | extraInfo', JSON.stringify(extraInfo));
+            var queryFind = {'servicetype': typeaction};
+            OpnSearchConfig.find(queryFind).then((els) => {
+                //console.log('postAssettOpenness els', els);
+                if (els.length > 0) {
+                    try {
+                        let notify = true;
+                        if (rule.sendnotification === false)
+                            notify = rule.sendnotification;
+                        var el = els[0];
+                        var companyId = (extraInfo != undefined) ? extraInfo.companyId : openSearchUser.gid;
+                        var userId = (extraInfo != undefined) ? extraInfo.userId : openSearchUser.uid;
+                        // var groupId = (obj._source.properties.owner.uid == "admin@dymer.it") ? opnConfUtil.user.d_gid : obj._source.properties.owner.gid;
+                        // var emailAddress = (obj._source.properties.owner.uid == "admin@dymer.it") ? opnConfUtil.user.d_mail : obj._source.properties.owner.uid;
+                        var groupId = (obj._source.properties.owner.uid == "admin@dymer.it") ? openSearchUser.gid : extraInfo.groupId;
+                        var emailAddress = (obj._source.properties.owner.uid == "admin@dymer.it") ? openSearchUser.email : extraInfo.emailAddress;
+                        if (el.servicetype == 'insert' || el.servicetype == 'update') {
+                            var assetTitle = obj._source[rule.mapping.title];
+                            var assetextContent = "";
+                            (rule.mapping.extContent).forEach(element => {
+                                assetextContent += obj._source[element] + "+";
+                            });
+                            assetextContent = assetextContent.substring(0, assetextContent.length - 1);
+                            if (obj._source.properties.owner.gid == undefined || obj._source.properties.owner.gid == "")
+                                obj._source.properties.owner.gid = openSearchUser.gid;
+                            if (obj._source.properties.owner.uid == undefined || obj._source.properties.owner.uid == "")
+                                obj._source.properties.owner.uid = openSearchUser.uid;
+                            let url_base_entity = ""; //https://dym.dih4industry.eu
+                            // url_base_entity = obj._source.properties.ipsource;
+                            url_base_entity = (el.configuration.dymerpath == undefined) ? "" : el.configuration.dymerpath;
+                            if (url_base_entity.endsWith("/")) {
+                                url_base_entity = url_base_entity.slice(0, -1);
+                            }
+                            var objToAssett = {
+                                //"elasticSearchResourceId": -1,
+                                "dymerDomainName": "",
+                                "emailAddress": emailAddress,
+                                "companyId": Number(companyId),
+                                "groupId": Number(groupId), //20121
+                                "userId": Number(userId),
+                                "index": obj._index,
+                                "type": obj._index,//VL
+                                "id": obj._id,
+                                "url": url_base_entity, //url del dymer
+                                "title": assetTitle,
+                                "extContent": assetextContent,
+                                "notify": notify
+                            };
+                            logger.info(nameFile + ' | postAssettOpenness | insert/update Json openness: ' + JSON.stringify(objToAssett));
+                            // console.log(nameFile + ' | postAssettOpenness | insert/update Json openness', JSON.stringify(objToAssett));
+                            callOpennessJsw(el, objToAssett);
+                        }
+                        if (el.servicetype == 'delete') {
+                            var objToAssett = {
+                                "emailAddress": emailAddress,
+                                "companyId": Number(companyId),
+                                "index": obj._index,
+                                "type": obj._index,//VL
+                                "id": obj._id,
+                                "notify": notify
+                            };
+                            logger.info(nameFile + ' | postAssettOpenness | delete Json openness: ' + JSON.stringify(objToAssett));
+                            // console.log(nameFile + ' | postAssettOpenness | delete Json openness', JSON.stringify(objToAssett));
+                            callOpennessJsw(el, objToAssett);
+                        }
+                    } catch (error) {
+                        logger.error(nameFile + ' | postAssettOpenness | find obj,extraInfo: ' + JSON.stringify(obj) + ',' + JSON.stringify(extraInfo) + ',' + error);
+                    }
+                }
+            }).catch((err) => {
+                logger.error(nameFile + ' | postAssettOpenness | find obj,extraInfo: ' + JSON.stringify(obj) + ',' + JSON.stringify(extraInfo) + ',' + err);
+                console.error("ERROR | " + nameFile + " | postAssettOpenness | find : ", err);
+            })
+
+        } else {
+            console.log("ERROR | " + nameFile + " | postAssettOpenness | user object is undefined - configuration required in Services/Openness Search Users");//TODO NOTIFY
+        }
+        //VL
+    }).catch((e) => {
+        console.error("ERROR | " + nameFile + " | dym.dymerentry/OpenSearch User ", e);
+        logger.error(nameFile + " | dym.dymerentry/OpenSearch User " + e);
         ret.setMessages("Get OpenSearch User Error");
         ret.setSuccess(false);
-        ret.setExtraData({"log": error.stack});
+        ret.setExtraData({"log": e.stack});
         return res.send(ret);
     })
 }
 
-function callOpennessJsw(conf, postObj) {
+//VL 15.4.25 -- oauth2 lfr integration start
+async function callOpennessJsw_Client(conf, postObj) {
+    const token = await getOAuthToken();
+
+    if (token) {
+        await callOpennessJsw2Level(token, conf, postObj);
+    }
+}
+
+async function getOAuthToken() {
+    try {
+        const el = await OpnUserModel.find();
+        const user = el[0];
+
+        //URL-encoded request
+        const data = new URLSearchParams({
+            client_id: user["clientID"],
+            client_secret: user["secretID"],
+            grant_type: 'client_credentials',
+        }).toString();
+
+        const response = await axios.post(user["tokenURL"], data, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+        });
+
+        return response.data.access_token;
+    } catch (error) {
+        console.error('Error while getting lfr token:', error.response ? error.response.data : error.message);
+        return null;
+    }
+
+}
+
+function callOpennessJsw2Level(token, conf, postObj) {
     OpnUserModel.find().then(el => {
         let user = el[0]
-        let openSearchUser = {
-            cid: user["cid"],
-            gid: user["gid"],
-            uid: user["uid"],
-            email: user["d_mail"],
-            password: util.decrypt("", user["d_pwd"])
-        }
-
         var callurl = conf.configuration.host;
         if (conf.configuration.port != undefined)
             if (conf.configuration.port != '')
                 callurl += ":" + conf.configuration.port;
         callurl += "/api/jsonws/invoke";
-        // console.log('chiamata callur X', callurl);
         logger.info(nameFile + ' | callOpennessJsw  | chiamata callur X :' + callurl);
         if (conf.configuration.method == "POST") {
             var objPOST = {};
             objPOST[conf.configuration.path] = postObj;
             postObj = objPOST;
-            // console.log('with postObj ', postObj);
-            logger.info(nameFile + ' | callOpennessJsw  | with postObj :' + JSON.stringify(postObj));
-            //   postObj = JSON.stringify(objPOST);
-            //    var configqq = { headers: { Cookie: 'JSESSIONID=C9B87F42FCF0BA612F4B59E411E908C5;' } };
-            var creden =  openSearchUser.email + ":" + openSearchUser.password;
-            logger.info(nameFile + ' | callOpennessJsw  | creden->:' + openSearchUser.email);
-            const buff = Buffer.from(creden, 'utf-8');
-            //let buff = new Buffer(creden);
-            let authorizationBasic = buff.toString('base64');
-            //   let authorizationBasic = Buffer.from(creden, 'base64');
+            logger.info(nameFile + ' | callOpennessJsw2Level  | with postObj :' + JSON.stringify(postObj));
+            console.log(nameFile + ' | callOpennessJsw2Level  | with postObj :', JSON.stringify(postObj));
             var configqq = {
                 "headers": {
-                    "Authorization": "Basic " + authorizationBasic
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
                 }
             };
-            // console.log('Authorization header-> ', configqq);
+            axios.post(callurl, postObj, configqq)
+                .then(function (response) {
+                    logger.info(nameFile + ' | callOpennessJsw2Level | POST | callurl, postObj, configqq' + callurl + " , " + JSON.stringify(postObj) + " , " + JSON.stringify(configqq));
+                    logger.info(nameFile + ' | callOpennessJsw2Level | POST | response ' + callurl + " , " + response);
+                })
+                .catch(function (error) {
+                    console.log(nameFile + ' | callOpennessJsw2Level | POST', error);
+                    logger.error(nameFile + ' | callOpennessJsw2Level | POST : ' + error);
+                });
+        } else {
+            logger.info(nameFile + ' | callOpennessJsw2Level | GET | callurl, postObj, configqq' + callurl + " , " + JSON.stringify(postObj));
+            axios.get(callurl, {params: postObj}).catch(function (error) {
+                console.log(nameFile + ' | callOpennessJsw2Level | GET', error);
+                logger.error(nameFile + ' | callOpennessJsw2Level | GET : ' + error);
+            });
+        }
+    }).catch((e) => {
+        console.error(">>ERROR | " + nameFile + " | dym.dymerentry/OpenSearch User ", e);
+        logger.error(nameFile + " | dym.dymerentry/OpenSearch User " + e);
+        ret.setMessages("Get OpenSearch User Error");
+        ret.setSuccess(false);
+        ret.setExtraData({"log": e.stack});
+        return res.send(ret);
+    })
+}
+//VL 15.4.25 - oauth2 lfr integration end
+
+
+
+
+function callOpennessJsw(conf, postObj) {
+
+       
+OpnUserModel.find().then(el => {
+        let user = el[0]
+        var callurl = conf.configuration.host;
+        
+        //console.log(nameFile + ' | callOpennessJsw  | user["d_mail"]:', user["d_mail"]);
+        //console.log(nameFile + ' | callOpennessJsw  | (user["d_pwd"]):', user["d_pwd"]);
+    
+                  
+                  
+ 
+         var creden = user["d_mail"] + ":" + util.decrypt(user["d_pwd"]);
+        
+        logger.info(nameFile + ' | callOpennessJsw  | creden->:' + user["d_mail"]);
+        const buff = Buffer.from(creden, 'utf-8');
+        let authorizationBasic = buff.toString('base64');
+
+        if (conf.configuration.port != undefined)
+            if (conf.configuration.port != '')
+                callurl += ":" + conf.configuration.port;
+        callurl += "/api/jsonws/invoke";
+        logger.info(nameFile + ' | callOpennessJsw  | chiamata callur X :' + callurl);
+        if (conf.configuration.method == "POST") {
+            var objPOST = {};
+            objPOST[conf.configuration.path] = postObj;
+            postObj = objPOST;
+            logger.info(nameFile + ' | callOpennessJsw  | with postObj :' + JSON.stringify(postObj));
+            console.log(nameFile + ' | callOpennessJsw  | with postObj :', JSON.stringify(postObj));
+            var configqq = {
+                "headers": {
+                     "Authorization": "Basic " + authorizationBasic,
+                    'Content-Type': 'application/json',
+                }
+            };
             axios.post(callurl, postObj, configqq)
                 .then(function (response) {
                     logger.info(nameFile + ' | callOpennessJsw | POST | callurl, postObj, configqq' + callurl + " , " + JSON.stringify(postObj) + " , " + JSON.stringify(configqq));
@@ -795,13 +891,16 @@ function callOpennessJsw(conf, postObj) {
             });
         }
     }).catch((e) => {
-        console.error("ERROR | " + nameFile + " | dym.dymerentry/OpenSearch User ", e);
+        console.error(">>ERROR | " + nameFile + " | dym.dymerentry/OpenSearch User ", e);
         logger.error(nameFile + " | dym.dymerentry/OpenSearch User " + e);
         ret.setMessages("Get OpenSearch User Error");
         ret.setSuccess(false);
         ret.setExtraData({"log": e.stack});
         return res.send(ret);
     })
+ 
 }
+
+
 
 module.exports = router;

@@ -32,12 +32,30 @@ const OpnUserSchema = new mongoose.Schema({
         d_isEncrypted: {
             type: Boolean,
             required: true
-        }
+        },
+		//VL 15.4.25 - oauth2 lfr integration start
+        clientID: {
+            type: String,
+            trim: true,
+            required: false
+        },
+        secretID: {
+            type: String,
+            trim: true,
+            required: false
+        },
+        tokenURL: {
+            type: String,
+            trim: true,
+            required: false
+        },
+        //VL 15.4.25 - oauth2 lfr integration end
     },
     {versionKey: false})
 OpnUserSchema.pre("save", function (next) {
     if (this.isModified('d_pwd') || this.isNew) {
-        let encryptedPwd = util.encrypt("", this.d_pwd)
+        //let encryptedPwd = util.encrypt("", this.d_pwd)
+        let encryptedPwd = util.encrypt(this.d_pwd)
         this.d_pwd = encryptedPwd;
         this.d_isEncrypted = true;
     }
@@ -48,11 +66,14 @@ OpnUserSchema.pre("updateOne", function (next) {
     const update = this.getUpdate();
     if (update.d_pwd) {
         if(!update.d_isEncrypted) {
-            let encryptedPwd = util.encrypt("", update.d_pwd)
+            //let encryptedPwd = util.encrypt("", update.d_pwd)
+            let encryptedPwd = util.encrypt(update.d_pwd)
             update.d_pwd = encryptedPwd
         } else {
-            let decrypted = util.decrypt("", update.d_pwd)
-            let encryptedPwd = util.encrypt("", decrypted)
+            //let decrypted = util.decrypt("", update.d_pwd)
+            let decrypted = util.decrypt(update.d_pwd)
+            //let encryptedPwd = util.encrypt("", decrypted)
+            let encryptedPwd = util.encrypt(decrypted)
             update.d_pwd = encryptedPwd
         }
         update.d_isEncrypted = true

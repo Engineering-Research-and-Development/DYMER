@@ -35,6 +35,7 @@ var routes_dymer_usermap = require('./routes/routes-d-usermap');
 var routes_dymer_taxonomy = require('./routes/routes-d-taxonomy');
 var routes_dymer_import = require('./routes/routes-d-import');
 var routes_dymer_library = require('./routes/routes-d-library');
+var aiAgentRoutes = require('./routes/aiAgentRoutes');
 //var routes_dymer_importsocs = require('./routes/routes-d-import_socs');
 //var routes_dymer_importhb = require('./routes/routes-d-import_hb');
 var routes_dymer_permission = require('./routes/routes-d-perm');
@@ -44,8 +45,12 @@ var routes_dymer_configtool = require('./routes/routes-d-configtool');
 var routes_dymer_authconfig = require('./routes/routes-d-authconfig');
 var routes_dymer_duser = require('./routes/routes-d-users');
 var routes_dymer_stats = require('./routes/routes-d-stats');
+var routes_dymer_ollama = require('./routes/routes-d-ollama');
+/*MG - MAGIC AI - INIZIO*/
+var routes_dymer_magicAI = require('./routes/routes-d-magicai');
+/*MG - MAGIC AI - FINE*/
 app.use(express.json())
-//app.use(cors());
+    //app.use(cors());
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
@@ -63,6 +68,8 @@ app.use('/api/v1/opn', routes_dymer_openness
 app.use('/api/v1/fwadapter', routes_dymer_fwadapter
 // #swagger.tags = ['Services']
 );
+app.use('/api/v1/ai-agents', aiAgentRoutes);
+
 app.use('/api/v1/sync', routes_dymer_sync
 // #swagger.tags = ['Services']
 );
@@ -84,7 +91,8 @@ app.use('/api/v1/usermap', routes_dymer_usermap
 app.use('/api/v1/import', routes_dymer_import
 // #swagger.tags = ['Services']
 );
-app.use(util.getContextPath('dservice') + '/api/v1/library', routes_dymer_library);
+app.use('/api/v1/library', routes_dymer_library);
+
 //app.use('/api/v1/import_socs', routes_dymer_importsocs);
 //app.use('/api/v1/import_hb', routes_dymer_importhb);
 app.use('/api/v1/perm', routes_dymer_permission
@@ -101,10 +109,13 @@ app.use('/api/v1/duser', routes_dymer_duser
 // #swagger.tags = ['Services']
 );
 app.use('/api/v1/stats', routes_dymer_stats);
+/*MG - MAGIC AI - INIZIO*/
+app.use('/api/v1/magicai', routes_dymer_magicAI);
+/*MG - MAGIC AI - FINE*/
+app.use('/api/v1/llm', routes_dymer_ollama);//NEW
+
 
 app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
-    // #swagger.tags = ['Services']
-
     var ret = new jsonResponse();
     var filetype = req.params.filetype;
     //const dymeruser = util.getDymerUser(req, res);
@@ -117,16 +128,11 @@ app.get('/deletelog/:filetype', util.checkIsAdmin, (req, res) => {
 });
 
 app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
-    // #swagger.tags = ['Services']
-
     var filetype = req.params.filetype;
     //console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
     return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
 });
-
 app.get('/logtypes', async(req, res) => {
-    // #swagger.tags = ['Services']
-
     var ret = new jsonResponse();
     ret.setSuccess(true);
     let loggerdebug = global.loggerdebug;
@@ -134,10 +140,7 @@ app.get('/logtypes', async(req, res) => {
     ret.setMessages("logtypes");
     return res.send(ret);
 });
-
 app.post('/setlogconfig', (req, res) => {
-    // #swagger.tags = ['Services']
-
     var ret = new jsonResponse();
     logger.ts_infologger(req.body.consoleactive);
     ret.setMessages("Settings updated");
@@ -153,8 +156,8 @@ app.get('/checkservice', util.checkIsAdmin, (req, res) => {
     let errorsize = logger.filesize("error");
     let regex = /(?<!^).(?!$)/g;
     let infomserv = JSON.parse(JSON.stringify(global.gConfig));
-    infomserv.services.opnsearch.user.d_mail = (infomserv.services.opnsearch.user.d_mail).replace(regex, '*');
-    infomserv.services.opnsearch.user.d_pwd  = (infomserv.services.opnsearch.user.d_pwd).replace(regex, '*');
+    //infomserv.services.opnsearch.user.d_mail = (infomserv.services.opnsearch.user.d_mail).replace(regex, '*');
+    //infomserv.services.opnsearch.user.d_pwd  = (infomserv.services.opnsearch.user.d_pwd).replace(regex, '*');
     ret.setData({
         info: {
             size: infosize
@@ -171,8 +174,6 @@ app.get('/checkservice', util.checkIsAdmin, (req, res) => {
 });
 
 app.get("/*", (req, res) => {
-    // #swagger.tags = ['Services']
-
     var ret = new jsonResponse();
     logger.error(nameFile + ' | /* Api error 404  :' + req.path);
     ret.setMessages("Api error 404");
@@ -180,7 +181,6 @@ app.get("/*", (req, res) => {
     ret.setSuccess(false);
     return res.send(ret);
 });
-
 //module.exports = app;
 
 const root = express();

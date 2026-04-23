@@ -1,6 +1,5 @@
 var jsonResponse = require('../jsonResponse');
 var util = require('../utility');
-//var FormData = require('form-data');
 var http = require('http');
 var url = require("url");
 var express = require('express');
@@ -23,24 +22,7 @@ router.use(bodyParser.urlencoded({
     extended: false,
     limit: '100MB'
 }));
-/*
-const mongoURI = util.mongoUrlForm();
-console.log(nameFile + ' | mongoURI :', JSON.stringify(mongoURI));
-var db;
-mongoose
-    .connect(mongoURI, {
-        // useCreateIndex: true,
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    })
-    .then(x => {
-        console.log(nameFile + ` | Connected to Mongo! Database name: "${x.connections[0].name}"`);
-        db = x.connections[0].db;
-    })
-    .catch(err => {
-        console.error("ERROR | " + nameFile + ` | Error connecting to mongo! Database name: "${x.connections[0].name}"`, err);
-    });
-*/
+
 router.get('/', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -62,15 +44,18 @@ router.get('/', util.checkIsAdmin, (req, res) => {
     })
 });
 
-
 router.get('/userinfo', (req, res) => {
+	//console.log(nameFile + " | userinfo | " );										  
     var ret = new jsonResponse();
-    let data = req.body;;
+    let data = req.body;
+	//console.log(nameFile + " | userinfo | req.body: "+ JSON.stringify(req.body));																			 
+    //logger.info(nameFile + " | userinfo | req.body: "+ JSON.stringify(req.body));
     var mygid = 0;
     let extradata = {};
     if (data.dymtoExtraInfo != undefined && data.dymtoExtraInfo != 'undefined' && data.dymtoExtraInfo != null && data.dymtoExtraInfo != 'null') {
         extradata = JSON.parse(Buffer.from(data.dymtoExtraInfo, 'base64').toString());
         // console.log("EXTRADATA", extradata);
+        logger.info("EXTRADATA"+ extradata);
         if (extradata.extrainfo == undefined)
             mygid = extradata.groupId;
         else
@@ -97,124 +82,94 @@ router.get('/userinfo', (req, res) => {
     } catch (error) {
         myURLref = new URL("http://" + data.referer);
     }
-
-    // logger.info(nameFile + ' | data.referer : ' + data.referer);
-    //   logger.info(nameFile + ' | myURLref : ' + myURLref);
-    //console.log('myURLref', myURLref);
-    //console.log('data.referer|origin|host', "1" + data.referer, "2" + myURLref.origin, "3" + myURLref.host, data.idsadm);
-
+    //console.log(nameFile + ' | userinfo | regkey myURLref.host : ', myURLref.host);
+    //console.log(nameFile + ' | userinfo | regkey myURLref.origin : ', myURLref.origin);
     let regkey = (myURLref.host == "") ? (myURLref.origin) : myURLref.host;
     if (regkey == null || regkey == 'null')
         regkey = data.referer;
     var queryFind = { host: { "$regex": regkey }, active: true };
     let requestjsonpath = data.requestjsonpath;
-    //console.log('myURL requestjsonpath', requestjsonpath);
-    //console.log('myURL myURLref', myURLref);
     let myRequestBaseHost = myURLref.protocol + "//" + myURLref.host;
     let myRequestBaseUrl = myRequestBaseHost + myURLref.pathname;
     if (!myRequestBaseUrl.includes('http'))
         myRequestBaseUrl = data.referer;
     let myRequestJsonUrl = (requestjsonpath != undefined) ? requestjsonpath.protocol + "//" + requestjsonpath.host + requestjsonpath.pathname : undefined;
-    /*console.log('myURL protocol', myURLref.protocol);
-    console.log('myURL host', myURLref.host);
-    console.log('myURL href ', myURLref.href);
-    console.log('myURL pathname ', myURLref.pathname);
-    console.log('myURL search ', myURLref.search);
-    console.log('queryFind ', queryFind);
-    console.log('myRequestBaseUrl ', myRequestBaseUrl); 
-    console.log('myRequestBaseHost ', myRequestBaseHost);*/
-    //console.log('queryFind', queryFind);
-    DymRule.find(queryFind).then((els) => {
-        // console.log('DymRules', els);
 
+    DymRule.find(queryFind).then((els) => {
         if (els.length || data.idsadm) {
+            //console.log(nameFile + ' | userinfo | number of hosts, els.length: ', els.length);
+            //console.log(nameFile + ' | userinfo | user is admin, data.idsadm : ', data.idsadm);
             let searchObject = els[0];
             if (els.length > 1) {
-                //console.log('myRequestBaseUrl', myRequestBaseUrl);
                 searchObject = els.find((singoleCnf) => singoleCnf.host == myRequestBaseUrl);
                 if (searchObject == undefined) {
                     if (myRequestJsonUrl) {
-                        //console.log('myRequestJsonUrl', myRequestBaseUrl);
                         searchObject = els.find((singoleCnf) => singoleCnf.host == myRequestJsonUrl);
                     }
                     if (searchObject == undefined) {
-                        //console.log('myRequestBaseHost', myRequestBaseHost);
                         searchObject = els.find((singoleCnf) => (singoleCnf.host == myRequestBaseHost || singoleCnf.host == myRequestBaseHost + "/"));
                     }
                 }
             }
             // var el = els[0];
             let el = searchObject;
-            //console.log('DymRule searchObject', searchObject);
-            //console.log('data.idsadm', data.idsadm);
+            //console.log(nameFile + ' | userInfo | el/searchObject ', searchObject);
+            //logger.info(nameFile + ' | userInfo | el/searchObject '+ searchObject);
+
             let authtype = (el == undefined) ? "" : el.authtype;
             if (authtype == "jwtparent" || data.idsadm) {
+                /*
+                console.log(nameFile + ' | userInfo | authtype ', authtype);
+                console.log(nameFile + ' | userInfo | idsadm ', data.idsadm);
+                logger.info(nameFile + ' | userInfo | authtype '+ authtype);
+                logger.info(nameFile + ' | userInfo | idsadm '+ data.idsadm);
+                */
                 var token = data.DYM;
+                console.log(nameFile + ' | userinfo | data.DYM : ', data.DYM);
+                //logger.info(nameFile + ' | userinfo | data.DYM : ', data.DYM);
                 if (token != undefined && token != "null" && token != null) {
                     var decoded;
-                  //   console.log("aaaaaaaaaaaa", token, el)
-                    //  console.log("aaaaaaaaaaaa1", (el && el.prop !== undefined && el.prop.secretkey !== undefined && el.prop.secretkey != ""))
-                    if (el && el.prop !== undefined && el.prop.secretkey !== undefined && el.prop.secretkey != "") {
-                        // decryption
-                        //console.log({ token, secret: el.prop.secretkey })
-                        try {
-                            token = token.replace(/\s/g, "+")
-                            let hash = crypto.createHash('sha1')
-                            let originalKey = el.prop.secretkey;
-
-                            let digest = hash.update(originalKey).digest().subarray(0, 16)
-
-                            let cc = crypto.createDecipheriv('aes-128-ecb', digest, null);
-
-                            decoded = JSON.parse(Buffer.concat([cc.update(token, 'base64'), cc.final()]).toString())
-                        } catch (error) {
-                            //console.log(data)
-                            throw new Error("unable to decrypt token jwtparent")
-                        }
-                    } else {
+                    //decoded = JSON.parse(Buffer.from(token, 'base64').toString());
+                     if (util.isCrypted(token)) {
+                                let dymtokenDecryptedLfr = util.decryptLfr(token);
+ 
+                                console.log(nameFile + ' | userinfo | decrypted: ', dymtokenDecryptedLfr);
+                                decoded = new Buffer(dymtokenDecryptedLfr).toString("base64");
+                                 console.log(nameFile + ' | userinfo | coded in base64: ', decoded);
+                     }else
+                     {
                         decoded = JSON.parse(Buffer.from(token, 'base64').toString());
-                    }
-                     //console.log('decoded', decoded);
-
-
-
-                    //var decoded = JSON.parse(Buffer.from(token, 'base64').toString());
-                    // console.log('decoded', decoded);
+                     }
+                    console.log(nameFile + ' | userinfo | decoded DYM: ', decoded);
                     objuser.email = decoded.email;
                     objuser.id = decoded.email;
                     if (decoded.hasOwnProperty("extrainfo")) {
                         objuser.gid = decoded.extrainfo.groupId;
-                        //objuser.extrainfo = decoded.extrainfo;
                         objuser.extrainfo = {...objuser.extrainfo, ...decoded.extrainfo };
                     }
                     if (!(Object.entries(extradata).length === 0)) {
                         objuser.extrainfo = {...objuser.extrainfo, ...extradata.extrainfo };
                     }
                     objuser.extrainfo.emailAddress = decoded.email;
-                    //urs_gid = decoded.extrainfo.groupId;
-                    // if (decoded.extrainfo != undefined)
-                    //  objuser.extrainfo = decoded.extrainfo;
-                    
-                    let listrRoles= decoded.roles ;
-                    //console.log('listrRoles', listrRoles);
-                    listrRoles.forEach(element => {
+
+                    let listRoles= decoded.roles ;
+                    //console.log(nameFile + ' | userinfo | listRoles: ', listRoles);
+                    //logger.info(nameFile + ' | userinfo | listRoles: ', JSON.stringify(listRoles));
+                    listRoles.forEach(element => {
                         let trole=""
-                         if(element.hasOwnProperty("role"))
-                         trole=element.role; 
-                       else
-                       trole=element  ;
-                       if(! objuser.roles.includes(trole))
-                       objuser.roles.push(trole);
+                        if(element.hasOwnProperty("role"))
+                            trole=element.role;
+                        else
+                            trole=element  ;
+                        if(! objuser.roles.includes(trole))
+                            objuser.roles.push(trole);
                     });
-                      
-                    
-                    
-                  //  console.log('objuser.roles',objuser.roles);
+
                     objuser.username = decoded.username;
                 }
                 ret.setMessages("User detail");
                 ret.setData(objuser);
-                //console.log('objuser', objuser);
+                //console.log(nameFile + ' | userinfo | objuser', objuser);
                 return res.send(ret);
             }
             if (authtype == "oidc") {
@@ -235,7 +190,7 @@ router.get('/userinfo', (req, res) => {
                             response.data.roles.forEach(element => {
                                 objuser.roles.push(element.name);
                             });
-                            // console.log(obj_isi.roles);
+                            //console.log(obj_isi.roles);
                             objuser.email = response.data.email;
                             objuser.id = response.data.email;
                             objuser.d_appuid = response.data.app_id;
@@ -255,20 +210,6 @@ router.get('/userinfo', (req, res) => {
                         .catch(function(error) {
                             console.error(error);
                             logger.error(nameFile + ' | /userinfo oidc error | updateOne : ' + error);
-                            /* var token = data.DYM;
-                             var decoded = JSON.parse(Buffer.from(token, 'base64').toString());
-                             objuser.email = decoded.email;
-                             objuser.id = decoded.email;
-                             //urs_gid = decoded.extrainfo.groupId;
-                             objuser.extrainfo.emailAddress = decoded.email;
-                             objuser.extrainfo = decoded.extrainfo;
-                             decoded.roles.forEach(element => {
-                                 objuser.roles.push(element.role);
-                             });
-                             objuser.username = decoded.username;
-                             ret.setMessages("User detail");
-                             ret.setData(objuser);
-                             return res.send(ret);*/
                             ret.setMessages("User detail");
                             ret.setData(objuser);
                             return res.send(ret);
@@ -283,7 +224,6 @@ router.get('/userinfo', (req, res) => {
         } else {
             ret.setMessages("User detail");
             ret.setData(objuser);
-            // console.log('objuser', objuser);
             return res.send(ret);
         }
     }).catch((err) => {
@@ -306,7 +246,7 @@ router.post('/', util.checkIsAdmin, function(req, res) {
     var ret = new jsonResponse();
     var mod = new DymRule(req.body);
     //console.log(nameFile + ' | post | create : ', JSON.stringify(req.body));
-    logger.info(nameFile + ' | post | create : ' + JSON.stringify(req.body));
+    logger.info(nameFile + ' | post | create: ' + JSON.stringify(req.body));
     mod.save().then((el) => {
         ret.setMessages("Element created successfully");
         ret.addData(el);
@@ -322,6 +262,7 @@ router.post('/', util.checkIsAdmin, function(req, res) {
         }
     })
 });
+
 router.put('/:id', util.checkIsAdmin, (req, res) => {
     let id = req.params.id;
     let callData = util.getAllQuery(req);
@@ -350,6 +291,7 @@ router.put('/:id', util.checkIsAdmin, (req, res) => {
         }
     );
 });
+
 router.delete('/:id', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     var id = req.params.id;

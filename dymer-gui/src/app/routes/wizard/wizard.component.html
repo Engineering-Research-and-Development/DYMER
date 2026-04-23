@@ -1,0 +1,209 @@
+<mat-card>
+  <mat-card-content>
+    <page-header [class]="['text-black', 'b-0']" title="{{ 'menu.wizard.createModel' | translate }}"
+      subtitle="{{ 'menu.wizard.label' | translate }}" />
+    <div class="card-body">
+      <!-- Wizard -->
+      <mat-horizontal-stepper [linear]="isLinear" #wizard>
+
+        <mat-step [stepControl]="firstFormGroup">
+          <form [formGroup]="firstFormGroup">
+            <ng-template matStepLabel>{{ 'menu.wizard.chooseNameIndex' | translate }}</ng-template>
+            <div class="form-group">
+              <mat-form-field class="full-width-field">
+                <input matInput placeholder="{{ 'menu.wizard.name' | translate }}" formControlName="nameCtrl"
+                  required />
+                <mat-error *ngIf="firstFormGroup.get('nameCtrl')?.hasError('required')">
+                  {{ 'menu.wizard.nameRequired' | translate }}
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="form-group">
+              <mat-form-field class="full-width-field">
+                <input matInput placeholder="{{ 'menu.wizard.index' | translate }}" formControlName="indexCtrl"
+                  required />
+                <mat-error *ngIf="firstFormGroup.get('indexCtrl')?.hasError('required')">
+                  {{ 'menu.wizard.indexRequired' | translate }}
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="form-group">
+              <mat-form-field class="full-width-field">
+                <input matInput placeholder="{{ 'menu.wizard.description' | translate }}"
+                  formControlName="descriptionCtrl" required />
+                <mat-error *ngIf="firstFormGroup.get('descriptionCtrl')?.hasError('required')">
+                  {{ 'menu.wizard.descriptionRequired' | translate }}
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div>
+              <!-- <button mat-button matStepperNext>Next</button> -->
+              <div class="wizard-buttons-row">
+                <button mat-raised-button color="primary" matStepperNext>
+                  <mat-icon>arrow_forward</mat-icon>
+                  Next
+                </button>
+              </div>
+
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="secondFormGroup">
+          <form [formGroup]="secondFormGroup">
+            <ng-template matStepLabel>{{ 'menu.wizard.enterFields' | translate }}</ng-template>
+            <!--  <label for="csvFile">{{ 'menu.wizard.importCsv' | translate }}</label>
+            <input
+              type="file"
+              id="csvFile"
+              accept=".csv"
+              (change)="onCsvFileChange($event)"
+              class="form-control"
+            /> -->
+
+            <p>{{ 'importexport.upload_csv_file' | translate }}</p>
+            <div class="dropzone" (click)="fileInput.click()" (dragover)="onDragOver($event)"
+              (dragleave)="onDragLeave($event)" (drop)="onDrop($event)" [class.drag-over]="isDragOver">
+              <input type="file" id="csvFile" (change)="onCsvFileChange($event)" #fileInput hidden accept=".csv" />
+
+              <mat-icon class="dropzone-icon">cloud_upload</mat-icon>
+              <p class="dropzone-text">{{ 'importexport.drag_drop_here' | translate }}</p>
+              <p class="dropzone-browse-text">{{ 'importexport.or_browse_files' | translate }}</p>
+
+              <div *ngIf="selectedFile" class="file-info-container">
+                <mat-icon class="dropzone-icon-file">insert_drive_file</mat-icon>
+                <p class="file-name">{{ selectedFileName }}</p>
+                <p class="file-size">{{ getFileSize(selectedFile!.size) }}</p>
+              </div>
+            </div>
+
+
+
+
+
+            <mat-error *ngIf="csvError">{{ csvError }}</mat-error>
+            <div formArrayName="fieldsArray" class="mt-5">
+              <div *ngFor="let fieldCtrl of fieldsArrayControls; let i = index" [formGroupName]="i" class="field-group">
+                <div class="form-group">
+                  <div class="field-row">
+                    <mat-form-field class="field-title">
+                      <input matInput placeholder="{{ 'menu.wizard.title' | translate }}" formControlName="titleCtrl"
+                        required />
+                    </mat-form-field>
+                    <mat-form-field class="m-r-8 field-type" appearance="outline">
+                      <mat-select name="type" formControlName="selectTypeCtrl" required>
+                        <mat-optgroup label="Base Field">
+                          <mat-option value="text">Text</mat-option>
+                          <mat-option value="email">Email</mat-option>
+                          <mat-option value="date">Date</mat-option>
+                          <mat-option value="number">Number</mat-option>
+                          <mat-option value="textarea">Textarea</mat-option>
+                          <mat-option value="selectlist">Select List</mat-option>
+                          <mat-option value="file">Generic File (e.g. PDF, DOC, XML, YML)</mat-option>
+                          <mat-option value="image">Image (png,jpg)</mat-option>
+                        </mat-optgroup>
+                        <mat-optgroup label="Dymer Field">
+                          <mat-option value="taxonomy">Dymer Taxonomy</mat-option>
+                          <mat-option value="relation">Dymer Relation</mat-option>
+                          <mat-option value="geo">Dymer Geopoint</mat-option>
+                        </mat-optgroup>
+                      </mat-select>
+                    </mat-form-field>
+                    <mat-form-field *ngIf="isFieldTypeTaxonomy(fieldCtrl)">
+                      <mat-label>{{ 'menu.wizard.selectVocabulary' | translate }}</mat-label>
+                      <mat-select formControlName="taxCtrl">
+                        <ng-container *ngFor="let vocabFormControl of selectVocabularyFormArray?.controls">
+                          <mat-option *ngIf="vocabFormControl.value as vocab" [value]="vocab.vocabularyId">
+                            {{ vocab.vocabularyTitle }}
+                          </mat-option>
+                        </ng-container>
+                      </mat-select>
+                    </mat-form-field>
+                    <mat-form-field *ngIf="isFieldTypeRelation(fieldCtrl)">
+                      <mat-label>{{ 'menu.wizard.selectRelation' | translate }}</mat-label>
+                      <mat-select formControlName="relationtoCtrl">
+                        <ng-container *ngFor="let relationFormControl of selectRelationFormArray?.controls">
+                          <mat-option *ngIf="relationFormControl.value as relation"
+                            [value]="transformRelationTitle(relation.relationalModelTitle)">
+                            {{ relation.relationalModelTitle }}
+                          </mat-option>
+                        </ng-container>
+                      </mat-select>
+                    </mat-form-field>
+                    <mat-checkbox formControlName="requiredCtlr">{{'menu.wizard.required' | translate}}</mat-checkbox>
+                    <mat-checkbox formControlName="repeatableCtlr">{{'menu.wizard.repeatable' |
+                      translate}}</mat-checkbox>
+                    <mat-checkbox formControlName="searchableCtlr">{{'menu.wizard.searchable' |
+                      translate}}</mat-checkbox>
+                    <div class="field-actions">
+                      <span class="icon material-symbols-rounded cloneAction"
+                        (click)="cloneFormGroup(i)">content_copy</span>
+                      <span class="icon material-symbols-rounded deleteAction" (click)="removeConfig(i)">delete</span>
+                    </div>
+                  </div>
+                  <mat-error *ngIf="fieldCtrl.get('titleCtrl')?.hasError('required')"> {{ 'menu.wizard.titleRequired' |
+                    translate }} </mat-error>
+                </div>
+              </div>
+              <div>
+                <!-- <button mat-button matStepperPrevious>Back</button>
+                <button mat-button matStepperNext>Next</button> -->
+                <div class="wizard-buttons-row">
+                  <button mat-stroked-button matStepperPrevious>
+                    <mat-icon>arrow_back</mat-icon>
+                    Back
+                  </button>
+
+                  <button mat-raised-button color="primary" matStepperNext>
+                    Next
+                    <mat-icon>arrow_forward</mat-icon>
+                  </button>
+                </div>
+
+
+              </div>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step [stepControl]="thirdFormGroup">
+          <form [formGroup]="thirdFormGroup">
+            <ng-template matStepLabel>{{ 'menu.wizard.chooseTemplate' | translate }}</ng-template>
+            <div class="form-group">
+              <mat-radio-group formControlName="selectTemplateCtrl" required class="template-radio-group"
+                aria-label="Select template">
+                <div *ngFor="let template of templates" class="template-option"
+                  [ngClass]="{'template-option-selected': thirdFormGroup.get('selectTemplateCtrl')?.value === template.value}">
+                  <mat-radio-button #radioButton [value]="template.value">
+                    <div class="option-content">
+                      <img [src]="template.image" [alt]="template.label" class="option-image">
+                      <span class="option-label">{{ template.label }}</span>
+                    </div>
+                  </mat-radio-button>
+                </div>
+              </mat-radio-group>
+              <mat-error *ngIf="thirdFormGroup.get('selectTemplateCtrl')?.hasError('required')">
+                {{ 'menu.wizard.templateRequired' | translate }}
+              </mat-error>
+            </div>
+            <div class="step-actions">
+              <!-- <button mat-button matStepperNext>Next</button> -->
+              <!-- <button style="cursor: pointer;" class="btn-primary wizard-submit-button" (click)="createModelTemplate()" [disabled]="!thirdFormGroup.valid">{{ 'menu.wizard.submit' | translate }}</button>   -->
+              <div class="wizard-buttons-row justify-end">
+                <button mat-stroked-button matStepperPrevious>
+                  <mat-icon>arrow_back</mat-icon>
+                  Back
+                </button>
+
+                <button mat-raised-button color="primary" (click)="createModelTemplate()"
+                  [disabled]="!thirdFormGroup.valid">
+                  <mat-icon>check</mat-icon>
+                  Submit
+                </button>
+              </div>
+
+            </div>
+          </form>
+        </mat-step>
+      </mat-horizontal-stepper>
+    </div>
+  </mat-card-content>
+</mat-card>

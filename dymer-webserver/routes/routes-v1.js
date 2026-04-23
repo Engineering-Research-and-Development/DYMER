@@ -16,7 +16,6 @@ const { Console } = require('console');
 router.get('/logtypes', async(req, res) => {
     // #swagger.tags = ['Webserver']
 
-
     let ret = new jsonResponse();
     let loggerdebug_webserver = global.loggerdebug; // (process.env.DYMER_LOGGER == undefined) ? false : process.env.DYMER_LOGGER;
     let msglog = "file";
@@ -25,7 +24,7 @@ router.get('/logtypes', async(req, res) => {
     let logsType_entity = (await axios.get(url_entity))
     let loggerdebug_entity = logsType_entity.data.data.consolelog;
     let redisactive_entity = logsType_entity.data.data.redisactive;
-
+    let multitenancyactive_entity = logsType_entity.data.data.multitenancyactive; // AC multitenancy
     let url_template = util.getServiceUrl("template") + "/logtypes";
     let loggerdebug_template = (await axios.get(url_template)).data.data.consolelog;
     let url_form = util.getServiceUrl("form") + "/logtypes";
@@ -38,7 +37,8 @@ router.get('/logtypes', async(req, res) => {
     ret.setData({
         msg: msglog,
         consoleactive: { webserver: loggerdebug_webserver, entity: loggerdebug_entity, template: loggerdebug_template, form: loggerdebug_form, service: loggerdebug_service },
-        redisactive: {entity: redisactive_entity}  
+        redisactive: {entity: redisactive_entity},
+        multitenancyactive: {entity: multitenancyactive_entity} // AC multitenancy
     });
     res.status(200);
     ret.setSuccess(true);
@@ -59,7 +59,7 @@ router.post('/setlogConfig', [util.checkIsDymerUser], async(req, res) => {
     logger.info(nameFile + '  | setlogConfig :' + data.consoleactive.webserver);
     logger.ts_infologger(data.consoleactive.webserver);
     let url_entity = util.getServiceUrl("entity") + "/setlogconfig";
-    let loggerdebug_entity = await axios.post(url_entity, { consoleactive: data.consoleactive.entity })
+    let loggerdebug_entity = await axios.post(url_entity, { consoleactive: data.consoleactive.entity, multitenancyactive: data.multitenancyactive.entity }) // AC - multitenancy
 
     //console.log('loggerdebug_from_entity', loggerdebug_entity.data.data.consoleactive);
     let url_template = util.getServiceUrl("template") + "/setlogconfig";
@@ -72,8 +72,13 @@ router.post('/setlogConfig', [util.checkIsDymerUser], async(req, res) => {
     var url = util.getServiceUrl("entity") + "/api/v1/entity/redistoggle";
     let state = await axios.patch(url, { state: data.redisactive.entity })
         // ret.setMessages("Log settings updated");
+        // AC - multitenancy start
+    var multitenancyUrl = util.getServiceUrl("entity") + "/api/v1/entity/multitenancyToggle";
+    let multitenancyState = await axios.patch(multitenancyUrl, { multitenancyState: data.multitenancyactive.entity })
+    // AC - multitenancy end
+
     ret.setMessages("Settings updated");
-    ret.setData({ consoleactive: { webserver: data.consoleactive.webserver, entity: loggerdebug_entity.data.data.consoleactive, template: loggerdebug_template.data.data.consoleactive, form: loggerdebug_form.data.data.consoleactive, service: loggerdebug_service.data.data.consoleactive }, redisactive: { entity: state.data.data }});    //console.log('ret.setData', ret.data);
+    ret.setData({ consoleactive: { webserver: data.consoleactive.webserver, entity: loggerdebug_entity.data.data.consoleactive, template: loggerdebug_template.data.data.consoleactive, form: loggerdebug_form.data.data.consoleactive, service: loggerdebug_service.data.data.consoleactive }, redisactive: { entity: state.data.data }, multitenancyactive: {entity: multitenancyState.data.data}});    //AC multitenancy
 } catch (error) {
     ret.setSuccess(false)
     ret.setMessages("Error");

@@ -1,0 +1,75 @@
+    <mat-card>
+      <page-header [class]="['text-black', 'b-0']" title="{{ 'menu.users' | translate }}"/>
+      <mat-card-content>
+        <table mat-table [dataSource]="listUsers" class="mat-elevation-z8">
+          <!-- Username Column -->
+          <ng-container matColumnDef="username">
+            <th mat-header-cell *matHeaderCellDef>{{ 'menu.permissions.name' | translate}}</th>
+            <td mat-cell *matCellDef="let el">{{ el.username }}</td>
+          </ng-container>
+
+          <!-- Password Column -->
+          <ng-container matColumnDef="password">
+            <th mat-header-cell *matHeaderCellDef>Password</th>
+            <td mat-cell *matCellDef="let el">{{ el.password }}</td>
+          </ng-container>
+
+          <!-- Email Column -->
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let el">{{ el.email }}</td>
+          </ng-container>
+
+          <!-- Role Column -->
+          <ng-container matColumnDef="roles">
+            <th mat-header-cell *matHeaderCellDef>{{ 'menu.permissions.roles.name' | translate}}</th>
+            <td mat-cell *matCellDef="let el">
+              @for (rl of el.roles; track $index) {
+                <span>{{ rl.role }}</span>
+              }
+            </td>
+          </ng-container>
+
+          <!-- Last Login Column -->
+          <ng-container matColumnDef="lastLogin">
+            <th mat-header-cell *matHeaderCellDef>{{ 'menu.permissions.lastAccess' | translate}}</th>
+            <td mat-cell *matCellDef="let el">{{ UTCConvert(el.timestamp) }}</td>
+          </ng-container>
+
+          <!-- IP Column -->
+          <ng-container matColumnDef="ip">
+            <th mat-header-cell *matHeaderCellDef>IP</th>
+            <td mat-cell *matCellDef="let el">{{ el.ip }}</td>
+          </ng-container>
+
+          <!-- Active Column -->
+          <ng-container matColumnDef="active">
+            <th mat-header-cell *matHeaderCellDef class="text-center">{{ 'menu.permissions.enabled' | translate}}</th>
+            <td mat-cell *matCellDef="let el" class="text-center" style="max-width: 100px">
+              <mat-icon [color]="el.active ? 'accent' : 'warn'">power_settings_new</mat-icon>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="text-center">{{ 'menu.actions.delete' | translate}}</th>
+            <td mat-cell *matCellDef="let el; let i = $index" class="text-center">
+              <mat-icon class="deleteAction" (click)="removeConfigDUser(el)">delete</mat-icon>
+            </td>
+          </ng-container>
+
+          <!-- Header and Row Definitions -->
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+
+        <div style="text-align: right">
+          <br />
+          <button (click)="openAddUserDialog()" class="h-9 px-6 bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold uppercase rounded-lg hover:opacity-90 transition-all shadow-sm">
+            {{ 'menu.actions.add' | translate }}
+          </button>
+ 
+
+        </div>
+      </mat-card-content>
+    </mat-card>

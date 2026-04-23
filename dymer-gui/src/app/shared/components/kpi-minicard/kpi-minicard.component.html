@@ -1,0 +1,21 @@
+<div class="kpi-minicard" [style.borderColor]="colorCode">
+  <div class="kpi-header">
+    <i [ngClass]="icon" [ngStyle]="iconStyle"></i>
+    <div class="kpi-label">{{ label }}</div>
+  </div>
+  <div class="kpi-number" [ngStyle]="kpiNumberStyle">
+    {{ kpiNumber | number }}
+  </div>
+
+  <!-- <div class="kpi-footer">
+      <button class="footer-action-button" title="Visualizza dettagli">
+        <i class="fa-solid fa-eye"></i>
+      </button>
+      <button class="footer-action-button" title="Modifica KPI">
+        <i class="fa-solid fa-edit"></i>
+      </button>
+      <button class="footer-action-button" title="Elimina KPI">
+        <i class="fa-solid fa-trash-alt"></i>
+      </button>
+    </div> -->
+</div>

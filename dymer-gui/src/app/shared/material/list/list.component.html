@@ -1,0 +1,81 @@
+<breadcrumb />
+
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Seasoning</mat-card-title>
+    <mat-card-subtitle>Showing a non-interactive list of seasonings.</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-list role="list">
+      @for (item of items; track item) {
+        <mat-list-item role="listitem">{{ item }}</mat-list-item>
+      }
+    </mat-list>
+  </mat-card-content>
+</mat-card>
+
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Mailbox navigation</mat-card-title>
+    <mat-card-subtitle>Showing a navigation list with links to google search</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-nav-list>
+      @for (link of links; track link) {
+        <a mat-list-item href="https://www.google.com/search?q={{ link.name }}">
+          {{ link.name }}
+        </a>
+      }
+    </mat-nav-list>
+  </mat-card-content>
+</mat-card>
+
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Messages</mat-card-title>
+    <mat-card-subtitle>
+      Showing a list of messages, where each message item has sender's name, sender's avatar,
+      message subject, and content of the message.
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-list role="list">
+      @for (message of messages; track message) {
+        <mat-list-item role="listitem">
+          <img matListItemAvatar [src]="message.image" [alt]="message.from" />
+          <h3 matListItemTitle>{{ message.from }}</h3>
+          <p matListItemLine>{{ message.subject }}</p>
+          <p matListItemLine class="demo-secondary-text">{{ message.message }}</p>
+        </mat-list-item>
+      }
+    </mat-list>
+  </mat-card-content>
+</mat-card>
+
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Folders and notes for mailbox</mat-card-title>
+    <mat-card-subtitle>Showing a list with two sections, "folders" and "notes".</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-list role="list">
+      <h3 mat-subheader>Folders</h3>
+      @for (folder of folders; track folder) {
+        <mat-list-item role="listitem">
+          <mat-icon matListItemIcon>folder</mat-icon>
+          <h4 matListItemTitle>{{ folder.name }}</h4>
+          <p matListItemLine class="demo-secondary-text">{{ folder.updated }}</p>
+        </mat-list-item>
+      }
+      <mat-divider />
+      <h3 mat-subheader>Notes</h3>
+      @for (note of notes; track note) {
+        <mat-list-item role="listitem">
+          <mat-icon matListItemIcon>note</mat-icon>
+          <h4 matListItemTitle>{{ note.name }}</h4>
+          <p matListItemLine class="demo-secondary-text">{{ note.updated }}</p>
+        </mat-list-item>
+      }
+    </mat-list>
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,46 @@
+<h2 mat-dialog-title>Edit User</h2>
+<mat-dialog-content class="demo-full-width">
+  <form [formGroup]="userForm" (ngSubmit)="submitForm()">
+    <!-- Username -->
+    <mat-form-field class="demo-full-width">
+      <mat-label>Username</mat-label>
+      <input matInput formControlName="username" placeholder="Enter username">
+      <mat-error *ngIf="userForm.get('username')?.invalid">Username is required (min 3 chars)</mat-error>
+    </mat-form-field>
+
+    <!-- Email -->
+    <mat-form-field class="demo-full-width">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" placeholder="Enter email">
+      <mat-error *ngIf="userForm.get('email')?.invalid">Valid email is required</mat-error>
+    </mat-form-field>
+
+    <!-- Password -->
+    <mat-form-field class="demo-full-width">
+      <mat-label>Password</mat-label>
+      <input matInput formControlName="password" placeholder="Leave empty if unchanged" type="password">
+      <mat-hint>Leave blank to keep current password</mat-hint>
+    </mat-form-field>
+
+    <!-- Roles -->
+    <mat-form-field class="demo-full-width">
+      <mat-label>Role</mat-label>
+      <mat-select formControlName="roles">
+        <mat-option value="app-admin">app-admin</mat-option>
+        <mat-option value="app-content-curator">app-content-curator</mat-option>
+      </mat-select>
+      <ng-container *ngIf="userForm.get('roles') as rolesCtrl">
+        <mat-error *ngIf="rolesCtrl?.get('0.role')?.invalid">Role is required</mat-error>
+      </ng-container>
+      <!-- <mat-error *ngIf="userForm.get('roles.0.role')?.invalid">Role is required</mat-error> -->
+    </mat-form-field>
+
+    <!-- Active -->
+    <mat-checkbox formControlName="active">Active</mat-checkbox>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="primary" [disabled]="userForm.invalid" (click)="submitForm()">Update</button>
+</mat-dialog-actions>

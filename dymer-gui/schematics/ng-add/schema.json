@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "ng-matero-ng-add",
+  "title": "Ng-Matero ng-add schematic",
+  "type": "object",
+  "properties": {
+    "project": {
+      "type": "string",
+      "description": "Name of the project.",
+      "$default": {
+        "$source": "projectName"
+      }
+    },
+    "layout": {
+      "description": "The layout template to apply",
+      "type": "string",
+      "default": "dynamic",
+      "x-prompt": {
+        "message": "Choose a prebuilt layout template:",
+        "type": "list",
+        "items": [
+          {
+            "value": "dynamic",
+            "label": "Dynamic"
+          },
+          {
+            "value": "static",
+            "label": "Static"
+          }
+        ]
+      }
+    },
+    "nav": {
+      "description": "The navigation type to apply",
+      "type": "string",
+      "default": "side",
+      "x-prompt": {
+        "message": "Choose a prebuilt navigation type:",
+        "type": "list",
+        "items": [
+          {
+            "value": "side",
+            "label": "Side Navigation"
+          },
+          {
+            "value": "top",
+            "label": "Top Navigation"
+          }
+        ]
+      }
+    },
+    "theme": {
+      "description": "The theme style to apply",
+      "type": "string",
+      "default": "auto",
+      "x-prompt": {
+        "message": "Choose a prebuilt theme style:",
+        "type": "list",
+        "items": [
+          {
+            "value": "auto",
+            "label": "Auto"
+          },
+          {
+            "value": "light",
+            "label": "Light"
+          },
+          {
+            "value": "dark",
+            "label": "Dark"
+          }
+        ]
+      }
+    },
+    "dir": {
+      "description": "The dir to apply",
+      "type": "string",
+      "default": "ltr",
+      "x-prompt": {
+        "message": "Choose a default direction:",
+        "type": "list",
+        "items": [
+          {
+            "value": "ltr",
+            "label": "LTR"
+          },
+          {
+            "value": "rtl",
+            "label": "RTL"
+          }
+        ]
+      }
+    },
+    "language": {
+      "description": "The language to apply",
+      "type": "string",
+      "default": "auto",
+      "x-prompt": {
+        "message": "Choose a default language:",
+        "type": "list",
+        "items": [
+          {
+            "value": "auto",
+            "label": "System"
+          },
+          {
+            "value": "en-US",
+            "label": "English (en-US)"
+          },
+          {
+            "value": "it-IT",
+            "label": "Italian (it-IT)"
+          }
+        ]
+      }
+    },
+    "animations": {
+      "type": "string",
+      "default": "enabled",
+      "description": "Whether Angular browser animations should be included.",
+      "x-prompt": {
+        "message": "Include the Angular animations module?",
+        "type": "list",
+        "items": [
+          {
+            "value": "enabled",
+            "label": "Include and enable animations"
+          },
+          {
+            "value": "disabled",
+            "label": "Include, but disable animations"
+          },
+          {
+            "value": "excluded",
+            "label": "Do not include"
+          }
+        ]
+      }
+    },
+    "standalone": {
+      "type": "boolean",
+      "default": true,
+      "description": "Creates an application based upon the standalone API, without NgModules."
+    }
+  },
+  "required": []
+}

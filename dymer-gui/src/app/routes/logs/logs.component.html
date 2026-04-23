@@ -1,0 +1,299 @@
+  
+  <mat-expansion-panel #myPanel>
+    <mat-expansion-panel-header>
+      <mat-panel-description></mat-panel-description>
+      <mat-panel-title>{{ 'menu.logs.generalSettings' | translate }}</mat-panel-title>
+    </mat-expansion-panel-header>
+    
+
+     <form [formGroup]="formCONF" (ngSubmit)="onSubmitCheckbox()">
+        @for (opt of logOptions; track opt.key) {
+          <div>
+            <h5 class="text-info">{{ opt.label | translate }}</h5>
+            <div class="row" [formGroupName]="opt.key">
+              @for (svc of opt.services; track svc.key) {
+                <div class="col-3">
+                  <mat-checkbox [formControlName]="svc.key">
+                    {{ svc.label }}
+                  </mat-checkbox>
+                </div>
+              }
+            </div>
+          </div>
+          <hr>
+        }
+
+       <mat-action-row>
+            <div class="button-save">
+                  <button mat-raised-button color="primary" type="submit">
+                    {{ 'menu.actions.save' | translate }}
+                  </button>
+                </div>
+      </mat-action-row>
+         
+      </form>
+  </mat-expansion-panel>
+
+ 
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">  
+       
+    
+    <div class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 shadow-sm hover:border-zinc-300 dark:hover:border-zinc-700 transition-all space-y-4">
+             <mat-card-title [class]="['mat-header-title']"><i class="index fa-solid fa-atom"></i> Webserver Microservice</mat-card-title>
+              
+                    <div class="row">
+                            <div class="col-12">
+                                <div class="left-div">
+                                 <span class="mat-header-title"><i class="fa fa-info" aria-hidden="true"></i> info.log</span> 
+                                </div>
+                                <div class="right-div">
+                                  <a  class="p-2 text-grey-500" title="Info Log" (click)="openLog('webserver', 'info')"> <i class="fa fa-download"></i> </a>
+                                                              <a class="p-2 text-grey-500" title="Flush info.log" (click)="deleteLog('webserver', 'info')">  <i class="fa fa-trash"></i> </a>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                    <div class="left-div">
+                                      <span class="text-danger-light"><i class="fa fa-exclamation" aria-hidden="true"></i> error.log</span> 
+                                    </div>
+                                    <div class="right-div">
+                                      <a  class="p-2 text-grey-500" title="Error Log" (click)="openLog('webserver', 'error')"><i class="fa fa-download  "></i> </a>
+                                      <a  class="p-2 text-grey-500" title="Flush error.log" (click)="deleteLog('webserver', 'error')"> <i class="fa fa-trash"></i> </a>
+                                    </div>
+                            </div>
+                  </div>
+                        <mat-divider/>
+                        <div class="row">
+                          <div class="col">
+                            <span class="ml-2  "><i class="fa fa-power-off {{ checkservice.webserver.state }}" [matTooltip]="checkservice.webserver.msg"></i> {{ checkservice.webserver.msg }}</span>
+                           </div>
+                           <div class="col-3 text-center">
+                              <span class="mr-2 "><i class="fa fa-file-alt ml-2"
+                                        [class.text-success]="configLog.consoleactive?.webserver == true"
+                                        [class.text-warning]="configLog.consoleactive?.webserver == false"
+                                        matTooltip="Console"></i>   Console </span>
+                           </div>   
+                               
+                          </div>
+                            <mat-divider/> 
+                        <div class="row">
+                              <div class="col-12 text-left">
+                                <a title="Config" class="ml-2 mat-header-title" (click)="openLogDialog('webserver')">
+                                                <i class="fa fa-info-circle"></i> Config
+                                              </a>
+                               </div>
+                        </div>
+               
+      </div> 
+        
+      <div class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 shadow-sm hover:border-zinc-300 dark:hover:border-zinc-700 transition-all space-y-4">
+          
+         
+            <mat-card-title [class]="['mat-header-title']"><i class="model fa-solid fa-indent"></i> Models Microservice</mat-card-title>
+           
+                    <div class="row">
+                            <div class="col-12">
+                                <div class="left-div">
+                                 <span class="mat-header-title"><i class="fa fa-info" aria-hidden="true"></i> info.log</span> 
+                                </div>
+                                <div class="right-div">
+                                  <a  class="p-2 text-grey-500" title="Info Log" (click)="openLog('forms', 'info')"> <i class="fa fa-download"></i> </a>
+                                                              <a class="p-2 text-grey-500" title="Flush info.log" (click)="deleteLog('forms', 'info')">  <i class="fa fa-trash"></i> </a>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                    <div class="left-div">
+                                      <span class="text-danger-light"><i class="fa fa-exclamation" aria-hidden="true"></i> error.log</span> 
+                                    </div>
+                                    <div class="right-div">
+                                      <a  class="p-2 text-grey-500" title="Error Log" (click)="openLog('forms', 'error')"><i class="fa fa-download  "></i> </a>
+                                      <a  class="p-2 text-grey-500" title="Flush error.log" (click)="deleteLog('forms', 'error')"> <i class="fa fa-trash"></i> </a>
+                                    </div>
+                            </div>
+                  </div>
+                        <mat-divider/>
+                        <div class="row">
+                          <div class="col">
+                             <span class="ml-2  "> <i class="fa fa-power-off {{ checkservice.forms.state }}"
+                 [matTooltip]="checkservice.forms.msg"></i> {{checkservice.forms.msg}}</span>
+                           <span class="mr-2  "><i class="fa fa-database {{ checkservice.forms.db.mongo.css }} ml-2"
+                 [matTooltip]="'Mongo ' + checkservice.forms.db.mongo.msg"></i> Mongo {{checkservice.forms.db.mongo.msg}}</span>
+                          </div>
+                           <div class="col-3 text-center">
+                              <span class="mr-2 "><i class="fa fa-file-alt ml-2"
+                                        [class.text-success]="configLog.consoleactive?.form == true"
+                                        [class.text-warning]="configLog.consoleactive?.form == false"
+                                        matTooltip="Console"></i>   Console </span>
+                           </div>   
+                               
+                          </div>
+                            <mat-divider/> 
+                        <div class="row">
+                              <div class="col-12 text-left">
+                                <a title="Config" class="ml-2 mat-header-title" (click)="openLogDialog('forms')">
+                                                <i class="fa fa-info-circle"></i> Config
+                                              </a>
+                               </div>
+                        </div>
+              
+      </div> 
+       <div class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 shadow-sm hover:border-zinc-300 dark:hover:border-zinc-700 transition-all space-y-4">
+             
+          
+              <mat-card-title [class]="['mat-header-title']"><i class="template fa-solid fa-table-list"></i> Templates Microservice</mat-card-title>
+          
+                    <div class="row">
+                            <div class="col-12">
+                                <div class="left-div">
+                                 <span class="mat-header-title"><i class="fa fa-info" aria-hidden="true"></i> info.log</span> 
+                                </div>
+                                <div class="right-div">
+                                  <a  class="p-2 text-grey-500" title="Info Log" (click)="openLog('templates', 'info')"> <i class="fa fa-download"></i> </a>
+                                                              <a class="p-2 text-grey-500" title="Flush info.log" (click)="deleteLog('templates', 'info')">  <i class="fa fa-trash"></i> </a>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                    <div class="left-div">
+                                      <span class="text-danger-light"><i class="fa fa-exclamation" aria-hidden="true"></i> error.log</span> 
+                                    </div>
+                                    <div class="right-div">
+                                      <a  class="p-2 text-grey-500" title="Error Log" (click)="openLog('templates', 'error')"><i class="fa fa-download  "></i> </a>
+                                      <a  class="p-2 text-grey-500" title="Flush error.log" (click)="deleteLog('templates', 'error')"> <i class="fa fa-trash"></i> </a>
+                                    </div>
+                            </div>
+                  </div>
+                        <mat-divider/>
+                        <div class="row">
+                          <div class="col">
+                             <span class="ml-2  "> <i class="fa fa-power-off {{ checkservice.templates.state }}"
+                 [matTooltip]="checkservice.templates.msg"></i> {{checkservice.templates.msg}} </span>
+                           <span class="mr-2  "><i class="fa fa-file-alt ml-2"
+                 [class.text-success]="configLog.consoleactive?.template == true"
+                 [class.text-warning]="configLog.consoleactive?.template == false"
+                 matTooltip="Console"></i> Mongo {{checkservice.forms.db.mongo.msg}} </span>
+                          </div>
+                           <div class="col-3 text-center">
+                              <span class="mr-2 "><i class="fa fa-file-alt ml-2"
+                                        [class.text-success]="configLog.consoleactive?.template == true"
+                                        [class.text-warning]="configLog.consoleactive?.template == false"
+                                        matTooltip="Console"></i>   Console </span>
+                           </div>   
+                               
+                          </div>
+                            <mat-divider/> 
+                        <div class="row">
+                              <div class="col-12 text-left">
+                                <a title="Config" class="ml-2 mat-header-title" (click)="openLogDialog('templates')"> <i class="fa fa-info-circle"></i> Config  </a>
+                               </div>
+                        </div>
+               
+      </div>  
+      <div class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 shadow-sm hover:border-zinc-300 dark:hover:border-zinc-700 transition-all space-y-4">
+           
+            
+              <mat-card-title [class]="['mat-header-title']"><i class="entity fa-solid fa-globe"></i> Entities Microservice</mat-card-title>
+            
+                    <div class="row">
+                            <div class="col-12">
+                                <div class="left-div">
+                                 <span class="mat-header-title"><i class="fa fa-info" aria-hidden="true"></i> info.log</span> 
+                                </div>
+                                <div class="right-div">
+                                  <a  class="p-2 text-grey-500" title="Info Log" (click)="openLog('entities', 'info')"> <i class="fa fa-download"></i> </a>
+                                                              <a class="p-2 text-grey-500" title="Flush info.log" (click)="deleteLog('entities', 'info')">  <i class="fa fa-trash"></i> </a>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                    <div class="left-div">
+                                      <span class="text-danger-light"><i class="fa fa-exclamation" aria-hidden="true"></i> error.log</span> 
+                                    </div>
+                                    <div class="right-div">
+                                      <a  class="p-2 text-grey-500" title="Error Log" (click)="openLog('entities', 'error')"><i class="fa fa-download  "></i> </a>
+                                      <a  class="p-2 text-grey-500" title="Flush error.log" (click)="deleteLog('entities', 'error')"> <i class="fa fa-trash"></i> </a>
+                                    </div>
+                            </div>
+                  </div>
+                        <mat-divider/>
+                        <div class="row">
+                          <div class="col">
+                             <span class="ml-2  ">  <i class="fa fa-power-off {{ checkservice.entities.state }}"
+                                                  [matTooltip]="checkservice.entities.msg"></i> {{checkservice.entities.msg}} </span>
+                          
+                 <span class="mr-2  "><i class="fa fa-database {{ checkservice.entities.db.mongo.css }} ml-2"
+                 [matTooltip]="'Mongo ' + checkservice.entities.db.mongo.msg"></i> Mongo {{checkservice.forms.db.mongo.msg}} </span>
+<br>
+                    <span class="mr-2  "><i class="fa fa-database {{ checkservice.entities.db.elastic.css }} ml-2"
+                 [matTooltip]="'Elastic ' + checkservice.entities.db.elastic.msg"></i> Elasticsearch {{checkservice.entities.db.elastic.msg}} </span>
+           <span class="mr-2  ">   <i class="fa fa-database {{ checkservice.entities.db.redis.css }} ml-2"
+                 [matTooltip]="'Redis ' + checkservice.entities.db.redis.msg"></i> Redis {{checkservice.entities.db.redis.msg}} </span>
+
+
+                          
+                              <span class="mr-2 "><i class="fa fa-file-alt ml-2"
+                                        [class.text-success]="configLog.consoleactive?.entity == true"
+                                        [class.text-warning]="configLog.consoleactive?.entity == false"
+                                        matTooltip="Console"></i>   Console </span>
+                           </div>   
+                               
+                          </div>
+                            <mat-divider/> 
+                        <div class="row">
+                              <div class="col-12 text-left">
+                                <a title="Config" class="ml-2 mat-header-title" (click)="openLogDialog('entities')"> <i class="fa fa-info-circle"></i> Config  </a>
+                               </div>
+                        </div>
+              
+      </div>  
+
+      <div class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 shadow-sm hover:border-zinc-300 dark:hover:border-zinc-700 transition-all space-y-4">
+            
+ 
+              <mat-card-title [class]="['mat-header-title']"><i class="service fa-solid fa-wrench"></i> Service Microservice</mat-card-title>
+            
+                    <div class="row">
+                            <div class="col-12">
+                                <div class="left-div">
+                                 <span class="mat-header-title"><i class="fa fa-info" aria-hidden="true"></i> info.log</span> 
+                                </div>
+                                <div class="right-div">
+                                  <a  class="p-2 text-grey-500" title="Info Log" (click)="openLog('dservice', 'info')"> <i class="fa fa-download"></i> </a>
+                                                              <a class="p-2 text-grey-500" title="Flush info.log" (click)="deleteLog('dservice', 'info')">  <i class="fa fa-trash"></i> </a>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                    <div class="left-div">
+                                      <span class="text-danger-light"><i class="fa fa-exclamation" aria-hidden="true"></i> error.log</span> 
+                                    </div>
+                                    <div class="right-div">
+                                      <a  class="p-2 text-grey-500" title="Error Log" (click)="openLog('dservice', 'error')"><i class="fa fa-download  "></i> </a>
+                                      <a  class="p-2 text-grey-500" title="Flush error.log" (click)="deleteLog('dservice', 'error')"> <i class="fa fa-trash"></i> </a>
+                                    </div>
+                            </div>
+                  </div>
+                        <mat-divider/>
+                        <div class="row">
+                          <div class="col">
+                             <span class="ml-2  ">   <i class="fa fa-power-off {{ checkservice.dservice.state }}"
+                 [matTooltip]="checkservice.dservice.msg"></i> {{checkservice.dservice.msg}} </span>
+                          
+                 <span class="mr-2  ">  <i class="fa fa-database {{ checkservice.dservice.db.mongo.css }} ml-2"
+                 [matTooltip]="'Mongo ' + checkservice.dservice.db.mongo.msg"></i> Mongo {{checkservice.dservice.db.mongo.msg}} </span>
+ 
+                    
+                          
+                              <span class="mr-2 "><i class="fa fa-file-alt ml-2"
+                 [class.text-success]="configLog.consoleactive?.service == true"
+                 [class.text-warning]="configLog.consoleactive?.service == false"
+                 matTooltip="Console"></i> Console </span>
+                           </div>   
+                               
+                          </div>
+                            <mat-divider/> 
+                        <div class="row">
+                              <div class="col-12 text-left">
+                                <a title="Config" class="ml-2 mat-header-title" (click)="openLogDialog('dservice')"> <i class="fa fa-info-circle"></i> Config  </a>
+                               </div>
+                        </div>
+                
+      </div>  
+     </div>  
+ 

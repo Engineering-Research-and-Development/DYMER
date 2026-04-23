@@ -1,0 +1,31 @@
+  <div 
+      #canvasContainer
+      class="w-full h-full min-h-[800px] bg-white relative outline-hidden"
+      (click)="onCanvasClick($event)"
+      (keydown.enter)="onCanvasClick($event)"
+      tabindex="0"
+      (dragover)="onDragOver($event)"
+      (drop)="onDrop($event)"
+      cdkDropList
+      (cdkDropListDropped)="onCdkDrop($event)"
+    ></div>
+    
+    <!-- Selection Overlay with Actions -->
+    @if (builderService.selectedElement(); as el) {
+      <div 
+        class="absolute z-50 flex items-center gap-1 bg-blue-600 rounded-md shadow-lg p-1 transform -translate-y-full -translate-x-1/2"
+        [style.top.px]="getRelativeTop(el)"
+        [style.left.px]="getRelativeLeft(el)"
+      >
+        <button (click)="moveUp($event)" class="text-white hover:bg-blue-700 p-1 rounded-sm" title="Move Up">
+          <mat-icon class="text-sm">arrow_upward</mat-icon>
+        </button>
+        <button (click)="moveDown($event)" class="text-white hover:bg-blue-700 p-1 rounded-sm" title="Move Down">
+          <mat-icon class="text-sm">arrow_downward</mat-icon>
+        </button>
+        <div class="w-px h-4 bg-blue-400 mx-1"></div>
+        <button (click)="deleteElement($event)" class="text-white hover:bg-red-600 p-1 rounded-sm" title="Delete">
+          <mat-icon class="text-sm">delete</mat-icon>
+        </button>
+      </div>
+    }

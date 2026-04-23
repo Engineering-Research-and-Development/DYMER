@@ -4,9 +4,7 @@ const nameFile = path.basename(__filename);
 require("../models/BridgeEntitiesModel");
 const mongooseBridge = require("mongoose");
 const logger = require('./dymerlogger');
-/*mongooseBridge.connect(utilBridge.mongoUrlEntitiesBridge(), { useNewUrlParser: true }, () => {
-    console.log("Bridge Database is connected");
-});*/
+
 mongooseBridge
     .connect(utilBridge.mongoUrlEntitiesBridge(), {
         //useCreateIndex: true,
@@ -34,12 +32,7 @@ var bridgeEntities = function bridgeEntities() {
                 mod.save().then((el) => {
                     //console.log(nameFile + ' | add :', JSON.stringify(el));
                     logger.info(nameFile + ' | bridgeEntities | add:' + JSON.stringify(el));
-                    //  el.mapping.dentity["_source"] = eval("(" + el.mapping.dentity["_source"] + ")");
-                    // el.mapping.dentity["properties"] = eval("(" + el.mapping.dentity["properties"] + ")");
-                    // el.mapping.extentity = eval("(" + el.mapping.extentity + ")");
-                    //   el.api.create.mapping.extentity = eval("(" + el.api.create.mapping.extentity + ")");
                     self.loadFromDb();
-                    //mappingList.push(el);
                     resolve({ success: true, data: el, msg: "endpoint entered successfully" });
                 }).catch((err) => {
                     if (err) {
@@ -48,7 +41,6 @@ var bridgeEntities = function bridgeEntities() {
                         reject({ success: false, msg: "endpoint entered error" });
                     }
                 })
-
             } else {
                 resolve({ success: true, msg: "sorry endpoint already exists" });
             }
@@ -63,18 +55,11 @@ var bridgeEntities = function bridgeEntities() {
         var self = this;
         return new Promise(function(resolve, reject) {
             if (self.exsistMapping(obj)) {
-                // resolve({ success: true, data: el, msg: "endpoint updated successfully" });
                 var myfilter = { "_id": id };
-
-                //obj.mapping.dentity["_source"] = eval("(" + obj.mapping.dentity["_source"] + ")");
-                //obj.mapping.dentity["properties"] = eval("(" + obj.mapping.dentity["properties"] + ")");
-                //  obj.mapping.extentity = eval("(" + obj.mapping.extentity + ")");
-                //  obj.api.create.mapping.extentity = eval("(" + obj.api.create.mapping.extentity + ")");
                 var myquery = {
                     "$set": obj
                 };
-                /*  var mod = new bridgeModel(obj);
-                  let doc = await Character.findOneAndUpdate(filter, update);*/
+
                 bridgeModel.findOneAndUpdate(myfilter, myquery, { upsert: true },
                     function(err, raw) {
                         if (err) {
@@ -84,9 +69,7 @@ var bridgeEntities = function bridgeEntities() {
                         } else {
                             //console.log(nameFile + ' | update :', JSON.stringify(raw));
                             logger.info(nameFile + ' | bridgeEntities | update:' + JSON.stringify(raw));
-                            //  const ind = mappingList.findIndex(x => x["_id"] == id);
                             self.loadFromDb();
-                            // mappingList[ind] = obj;
                             resolve({ success: true, data: obj, msg: "endpoint updated successfully" });
                         }
                     }
@@ -184,15 +167,10 @@ var bridgeEntities = function bridgeEntities() {
         let temp_mappingList = JSON.parse(JSON.stringify(mappingList));
         if (doevaljson == undefined || doevaljson == true) {
             temp_mappingList.forEach(element => {
-                //element.api.search.header = this.evalutateJson(element.api.search.header, false);
                 element.api.search.mapping.query = this.evalutateJson(element.api.search.mapping.query, false);
-                //element.api.create.header = this.evalutateJson(element.api.search.header, false);
                 element.api.create.mapping.extentity = this.evalutateJson(element.api.create.mapping.extentity, false);
-                //element.api.update.header = this.evalutateJson(element.api.search.header, false);
                 element.api.update.mapping.extentity = this.evalutateJson(element.api.update.mapping.extentity, false);
-                //element.api.patch.header = this.evalutateJson(element.api.search.header, false);
                 element.api.patch.mapping.extentity = this.evalutateJson(element.api.patch.mapping.extentity, false);
-                //element.api.delete.header = this.evalutateJson(element.api.search.header, false);
                 element.api.delete.mapping.extentity = this.evalutateJson(element.api.delete.mapping.extentity, false);
 
                 element.mapping.extentity = this.evalutateJson(element.mapping.extentity);
@@ -261,23 +239,17 @@ var bridgeEntities = function bridgeEntities() {
         mappingList = [];
         bridgeModel.find({}).then((els) => {
             els.forEach(element => {
-                //element.api.create.mapping.extentity = eval("(" + element.api.create.mapping.extentity + ")");
-                //element.api.search.header = JSON.parse(element.api.search.header);
                 element.api.search.mapping.query = JSON.parse(element.api.search.mapping.query);
                 if (element.api.create) {
-                    //element.api.create.header = JSON.parse(element.api.create.header);
                     element.api.create.mapping.extentity = JSON.parse(element.api.create.mapping.extentity);
                 }
                 if (element.api.update) {
-                    //element.api.update.header = JSON.parse(element.api.update.header);
                     element.api.update.mapping.extentity = JSON.parse(element.api.update.mapping.extentity);
                 }
                 if (element.api.patch) {
-                    //element.api.patch.header = JSON.parse(element.api.patch.header);
                     element.api.patch.mapping.extentity = JSON.parse(element.api.patch.mapping.extentity);
                 }
                 if (element.api.delete) {
-                    //element.api.delete.header = JSON.parse(element.api.delete.header);
                     element.api.delete.mapping.extentity = JSON.parse(element.api.delete.mapping.extentity);
                 }
                 if (element.mapping.extentity) {
@@ -303,10 +275,6 @@ var bridgeEntities = function bridgeEntities() {
 bridgeEntities CLASS DEFINITION
 ************************************************************************ */
 bridgeEntities.instance = null;
-/*
-mongooseBridge.connect(utilBridge.mongoUrlEntitiesBridge(), { useNewUrlParser: true }, () => {
-    console.log("Database is connected");
-});*/
 /**
  * bridgeEntities getInstance definition
  * @return bridgeEntities class

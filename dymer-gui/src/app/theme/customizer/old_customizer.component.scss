@@ -1,0 +1,11 @@
+.customizer-handle {
+  position: fixed;
+  right: 2rem;
+  bottom: 2rem;
+  z-index: 1;
+
+  [dir='rtl'] & {
+    right: auto;
+    left: 2rem;
+  }
+}

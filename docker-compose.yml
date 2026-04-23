@@ -1,0 +1,264 @@
+version: "3.3"
+
+volumes:
+    mongo_data_d2025:
+    mongo_conf_d2025:
+    elasticsearch_data_d2025:
+    kibana_data_d2025:
+    qdrant_storage_d2025:
+    redis_data_d2025:
+
+services:
+
+  mongodb:
+    hostname: mongodb
+    image: mongo:7.0.4
+    ports:
+      - published: 27017
+        target: 27017
+    volumes:
+      - mongo_data_d2025:/data/db
+      - mongo_conf_d2025:/data/configdb
+      - ./backups_mongo:/opt/backups
+    networks:
+      - app_network
+
+  elasticsearch:
+    hostname: elasticsearch
+    image: elasticsearch:8.11.0
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    volumes:
+      - elasticsearch_data_d2025:/usr/share/elasticsearch/data
+      - ./backups:/usr/share/elasticsearch/data/backups
+    networks:
+      - app_network
+
+  # ============================
+  # QDRANT - Vector Database
+  # ============================
+  qdrant:
+    hostname: qdrant
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    ports:
+      - "${QDRANT_HTTP_PORT:-6333}:6333"
+      - "${QDRANT_GRPC_PORT:-6334}:6334"
+    volumes:
+      - qdrant_storage_d2025:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__HTTP_PORT=6333
+      - QDRANT__SERVICE__GRPC_PORT=6334
+      - QDRANT__LOG_LEVEL=${QDRANT_LOG_LEVEL:-INFO}
+      - QDRANT__SERVICE__API_KEY=${QDRANT_API_KEY:-}
+    restart: unless-stopped
+    networks:
+      - app_network
+
+  # ============================
+  # REDIS - Cache & Message Broker
+  # ============================
+  redis:
+    hostname: redis
+    image: redis:7.2-alpine
+    container_name: redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data_d2025:/data
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    restart: unless-stopped
+    networks:
+      - app_network
+
+  # ============================
+  # REDIS INSIGHT (optional - per gestire Redis visualmente)
+  # ============================
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: redis-insight
+    ports:
+      - "${REDIS_INSIGHT_PORT:-5540}:5540"
+    volumes:
+      - redis-insight-data:/db
+    depends_on:
+      - redis
+    networks:
+      - app_network
+    profiles:
+      - tools
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    volumes:
+      - ./ollama/ollama:/root/.ollama
+    ports:
+      - "7869:1143"
+    tty: true
+    restart: always
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+      - OLLAMA_HOST=0.0.0.0
+    networks:
+      - app_network
+
+  webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile   
+    hostname: webserver
+    secrets:
+      - jwt_secret_key
+      - encryption_secret_key
+      - allowed_origins      
+      - allowed_origins_dev  
+    ports:
+      - 80:8080
+    environment:
+      - NODE_ENV=production
+      - DYMER_UUID=${DYM_UUID}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - ENCRYPTION_SECRET_KEY=${ENCRYPTION_SECRET_KEY}
+      - SKIP_CSRF_TOKEN=${SKIP_CSRF_TOKEN}
+      - ALLOWED_ORIGINS_DEV=${ALLOWED_ORIGINS_DEV}
+      # Qdrant configuration
+      - QDRANT_HOST=qdrant
+      - QDRANT_HTTP_PORT=6333
+      - QDRANT_GRPC_PORT=6334
+      - QDRANT_API_KEY=${QDRANT_API_KEY:-}
+      # Redis configuration
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+    restart: always
+    depends_on:
+      - qdrant
+      - redis
+    networks:
+      - app_network
+
+  services:
+    hostname: services
+    image: node:20.10.0-alpine3.18
+    secrets:
+      - jwt_secret_key
+      - encryption_secret_key  
+    extra_hosts:
+      - "${DIH_PORTAL_NAME}:${DIH_PORTAL_ADDR}"
+    volumes:
+      - ./dymer-services:/usr/src/app
+    environment:
+      - NODE_ENV=production
+      - DYMER_UUID=${DYM_UUID}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - ENCRYPTION_SECRET_KEY=${ENCRYPTION_SECRET_KEY}
+      # Qdrant configuration
+      - QDRANT_HOST=qdrant
+      - QDRANT_HTTP_PORT=6333
+      - QDRANT_GRPC_PORT=6334
+      - QDRANT_API_KEY=${QDRANT_API_KEY:-}
+      # Redis configuration
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+    working_dir: /usr/src/app
+    command: "npm start"
+    depends_on:
+      - qdrant
+      - redis
+    networks:
+      - app_network
+
+  templates:
+    hostname: templates
+    image: node:20.10.0-alpine3.18
+    depends_on:
+      - mongodb
+    volumes:
+      - ./dymer-templates:/usr/src/app
+    environment:
+      - NODE_ENV=production
+      - DYMER_UUID=${DYM_UUID}
+      # Qdrant configuration (opzionale)
+      - QDRANT_HOST=qdrant
+      - QDRANT_HTTP_PORT=6333
+      # Redis configuration (opzionale)
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    working_dir: /usr/src/app
+    command: "npm start"
+    networks:
+      - app_network
+
+  forms:
+    hostname: forms
+    image: node:20.10.0-alpine3.18
+    secrets:
+      - jwt_secret_key
+      - encryption_secret_key 
+    depends_on:
+      - mongodb
+    volumes:
+      - ./dymer-forms:/usr/src/app
+    environment:
+      - NODE_ENV=production
+      - DYMER_UUID=${DYM_UUID}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - ENCRYPTION_SECRET_KEY=${ENCRYPTION_SECRET_KEY}
+      # Qdrant configuration
+      - QDRANT_HOST=qdrant
+      - QDRANT_HTTP_PORT=6333
+      - QDRANT_API_KEY=${QDRANT_API_KEY:-}
+      # Redis configuration
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+    working_dir: /usr/src/app
+    command: "npm start"
+    networks:
+      - app_network
+
+  entities:
+    hostname: entities
+    image: node:20.10.0-alpine3.18
+    depends_on:
+      - elasticsearch
+    volumes:
+      - ./dymer-entities:/usr/src/app
+    environment:
+      - NODE_ENV=production
+      - DYMER_UUID=${DYM_UUID}
+      # Qdrant configuration
+      - QDRANT_HOST=qdrant
+      - QDRANT_HTTP_PORT=6333
+      # Redis configuration
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    working_dir: /usr/src/app
+    command: "npm start"
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
+
+secrets:
+  jwt_secret_key:
+      file: ./secrets/jwt_secret_key
+  encryption_secret_key:
+      file: ./secrets/encryption_secret_key
+  allowed_origins:
+      file: ./secrets/allowed_origins
+  allowed_origins_dev:
+      file: ./secrets/allowed_origins_dev
+
+volumes:
+  redis-insight-data:

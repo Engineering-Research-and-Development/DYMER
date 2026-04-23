@@ -1,0 +1,119 @@
+ 
+  <page-header [class]="['text-black', 'b-0']" title="{{ 'menu.permissions.configuration' | translate }}"/>
+  <!-- Form nuovo ruolo -->
+  <div class="mb-4 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden ng-star-inserted">
+    <div style="display: flex; gap: 16px; align-items: center;" class="p-6 bg-[#fafafa] font-sans rounded-tl-xl rounded-tr-xl border-b border-zinc-200 dark:border-zinc-800">
+       <div class="flex flex-col gap-2 w-[300px]">
+          <label class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.2em] leading-none">
+            {{ 'menu.permissions.roles.name' | translate }}
+          </label>
+          
+          <input type="text"
+                [(ngModel)]="formData.role" 
+                name="custom_role"
+                class="h-10 px-3 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-900 focus:border-zinc-300 dark:focus:border-zinc-700 transition-all placeholder:text-zinc-400"
+                placeholder="Inserisci ruolo...">
+        </div>
+        <button (click)="saveConfigRules(formData)" class="h-9 px-6 bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold uppercase rounded-lg hover:opacity-90 transition-all shadow-sm">
+              {{ 'menu.actions.add' | translate }}
+            </button>
+
+    </div>
+  </div>
+
+  <!-- Tabella permessi -->
+  <div class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden ng-star-inserted">
+    <div class="permissions-grid p-6 bg-[#fafafa] font-sans">
+      <!-- Intestazioni -->
+      <div class="header-cell role-header">{{ 'menu.permissions.name' | translate}}</div>
+      <div class="header-cell">{{ 'menu.actions.view' | translate}}</div>
+      <div class="header-cell">{{ 'menu.actions.create' | translate}}</div>
+      <div class="header-cell">{{ 'menu.actions.edit' | translate}}</div>
+      <div class="header-cell">{{ 'menu.actions.delete' | translate}}</div>
+      <div class="header-cell actions-header">{{ 'menu.actions' | translate}}</div>
+      <!-- Righe dati -->
+      @for (role of listPerm; track role._id) {
+        <!-- Nome ruolo (prima riga) -->
+        <div class="role-name-cell">
+          <div class="role-name">
+            <mat-icon>badge</mat-icon>
+            <span>{{role.role}}</span>
+          </div>
+        </div>
+
+        <!-- Celle vuote sotto le intestazioni per la prima riga -->
+        <div class="empty-cell"></div>
+        <div class="empty-cell"></div>
+        <div class="empty-cell"></div>
+        <div class="empty-cell"></div>
+        <div class="empty-cell"></div>
+
+        <!-- Entità e checkbox (dalla seconda riga in poi) -->
+        @for (element of role.elements; track element.entity) {
+          <div class="entity-cell">
+            {{element.entity}}
+          </div>
+
+          <div class="perm-cell">
+            <!-- <mat-checkbox [checked]="isChecked(element, 'view')"
+                         (change)="changePermission(role, 'view', element.entity)">
+            </mat-checkbox> -->
+              <label class="relative flex items-center justify-center cursor-pointer group">
+                <input type="checkbox" 
+                      class="sr-only peer"
+                      [checked]="isChecked(element, 'view')"
+                      (change)="changePermission(role, 'view', element.entity)">
+                
+                <div class="w-5 h-5 bg-white dark:bg-zinc-950 border-2 border-zinc-200 dark:border-zinc-800 rounded 
+                            peer-checked:bg-zinc-900 dark:peer-checked:bg-white peer-checked:border-zinc-900 dark:peer-checked:border-white
+                            transition-all duration-150 flex items-center justify-center
+                            group-hover:border-zinc-400 dark:group-hover:border-zinc-600 shadow-sm">
+                  
+                  <svg xmlns="http://www.w3.org/2000/svg" 
+                      class="w-3.5 h-3.5 text-white dark:text-black opacity-0 peer-checked:opacity-100 transition-opacity" 
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </div>
+              </label>
+
+
+
+
+          </div>
+
+          <div class="perm-cell">
+            <mat-checkbox [checked]="isChecked(element, 'create')"
+                         (change)="changePermission(role, 'create', element.entity)">
+            </mat-checkbox>
+          </div>
+
+          <div class="perm-cell">
+            <mat-checkbox [checked]="isChecked(element, 'edit')"
+                         (change)="changePermission(role, 'edit', element.entity)">
+            </mat-checkbox>
+          </div>
+
+          <div class="perm-cell">
+            <mat-checkbox [checked]="isChecked(element, 'delete')"
+                         (change)="changePermission(role, 'delete', element.entity)">
+            </mat-checkbox>
+          </div>
+
+          <div class="actions-cell">
+            @if ($first) {
+              <button mat-icon-button (click)="saveRole(role)" matTooltip="Save">
+                <mat-icon>save</mat-icon>
+              </button>
+              @if (role.role !== 'admin') {
+                <button mat-icon-button (click)="removeRole(role._id)" matTooltip="Delete">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              }
+            }
+          </div>
+        }
+      }
+    </div>
+  </div>
+

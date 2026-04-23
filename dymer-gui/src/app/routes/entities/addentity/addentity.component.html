@@ -1,0 +1,79 @@
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 p-6 min-h-screen dark:bg-black text-zinc-900 dark:text-zinc-100">
+  
+  <aside class="md:col-span-4 flex flex-col gap-4">
+    <div class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-sm overflow-hidden p-2">
+      <div class="p-4 space-y-4">
+        
+        <form class="w-full">
+          <label class="block mb-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400 select-none uppercase tracking-wider">
+            {{ 'search.byTitle' | translate }}
+          </label>
+          <div class="relative group">
+            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-zinc-600 dark:group-focus-within:text-zinc-300 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            </div>
+            <input 
+              type="text"
+              [formControl]="searchControl"
+              [placeholder]="'search.placeholder' | translate"
+              class="w-full h-10 bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 text-sm rounded-md border border-zinc-200 dark:border-zinc-800 pl-10 pr-3 outline-none focus:ring-2 focus:ring-zinc-200 dark:focus:ring-zinc-800 transition-all placeholder:text-zinc-400"
+            />
+          </div>
+        </form>
+
+        <div *ngIf="!(filteredModels$ | async)?.length" 
+             class="p-3 text-sm rounded-md bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-500">
+          {{ 'menu.entities.add.noModelAvailable' | translate }}
+        </div>
+
+        <nav class="space-y-1" *ngIf="(filteredModels$ | async)?.length">
+          <div *ngFor="let el of (filteredModels$ | async); let i = index" 
+               (click)="loadHtmlForm(el, i)"
+               class="flex items-center justify-between p-3 rounded-md cursor-pointer transition-all border border-transparent"
+               [ngClass]="i === selectedIndex 
+                          ? 'bg-zinc-100 dark:bg-zinc-800 text-black dark:text-white border-zinc-200 dark:border-zinc-700' 
+                          : 'hover:bg-zinc-50 dark:hover:bg-zinc-900 text-zinc-600 dark:text-zinc-400'">
+            <span class="text-sm font-medium">{{ el.title }}</span>
+            <div class="flex items-center justify-center w-6 h-6 rounded-full bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </aside>
+
+  <main class="md:col-span-8">
+    <div class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-sm h-full flex flex-col">
+      
+      <header class="px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
+        <h5 class="text-base font-semibold text-zinc-800 dark:text-zinc-200 uppercase tracking-tight">
+          {{ formtitle || 'Seleziona un modello' }}
+        </h5>
+      </header>
+
+      <div class="p-6 flex-grow">
+        <div id="cont-RenderForm">
+          <div *ngIf="!formHtml; else formContainer" class="flex flex-col items-center justify-center py-20 text-zinc-300 dark:text-zinc-700">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="mb-4 opacity-50">
+              <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+            <p class="text-sm font-medium">Nessun form selezionato</p>
+          </div>
+
+          <ng-template #formContainer>
+            <div id="html-torender" [innerHTML]="formHtml" class="prose dark:prose-invert max-w-none"></div>
+          </ng-template>
+          <div id="appendfiles"></div>
+        </div>
+      </div>
+
+      <footer class="px-6 py-3 bg-zinc-50/50 dark:bg-zinc-900/50 border-t border-zinc-100 dark:border-zinc-800">
+        <div class="flex justify-end gap-3 text-xs text-zinc-400 uppercase tracking-tighter">
+          <span>{{ 'KMS System' }}</span>
+        </div>
+      </footer>
+    </div>
+  </main>
+
+</div>

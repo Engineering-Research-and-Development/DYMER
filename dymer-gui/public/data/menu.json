@@ -1,0 +1,304 @@
+{
+  "menu": [
+    {
+      "route": "dashboard",
+      "name": "dashboard",
+      "type": "link",
+      "iconLibrary": "matero",
+      "icon": "bar_chart"
+    },
+    {
+      "route": "logs",
+      "name": "logs",
+      "type": "link",
+      "iconLibrary": "font-awesome",
+      "icon": "file-lines"
+    },
+    {
+      "route": "permissions",
+      "name": "permissions",
+      "type": "sub",
+      "iconLibrary": "matero",
+      "icon": "lock",
+      "children": [
+        {
+          "route": "authorization",
+          "name": "authorization",
+          "type": "link",
+          "iconLibrary": "font-awesome",
+          "icon": "key"
+        },
+        {
+          "route": "roles",
+          "name": "roles",
+          "type": "link",
+          "iconLibrary": "font-awesome",
+          "icon": "id-card"
+        },
+        {
+          "route": "dymerUser",
+          "name": "dymerUser",
+          "type": "link",
+          "iconLibrary": "font-awesome",
+          "icon": "user"
+        }
+      ],
+      "permissions": {
+        "only": [
+          "ADMIN"
+        ]
+      }
+    },
+    {
+      "route": "aimagic",
+      "name": "AI",
+      "type": "link",
+      "iconLibrary": "font-awesome",
+      "icon": "wand-sparkles",
+      "permissions": {
+        "only": [
+          "ADMIN"
+        ]
+      }
+    },
+    {
+      "route": "wizard",
+      "name": "wizard",
+      "type": "link",
+      "iconLibrary": "font-awesome",
+      "icon": "rocket",
+      "permissions": {
+        "only": [
+          "ADMIN"
+        ]
+      }
+    },
+    {
+      "route": "entities",
+      "name": "entities",
+      "type": "sub",
+      "iconLibrary": "font-awesome",
+      "icon": "earth-europe",
+      "children": [
+        {
+          "route": "listentities",
+          "name": "listentities",
+          "type": "link",
+          "iconLibrary": "matero",
+          "icon": "format_list_bulleted"
+        },
+        {
+          "route": "relations",
+          "name": "relations",
+          "type": "link",
+          "iconLibrary": "font-awesome",
+          "icon": "bezier-curve"
+        },
+        {
+          "route": "addentity",
+          "name": "addentity",
+          "type": "link",
+          "iconLibrary": "font-awesome",
+          "icon": "pencil"
+        },
+        {
+          "route": "taxonomy",
+          "name": "taxonomy",
+          "type": "link",
+          "iconLibrary": "font-awesome",
+          "icon": "sitemap"
+        },
+        {
+          "route": "importExport",
+          "name": "importExport",
+          "type": "link",
+          "iconLibrary": "matero",
+          "icon": "cloud_upload"
+        },
+        {
+          "route": "querybuilder",
+          "name": "querybuilder",
+          "type": "link",
+          "iconLibrary": "font-awesome",
+          "icon": "gamepad"
+        },
+        {
+          "route": "hooks",
+          "name": "hooks",
+          "type": "link",
+          "iconLibrary": "font-awesome",
+          "icon": "toggle-on"
+        }
+      ],
+      "permissions": {
+        "only": [
+          "ADMIN"
+        ]
+      }
+    },
+    {
+      "route": "forms/models-builder",
+      "name": "managemodel",
+      "type": "link",
+      "iconLibrary": "matero",
+      "icon": "list_alt",
+      "permissions": {
+        "only": [
+          "ADMIN"
+        ]
+      }
+    },
+    {
+      "route": "templates/templates-builder",
+      "name": "managetemplate",
+      "type": "link",
+      "iconLibrary": "font-awesome",
+      "icon": "file-fragment",
+      "permissions": {
+        "only": [
+          "ADMIN"
+        ]
+      }
+    },
+    {
+      "route": "services",
+      "name": "services",
+      "type": "sub",
+      "iconLibrary": "font-awesome",
+      "icon": "box-archive",
+      "children": [
+      {
+          "route": "agents",
+          "name": "agents",
+          "type": "link",
+          "iconLibrary": "font-awesome",
+          "icon": "brain"
+        },
+        {
+          "route": "opennesssearch",
+          "name": "opennesssearch",
+          "type": "link",
+          "iconLibrary": "font-awesome",
+          "icon": "map-signs"
+        },
+        {
+          "route": "libraries",
+          "name": "libraries",
+          "type": "link",
+          "iconLibrary": "matero",
+          "icon": "format_list_bulleted"
+        },
+        {
+          "route": "socialStatistics",
+          "name": "socialStatistics",
+          "type": "link",
+          "iconLibrary": "font-awesome",
+          "icon": "chart-column"
+        },
+        {
+          "route": "importcron",
+          "name": "importcron",
+          "type": "link",
+          "iconLibrary": "font-awesome",
+          "icon": "refresh"
+        }
+      ],
+      "permissions": {
+        "only": [
+          "ADMIN"
+        ]
+      }
+    },
+    {
+      "route": "documentation",
+      "name": "documentation",
+      "type": "sub",
+      "iconLibrary": "matero",
+      "icon": "cloud_download",
+      "children": [
+        {
+          "route": "fixproblems",
+          "name": "fixproblems",
+          "type": "link",
+          "iconLibrary": "font-awesome",
+          "icon": "exclamation-triangle"
+        },
+        {
+          "route": "demolist",
+          "name": "demolist",
+          "type": "link",
+          "iconLibrary": "matero",
+          "icon": "file_copy"
+        },
+        {
+          "route": "demosingle",
+          "name": "demosingle",
+          "type": "link",
+          "iconLibrary": "matero",
+          "icon": "insert_drive_file"
+        },
+        {
+          "route": "singlebyurl",
+          "name": "singlebyurl",
+          "type": "link",
+          "iconLibrary": "matero",
+          "icon": "insert_drive_file"
+        },
+        {
+          "route": "demomap",
+          "name": "demomap",
+          "type": "link",
+          "iconLibrary": "font-awesome",
+          "icon": "compass"
+        },
+        {
+          "route": "demosearchbar",
+          "name": "demosearchbar",
+          "type": "link",
+          "iconLibrary": "font-awesome",
+          "icon": "search"
+        },
+        {
+          "route": "demomanager",
+          "name": "demomanager",
+          "type": "link",
+          "iconLibrary": "font-awesome",
+          "icon": "gear"
+        },
+        {
+          "route": "modelsdoc",
+          "name": "modelsdoc",
+          "type": "link",
+          "iconLibrary": "matero",
+          "icon": "format_list_bulleted"
+        },
+        {
+          "route": "templatesdoc",
+          "name": "templatesdoc",
+          "type": "link",
+          "iconLibrary": "font-awesome",
+          "icon": "file-fragment"
+        },
+        {
+          "route": "redisdoc",
+          "name": "redisdoc",
+          "type": "link",
+          "iconLibrary": "font-awesome",
+          "icon": "database"
+        },
+        {
+          "route": "swaggerapi",
+          "name": "swaggerapi",
+          "type": "link",
+          "iconLibrary": "matero",
+          "icon": "format_list_bulleted"
+        }
+      ],
+      "permissions": {
+        "only": [
+          "ADMIN"
+        ]
+      }
+    }
+  ]
+}

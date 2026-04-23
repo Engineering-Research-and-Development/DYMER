@@ -1,0 +1,5 @@
+// Import the highlight.js theme directly into the component's styles.
+// This is the recommended way to handle styles for encapsulated components.
+// Sass will automatically look inside the `node_modules` folder.
+
+@import "highlight.js/styles/atom-one-dark.css";

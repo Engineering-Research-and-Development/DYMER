@@ -1,0 +1,461 @@
+<!-- <mat-drawer-container class="entities-container" [hasBackdrop]="true">
+
+  <mat-drawer-content>
+    <div class="p-16">
+
+      <mat-card class="m-b-16 b-10 bg-blue-99 shadow-none border">
+        <mat-card-content p-y-8>
+          <form [formGroup]="entityForm" class="row align-items-center">
+
+            <div class="col-md-3">
+              <mat-form-field appearance="outline" class="w-full hide-hint">
+                <mat-label>{{ 'menu.entities.listentities.searchByTitle' | translate }}</mat-label>
+                <input matInput formControlName="titleCtrl" placeholder="Cerca...">
+                <mat-icon matSuffix>search</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <div class="col-md-2">
+              <mat-form-field appearance="outline" class="w-full hide-hint">
+                <mat-label>{{ 'menu.entities.listentities.indexLabel' | translate }}</mat-label>
+                <mat-select formControlName="selectIndexCtrl">
+                  <mat-option value="">{{ 'menu.entities.listentities.indexAll' | translate }}</mat-option>
+                  <mat-option *ngFor="let index of indexes" [value]="index">{{ index }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="col-md-2">
+              <mat-form-field appearance="outline" class="w-full hide-hint">
+                <mat-label>{{ 'menu.entities.listentities.statusLabel' | translate }}</mat-label>
+                <mat-select formControlName="selectStatusCtrl">
+                  <mat-option value="">Tutti</mat-option>
+                  <mat-option value="1">Published</mat-option>
+                  <mat-option value="2">Unpublished</mat-option>
+                  <mat-option value="3">Draft</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="col-md-2">
+              <mat-form-field appearance="outline" class="w-full hide-hint">
+                <mat-label>{{ 'menu.entities.listentities.visibilityLabel' | translate }}</mat-label>
+                <mat-select formControlName="selectVisibilityCtrl">
+                  <mat-option value="">{{ 'menu.entities.listentities.visibilityAll' | translate }}</mat-option>
+                  <mat-option value="0">{{ 'menu.entities.listentities.visibility.public' | translate }}</mat-option>
+                  <mat-option value="1">{{ 'menu.entities.listentities.visibility.private' | translate }}</mat-option>
+                  <mat-option value="2">{{ 'menu.entities.listentities.visibility.restricted' | translate }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="col-md-3 d-flex justify-content-end align-items-center">
+              <button mat-stroked-button color="primary" (click)="resetFilters()" type="button">
+                <mat-icon>filter_alt_off</mat-icon> {{ 'menu.entities.listentities.actions.resetFilters' | translate }}
+              </button>
+              <div class="m-l-16 text-right">
+                <small class="text-muted d-block line-height-1">Totale Risultati</small>
+                <span class="fw-600 fs-16">{{ totalSize }}</span>
+              </div>
+            </div>
+
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="b-10 overflow-hidden border shadow-none">
+        <div class="table-responsive">
+          <table mat-table [dataSource]="dataSource" class="w-full">
+
+            <ng-container matColumnDef="title">
+              <th mat-header-cell *matHeaderCellDef> {{ 'menu.entities.listentities.searchByTitle' | translate }} </th>
+              <td mat-cell *matCellDef="let entity">
+                <div class="d-flex flex-column p-y-12">
+                  <span class="fw-600 text-primary">{{ entity.title || 'N/A' }}</span>
+                  <small class="text-muted font-monospace fs-10">{{ entity._id }}</small>
+                </div>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="index">
+              <th mat-header-cell *matHeaderCellDef> Index </th>
+              <td mat-cell *matCellDef="let entity">
+                <span class="badge bg-grey-100 text-grey-700 p-x-8 p-y-4 r-4 fs-12 border">
+                  {{ entity._index }}
+                </span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef> Stato </th>
+              <td mat-cell *matCellDef="let entity">
+                <mat-icon [matTooltip]="'Visibilità'" class="fs-18 m-r-8 text-grey-400">
+                  {{ entity.properties?.visibility == '0' ? 'public' : 'lock' }}
+                </mat-icon>
+                <mat-icon [matTooltip]="'Status'"
+                          [class.text-green-500]="entity.properties?.status == '1'"
+                          [class.text-orange-500]="entity.properties?.status == '3'"
+                          class="fs-18">
+                  {{ entity.properties?.status == '1' ? 'check_circle' : 'edit_note' }}
+                </mat-icon>
+              </td>
+            </ng-container>
+
+             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef class="text-right px-16"> Azioni </th>
+                  <td mat-cell *matCellDef="let entity" class="text-right px-16">
+                    <div class="d-flex justify-content-end gap-4">
+
+                      <button mat-icon-button color="primary" (click)="showEntityDetails(entity)" matTooltip="Vedi dettagli">
+                        <mat-icon>visibility</mat-icon>
+                      </button>
+
+                      <button mat-icon-button color="accent" (click)="openEditModal(entity)" matTooltip="Modifica">
+                        <mat-icon>edit</mat-icon>
+                      </button>
+
+                      <button mat-icon-button (click)="showEntityJson(entity)" matTooltip="Vedi JSON">
+                        <mat-icon>code</mat-icon>
+                      </button>
+
+                      <button mat-icon-button color="warn" (click)="confirmDeleteEntity(entity)" matTooltip="Elimina">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+
+                    </div>
+                  </td>
+                </ng-container>
+          </table>
+
+          <div *ngIf="dataSource.data.length === 0 && !isLoading" class="p-24 text-center">
+            <mat-icon class="fs-48 text-grey-300">search_off</mat-icon>
+            <p class="text-muted">Nessuna entità trovata con i filtri selezionati.</p>
+          </div>
+
+          <div *ngIf="isLoading" class="p-24 text-center">
+            <mat-spinner diameter="40" class="m-auto"></mat-spinner>
+          </div>
+
+          <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons class="border-top"></mat-paginator>
+        </div>
+      </mat-card>
+    </div>
+  </mat-drawer-content>
+
+  <mat-drawer #drawer mode="over" position="end" class="detail-drawer mat-elevation-z8" style="width: 50vw;">
+
+    <div class="drawer-header p-16 d-flex align-items-center justify-content-between" style="background-color: #f8f9fa; color: #212529;">
+      <div class="d-flex flex-column">
+        <h3 class="m-0 fs-16 fw-600">Dettaglio Entità</h3>
+        <small *ngIf="selectedEntityDetail" class="opacity-7">{{ selectedEntityDetail._id }}</small>
+      </div>
+      <button mat-icon-button (click)="drawer.close()" class="text-dark">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="drawer-body p-24" style="background-color: white; overflow-y: auto; overflow-x: auto;">
+
+    
+      <div class="detail-actions-toolbar mb-3" *ngIf="selectedEntityDetail">
+      
+        <button mat-icon-button
+                class="edit-entity-detail-button"
+                (click)="openEditModal()"
+                [matTooltip]="'menu.entities.listentities.actions.editDetails' | translate">
+            <mat-icon>edit</mat-icon>
+        </button>
+       
+        <button mat-icon-button
+                class="user-config-button"
+                (click)="toggleUserEditor()"
+                [matTooltip]="'menu.entities.listentities.actions.configureUser' | translate">
+          <mat-icon>settings</mat-icon>
+        </button>
+       
+        <button mat-icon-button color="warn" class="delete-entity-detail-button" (click)="confirmDeleteEntity(selectedEntityDetail)" [matTooltip]="'menu.entities.listentities.actions.deleteEntity' | translate">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+
+     
+      <div *ngIf="showUserEditor && selectedEntityDetail" class="user-editor-form p-16 m-b-16 bg-grey-50 r-8 border mat-elevation-z1">
+        <form [formGroup]="userForm" (ngSubmit)="saveEntityUser()">
+          <div class="row align-items-center">
+            <div class="col-md-5">
+              <mat-form-field appearance="outline" class="w-full hide-hint">
+                <mat-label>User ID</mat-label>
+                <input matInput formControlName="uidCtrl" required>
+              </mat-form-field>
+            </div>
+            <div class="col-md-5">
+              <mat-form-field appearance="outline" class="w-full hide-hint">
+                <mat-label>Group ID</mat-label>
+                <input matInput formControlName="gidCtrl" required>
+              </mat-form-field>
+            </div>
+            <div class="col-md-2 d-flex justify-content-end">
+              <button mat-flat-button color="primary" type="submit" [disabled]="userForm.invalid || isLoadingDetails" class="w-full">
+                {{ 'menu.actions.save' | translate }}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div *ngIf="isLoadingDetails" class="text-center p-y-40">
+        <mat-spinner diameter="40" class="m-auto"></mat-spinner>
+        <p class="m-t-16 text-muted">Caricamento template...</p>
+      </div>
+
+      <div class="dymer-rendered-content"
+           *ngIf="!showFullJsonView"
+           [innerHTML]="renderedDetailHtml"
+           (click)="handleRenderedHtmlClick($event)"
+           style="width: 100%; overflow: visible;">
+      </div>
+
+      <mat-divider class="m-y-24"></mat-divider>
+
+      <div class="d-flex gap-8 justify-content-end" *ngIf="selectedEntityDetail">
+        <button mat-stroked-button color="warn" (click)="confirmDeleteEntity(selectedEntityDetail)">
+          <mat-icon>delete</mat-icon> Elimina
+        </button>
+
+      </div>
+
+      <div class="m-t-32">
+        <button mat-button (click)="toggleFullJsonView()" class="w-full justify-content-start">
+          <mat-icon>{{ showFullJsonView ? 'expand_less' : 'expand_more' }}</mat-icon>
+          {{ showFullJsonView ? 'Nascondi JSON' : 'Mostra JSON Completo' }}
+        </button>
+
+        <div *ngIf="showFullJsonView" class="json-box m-t-8 p-12 bg-grey-50 r-8 border">
+          <ngx-json-viewer [json]="fullEntityJsonToShow" [expanded]="false"></ngx-json-viewer>
+        </div>
+      </div>
+
+    </div>
+  </mat-drawer>
+
+</mat-drawer-container>
+
+ 
+<div *ngIf="isEditModalOpen"
+    id="entityEdit"
+    [attr.data-identityEdit]="selectedEntityDetail?._id"
+    class="dymermodal"
+    style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); z-index: 1050; display: flex; align-items: center; justify-content: center;">
+    <div class="modal-dialog" role="document" style="max-width: 60%; max-height: 85vh;">
+        <div class="modal-content" style="height: 100%; overflow-y: auto;">
+          <form>
+            <div class="modal-header">
+              <button type="button" class="close closeform" (click)="closeEditModal()"  style="float: right; background: transparent; border: 0; font-size: 1.5rem; opacity: .5; padding: 1rem;">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="contbody">
+                
+                <div *ngIf="isLoadingDetails" class="detail-placeholder text-center" style="padding: 20px;">
+                  <mat-spinner diameter="50"></mat-spinner>
+                  <p>{{ 'menu.entities.listentities.loadingFormConfig' | translate }}</p>
+                </div>
+               
+                <div *ngIf="!isLoadingDetails && entitySpecificFormHtml" id="entityEditModalBody" class="modal-body" [innerHTML]="entitySpecificFormHtml">
+                  
+                </div>
+                  <div *ngIf="!isLoadingDetails && !entitySpecificFormHtml" class="alert alert-info">
+                  {{ 'menu.entities.listentities.editModal.noModelAvailable' | translate }}
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default closeform" (click)="closeEditModal()">
+                {{ 'menu.entities.listentities.actions.closeDetails' | translate }}
+              </button>
+              <button type="button" class="btn btn-primary onputform" (click)="actionPutMultipartForm('entity', undefined, { instance: { index: selectedEntityDetail?._index }, data: { index: selectedEntityDetail?._index } }, '#entityEdit form', undefined, undefined, true)">
+                {{ 'menu.actions.save' | translate }}
+              </button>
+            </div>
+          </form>
+        </div>
+    </div>
+</div> -->
+
+
+
+
+
+
+<div class="min-h-screen  dark:bg-black text-zinc-900 dark:text-zinc-100 p-6">
+  
+  <header class="mb-6">
+    <div class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 shadow-sm">
+      <form [formGroup]="entityForm" class="flex flex-wrap items-end gap-4">
+        
+        <div class="flex-1 min-w-[200px]">
+          <label class="block mb-1.5 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+            {{ 'menu.entities.listentities.searchByTitle' | translate }}
+          </label>
+          <div class="relative group">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 group-focus-within:text-zinc-600 transition-colors" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <circle cx="11" cy="11" r="8" stroke-width="2"/><path d="m21 21-4.3-4.3" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <input formControlName="titleCtrl" type="text" placeholder="Cerca..."
+              class="w-full h-9 pl-10 pr-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all">
+          </div>
+        </div>
+
+        <div class="w-48">
+          <label class="block mb-1.5 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Index</label>
+          <select formControlName="selectIndexCtrl" class="w-full h-9 px-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all appearance-none">
+            <option value="">Tutti</option>
+            <option *ngFor="let index of indexes" [value]="index">{{ index }}</option>
+          </select>
+        </div>
+
+        <div class="w-48">
+          <label class="block mb-1.5 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Stato</label>
+          <select formControlName="selectStatusCtrl" class="w-full h-9 px-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all appearance-none">
+            <option value="">Tutti</option>
+            <option value="1">Published</option>
+            <option value="2">Unpublished</option>
+            <option value="3">Draft</option>
+          </select>
+        </div>
+
+        <div class="flex items-center gap-6 ml-auto">
+          <button (click)="resetFilters()" type="button" 
+            class="h-9 px-4 flex items-center gap-2 text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors border border-zinc-200 dark:border-zinc-800 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-900">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            Reset
+          </button>
+          <div class="text-right border-l border-zinc-200 dark:border-zinc-800 pl-6">
+            <small class="block text-[10px] text-zinc-500 uppercase tracking-tighter">Totale</small>
+            <span class="text-xl font-mono font-bold leading-none">{{ totalSize }}</span>
+          </div>
+        </div>
+      </form>
+    </div>
+  </header>
+
+  <div class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden shadow-sm">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-zinc-50/50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800">
+            <th class="px-6 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Titolo / ID</th>
+            <th class="px-6 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Index</th>
+            <th class="px-6 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Stato</th>
+            <th class="px-6 py-3 text-[10px] font-bold text-zinc-500 uppercase tracking-widest text-right">Azioni</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
+          <tr *ngFor="let entity of dataSource.data" class="group hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30 transition-colors">
+            <td class="px-6 py-4">
+              <div class="flex flex-col">
+                <span class="text-sm font-semibold text-zinc-800 dark:text-zinc-200">{{ entity.title || 'N/A' }}</span>
+                <span class="text-[10px] font-mono text-zinc-400">{{ entity._id }}</span>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
+                {{ entity._index }}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-sm">
+              <div class="flex items-center gap-3">
+                <span [class]="entity.properties?.status == '1' ? 'text-emerald-500' : 'text-amber-500'">
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                </span>
+                <span class="text-zinc-400">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-width="2" stroke-linecap="round"/></svg>
+                </span>
+              </div>
+            </td>
+            <td class="px-6 py-4 text-right">
+              <div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button (click)="showEntityDetails(entity)" class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md text-zinc-500 transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-width="2"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-width="2"/></svg>
+                </button>
+                <button (click)="openEditModal(entity)" class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md text-zinc-500 transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke-width="2"/></svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="px-6 py-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50/30 dark:bg-zinc-900/30">
+      <span class="text-xs text-zinc-500">Mostrando 10 di {{ totalSize }} risultati</span>
+      <div class="flex gap-2">
+        <button class="p-2 border border-zinc-200 dark:border-zinc-800 rounded hover:bg-white dark:hover:bg-zinc-800 text-zinc-400 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-width="2"/></svg>
+        </button>
+        <button class="p-2 border border-zinc-200 dark:border-zinc-800 rounded hover:bg-white dark:hover:bg-zinc-800 text-zinc-400 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-width="2"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+
+<div 
+  *ngIf="isDrawerOpen()" 
+  (click)="closeDrawer()"
+  class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[90] transition-opacity duration-300">
+</div>
+
+<aside 
+  [class.translate-x-0]="isDrawerOpen()"
+  [class.translate-x-full]="!isDrawerOpen()"
+  class="fixed inset-y-0 right-0 md:w-[70%] bg-white dark:bg-zinc-950 border-l border-zinc-200 dark:border-zinc-800 shadow-2xl z-[100] flex flex-col transition-transform duration-500 ease-in-out">  
+  <div class="p-6 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
+    <div class="flex flex-col">
+      <h3 class="text-sm font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Dettaglio Entità</h3>
+      <span *ngIf="selectedEntityDetail" class="text-[10px] font-mono text-zinc-400 mt-1">
+        ID: {{ selectedEntityDetail._id }}
+      </span>
+    </div>
+    <button (click)="closeDrawer()" class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors text-zinc-400">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path d="M6 18L18 6M6 6l12 12" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="flex-1 overflow-y-auto p-6">
+    <div class="flex gap-2 mb-8 p-1.5 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg">
+      <button (click)="openEditModal(selectedEntityDetail)" class="flex-1 h-8 text-[10px] font-bold uppercase hover:bg-white dark:hover:bg-zinc-800 rounded shadow-sm transition-all">
+        Modifica
+      </button>
+      <button (click)="toggleUserEditor()" class="flex-1 h-8 text-[10px] font-bold uppercase hover:bg-white dark:hover:bg-zinc-800 rounded shadow-sm transition-all">
+        Permessi
+      </button>
+      <button (click)="confirmDeleteEntity(selectedEntityDetail)" class="flex-1 h-8 text-[10px] font-bold uppercase text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded transition-all">
+        Elimina
+      </button>
+    </div>
+
+    <div class="dymer-rendered-content prose dark:prose-invert max-w-none"
+         [innerHTML]="renderedDetailHtml">
+    </div>
+
+    <div class="mt-12 pt-6 border-t border-zinc-100 dark:border-zinc-800">
+      <button (click)="toggleFullJsonView()" class="flex items-center gap-2 text-xs font-medium text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors">
+        <svg [class.rotate-180]="showFullJsonView" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="2"/></svg>
+        {{ showFullJsonView ? 'Nascondi JSON' : 'Visualizza JSON Raw' }}
+      </button>
+      
+      <div *ngIf="showFullJsonView" class="mt-4 p-4 bg-zinc-50 dark:bg-zinc-900 rounded-md border border-zinc-200 dark:border-zinc-800 font-mono text-[11px] overflow-x-auto">
+        <ngx-json-viewer [json]="fullEntityJsonToShow"></ngx-json-viewer>
+      </div>
+    </div>
+  </div>
+</aside>

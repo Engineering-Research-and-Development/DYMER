@@ -1,0 +1,105 @@
+<div class="container mx-auto px-4 py-8 max-w-2xl">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 md:p-12">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Get in Touch</h1>
+            <p class="text-gray-600 dark:text-gray-300">We'd love to hear from you. Please fill out the form below and we'll get back to you as soon as possible.</p>
+        </div>
+        
+        <form class="space-y-6">
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Name Field -->
+                <div class="flex flex-col">
+                    <label for="name" class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="material-icons text-gray-400">person</span>
+                        </div>
+                        <input 
+                            type="text" 
+                            id="name" 
+                            name="name" 
+                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" 
+                            placeholder="John Doe"
+                            required
+                        >
+                    </div>
+                </div>
+                
+                <!-- Email Field -->
+                <div class="flex flex-col">
+                    <label for="email" class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="material-icons text-gray-400">email</span>
+                        </div>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" 
+                            placeholder="john@example.com"
+                            required
+                        >
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Title Field -->
+            <div class="flex flex-col">
+                <label for="title" class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="material-icons text-gray-400">title</span>
+                    </div>
+                    <input 
+                        type="text" 
+                        id="title" 
+                        name="title" 
+                        class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" 
+                        placeholder="Enter a title"
+                        required
+                    >
+                </div>
+            </div>
+            
+            <!-- Description Field -->
+            <div class="flex flex-col">
+                <label for="description" class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+                <div class="relative">
+                    <textarea 
+                        id="description" 
+                        name="description" 
+                        rows="5" 
+                        class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors resize-none dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" 
+                        placeholder="Enter a description..."
+                        required
+                    ></textarea>
+                </div>
+            </div>
+            
+            <!-- Checkbox -->
+            <div class="flex items-start">
+                <div class="flex items-center h-5">
+                    <input 
+                        id="privacy" 
+                        name="privacy" 
+                        type="checkbox" 
+                        class="w-4 h-4 text-blue-600 border-gray-300 rounded-sm focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                        required
+                    >
+                </div>
+                <div class="ml-3 text-sm">
+                    <label for="privacy" class="font-medium text-gray-700 dark:text-gray-300">I agree to the <a href="#" class="text-blue-600 hover:underline dark:text-blue-400">Privacy Policy</a></label>
+                </div>
+            </div>
+            
+            <!-- Submit Button -->
+            <button 
+                type="submit" 
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 flex items-center justify-center"
+            >
+                <span class="material-icons mr-2">send</span> Send Message
+            </button>
+        </form>
+    </div>
+</div>

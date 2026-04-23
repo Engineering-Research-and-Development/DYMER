@@ -8,11 +8,10 @@ const nameFile = path.basename(__filename);
 /* GET home page. */
 
 router.get("*", cors(), function(req, res, next) {
-
     console.log("xxx", req._parsedUrl.pathname);
 
     res.sendFile(path.join(__dirname + "/../uploads" + req._parsedUrl.pathname));
-    // res.sendFile(path.resolve(  "uploads"+ req._parsedUrl.pathname));
+    // res.sendFile((  "uploads"+ req._parsedUrl.pathname));
 
     // res.sendFile(path.resolve(__dirname+"/../"+req.originalUrl));
 });

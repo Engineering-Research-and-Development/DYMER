@@ -35,7 +35,7 @@ router.post("/savestats", async function (req, res) {
                 ret.setMessages("Statistics updated successfully")
                 ret.addData(await existingDoc.save());
 
-                console.log("savestats - Statistics updated successfully ===> ", ret);
+                //console.log("savestats - Statistics updated successfully ===> ", ret);
                 return res.status(201).send(ret);
             } else {
                 data.ip = req.ip;
@@ -45,13 +45,13 @@ router.post("/savestats", async function (req, res) {
 
                 let newObj = new statsModel(data);
                 newObj.email = dymeruser.email;
-                console.log("savestats - newObj ===> ", newObj);
+                //console.log("savestats - newObj ===> ", newObj);
 
                 ret.setSuccess(true)
                 ret.setMessages("New statistics saved successfully")
                 ret.addData(await newObj.save());
 
-                console.log("savestats - New statistics saved successfully ===> ", ret);
+                //console.log("savestats - New statistics saved successfully ===> ", ret);
                 return res.status(201).send(ret);
             }
         } catch (err) {

@@ -1,0 +1,39 @@
+<page-header class="bg-cyan-50" />
+
+<form class="m-x--4">
+  <mat-form-field class="m-x-4" appearance="outline">
+    <input matInput [(ngModel)]="query.q" name="q" placeholder="Query String" />
+  </mat-form-field>
+
+  <mat-form-field class="m-x-4" appearance="outline">
+    <mat-select [(ngModel)]="query.sort" name="sort" placeholder="Sort">
+      <mat-option>-- None --</mat-option>
+      <mat-option value="stars">stars</mat-option>
+      <mat-option value="forks">forks</mat-option>
+      <mat-option value="updated">updated</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="m-x-4" appearance="outline">
+    <mat-select [(ngModel)]="query.order" name="order" placeholder="Order">
+      <mat-option>-- None --</mat-option>
+      <mat-option value="desc">desc</mat-option>
+      <mat-option value="asc">asc</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <button class="m-x-4" mat-flat-button (click)="search()">Search</button>
+  <button class="m-x-4" mat-button color="warn" (click)="reset()">Reset</button>
+</form>
+
+<mtx-grid
+  [data]="list"
+  [columns]="columns"
+  [length]="total"
+  [loading]="isLoading"
+  [pageOnFront]="false"
+  [pageIndex]="query.page"
+  [pageSize]="query.per_page"
+  [pageSizeOptions]="[5, 10, 20]"
+  (page)="getNextPage($event)"
+/>

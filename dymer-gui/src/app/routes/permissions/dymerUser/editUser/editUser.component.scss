@@ -1,0 +1,14 @@
+.demo-full-width {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* spazio tra i campi */
+  width: 100%;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+mat-checkbox {
+  margin-top: 8px;
+}

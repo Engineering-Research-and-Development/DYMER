@@ -1,0 +1,120 @@
+<div class="min-h-screen dark:bg-black text-zinc-900 dark:text-zinc-100 p-6 space-y-8">
+  
+  <section class="  mx-auto">
+    <div class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden">
+      
+      <div class="px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50/30 dark:bg-zinc-900/30">
+        <h2 class="text-xs font-bold uppercase tracking-widest text-zinc-500">
+          {{ 'menu.entities.relations.manageRelation' | translate }}
+        </h2>
+      </div>
+
+      <div class="p-6" *ngIf="showConfigAuthentication">
+        <form [formGroup]="manageRelForm" (ngSubmit)="saveManageRel()" class="space-y-6">
+          
+          <div *ngIf="manageRelForm.get('_id')?.value" class="w-1/3">
+            <label class="block mb-1.5 text-[10px] font-bold text-zinc-400 uppercase">ID Relazione</label>
+            <input formControlName="_id" readonly 
+                   class="w-full h-9 px-3 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md text-xs font-mono text-zinc-500 outline-none">
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
+            <div class="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-zinc-300 dark:text-zinc-700">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11l5 5 5-5M7 13l5 5 5-5"/></svg>
+            </div>
+
+            <div class="space-y-4 p-4 bg-zinc-50/50 dark:bg-zinc-900/50 rounded-lg border border-zinc-100 dark:border-zinc-800">
+              <h3 class="text-[10px] font-bold text-zinc-400 uppercase tracking-tight">Origine (Entità 1)</h3>
+              <div class="space-y-3">
+                <select formControlName="index1" class="w-full h-9 px-3 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800">
+                  <option value="">{{ 'menu.entities.relations.index1' | translate }}</option>
+                  <option *ngFor="let index of groupedEntities" [value]="index">{{ index }}</option>
+                </select>
+                <input formControlName="id1" [placeholder]="'menu.entities.relations.id1' | translate" 
+                       class="w-full h-9 px-3 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800">
+              </div>
+            </div>
+
+            <div class="space-y-4 p-4 bg-zinc-50/50 dark:bg-zinc-900/50 rounded-lg border border-zinc-100 dark:border-zinc-800">
+              <h3 class="text-[10px] font-bold text-zinc-400 uppercase tracking-tight">Destinazione (Entità 2)</h3>
+              <div class="space-y-3">
+                <select formControlName="index2" class="w-full h-9 px-3 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800">
+                  <option value="">{{ 'menu.entities.relations.index2' | translate }}</option>
+                  <option *ngFor="let index of groupedEntities" [value]="index">{{ index }}</option>
+                </select>
+                <input formControlName="id2" [placeholder]="'menu.entities.relations.id2' | translate" 
+                       class="w-full h-9 px-3 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800">
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-4 flex justify-end gap-3 border-t border-zinc-100 dark:border-zinc-800">
+            <button type="button" (click)="resetManageRel()" 
+                    class="h-9 px-4 text-xs font-bold uppercase text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors">
+              {{ 'cancel' | translate }}
+            </button>
+            <button type="submit" [disabled]="!manageRelForm.valid"
+                    class="h-9 px-6 bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold uppercase rounded-lg hover:opacity-90 transition-all disabled:opacity-30">
+              {{ 'menu.entities.relations.saveRelation' | translate }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="  mx-auto">
+    <div class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-zinc-50/50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800">
+              <th class="px-6 py-4 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Origine</th>
+              <th class="px-6 py-4 text-[10px] font-bold text-zinc-500 uppercase tracking-widest text-center">
+                <svg class="w-4 h-4 mx-auto opacity-30" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+              </th>
+              <th class="px-6 py-4 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Destinazione</th>
+              <th class="px-6 py-4 text-[10px] font-bold text-zinc-500 uppercase tracking-widest text-right">Azioni</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
+            <tr *ngFor="let el of dataSource.data" class="group hover:bg-zinc-50/30 dark:hover:bg-zinc-900/20 transition-colors">
+              <td class="px-6 py-4">
+                <div class="flex flex-col">
+                  <span class="text-xs font-bold text-zinc-400 uppercase tracking-tighter">{{ el._source?._index1 }}</span>
+                  <span class="text-sm font-medium text-zinc-800 dark:text-zinc-200">{{ el.title1 }}</span>
+                  <span class="text-[10px] font-mono text-zinc-400">ID: {{ el._source?._id1 }}</span>
+                </div>
+              </td>
+              <td class="px-6 py-4 text-center">
+                 <div class="w-px h-8 bg-zinc-200 dark:bg-zinc-800 mx-auto"></div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="flex flex-col">
+                  <span class="text-xs font-bold text-zinc-400 uppercase tracking-tighter">{{ el._source?._index2 }}</span>
+                  <span class="text-sm font-medium text-zinc-800 dark:text-zinc-200">{{ el.title2 }}</span>
+                  <span class="text-[10px] font-mono text-zinc-400">ID: {{ el._source?._id2 }}</span>
+                </div>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button (click)="setUpdateManageRel(el)" class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md text-zinc-500 transition-colors" [matTooltip]="'menu.entities.relations.updateRelationTooltip' | translate">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke-width="2"/></svg>
+                  </button>
+                  <button (click)="deleteRelationById(el)" class="p-2 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-md text-red-400 transition-colors" [matTooltip]="'menu.entities.relations.deleteRelationTooltip' | translate">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2"/></svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="px-6 py-3 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/30 dark:bg-zinc-900/30">
+        <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons 
+                       class="!bg-transparent !text-zinc-500 !text-xs uppercase"></mat-paginator>
+      </div>
+    </div>
+  </section>
+</div>

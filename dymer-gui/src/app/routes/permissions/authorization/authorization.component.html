@@ -1,0 +1,59 @@
+<mat-card>
+  <page-header [class]="['text-black', 'b-0']" title="{{ 'menu.permissions.authorizationAuthentication' | translate }}"/>
+  <mat-card-content style="overflow-x: hidden">
+    <table mat-table [dataSource]="listAuthConfig">
+      <!-- Request url Column -->
+      <ng-container matColumnDef="requestUrl">
+        <th mat-header-cell *matHeaderCellDef class="text-primary">{{ 'menu.permissions.requestUrl' | translate}}</th>
+        <td mat-cell *matCellDef="let authConf">{{ authConf.host }}</td>
+      </ng-container>
+
+      <!-- Enabled Column -->
+      <ng-container matColumnDef="enabled">
+        <th mat-header-cell *matHeaderCellDef class="text-primary">{{ 'menu.permissions.enabled' | translate}}</th>
+        <td mat-cell *matCellDef="let authConf">{{ authConf.active }}</td>
+      </ng-container>
+
+      <!-- Type Column -->
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef class="text-primary">{{ 'menu.permissions.type' | translate}}</th>
+        <td mat-cell *matCellDef="let authConf">{{ authConf.authtype }}</td>
+      </ng-container>
+
+      <!-- Properties Column -->
+      <ng-container matColumnDef="properties">
+        <th mat-header-cell *matHeaderCellDef class="text-primary">{{ 'menu.permissions.properties' | translate}}</th>
+        <td mat-cell *matCellDef="let authConf; let i = index">
+          <i class="fa-solid fa-bars burgherAction" (click)="toggleProps(i)"></i>
+          @if (showProps[i]) {
+            <pre>{{ authConf.prop | json }}</pre>
+          }
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef class="text-primary">Actions</th>
+        <td mat-cell *matCellDef="let authConf; let i = index">
+          <i class="fa fa-clone cloneAction" (click)="duplicateConfig(i, 'clone')"></i>
+          <i class="fa fa-pencil updateAction" (click)="openNewAuthConfigDialog(authConf)"></i>
+          <i class="fa fa-trash deleteAction" (click)="removeConfig(i)"></i>
+        </td>
+      </ng-container>
+
+      <!-- Add New Row -->
+      <ng-container matColumnDef="addNew">
+        <td mat-footer-cell *matFooterCellDef colspan="5" style="text-align: right">
+          
+           <button (click)="openNewAuthConfigDialog()" class="h-9 px-6 bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold uppercase rounded-lg hover:opacity-90 transition-all shadow-sm">
+               {{ 'menu.actions.add' | translate }}
+            </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr mat-footer-row *matFooterRowDef="['addNew']"></tr>
+    </table>
+  </mat-card-content>
+</mat-card>

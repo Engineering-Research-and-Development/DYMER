@@ -13,6 +13,13 @@ const http = require('http');
 const custumLibraries = require('./libInit');
 const crypto = require("crypto")
 
+const ALGORITHM = 'aes-128-ecb';
+const UNICODE_FORMAT = 'utf-8';
+const SHA = 'sha1';
+
+const jwt = require("jsonwebtoken");
+const secrets = require("./config/Secrets.js");//VL docker secrets
+
 exports.getContextPath = function(typeServ) {
     let cpath = global.gConfig.services[typeServ]["context-path"];
     if (cpath == undefined)
@@ -79,33 +86,6 @@ function isEmpty(obj) {
     }
     return true;
 }*/
-
-
-exports.encrypt = function (secretKey, password) {
-    let hash = crypto.createHash('sha1')
-
-    let digest = hash.update(secretKey).digest().subarray(0, 16)
-    const cipher = crypto.createCipheriv("aes-128-ecb", digest, null);
-
-    let encryptedText = cipher.update(password, "utf-8", "hex");
-    encryptedText += cipher.final("hex");
-
-    return encryptedText
-}
-
-exports.decrypt = function(secretKey, encryptedText) {
-    let hash = crypto.createHash('sha1');
-    let digest = hash.update(secretKey).digest().subarray(0, 16);
-
-    const decipher = crypto.createDecipheriv("aes-128-ecb", digest, null);
-
-    let decryptedText = decipher.update(encryptedText, "hex", "utf-8");
-    decryptedText += decipher.final("utf-8");
-
-    return decryptedText;
-}
-
-
 
 exports.getAllQuery = function(req) {
 
@@ -187,15 +167,16 @@ exports.checkIsDymerUser = function(req, res, next) {
 }
 exports.checkIsAdmin = function(req, res, next) {
     const hdymeruser = req.headers.dymeruser;
+	console.log(">>> checkIsAdmin hdymeruser:", hdymeruser);													
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     //console.log("==> checkIsAdmin dymeruser:", dymeruser);
     if ((dymeruser.roles.indexOf("app-admin") > -1)) {
-        console.log(nameFile + ' | checkIsAdmin | Yes permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
-        logger.info(nameFile + ' | checkIsAdmin | Yes permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
+        console.log(nameFile + ' | checkIsAdmin | Yes permission, dymeruser.id: ' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
+        logger.info(nameFile + ' | checkIsAdmin | Yes permission, dymeruser.id: ' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
         next();
     } else {
         console.log('checkIsAdmin | No permission:', dymeruser.id, req.originalUrl, req.method, req.url);
-        logger.info(nameFile + ' | checkIsAdmin | No permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
+        logger.info(nameFile + ' | checkIsAdmin | No permission, dymeruser.id: ' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
         var ret = new jsonResponse();
         ret.setMessages("Sorry, something went wrong: you don't have permission or your authentication has expired");
         // res.status(200);
@@ -209,7 +190,7 @@ exports.checkIsAdminRun = function(req, res, next) {
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     //console.log("==> checkIsAdmin dymeruser:", dymeruser);
     if ((dymeruser.roles.indexOf("app-admin") > -1)) {
-        //console.log("==>ruolo app-admin");
+        
         req.dymeruser = dymeruser;
         console.log(nameFile + ' | checkIsAdmin | Yes permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
         logger.info(nameFile + ' | checkIsAdmin | Yes permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
@@ -230,11 +211,11 @@ exports.checkIsPortalUser = function(req, res, next) {
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     //console.log("dymeruser", dymeruser);
     if ((dymeruser.roles.indexOf("app-admin") > -1)||(dymeruser.roles.indexOf("app-content-curator") > -1)) {
-        logger.info(nameFile + ' | checkIsAdmin | Yes permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
+        logger.info(nameFile + ' | checkIsPortalUser | Yes permission, dymeruser.id: ' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
         next();
     } else {
-        //console.log('checkIsAdmin | No permission:', dymeruser.id, req.originalUrl, req.method, req.url);
-        logger.info(nameFile + ' | checkIsAdmin | No permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
+        //console.log('checkIsPortalUser | No permission:', dymeruser.id, req.originalUrl, req.method, req.url);
+        logger.info(nameFile + ' | checkIsPortalUser | No permission, dymeruser.id: ' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
         var ret = new jsonResponse();
         ret.setMessages("Sorry, something went wrong: you don't have permission or your authentication has expired");
         // res.status(200);
@@ -245,23 +226,188 @@ exports.checkIsPortalUser = function(req, res, next) {
 exports.getDymerUser = function(req, res, next) {
     const hdymeruser = req.headers.dymeruser;
     if (hdymeruser == undefined) {
-        //console.log("==> getDymerUser hdymeruser is undefined");
+        
         return null;
     } else {
         const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
-        //console.log("==> getDymerUser dymeruser:", dymeruser);
+       
         return dymeruser;
     }
 }
-exports.getDymerUser2 = function(req, res, next) {
-    /*const hdymeruser = req.headers.dymeruser;
-    if (hdymeruser == undefined) {
-        console.log("==> getDymerUser hdymeruser is undefined");
-        return "test"";
-    } else {
-        const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
-        console.log("==> getDymerUser dymeruser:", dymeruser);
-        return "test2"";
-    }*/
-    return "test";
+
+//VL docker secrets
+exports.generateJWTToken = function(encryptedPayload) {
+    const secretKey = secrets.get('jwt_secret_key');
+    console.log(nameFile + ' | generateJWTToken | jwt_secret_key: ' + secretKey);
+    const token = jwt.sign({ data: encryptedPayload }, secretKey, { expiresIn: "2h" });
+    return token;
+};
+
+//exports.encrypt = function (secretKey, message) {//VL docker secrets
+exports.encrypt = function (message) {
+    const secretKey = secrets.get('encryption_secret_key');//VL docker secrets
+    console.log(nameFile + ' | encrypt | encryption_secret_key: ' + secretKey);
+    let hash = crypto.createHash('sha1')
+
+    let digest = hash.update(secretKey).digest().subarray(0, 16)
+    const cipher = crypto.createCipheriv("aes-128-ecb", digest, null);
+
+    let encryptedText = cipher.update(message, "utf-8", "hex");
+    encryptedText += cipher.final("hex");
+
+    return encryptedText
 }
+
+//exports.decrypt = function(secretKey, encryptedText) {
+  exports.decrypt = function(encryptedText) {
+    
+    const secretKey = secrets.get('encryption_secret_key');//VL docker secrets
+    let hash = crypto.createHash('sha1');
+    let digest = hash.update(secretKey).digest().subarray(0, 16);
+
+    const decipher = crypto.createDecipheriv("aes-128-ecb", digest, null);
+
+    let decryptedText = decipher.update(encryptedText, "hex", "utf-8");
+    decryptedText += decipher.final("utf-8");
+ 
+    return decryptedText;
+}
+
+
+exports.decrypt_ = function (encryptedMessage) {
+    const secretKey = secrets.get('encryption_secret_key'); // VL docker secrets
+    console.log(nameFile + ' | decrypt | encryption_secret_key: ' + secretKey);
+
+    let hash = crypto.createHash('sha1');
+    let digest = hash.update(secretKey).digest().subarray(0, 16);
+
+    const decipher = crypto.createDecipheriv("aes-128-ecb", digest, null);
+
+    let decryptedText = decipher.update(encryptedMessage, "hex", "utf-8");
+    decryptedText += decipher.final("utf-8");
+
+    return decryptedText;
+};
+
+
+
+
+
+
+exports.generateHexString = function generateHexString(length) {
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += Math.floor(Math.random() * 16).toString(16);
+    }
+    return result;
+}
+
+
+
+exports.decryptLfr = function (encryptedMessage) {
+    try {
+        const secret = secrets.get('encryption_secret_key');
+        console.log(nameFile + ' | decryptLfr | encryption_secret_key: ' + secret);
+        const secretKey = setKey(secret);
+        const decipher = crypto.createDecipheriv(ALGORITHM, secretKey, null);
+        let decrypted = decipher.update(encryptedMessage, 'base64', UNICODE_FORMAT);
+        decrypted += decipher.final(UNICODE_FORMAT);
+        //console.log(nameFile + " | decryptLfr | decrypted DYM: ", decrypted)
+        return decrypted;
+    } catch (e) {
+        console.log(nameFile + " | decryptLfr | Unable to decrypt: ", e.toString())
+        logger.info(nameFile + " | decryptLfr | Unable to decrypt: "+ e.toString())
+    }
+    return "";
+}
+
+function setKey(secretKey) {
+    const sha = crypto.createHash(SHA);
+    let key = Buffer.from(secretKey, UNICODE_FORMAT);
+    key = sha.update(key).digest();
+    key = key.slice(0, 16);
+    return key;
+}
+
+exports.isCrypted = function(dt) {
+    try {
+        JSON.parse(Buffer.from(dt, 'base64').toString())
+        //console.log(nameFile + " | isCrypted | able to decode from base64 ")
+        return false;
+    } catch (error) {
+        //console.log(nameFile + " | isCrypted | unable to decode from base64 ")
+        logger.warn(nameFile + " | isCrypted | unable to decode from base64 ")
+        return true;
+    }
+}
+
+//TODO change dymer-viewer portlet to get right jwt (DYM)
+//VL 0day - 0day - Lfr DYM decrypt start 
+/*
+exports.isCrypted = function(dt) {
+    try {
+        JSON.parse(Buffer.from(dt, 'base64').toString())
+        //console.log(nameFile + " | isCrypted | able to decode from base64 ")
+        return false;
+    } catch (error) {
+        //console.log(nameFile + " | isCrypted | unable to decode from base64 ")
+        logger.warn(nameFile + " | isCrypted | unable to decode from base64 ")
+        return true;
+    }
+}
+
+function setKey(secretKey) {
+    const sha = crypto.createHash(SHA);
+    let key = Buffer.from(secretKey, UNICODE_FORMAT);
+    key = sha.update(key).digest();
+    key = key.slice(0, 16);
+    return key;
+}
+
+//exports.decryptLfr = function (secret, encryptedMessage) {
+exports.decryptLfr = function (encryptedMessage) {
+    try {
+        const secret = secrets.get('encryption_secret_key');
+        console.log(nameFile + ' | decryptLfr | encryption_secret_key: ' + secret);
+        const secretKey = setKey(secret);
+        const decipher = crypto.createDecipheriv(ALGORITHM, secretKey, null);
+        let decrypted = decipher.update(encryptedMessage, 'base64', UNICODE_FORMAT);
+        decrypted += decipher.final(UNICODE_FORMAT);
+        //console.log(nameFile + " | decryptLfr | decrypted DYM: ", decrypted)
+        return decrypted;
+    } catch (e) {
+        console.log(nameFile + " | decryptLfr | Unable to decrypt: ", e.toString())
+        logger.info(nameFile + " | decryptLfr | Unable to decrypt: "+ e.toString())
+    }
+    return "";
+}
+
+exports.generateHexString = function generateHexString(length) {
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += Math.floor(Math.random() * 16).toString(16);
+    }
+    return result;
+}
+SICURAMENTE è un refuso
+*/
+
+//TODO delete
+/*const jwt = require('jsonwebtoken');
+exports.getDecryptedPayloadRefreshToken = function(token) {
+    const secretKey = process.env.ENCRYPTION_SECRET_KEY//REFRESH_SECRET_KEY per decriptare il refresh_token
+    const encryptKey = process.env.ENCRYPTION_SECRET_KEY//per decriptare il payload
+    try {
+        let decoded = jwt.verify(token, secretKey)
+        logger.info(nameFile + " | getDecryptedPayloadRefreshToken | refresh_token: ", token)
+        logger.info(nameFile + " | getDecryptedPayloadRefreshToken | decoded: ", decoded)
+        let payload = JSON.parse(exports.decrypt(encryptKey, decoded.data))
+        return payload
+    } catch (err) {
+        console.log(nameFile + " | getDecryptedPayloadRefreshToken | Unable to verify token due to: ", err)
+        logger.info(nameFile + " | getDecryptedPayloadRefreshToken | Unable to verify token due to: ", err)
+        new Error(err)
+    }
+}*/
+
+//VL 0day - 0day - Lfr DYM decrypt end

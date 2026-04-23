@@ -1,0 +1,91 @@
+<div class="bg-white dark:bg-zinc-950 rounded-2xl overflow-hidden shadow-xl border border-zinc-200 dark:border-zinc-800 w-full max-w-md">
+  
+  <header class="px-6 py-5 border-b border-zinc-100 dark:border-zinc-900 bg-zinc-50/50 dark:bg-zinc-900/50">
+    <h2 class="text-sm font-bold uppercase tracking-widest text-zinc-800 dark:text-zinc-200">
+      {{ 'menu.users.manageUser' | translate }}
+    </h2>
+  </header>
+
+  <div class="p-6">
+    <form [formGroup]="userForm" class="space-y-6">
+      
+      <div class="space-y-2">
+        <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em]">
+          {{ 'menu.permissions.name' | translate }}
+        </label>
+        <input formControlName="username" type="text"
+               class="w-full h-10 px-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all shadow-sm placeholder:text-zinc-400"
+               placeholder="es. mario_rossi">
+        
+        @if (userForm.get('username')?.touched && userForm.get('username')?.invalid) {
+          <div class="flex items-center gap-1.5 mt-1 text-[10px] font-bold text-red-500 uppercase tracking-tight">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            @if (userForm.get('username')?.hasError('required')) { <span>Username is required</span> }
+            @if (userForm.get('username')?.hasError('minlength')) { <span>Min 3 characters</span> }
+          </div>
+        }
+      </div>
+
+      <div class="space-y-2">
+        <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em]">Password</label>
+        <input formControlName="password" type="password"
+               class="w-full h-10 px-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all shadow-sm"
+               placeholder="••••••••">
+        
+        @if (userForm.get('password')?.touched && userForm.get('password')?.invalid) {
+          <div class="flex items-center gap-1.5 mt-1 text-[10px] font-bold text-red-500 uppercase tracking-tight">
+             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+             @if (userForm.get('password')?.hasError('required')) { <span>Password required</span> }
+             @if (userForm.get('password')?.hasError('minlength')) { <span>Min 6 characters</span> }
+          </div>
+        }
+      </div>
+
+      <div class="space-y-2">
+        <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em]">Email</label>
+        <input formControlName="email" type="email"
+               class="w-full h-10 px-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all shadow-sm"
+               placeholder="mario@example.com">
+        
+        @if (userForm.get('email')?.touched && userForm.get('email')?.invalid) {
+          <div class="flex items-center gap-1.5 mt-1 text-[10px] font-bold text-red-500 uppercase tracking-tight">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            @if (userForm.get('email')?.hasError('required')) { <span>Email is required</span> }
+            @if (userForm.get('email')?.hasError('email')) { <span>Invalid format</span> }
+          </div>
+        }
+      </div>
+
+      <div class="space-y-2">
+        <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em]">
+          {{ 'menu.permissions.roles.name' | translate }}
+        </label>
+        <input formControlName="roles" type="text"
+               class="w-full h-10 px-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all shadow-sm"
+               placeholder="es. admin, editor">
+        <p class="text-[9px] text-zinc-400 font-medium italic">Separa i ruoli con una virgola</p>
+      </div>
+
+      <label class="flex items-center gap-3 cursor-pointer group w-fit pt-2">
+        <div class="relative">
+          <input type="checkbox" formControlName="active" class="sr-only peer">
+          <div class="w-9 h-5 bg-zinc-200 dark:bg-zinc-800 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+        </div>
+        <span class="text-xs font-bold text-zinc-500 group-hover:text-zinc-800 dark:group-hover:text-zinc-200 uppercase tracking-wider transition-colors">
+          {{ 'menu.permissions.enabled' | translate }}
+        </span>
+      </label>
+
+      <div class="flex items-center justify-end gap-3 pt-8 border-t border-zinc-100 dark:border-zinc-900">
+        <button mat-dialog-close type="button" 
+                class="h-10 px-4 text-xs font-bold uppercase text-zinc-400 hover:text-zinc-600 transition-colors">
+          {{ 'menu.actions.cancel' | translate }}
+        </button>
+        <button (click)="submitForm()" [disabled]="userForm.invalid"
+                class="h-10 px-8 bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold uppercase rounded-xl hover:opacity-90 transition-all shadow-sm disabled:opacity-30 disabled:cursor-not-allowed">
+          {{ 'menu.actions.save' | translate }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

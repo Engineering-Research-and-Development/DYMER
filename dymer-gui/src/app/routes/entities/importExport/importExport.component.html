@@ -1,0 +1,396 @@
+ <section class=" mx-auto mt-6">
+  <div class="flex items-center gap-1 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-xl w-fit mb-6">
+    <button (click)="activeTab = 'export'"
+            [class]="activeTab === 'export' 
+              ? 'px-4 py-2 text-xs font-bold uppercase tracking-wider bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm rounded-lg transition-all' 
+              : 'px-4 py-2 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-all'">
+            <div class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                {{ 'importexport.import_tab' | translate }}
+              </div>
+    </button>
+    <button (click)="activeTab = 'import'"
+            [class]="activeTab === 'import' 
+              ? 'px-4 py-2 text-xs font-bold uppercase tracking-wider bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm rounded-lg transition-all' 
+              : 'px-4 py-2 text-xs font-bold uppercase tracking-wider text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-all'">
+      <div class="flex items-center gap-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
+        <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+        <path d="M12 12v6"/>
+        <path d="M9 15h6"/>
+      </svg>
+      {{ 'importexport.export_tab' | translate }}
+    </div>
+    </button>
+  </div>
+
+  <div [ngSwitch]="activeTab" class="animate-in fade-in slide-in-from-bottom-2 duration-300">
+    
+    <div *ngSwitchCase="'export'" class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden">
+      <header class="px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/30 dark:bg-zinc-900/30">
+        <h2 class="text-xs font-bold uppercase tracking-widest text-zinc-500">
+          {{ 'importexport.import' | translate }}
+        </h2>
+      </header>
+      <div class="p-6">
+ <!-- Import from REST -->
+    <section class="  mx-auto mt-6">
+            <div class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden">
+              
+              <header class="px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50/30 dark:bg-zinc-900/30">
+                <h2 class="text-xs font-bold uppercase tracking-widest text-zinc-500">
+                  {{ 'importexport.import_from_rest' | translate }}
+                </h2>
+                
+                <button (click)="showMappingBridgeRule = !showMappingBridgeRule"
+                        class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition-colors text-zinc-400"
+                        aria-label="Toggle REST import form">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" 
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      [class.rotate-180]="showMappingBridgeRule" class="transition-transform duration-200">
+                    <path d="m6 9 6 6 6-6"/>
+                  </svg>
+                </button>
+              </header>
+
+              <div class="p-6 space-y-6" *ngIf="showMappingBridgeRule">
+                
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                  
+                  <div class="md:col-span-2">
+                    <label class="block mb-1.5 text-[10px] font-bold text-zinc-400 uppercase">Method</label>
+                    <select [(ngModel)]="method" 
+                            class="w-full h-9 px-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all appearance-none">
+                      <option value="GET">GET</option>
+                      <option value="POST" disabled>POST</option>
+                    </select>
+                  </div>
+
+                  <div class="md:col-span-3">
+                    <label class="block mb-1.5 text-[10px] font-bold text-zinc-400 uppercase">Host</label>
+                    <input #hostInput type="text" placeholder="http://localhost" value="http://localhost"
+                          class="w-full h-9 px-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all">
+                  </div>
+
+                  <div class="md:col-span-2">
+                    <label class="block mb-1.5 text-[10px] font-bold text-zinc-400 uppercase">Port</label>
+                    <input #portInput type="text" placeholder="8080" value="8080"
+                          class="w-full h-9 px-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all">
+                  </div>
+
+                  <div class="md:col-span-5">
+                    <label class="block mb-1.5 text-[10px] font-bold text-zinc-400 uppercase">Path</label>
+                    <input #pathInput type="text" placeholder="/api/v1/resource"
+                          class="w-full h-9 px-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all">
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block mb-1.5 text-[10px] font-bold text-zinc-400 uppercase tracking-tight">Mapping Configuration</label>
+                  <textarea [(ngModel)]="mapping" rows="8"
+                            class="w-full p-4 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-md text-sm font-mono outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all"
+                            placeholder='{ "source": "target" }'></textarea>
+                </div>
+
+                <div class="flex justify-center pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                  <button (click)="importEntFl(hostInput.value, portInput.value, pathInput.value)"
+                          class="h-10 px-8 bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold uppercase rounded-lg hover:opacity-90 transition-all shadow-sm">
+                    {{ 'importexport.import' | translate }}
+                  </button>
+                </div>
+
+                <div *ngIf="import_result" class="mt-6">
+                  <label class="block mb-2 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase">Response Result</label>
+                  <div class="p-4 bg-zinc-900 rounded-lg border border-zinc-800 overflow-x-auto overflow-y-auto max-h-60">
+                    <pre class="text-[11px] font-mono text-zinc-300 leading-relaxed">{{ import_result | json }}</pre>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </section>
+
+    <!-- Import from CSV -->
+  <section class="  mx-auto mt-6 ">
+  <div class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden">
+    
+    <header class="px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-zinc-50/30 dark:bg-zinc-900/30">
+      <div class="flex flex-col">
+        <h2 class="text-xs font-bold uppercase tracking-widest text-zinc-500">
+          {{ 'importexport.import_from_csv' | translate }}
+        </h2>
+        <p class="text-[10px] text-zinc-400 mt-0.5" *ngIf="importFromCSV">
+          {{ 'importexport.fill_all_fields' | translate }}
+        </p>
+      </div>
+      <button (click)="importFromCSV = !importFromCSV"
+              class="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-md transition-colors text-zinc-400">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" 
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+             [class.rotate-180]="importFromCSV" class="transition-transform duration-200"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+    </header>
+
+    <div class="p-6" *ngIf="importFromCSV">
+      
+      <nav class="mb-10" *ngIf="!showResultWizard">
+        <ul class="flex items-center justify-between relative">
+          <div class="absolute top-1/2 left-0 w-full h-px bg-zinc-100 dark:bg-zinc-800 -z-0"></div>
+          
+          <li *ngFor="let step of [1,2,3,4,5]" class="relative z-10">
+            <div [class]="currentStep === step 
+                ? 'w-8 h-8 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-xs font-bold shadow-lg ring-4 ring-white dark:ring-zinc-950' 
+                : currentStep > step 
+                ? 'w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs ring-4 ring-white dark:ring-zinc-950'
+                : 'w-8 h-8 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-400 flex items-center justify-center text-xs ring-4 ring-white dark:ring-zinc-950'">
+              <span *ngIf="currentStep <= step">{{ step }}</span>
+              <svg *ngIf="currentStep > step" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            </div>
+          </li>
+        </ul>
+      </nav>
+
+      <div [ngSwitch]="currentStep" *ngIf="!showResultWizard">
+        
+        <div *ngSwitchCase="1" class="space-y-6 animate-in fade-in slide-in-from-bottom-2">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">{{ 'importexport.choose_index' | translate }}</label>
+              <select [(ngModel)]="infoDetails.index" name="index" (selectionChange)="getIndexStructure()"
+                      class="w-full h-10 px-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all">
+                <option *ngFor="let index of listEntities" [value]="index">{{ index }}</option>
+              </select>
+            </div>
+            
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">{{ 'importexport.separator' | translate }}</label>
+              <div class="flex gap-2">
+                <select [(ngModel)]="infoDetails.separator" name="separator" (change)="customSeparator = (infoDetails.separator === 'custom')"
+                        class="flex-1 h-10 px-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all">
+                  <option value="">{{ 'importexport.auto_detect' | translate }}</option>
+                  <option value=";">{{ 'importexport.semicolon' | translate }}</option>
+                  <option value=",">{{ 'importexport.comma' | translate }}</option>
+                  <option value="\t">TAB</option>
+                  <option value="|">PIPE (|)</option>
+                  <option value="custom">{{ 'importexport.custom' | translate }}</option>
+                </select>
+                <input *ngIf="customSeparator" [(ngModel)]="infoDetails.separator" name="customSeparator"
+                       class="w-20 h-10 px-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-center outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all">
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-end pt-4 border-t border-zinc-100 dark:border-zinc-800">
+            <button (click)="nextStep()" [disabled]="!infoDetails.index"
+                    class="h-10 px-6 bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold uppercase rounded-lg hover:opacity-90 disabled:opacity-20 transition-all">
+              {{ 'importexport.next' | translate }}
+            </button>
+          </div>
+        </div>
+
+        <div *ngSwitchCase="2" class="space-y-6">
+          <div (click)="fileInput.click()" (dragover)="onDragOver($event)" (drop)="onDrop($event)"
+               [class.border-zinc-900]="isDragOver"
+               class="group relative border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl p-12 text-center hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-all cursor-pointer">
+            <input type="file" (change)="onFileSelected($event)" #fileInput hidden accept=".csv" />
+            
+            <div class="flex flex-col items-center gap-4">
+              <div class="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center text-zinc-400 group-hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-zinc-800 dark:text-zinc-200">{{ 'importexport.drag_drop_here' | translate }}</p>
+                <p class="text-xs text-zinc-400 mt-1">{{ 'importexport.or_browse_files' | translate }}</p>
+              </div>
+            </div>
+
+            <div *ngIf="selectedFile" class="mt-6 p-3 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg inline-flex items-center gap-3">
+              <svg class="text-zinc-400" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span class="text-xs font-mono">{{ selectedFileName }}</span>
+              <span class="text-[10px] px-1.5 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded">{{ getFileSize(selectedFile!.size) }}</span>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center pt-4 border-t border-zinc-100 dark:border-zinc-800">
+            <button (click)="previousStep()" class="text-xs font-bold uppercase text-zinc-400 hover:text-zinc-800 transition-colors">
+              {{ 'importexport.previous' | translate }}
+            </button>
+            <button (click)="getFieldByCSV()" [disabled]="!selectedFile"
+                    class="h-10 px-6 bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold uppercase rounded-lg hover:opacity-90 transition-all">
+              {{ 'importexport.upload_file' | translate }}
+            </button>
+          </div>
+        </div>
+
+        <div *ngSwitchCase="3" class="space-y-6">
+          <div class="overflow-hidden border border-zinc-200 dark:border-zinc-800 rounded-lg">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 text-[10px] font-bold text-zinc-400 uppercase tracking-wider">
+                  <th class="px-4 py-3">{{ 'importexport.import' | translate }}</th>
+                  <th class="px-4 py-3">{{ 'importexport.index_fields' | translate }}</th>
+                  <th class="px-4 py-3">{{ 'importexport.csv_fields' | translate }}</th>
+                  <th class="px-4 py-3">Array?</th>
+                  <th class="px-4 py-3 text-right"></th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
+                <tr *ngFor="let record of infoDetails.fields; let i = index" class="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50">
+                  <td class="px-4 py-3">
+                    <input type="checkbox" [(ngModel)]="record.isSelected" class="w-4 h-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900">
+                  </td>
+                  <td class="px-4 py-3">
+                    <input *ngIf="record.isNew" [(ngModel)]="record.originalName" class="h-8 w-full bg-transparent border-b border-zinc-200 focus:border-zinc-900 outline-none">
+                    <span *ngIf="!record.isNew" class="font-medium">{{ record.originalName }}</span>
+                  </td>
+                  <td class="px-4 py-3">
+                    <select [(ngModel)]="record.newName" class="h-8 w-full bg-zinc-100 dark:bg-zinc-800 rounded border-none px-2 outline-none">
+                      <option *ngFor="let field of CSVFields" [value]="field">{{ field }}</option>
+                    </select>
+                  </td>
+                  <td class="px-4 py-3">
+                    <input type="checkbox" [(ngModel)]="record.isArrayField" class="w-4 h-4 rounded border-zinc-300">
+                  </td>
+                  <td class="px-4 py-3 text-right">
+                    <button *ngIf="record.isNew" (click)="removeHeader(i)" class="text-red-400 hover:text-red-600 p-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <button (click)="addHeader()" class="text-[10px] font-bold uppercase py-2 px-4 border border-zinc-200 dark:border-zinc-800 rounded hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors">
+            + {{ 'importexport.add_new_column' | translate }}
+          </button>
+
+          <div class="flex justify-between pt-6 border-t border-zinc-100 dark:border-zinc-800">
+            <button (click)="previousStep()" class="text-xs font-bold uppercase text-zinc-400">{{ 'importexport.previous' | translate }}</button>
+            <button (click)="nextStep()" class="h-10 px-6 bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold uppercase rounded-lg hover:opacity-90 transition-all">
+              {{ 'importexport.next' | translate }}
+            </button>
+          </div>
+        </div>
+
+        <div *ngSwitchCase="5" class="space-y-6">
+          <div class="bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-x-auto">
+            <table class="w-full text-[11px] font-mono border-collapse">
+              <thead>
+                <tr class="border-b border-zinc-200 dark:border-zinc-800">
+                  <th *ngFor="let key of (MappedData[0] | keyvalue)" class="px-3 py-2 text-zinc-400 font-bold uppercase tracking-tighter">{{ key.key }}</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-zinc-200/50 dark:divide-zinc-800/50">
+                <tr *ngFor="let item of MappedData">
+                  <td *ngFor="let value of item | keyvalue" class="px-3 py-2 text-zinc-600 dark:text-zinc-300 whitespace-nowrap">{{ value.value }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="flex justify-between pt-6 border-t border-zinc-100 dark:border-zinc-800">
+            <button (click)="previousStep()" class="text-xs font-bold uppercase text-zinc-400">{{ 'importexport.previous' | translate }}</button>
+            <button (click)="importMappedData()" [disabled]="!MappedData || MappedData.length === 0"
+                    class="h-10 px-8 bg-emerald-600 text-white text-xs font-bold uppercase rounded-lg hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-500/20">
+              {{ 'importexport.submit' | translate }}
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <div *ngIf="showResultWizard" class="py-20 flex flex-col items-center justify-center animate-in zoom-in-95 duration-500">
+        <div class="w-20 h-20 bg-emerald-100 dark:bg-emerald-500/20 rounded-full flex items-center justify-center mb-6 text-emerald-600 dark:text-emerald-400">
+           <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <h3 class="text-xl font-bold text-zinc-900 dark:text-white">Importazione Completata</h3>
+        <p class="text-zinc-500 mt-2 text-sm">Tutte le entità sono state processate con successo.</p>
+        <button (click)="importFromCSV = false; showResultWizard = false" 
+                class="mt-8 text-xs font-bold uppercase px-6 py-2 border border-zinc-200 dark:border-zinc-800 rounded hover:bg-zinc-50 transition-all">
+          Torna alla dashboard
+        </button>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+
+        </div>
+    </div>
+
+    <div *ngSwitchCase="'import'" class="space-y-6 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden">
+
+      <header class="px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/30 dark:bg-zinc-900/30">
+        <h2 class="text-xs font-bold uppercase tracking-widest text-zinc-500">
+          {{ 'importexport.export_entities' | translate }}
+        </h2>
+      </header>
+      <div class="p-6">
+        <div class="space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                
+                <div class="space-y-2">
+                  <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-none">
+                    {{ 'importexport.index' | translate }}
+                  </label>
+                  <div class="relative">
+                    <select [(ngModel)]="selectedEntity" (change)="selectOptions()"
+                            class="w-full h-10 px-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all appearance-none cursor-pointer">
+                      <option [ngValue]="null" disabled selected>{{ 'importexport.select_index' | translate }}</option>
+                      <option *ngFor="let entity of listEntities" [value]="entity">{{ entity }}</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-zinc-400">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    </div>
+                  </div>
+                  <p *ngIf="selectedEntity" class="text-[10px] font-mono text-emerald-600 dark:text-emerald-400">
+                    {{ 'importexport.selected' | translate }}: {{ selectedEntity }}
+                  </p>
+                </div>
+
+                <div class="space-y-2 animate-in fade-in slide-in-from-left-2" *ngIf="selectedEntity">
+                  <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-none">
+                    {{ 'importexport.fields' | translate }}
+                  </label>
+                  <div class="mtx-select-custom-wrapper">
+                    <mtx-select [items]="myDropdownOptions" 
+                                [(ngModel)]="myDropdownModel" 
+                                name="exportFields" 
+                                [multiple]="true" 
+                                [closeOnSelect]="false" 
+                                [clearable]="false"
+                                placeholder="Seleziona campi..."
+                                class="resend-select">
+                    </mtx-select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center justify-end gap-3 pt-6 border-t border-zinc-100 dark:border-zinc-800">
+                <button type="button" (click)="clearExportForm()"
+                        class="h-9 px-4 text-xs font-bold uppercase text-zinc-400 hover:text-red-500 transition-colors">
+                  {{ 'importexport.clear' | translate }}
+                </button>
+
+                <div class="flex gap-2">
+                  <button type="button" (click)="ExportCSV()"
+                          class="h-9 px-5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-200 text-xs font-bold uppercase rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    {{ 'importexport.export_csv' | translate }}
+                  </button>
+
+                  <button type="button" (click)="ExportJSON()"
+                          class="h-9 px-5 bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold uppercase rounded-lg hover:opacity-90 transition-all shadow-sm flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h14a2 2 0 0 0 2-2V7.5L14.5 2H6a2 2 0 0 0-2 2v4"/><polyline points="14 2 14 8 20 8"/><path d="M2 15h10"/><path d="m9 18 3-3-3-3"/></svg>
+                    {{ 'importexport.export_json' | translate }}
+                  </button>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+
+  </div>
+</section>
+ 

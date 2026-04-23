@@ -78,8 +78,8 @@ router.get('/dispatch', util.checkIsAdmin, function(req, res) {
         "app_azf_domain": "",
         "id": 1,
         "app_id": "",
-        "email": "marcoromano12@gmail.com",
-        "username": "marcoromano12@gmail.com"
+        "email": "admin@dymer.it",
+        "username": "admin@dymer.it"
     };
 
     let userinfo_objJsonStr_admin = JSON.stringify(userinfo_admin);
@@ -543,7 +543,7 @@ function postfwadapter(typeaction, obj, extraInfo, rfrom) {
                     /* objToAssett["_index"] = index;
                      objToAssett["_type"] = index;
                      objToAssett["_id"] = obj._id;*/
-                    // console.log(nameFile + ' | pre postfwadapter |' + JSON.stringify(objToAssett));
+                    console.log(nameFile + ' | pre postfwadapter |' + JSON.stringify(objToAssett));
                     logger.info(nameFile + ' | pre postfwadapter | objToAssett :' + JSON.stringify(objToAssett));
                     var ref = undefined;
                     if (objToAssett.properties.status == 1) {
@@ -896,6 +896,7 @@ var downloadFile = function(url, dest, filename) {
 }
 
 function callFwAdapter_no(conf, postObj) {
+    console.log("-----------callFwAdapter_no-----------");
     var opnConfUtil = util.getServiceConfig("opnsearch");
     var callurl = conf.configuration.host;
     if (conf.configuration.port != undefined)

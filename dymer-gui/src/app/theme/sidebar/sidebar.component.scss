@@ -1,0 +1,47 @@
+@use '../style/breakpoints';
+
+.matero-sidebar-header {
+  overflow: hidden;
+
+  mat-toolbar {
+    width: var(--sidenav-width);
+    padding: 0 0.5rem;
+    background-color: var( --mat-sys-tertiary-bg); 
+
+  }
+
+  // Remove redundant padding in the slide toggle
+  mat-slide-toggle .mdc-label {
+    display: none;
+  }
+}
+
+.matero-sidebar-main {
+  height: calc(100% - var(--mat-toolbar-standard-height));
+  padding: 0 0.5rem 0.5rem;
+  overflow: auto;
+  scrollbar-width: none;
+  background-color: var( --mat-sys-tertiary-bg); 
+  @include breakpoints.bp-lt(small) {
+    & {
+      height: calc(100% - var(--mat-toolbar-mobile-height));
+    }
+  }
+}
+.mat-drawer {
+  
+  color: var(--mat-sys-tertiary-colors) !important;
+  background-color: var( --mat-sys-tertiary-bg) !important; 
+
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+
+}
+
+:host-context(.theme-dark) .mat-drawer {
+  background-color: #2a2b38 !important;
+}
+
+.mat-drawer-inner-container {
+    border-right: 1px solid #ebe6e6;
+}

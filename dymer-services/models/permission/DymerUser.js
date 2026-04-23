@@ -25,5 +25,27 @@ mongoose.model("DymerUser", {
     prop: {
         type: Object,
         require: false
+    },
+    // AC MG
+    salt: {
+        type: String,
+        require: false
+	},
+    //VL login -
+	refreshToken: {
+        type: String,
+        require: false
+    },
+    csrfToken: {
+        type: String,
+        require: false
+    },
+	ip: {
+        type: String,
+        require: false
+    },
+    timestamp: {
+        type: Date,
+        default: Date.now
     }
 });

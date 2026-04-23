@@ -1,0 +1,125 @@
+// .card {
+//   border: 1px solid #e7e7e7;
+//   border-radius: 0.5rem;
+//   margin-bottom: 1.5rem;
+//   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+// }
+
+// .card-header {
+//   background-color: #f8f9fa;
+//   padding: 1rem 1.25rem;
+//   border-bottom: 1px solid #e7e7e7;
+//   border-top-left-radius: 0.5rem;
+//   border-top-right-radius: 0.5rem;
+// }
+
+// .card-title {
+//   color: #333;
+//   font-size: 1.25rem;
+//   margin-bottom: 0;
+// }
+
+// .card-body {
+//   padding: 1.25rem;
+// }
+
+// .table {
+//   width: 100%;
+//   margin-bottom: 1rem;
+//   color: #212529;
+//   border-collapse: collapse;
+// }
+
+// .table th,
+// .table td {
+//   padding: 0.75rem;
+//   vertical-align: top;
+//   border-top: 1px solid #dee2e6;
+//   text-align: left;
+//   word-break: break-word;
+// }
+
+// .table thead th {
+//   vertical-align: bottom;
+//   border-bottom: 2px solid #dee2e6;
+//   color: #6c757d;
+//   font-weight: bold;
+// }
+
+// .table tbody tr:nth-child(odd) {
+//   background-color: #f9f9f9;
+// }
+
+// .text-primary {
+//   color: #007bff !important;
+// }
+
+// .text-center {
+//   text-align: center !important;
+// }
+
+// .table tbody td span {
+//   display: inline-block;
+//   padding: 0.2rem 0.4rem;
+//   margin-right: 0.2rem;
+//   background-color: #e9ecef;
+//   border-radius: 0.2rem;
+//   font-size: 0.875rem;
+//   color: #495057;
+// }
+
+// .card-footer {
+//   background-color: #f8f9fa;
+//   padding: 0.75rem 1.25rem;
+//   border-top: 1px solid #e7e7e7;
+//   border-bottom-left-radius: 0.5rem;
+//   border-bottom-right-radius: 0.5rem;
+// }
+
+// .table th:nth-child(1), /* Name Surname */
+// .table td:nth-child(1) {
+//   width: 15%; /* Ridotto un po' */
+// }
+
+// .table th:nth-child(2), /* Password */
+// .table td:nth-child(2) {
+//   width: 30%; /* Aumentato per dare più spazio al testo che va a capo */
+// }
+
+// .table th:nth-child(3), /* Email */
+// .table td:nth-child(3) {
+//   width: 20%;
+// }
+
+// .table th:nth-child(4), /* Role */
+// .table td:nth-child(4) {
+//   width: 10%;
+// }
+
+// .table th:nth-child(5), /* Enabled */
+// .table td:nth-child(5) {
+//   width: 20%;
+//   text-align: center;
+// }
+
+// .table th:nth-child(6), /* Azioni (icona cestino) */
+// .table td:nth-child(6) {
+//   width: 5%;
+//   text-align: center;
+// }
+// button,
+// a {
+//   margin: 8px;
+//   text-transform: uppercase;
+//   vertical-align: middle;
+// }
+.mat-column-password {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mat-column-username {
+  min-width: 120px;
+}

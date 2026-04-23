@@ -1,0 +1,263 @@
+
+
+<div class="row mt-3">
+  <div class="col-md-12 text-right">
+    <button mat-stroked-button color="warn" (click)="openReloadModal()">{{ 'libraries.reload_libraries' | translate }}</button>
+  </div>
+</div>
+
+<div class="row" *ngFor="let config of libraryCardsConfigs">
+  <div class="col-md-12 mt-3">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>
+          {{ config.title }}
+          <button mat-icon-button (click)="config.showConfig = !config.showConfig" class="pull-right burgherAction">
+            <i class="fa fa-bars" aria-hidden="true"></i>
+          </button>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content *ngIf="config.showConfig">
+        <h5>{{ 'libraries.select_files_to_activate' | translate }}</h5>
+        <div class="mat-elevation-z2 table-container">
+          <table mat-table [dataSource]="config.dataSource" matSort [trackBy]="trackByLibraryId" class="w-100">
+
+            <!-- Activated Column -->
+            <ng-container matColumnDef="activated">
+              <th mat-header-cell *matHeaderCellDef>{{ 'libraries.activated' | translate }}</th>
+              <td mat-cell *matCellDef="let row">
+                <ng-container *ngTemplateOutlet="activationCell; context: { rowData: row }"></ng-container>
+              </td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'libraries.name' | translate }}</th>
+              <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+            </ng-container>
+
+            <!-- Filename Column -->
+            <ng-container matColumnDef="filename">
+              <th mat-header-cell *matHeaderCellDef>{{ 'libraries.filename' | translate }}</th>
+              <td mat-cell *matCellDef="let row"> {{row.filename}} </td>
+            </ng-container>
+
+            <!-- Group Column -->
+            <ng-container matColumnDef="group">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'libraries.group' | translate }}</th>
+              <td mat-cell *matCellDef="let row"> {{row.group}} </td>
+            </ng-container>
+
+            <!-- Callback Column -->
+            <ng-container matColumnDef="callback">
+              <th mat-header-cell *matHeaderCellDef>{{ 'libraries.callback' | translate }}</th>
+              <td mat-cell *matCellDef="let row">
+                <ng-container *ngTemplateOutlet="callbackCell; context: { rowData: row }"></ng-container>
+              </td>
+            </ng-container>
+
+            <!-- UseOnLoad Column -->
+            <ng-container matColumnDef="useonload">
+              <th mat-header-cell *matHeaderCellDef>{{ 'libraries.use_onload' | translate }}</th>
+              <td mat-cell *matCellDef="let row">
+                <ng-container *ngTemplateOutlet="useOnLoadCell; context: { rowData: row }"></ng-container>
+              </td>
+            </ng-container>
+
+            <!-- Mandatory Column -->
+            <ng-container matColumnDef="mandatory">
+              <th mat-header-cell *matHeaderCellDef>{{ 'libraries.mandatory' | translate }}</th>
+              <td mat-cell *matCellDef="let row">
+                <ng-container *ngTemplateOutlet="mandatoryCell; context: { rowData: row }"></ng-container>
+              </td>
+            </ng-container>
+
+            <!-- Delete Column -->
+            <ng-container matColumnDef="delete">
+              <th mat-header-cell *matHeaderCellDef>{{ 'menu.actions.delete' | translate }}</th>
+              <td mat-cell *matCellDef="let row">
+                <ng-container *ngTemplateOutlet="deleteCell; context: { rowData: row }"></ng-container>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="config.displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; let i = index; columns: config.displayedColumns;" [ngClass]="getRowClass(row, i)"></tr>
+
+          </table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+
+<div class="row mt-3">
+  <div class="col-md-12">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>
+          {{ 'libraries.add_library' | translate }}
+          <button mat-icon-button (click)="showNewLibrary = !showNewLibrary" class="pull-right burgherAction">
+            <i class="fa fa-cogs" aria-hidden="true"></i>
+          </button>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content *ngIf="showNewLibrary">
+        <form #formNewLibrary="ngForm" id="formNewLibrary">
+          <div class="row">
+            <div class="col-md-6">
+              <mat-form-field class="w-100">
+                <mat-label>{{ 'libraries.name' | translate }} *</mat-label>
+                <input matInput
+                       id="name"
+                       [(ngModel)]="library.name"
+                       name="name"
+                       (focus)="nameFocused = true"
+                       required>
+              </mat-form-field>
+            </div>
+            <div class="col-md-6">
+              <mat-form-field class="w-100" *ngIf="nameFocused && library.name">
+                <mat-label>{{ 'libraries.library_type' | translate }} *</mat-label>
+                <mat-select id="libraryType"
+                            [(ngModel)]="selectedLibraryType"
+                            name="libraryType"
+                            (selectionChange)="showLibraryForm()">
+                  <mat-option value="Javascript">{{ 'libraries.javascript' | translate }}</mat-option>
+                  <mat-option value="CSS">{{ 'libraries.css' | translate }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div *ngIf="selectedLibraryType">
+            <div class="row">
+              <div class="col-md-6">
+                <mat-form-field class="w-100">
+                  <mat-label>{{ 'libraries.dom_type' | translate }} *</mat-label>
+                  <mat-select id="domtype" [(ngModel)]="library.domtype" name="domtype" required>
+                    <mat-option value="link">{{ 'libraries.link' | translate }}</mat-option>
+                    <mat-option value="script">{{ 'libraries.script' | translate }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-md-6 d-flex align-items-center">
+                <mat-checkbox id="useonload" [(ngModel)]="library.useonload" name="useonload">
+                  {{ 'libraries.use_onload' | translate }} <span>({{ 'libraries.change_only_if_necessary' | translate }})</span>
+                </mat-checkbox>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-12">
+                <label class="mat-label">{{ 'libraries.upload_library' | translate }} *</label>
+                <div class="file-upload-container"
+                     (click)="fileInput.click()"
+                     (dragover)="onDragOver($event)"
+                     (dragleave)="onDragLeave($event)"
+                     (drop)="onDrop($event)">
+                  <input type="file"
+                         #fileInput
+                         class="d-none"
+                         id="filename"
+                         (change)="onFileSelect($event)"
+                         required>
+                  <div class="text-center">
+                    <mat-icon>cloud_upload</mat-icon>
+                    <p class="mb-0">{{ 'importexport.drag_drop_here' | translate }}</p>
+                    <p class="text-muted mb-0">{{ 'importexport.or_browse_files' | translate }}</p>
+                    <p *ngIf="fileUpload" class="mt-2 file-name-display">{{ fileUpload.name }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-12">
+                <mat-form-field class="w-100">
+                  <mat-label>{{ 'libraries.callback' | translate }}</mat-label>
+                  <textarea matInput
+                            id="callback"
+                            [(ngModel)]="library.callback"
+                            name="callback"></textarea>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-12">
+                <mat-form-field class="w-100">
+                  <mat-label>{{ 'libraries.group' | translate }} *</mat-label>
+                  <input matInput id="group" [(ngModel)]="library.group" name="group" required>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <mat-form-field class="w-100">
+                  <mat-label>{{ 'libraries.load_type' | translate }} *</mat-label>
+                  <mat-select id="loadtype" [(ngModel)]="library.loadtype" name="loadtype" required>
+                    <mat-option value="view">{{ 'libraries.view' | translate }}</mat-option>
+                    <mat-option value="map">{{ 'libraries.map' | translate }}</mat-option>
+                    <mat-option value="form">{{ 'libraries.form' | translate }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div class="col-md-6 d-flex align-items-center">
+                <mat-checkbox id="mandatory" [(ngModel)]="library.mandatory" name="mandatory">
+                  {{ 'libraries.mandatory' | translate }}
+                </mat-checkbox>
+              </div>
+            </div>
+
+            <div class="row text-right">
+              <div class="col-12">
+                <button mat-raised-button color="primary" (click)="addLibrary()">{{ 'menu.actions.save' | translate }}</button>
+                <button mat-stroked-button (click)="cancelAddLibrary()" class="ml-2">{{ 'menu.actions.cancel' | translate }}</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+
+<!-- Template for the activation checkbox cell -->
+<ng-template #activationCell let-rowData="rowData">
+  <div class="activation-cell-container">
+    <mat-slide-toggle [checked]="rowData.activated"
+                      (change)="onLibraryActivationChange($event, rowData)">
+    </mat-slide-toggle>
+  </div>
+</ng-template>
+
+<!-- Template for the useonload checkbox cell -->
+<ng-template #useOnLoadCell let-rowData="rowData">
+  <mat-checkbox [checked]="rowData.useonload"
+                [disabled]="true">
+  </mat-checkbox>
+</ng-template>
+
+<!-- Template for the mandatory checkbox cell -->
+<ng-template #mandatoryCell let-rowData="rowData">
+  <mat-checkbox [checked]="rowData.mandatory"
+                [disabled]="true">
+  </mat-checkbox>
+</ng-template>
+
+<!-- Template for the delete button cell -->
+<ng-template #deleteCell let-rowData="rowData">
+  <button mat-icon-button color="warn"
+          [disabled]="rowData.mandatory"
+          (click)="onDeleteLibrary(rowData)">
+    <mat-icon>delete</mat-icon>
+  </button>
+</ng-template>
+
+<!-- Template for the callback cell -->
+<ng-template #callbackCell let-rowData="rowData">
+  <span *ngIf="rowData.callback" [matTooltip]="rowData.callback" matTooltipPosition="above" class="callback-link">
+    {{ 'libraries.show_callback' | translate }}
+  </span>
+</ng-template>

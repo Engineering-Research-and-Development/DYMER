@@ -1,0 +1,11 @@
+ ::ng-deep .codemirror-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    ::ng-deep .codemirror-wrapper .CodeMirror {
+      flex: 1;
+      height: 100%;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 14px;
+    }

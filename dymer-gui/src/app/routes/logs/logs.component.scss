@@ -1,0 +1,124 @@
+ 
+.service-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.list-group-item {
+  border: none;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  padding: 1.2rem 1rem;
+  transition: transform 0.2s;
+}
+
+.list-group-item:hover {
+  transform: scale(1.01);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.icon-big {
+  font-size: 1.8rem;
+}
+
+.fa-trash {
+  cursor: pointer;
+}
+
+.fa-trash:hover,
+.fa-info:hover,
+.fa-exclamation:hover,
+.fa-power-off:hover,
+.fa-file-alt:hover,
+.fa-info-circle:hover {
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.text-success {
+  color: #28a745 !important;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+
+.text-danger-light {
+  color: #ef8157 !important;
+}
+ 
+.text-warning {
+  color: #ffc107 !important;
+}
+
+.text-primary {
+  color: #007bff !important;
+}
+
+@media (max-width: 768px) {
+  .service-name {
+    font-size: 1rem;
+  }
+  .icon-big {
+    font-size: 1.4rem;
+  }
+  .list-group-item {
+    padding: 1rem 0.8rem;
+  }
+}
+
+.button-save {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.mat-mdc-card-footer{margin-top:10px ;}
+.p-5{
+  padding: 0.5rem !important;
+}
+.mat-divider {
+  margin: 0.5rem 0;
+}
+.mdc-card--outlined{
+box-shadow: 0 6px 10px -4px rgba(0, 0, 0, .15) !important;
+border-width:0px !important;    
+}
+ .left-div {
+    float: left;
+    width: 48%;  
+   padding:2px;
+    box-sizing: border-box;  
+    margin-right: 2%;  
+  }
+
+  .right-div {
+    float: right;
+    width: 48%;  
+   text-align: right;
+    box-sizing: border-box;  
+    margin-left: 2%;  
+    padding:2px;
+  }
+
+   .right-div a {
+     color:#9a9a9a;
+  }
+
+   .right-div a:hover i.fa-download {
+    color:var(--index);
+   }
+
+   .right-div a:hover i.fa-trash {
+      color:var(--relation);
+  }
+  .right-div a:hover i.fa-info {
+    color:var(--model);
+  }  
+  .right-div a:hover i.fa-exclamation {
+    color:var(--entity);
+  }
+  .right-div a:hover i.fa-power-off {
+    color:var(--template);
+  }

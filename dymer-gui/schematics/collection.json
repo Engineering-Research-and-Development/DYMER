@@ -1,0 +1,26 @@
+{
+  "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {
+    "ng-add": {
+      "description": "Add ng-matero to the project.",
+      "factory": "./ng-add/index",
+      "schema": "./ng-add/schema.json"
+    },
+    "ng-add-setup-project": {
+      "description": "Sets up the specified project after the ng-add dependencies have been installed.",
+      "private": true,
+      "factory": "./ng-add/setup-project",
+      "schema": "./ng-add/schema.json"
+    },
+    "module": {
+      "description": "Generate a module in the project.",
+      "factory": "./ng-generate/module/index",
+      "schema": "./ng-generate/module/schema.json"
+    },
+    "page": {
+      "description": "Generate a page component in the project.",
+      "factory": "./ng-generate/page/index",
+      "schema": "./ng-generate/page/schema.json"
+    }
+  }
+}

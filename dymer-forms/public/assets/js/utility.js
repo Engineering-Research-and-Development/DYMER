@@ -15,6 +15,7 @@ function checkvalue(el){
 	 else
 		 el.val("false");
 }
+
 function useGritter(title, text) {
 	if ($.gritter) {
 		$.gritter.add({

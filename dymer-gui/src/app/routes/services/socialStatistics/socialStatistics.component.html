@@ -1,0 +1,160 @@
+
+<div class="col-md-12 mt-3">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{ 'socialStatistics.title' | translate }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="actions float-right">
+        <button mat-icon-button (click)="statsShowCharts = !statsShowCharts" [attr.aria-expanded]="statsShowCharts"
+          [matTooltip]="'socialStatistics.showCharts' | translate" aria-controls="charts">
+          <mat-icon>bar_chart</mat-icon>
+        </button>
+        <button mat-icon-button (click)="statsShowFilters = !statsShowFilters" [attr.aria-expanded]="statsShowFilters"
+          [matTooltip]="'socialStatistics.filter' | translate" aria-controls="filters">
+          <mat-icon>filter_list</mat-icon>
+        </button>
+      </div>
+
+      <div class="filters-container" *ngIf="statsShowFilters" id="filters">
+        <div class="filter-group">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>{{ 'socialStatistics.filters.type' | translate }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <mat-radio-group class="d-flex flex-column" name="radioType" (change)="statsTypeFilter($event.value)">
+                <mat-radio-button value="all" class="all">{{ 'socialStatistics.filters.all' | translate }}</mat-radio-button>
+                <mat-radio-button *ngFor="let el of statsTypes" [value]="el[0].type">{{ el[0].type }}</mat-radio-button>
+              </mat-radio-group>
+            </mat-card-content>
+          </mat-card>
+        </div>
+        <div class="filter-group">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>{{ 'socialStatistics.filters.action' | translate }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <mat-checkbox value="all" class="all" (change)="statsActionFilter('all', $event.checked)">{{ 'socialStatistics.filters.all' | translate }}</mat-checkbox>
+              <mat-checkbox value="view" (change)="statsActionFilter('view', $event.checked)">{{ 'socialStatistics.filters.views' | translate }}</mat-checkbox>
+              <mat-checkbox value="like" (change)="statsActionFilter('like', $event.checked)">{{ 'socialStatistics.filters.likes' | translate }}</mat-checkbox>
+              <mat-checkbox value="dislike" (change)="statsActionFilter('dislike', $event.checked)">{{ 'socialStatistics.filters.dislikes' | translate }}</mat-checkbox>
+            </mat-card-content>
+          </mat-card>
+        </div>
+        <div class="filter-group">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>{{ 'socialStatistics.filters.counter' | translate }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <mat-checkbox value="all" class="all" (change)="statsCounterFilter('all', $event.checked)">{{ 'socialStatistics.filters.all' | translate }}</mat-checkbox>
+              <mat-checkbox value="one" (change)="statsCounterFilter('one', $event.checked)">0 - 100</mat-checkbox>
+              <mat-checkbox value="two" (change)="statsCounterFilter('two', $event.checked)">101 - 300</mat-checkbox>
+              <mat-checkbox value="three" (change)="statsCounterFilter('three', $event.checked)">&gt; 300</mat-checkbox>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+
+      <div class="charts-container mt-3" *ngIf="statsShowCharts" id="charts">
+        <div class="row">
+          <div class="col-md-4">
+            <mat-card class="chart-card">
+              <div class="chart-badge">Top 10</div>
+              <mat-card-content>
+                <canvas baseChart
+                        [data]="topViewedChartData"
+                        [options]="topViewedChartOptions"
+                        [type]="'bar'">
+                </canvas>
+              </mat-card-content>
+            </mat-card>
+          </div>
+          <div class="col-md-4">
+            <mat-card class="chart-card">
+              <div class="chart-badge">Top 10</div>
+              <mat-card-content>
+                <canvas baseChart
+                        [data]="topLikedChartData"
+                        [options]="topLikedChartOptions"
+                        [type]="'bar'">
+                </canvas>
+              </mat-card-content>
+            </mat-card>
+          </div>
+          <div class="col-md-4">
+            <mat-card class="chart-card">
+              <div class="chart-badge">Type</div>
+              <mat-card-content>
+                <canvas baseChart
+                        [data]="typeDistributionChartData"
+                        [options]="typeDistributionChartOptions"
+                        [type]="'bar'">
+                </canvas>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div>
+      </div>
+
+      <mat-form-field class="w-100 mt-3">
+        <mat-label>{{ 'search.placeholder' | translate }}</mat-label>
+        <input matInput (keyup)="applyFilters($event)" [placeholder]="'search.placeholder' | translate">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <div class="mat-elevation-z2 table-container mt-3">
+        <table mat-table [dataSource]="statsDataSource" matSort #statsSort="matSort" id="dtStatistics" class="w-100">
+
+          <!-- Index Column -->
+          <ng-container matColumnDef="#">
+            <th mat-header-cell *matHeaderCellDef>#</th>
+            <td mat-cell *matCellDef="let i = index"> {{i + 1}} </td>
+          </ng-container>
+
+          <!-- Altre colonne... -->
+          <ng-container *ngFor="let col of ['type', 'title', 'user', 'action']" [matColumnDef]="col">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{ 'socialStatistics.table.headers.' + col | translate }} </th>
+            <td mat-cell *matCellDef="let el" [ngClass]="{'text-center': col !== 'type'}"> {{el[col]}} </td>
+          </ng-container>
+
+          <!-- Counter Column -->
+          <ng-container matColumnDef="counter">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center"> {{ 'socialStatistics.table.headers.counter' | translate }} </th>
+            <td mat-cell *matCellDef="let el" class="text-center">
+              <a href="javascript:void(0)" [matTooltip]="el.timestamps.join('\n')"
+                matTooltipPosition="above">{{ el.timestamps.length }}</a>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let el" class="text-center actmodindexdash">
+              <button mat-icon-button color="warn" (click)="deleteStatistics(el._id)" [matTooltip]="'socialStatistics.table.actions.flush_one' | translate">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="statsDisplayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: statsDisplayedColumns;"></tr>
+        </table>
+        <mat-paginator #statsPaginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons
+          [attr.aria-label]="'socialStatistics.paginator_aria_label' | translate"></mat-paginator>
+      </div>
+    </mat-card-content>
+    <mat-card-footer>
+      <hr />
+      <div class="stats"><i class="fa fa-history"></i> {{ 'socialStatistics.footer.last_updated' | translate }} 23/10/2024</div>
+      <div class="pull-right">
+        <button mat-button color="warn" (click)="deleteStatistics('all')" [matTooltip]="'socialStatistics.footer.flush_all_tooltip' | translate">
+          <span>{{ 'socialStatistics.footer.flush_all' | translate }}</span>
+          <mat-icon class="ml-1">delete_sweep</mat-icon>
+        </button>
+      </div>
+    </mat-card-footer>
+  </mat-card>
+</div>

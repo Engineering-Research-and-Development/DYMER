@@ -1,0 +1,39 @@
+{
+  "name": "ng-matero",
+  "version": "19.0.0",
+  "description": "Angular Material admin template",
+  "author": "nzbin<nzb329@163.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ng-matero/ng-matero.git"
+  },
+  "keywords": [
+    "angular",
+    "angular-material",
+    "admin-dashboard",
+    "admin-template",
+    "ng-matero",
+    "ng-admin",
+    "ngx-admin",
+    "responsive",
+    "schematics",
+    "material-extensions",
+    "material-design"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ng-matero/ng-matero/issues"
+  },
+  "homepage": "https://ng-matero.github.io/ng-matero/",
+  "scripts": {
+    "build": "npx tsc -p tsconfig.json"
+  },
+  "schematics": "./collection.json",
+  "ng-update": {
+    "migrations": "./migration.json",
+    "packageGroup": [
+      "ng-matero"
+    ]
+  },
+  "sideEffects": false
+}

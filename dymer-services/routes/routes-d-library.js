@@ -4,6 +4,7 @@ const router = express.Router();
 const mongoose = require( "mongoose" );
 const isValidObjectId = mongoose.isValidObjectId;
 const DymRule = require( '../models/permission/DymerLibraries' );
+const initLibraries = require("../libInit")
 const path = require( 'path' );
 const nameFile = path.basename( __filename );
 const logger = require( "./dymerlogger" );
@@ -21,7 +22,6 @@ function errorStringify( status, origin, message ) {
 router.use( express.json( { limit : '50mb', extended : true } ) );
 router.use( express.urlencoded( { limit : '100mb', extended : true } ) );
 
-// POST
 router.post( '/', util.checkIsAdmin, async ( req, res ) => {
 	// console.log( `router-d-library -> POST: [${ req.body }]` );
 	let whatAndPath = "post/library/";
@@ -48,13 +48,45 @@ router.post( '/', util.checkIsAdmin, async ( req, res ) => {
 	}
 } );
 
+/* AC - Reload libraries (logically delete and Init) - START */
+router.post('/reload', util.checkIsAdmin, async (req, res) => {
+	const whatAndPath = "/reload"
+	try {
+		const result = await DymRule.deleteMany({})
+		if ( result.deletedCount < 1 ) {
+			let status = 404;
+			let message = `Libraries not found`;
+			let error = errorStringify( status, whatAndPath, message );
+			return handleError( res, status, error, message, whatAndPath );
+		} else {
+			logger.info( `${ nameFile } | ${ whatAndPath } | Libraries successfully deleted: ${result.deletedCount}` );
+			console.log( `${ nameFile } | ${ whatAndPath } | Libraries successfully deleted: ${result.deletedCount}` );
+			res.json( { message: `Libraries successfully deleted: ${result.deletedCount}` } );
+		}
+	} catch (error) {
+		handleError(res, 500, error, "Error dropping libraries: ", whatAndPath);
+	}
+
+	try {
+		initLibraries.initLibraries().then(() => {
+			console.log("initLibraries completed.");
+		}).catch(error => {
+			console.error("Error during initLibraries:", error);
+		});
+	} catch (error) {
+		handleError(res, 500, error, "Error init libraries: ", whatAndPath);
+	}
+});
+/* AC - Reload libraries (logically delete and Init) - END */
+
 // GET ALL
+// TODO indagare sul perché con util.checkIsAdmin la pagina di test "dymer_list_detail_one_page.html" non funzionava
 router.get( '/', /* util.checkIsAdmin,  */async ( req, res ) => {
 	// console.log( "router-d-library -> GET all" );
 	let whatAndPath = "getAll/library/";
 	try {
 		const libraries = await DymRule.find();
-		logger.info( `${ nameFile } | ${ whatAndPath } | Fetched all libraries: ${ JSON.stringify( libraries ) }` );
+		//logger.info( `${ nameFile } | ${ whatAndPath } | Fetched all libraries: ${ JSON.stringify( libraries ) }` );
 		res.json( libraries );
 	} catch ( error ) {
 		handleError( res, 500, error, "Error retrieving library configuration: ", whatAndPath );

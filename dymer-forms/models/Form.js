@@ -2,28 +2,14 @@ const mongoose = require("mongoose");
 
 mongoose.model("Form", {
     //Title, author, publisher,description
-    title: {
-        type: String,
-        require: true
-    },
-    author: {
-        type: String,
-        require: true
-    },
-    description: {
-        type: String,
-        require: true
-    },
-    posturl: {
-        type: String,
-        require: true
-    },
-    instance: [{
-        _index: String,
-        _type: String
-    }],
+    title: {type: String,require: true    },
+    author: {type: String,require: true    },
+    description: {type: String,require: true    },
+    posturl: {type: String,require: true    },
+    instance: [{_index: String, _type: String    }],
     structure: { type: Object },
     files: [mongoose.Schema.Types.ObjectId],
+    interoperability: { type: Object },
     properties: {
         created: {
             type: Date,
@@ -65,6 +51,5 @@ mongoose.model("Form", {
             }
         }
     }
-
 
 });

@@ -1,0 +1,26 @@
+:host {
+      display: block;
+    }
+    /* Add some basic styles for the canvas content to look decent even when empty */
+    ::ng-deep .canvas-empty-placeholder {
+      border: 2px dashed #e5e7eb;
+      padding: 2rem;
+      text-align: center;
+      color: #9ca3af;
+      border-radius: 0.5rem;
+      margin: 1rem;
+    }
+    
+    /* Highlight hover target */
+    ::ng-deep .drop-target {
+      outline: 2px dashed #3b82f6 !important;
+      outline-offset: -2px;
+      background-color: rgba(59, 130, 246, 0.05);
+    }
+
+    /* Selected element style */
+    ::ng-deep .selected-element {
+      outline: 2px solid #2563eb !important;
+      outline-offset: -2px;
+      position: relative;
+    }

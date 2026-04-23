@@ -1,0 +1,223 @@
+<div class="p-6 min-h-screen font-sans">
+  <div class="flex justify-between items-end mb-8">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900">Console Overiew</h1>
+      <p class="text-slate-500 text-sm">Monitoraggio microservizi e agenti AI.</p>
+    </div>
+    <div class="text-[10px] font-mono text-slate-400 border border-slate-200 p-2 rounded bg-white shadow-sm">
+      UUID: {{ systemInfo().uuid }} | v{{ systemInfo().version }} | Updated: {{ systemInfo().updated | date:'short' }}
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-6 gap-6 mb-8">
+    @for (kpi of [
+      { label: 'Index', val: stats().indexes, icon: 'fa-atom', color: 'text-blue-500' },
+      { label: 'Models', val: stats().models, icon: 'fa-indent', color: 'text-teal-500' },
+      { label: 'Templates', val: stats().templates, icon: 'fa-table-list', color: 'text-yellow-500' },
+      { label: 'Entity', val: stats().entities, icon: 'fa-globe', color: 'text-blue-500' },
+      { label: 'Relations', val: stats().relations, icon: 'fa-sitemap', color: 'text-purple-500' },
+      { label: 'AI Agents', val: aiAgents().length, icon: 'fa-robot', color: 'text-orange-500' }
+    ]; track kpi.label) {
+      <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm hover:border-blue-400 transition-colors">
+        <div class="flex justify-between items-start mb-2 text-[10px] font-bold uppercase text-slate-400 tracking-widest">
+          {{ kpi.label }} <i [class]="'fa-solid ' + kpi.icon + ' ' + kpi.color"></i>
+        </div>
+        <div class="text-2xl font-bold text-slate-900">{{ kpi.val }}</div>
+      </div>
+    }
+  </div>
+
+  <div class="grid grid-cols-2 lg:grid-cols-12 gap-6">
+       <div class="lg:col-span-4 ">
+                
+        <div class="lg:col-span-4 bg-white border border-slate-200 rounded-lg shadow-sm p-3">
+                  <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+                    <h3 class="font-bold text-xs uppercase tracking-widest">Health Check</h3>
+                    <span class="text-[10px] text-emerald-500 font-bold">ALL SYSTEMS GO</span>
+                  </div>
+                  <div class="p-4 space-y-4">
+                    @for (svc of services(); track svc.name) {
+                      <div class="flex items-center justify-between group">
+                        <div class="flex items-center gap-3">
+                          <span class="relative flex h-2 w-2">
+                            <span [class]="svc.status === 'online' ? 'bg-emerald-400' : 'bg-amber-400'" class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"></span>
+                            <span [class]="svc.status === 'online' ? 'bg-emerald-500' : 'bg-amber-500'" class="relative inline-flex rounded-full h-2 w-2"></span>
+                          </span>
+                          <span class="text-sm font-medium text-slate-600 group-hover:text-slate-900">{{ svc.name }}</span>
+                        </div>
+                        <span class="text-[10px] font-mono text-slate-400 group-hover:text-slate-600">{{ svc.latency }}</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+    
+              <div class="lg:col-span-4 bg-white border border-slate-200 rounded-xl shadow-sm mt-2 p-3">
+                <div class="p-4 border-b border-slate-100 font-bold text-xs uppercase text-slate-500 tracking-wider">Stato Agenti AI</div>
+                <div class="p-4 space-y-4 max-h-[400px] overflow-y-auto">
+                  @for (agent of aiAgents(); track agent.id) {
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-3">
+                        <span class="flex h-2 w-2 rounded-full" [ngClass]="agent.status === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'"></span>
+                        <span class="text-sm font-medium text-slate-700">{{ agent.name }}</span>
+                      </div>
+                      <span [ngClass]="getStatusClass(agent.status)" class="text-[9px] font-bold px-2 py-0.5 rounded uppercase">{{ agent.status }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+
+
+
+               
+
+
+
+
+
+    </div>
+    <div class="lg:col-span-8  overflow-hidden">
+     <!---
+     nuovo tab-->
+<section class="max-w-5xl mx-auto mt-6">
+  
+  <div class="flex items-center gap-1 p-1 bg-zinc-100 dark:bg-zinc-900 rounded-xl w-fit mb-6">
+    <button (click)="activeTab = 'lastEntities'"
+            [class]="activeTab === 'lastEntities' 
+              ? 'px-4 py-2 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm rounded-lg transition-all' 
+              : 'px-4 py-2 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-all'"
+            class="text-xs font-bold uppercase tracking-wider group">
+      <div class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m21 8-9-4-9 4 9 4 9-4Z"/><path d="M3 8v8l9 4V12"/><path d="m21 8-9 4v8"/>
+        </svg>
+        <span>{{ 'menu.last_entities' | translate }}</span>
+      </div>
+    </button>
+
+    <button (click)="activeTab = 'logs'"
+            [class]="activeTab === 'logs' 
+              ? 'px-4 py-2 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm rounded-lg transition-all' 
+              : 'px-4 py-2 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-all'"
+            class="text-xs font-bold uppercase tracking-wider group">
+      <div class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 10H6"/><path d="M14 14H6"/><path d="M18 18H6"/><path d="M12 6H6"/>
+          <path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/>
+        </svg>
+        <span>{{ 'menu.logs' | translate }}</span>
+      </div>
+    </button>
+  </div>
+
+  <div [ngSwitch]="activeTab" class="animate-in fade-in slide-in-from-bottom-2 duration-300">
+    
+    <div *ngSwitchCase="'lastEntities'" class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden">
+      <!-- <header class="px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/30 dark:bg-zinc-900/30">
+        <h2 class="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">
+          Overview / {{ 'menu.last_entities' | translate }}
+        </h2>
+      </header> -->
+      
+      <div class="p-8">
+        <div class="flex flex-col items-center justify-center   border-2 border-dashed border-zinc-100 dark:border-zinc-900 rounded-lg">
+            <mtx-grid [data]="latestEntities()" [columns]="columns" [showPaginator]="false" class="compact-grid"></mtx-grid>
+          
+        </div>
+      </div>
+    </div>
+
+    <div *ngSwitchCase="'logs'" class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden">
+      <!-- <header class="px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/30 dark:bg-zinc-900/30">
+        <h2 class="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">
+          System / {{ 'menu.logs' | translate }}
+        </h2>
+      </header> -->
+      
+      <div class="p-8">
+        <div class="flex flex-col items-center justify-center border-2 border-dashed border-zinc-100 dark:border-zinc-900 rounded-lg">
+           
+         <div class="text-center text-slate-400 italic text-sm">
+                  <div class="p-6 bg-[#fafafa] font-sans">
+                  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-8">
+                    
+                    <div class="lg:col-span-12 bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                      <div class="p-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        
+                        <div class="flex bg-slate-100 p-1 rounded-lg gap-1">
+                          @for (tab of ['all', 'webserver', 'entities', 'ai-srv']; track tab) {
+                              <button 
+                                    (click)="fetchLogs(tab)"
+                                    [class]="currentLogFile() === tab ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'"
+                                    class="px-4 py-1.5 text-xs font-bold rounded-md transition-all uppercase border-none cursor-pointer">
+                                    {{ tab.split('-')[0] }}
+                                  </button>
+                          }
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                          <button (click)="toggleFilter('error')" 
+                            [class]="logFilters().error ? 'bg-red-500 text-white' : 'bg-slate-100 text-slate-400'"
+                            class="pillar-btn">
+                            <span class="dot bg-white"></span> Error
+                          </button>
+                          <button (click)="toggleFilter('warning')" 
+                            [class]="logFilters().warning ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-400'"
+                            class="pillar-btn">
+                            <span class="dot bg-white"></span> Warning
+                          </button>
+                          <button (click)="toggleFilter('info')" 
+                            [class]="logFilters().info ? 'bg-blue-500 text-white' : 'bg-slate-100 text-slate-400'"
+                            class="pillar-btn">
+                            <span class="dot bg-white"></span> Info
+                          </button>
+                        </div>
+                      </div>
+
+                      <div class="bg-slate-900 p-4 font-mono text-xs h-[350px] overflow-y-auto">
+                        @for (log of filteredLogs(); track log.timestamp) {
+                          <div class="flex gap-4 mb-1 font-mono text-[11px] hover:bg-slate-800/50 p-1 rounded transition-colors">
+                                    <span class="text-slate-500">{{ log.timestamp }}</span>
+                                    
+                                    <span [class]="{
+                                      'text-red-400': log.type === 'error',
+                                      'text-amber-400': log.type === 'warning',
+                                      'text-blue-400': log.type === 'info'
+                                    }" class="font-bold w-12 text-center uppercase">
+                                      {{ log.type }}
+                                    </span>
+
+                                    <span class="text-slate-300">
+                                      @if (log.message.includes('|')) {
+                                        <span class="text-emerald-500">{{ log.message.split('|')[0] }}</span> 
+                                        <span class="text-slate-600">|</span>
+                                        <span class="text-slate-200">{{ log.message.split('|').slice(1).join('|') }}</span>
+                                      } @else {
+                                        {{ log.message }}
+                                      }
+                                    </span>
+                                  </div>
+                        } @empty {
+                          <div class="text-slate-600 italic">Nessun log corrispondente ai filtri selezionati...</div>
+                        }
+                      </div>
+                    </div>
+
+                    <div class="lg:col-span-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+                        </div>
+                    <div class="lg:col-span-8 bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                        </div>
+                  </div>
+                </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+     <!-- nuovo tab end-->
+        
+    </div>
+  </div>
+</div>

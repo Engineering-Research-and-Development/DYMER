@@ -1,0 +1,17 @@
+/* You can add global styles to this file, and also import other style files */
+ 
+//@use 'styles/variables';
+@use 'styles/reboot';
+@use 'styles/themes';
+@use 'styles/colors';
+@use 'styles/grid';
+@use 'styles/helpers';
+@use 'styles/plugins';
+@use 'styles/custom';
+@use "tailwindcss";
+@use 'codemirror/lib/codemirror.css';
+@use 'codemirror/theme/material.css';
+
+/*@tailwind base;
+@tailwind components;
+@tailwind utilities;     */

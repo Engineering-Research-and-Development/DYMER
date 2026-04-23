@@ -1,0 +1,105 @@
+import { Component, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
+
+@Component({
+  selector: 'app-ai-chat',
+  standalone: true,
+  imports: [CommonModule, FormsModule, MatIconModule],
+  template: `
+    <div class="flex flex-col h-full bg-white border-t border-gray-200">
+      <div class="p-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+        <h3 class="text-xs font-semibold text-gray-700 uppercase tracking-wider flex items-center gap-2">
+          <mat-icon class="text-purple-600 text-sm">auto_awesome</mat-icon>
+          AI Prompt Engine
+        </h3>
+      </div>
+      
+      <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50/50">
+        @for (msg of messages(); track msg.id) {
+          <div class="flex gap-2" [class.flex-row-reverse]="msg.role === 'user'">
+            <div 
+              class="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+              [class.bg-purple-100]="msg.role === 'ai'"
+              [class.text-purple-600]="msg.role === 'ai'"
+              [class.bg-blue-100]="msg.role === 'user'"
+              [class.text-blue-600]="msg.role === 'user'"
+            >
+              <mat-icon class="text-xs">{{ msg.role === 'ai' ? 'smart_toy' : 'person' }}</mat-icon>
+            </div>
+            <div 
+              class="max-w-[80%] p-3 rounded-lg text-sm shadow-xs"
+              [class.bg-white]="msg.role === 'ai'"
+              [class.text-gray-700]="msg.role === 'ai'"
+              [class.bg-blue-600]="msg.role === 'user'"
+              [class.text-white]="msg.role === 'user'"
+            >
+              {{ msg.content }}
+            </div>
+          </div>
+        }
+        @if (isLoading()) {
+          <div class="flex gap-2">
+            <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center shrink-0">
+              <mat-icon class="text-xs animate-pulse">smart_toy</mat-icon>
+            </div>
+            <div class="bg-white p-3 rounded-lg text-sm shadow-xs text-gray-500 italic">
+              Thinking...
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="p-3 bg-white border-t border-gray-200">
+        <div class="relative">
+          <input 
+            type="text" 
+            [(ngModel)]="currentMessage" 
+            (keydown.enter)="sendMessage()"
+            placeholder="Describe a layout or component..." 
+            class="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-full text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-hidden"
+            [disabled]="isLoading()"
+          />
+          <button 
+            (click)="sendMessage()"
+            [disabled]="!currentMessage.trim() || isLoading()"
+            class="absolute right-1 top-1 p-1.5 bg-purple-600 text-white rounded-full hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <mat-icon class="text-sm">send</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  `
+})
+export class AiChatComponent {
+  messages = signal<{id: string, role: 'user' | 'ai', content: string}[]>([
+    { id: '1', role: 'ai', content: 'Hi! I can help you generate layouts or components. What would you like to build?' }
+  ]);
+  currentMessage = '';
+  isLoading = signal(false);
+
+  sendMessage() {
+    if (!this.currentMessage.trim()) return;
+
+    const userMsg = this.currentMessage;
+    this.messages.update(msgs => [...msgs, {
+      id: Date.now().toString(),
+      role: 'user',
+      content: userMsg
+    }]);
+    this.currentMessage = '';
+    this.isLoading.set(true);
+
+    // Simulate AI response for now
+    setTimeout(() => {
+      this.messages.update(msgs => [...msgs, {
+        id: (Date.now() + 1).toString(),
+        role: 'ai',
+        content: `I received your request: "${userMsg}". I'm a placeholder for now, but I would generate code for you here!`
+      }]);
+      this.isLoading.set(false);
+    }, 1500);
+  }
+}

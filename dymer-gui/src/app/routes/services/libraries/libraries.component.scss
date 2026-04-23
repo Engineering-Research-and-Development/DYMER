@@ -1,0 +1,36 @@
+.callback-link {
+  color: var(--mat-primary-color); /* Usa il colore primario del tema */
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.pending-action-row {
+  background-color: #fff3cd; /* Giallo chiaro per evidenziare */
+  transition: background-color 0.3s ease-in-out; /* Transizione fluida */
+}
+
+.activation-cell-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.table-container {
+  max-height: 400px; /* Imposta un'altezza massima per la tabella */
+  overflow-y: auto;  /* Aggiunge la scrollbar verticale quando necessario */
+}
+
+/*
+  Sovrascrive gli stili di Angular Material per rendere
+  le frecce di ordinamento sempre visibili.
+*/
+::ng-deep {
+  /* Mostra l'indicatore "non ordinato" (frecce su e giù) anche quando non si è in hover */
+  .mat-sort-header-container:not(.mat-sort-header-sorted) .mat-sort-header-arrow {
+    opacity: 0.54 !important;
+    transform: none !important;
+  }
+  .mat-sort-header-container:not(.mat-sort-header-sorted) .mat-sort-header-arrow .mat-sort-header-indicator {
+    opacity: 1 !important; /* Assicura che l'icona interna sia visibile */
+  }
+}

@@ -1,0 +1,8 @@
+<h1 mat-dialog-title>Dettagli Log</h1>
+<div mat-dialog-content>
+ <!--  <pre>{{ data | json }}</pre> -->
+    <ngx-json-viewer [json]="data" [expanded]="true"></ngx-json-viewer>
+  </div>
+<div mat-dialog-actions>
+  <button mat-button mat-dialog-close>Chiudi</button>
+</div>

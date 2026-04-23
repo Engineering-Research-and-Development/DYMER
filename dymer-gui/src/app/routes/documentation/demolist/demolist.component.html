@@ -1,0 +1,150 @@
+<div class="col-md-12">
+  <div class="card">
+    <div class="card-header">
+      <h5 class="card-title">Dymer Viewer</h5>
+      <div class="card-category">
+        render entities: List & Details in One Page
+        <a [href]="downloadBaseUrl + '/demodownload/View/dymer_list_detail_one_page.html'" class="btn btn-wd btn-info float-right text-white" target="_self">
+          <i class="fa fa-download"></i> Download Example
+        </a>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <div class="row row-eq-height">
+        <div class="col-2 text-center">
+          <div class="crop-height rounded border">
+            <!-- Utilizziamo l'evento (click) di Angular per aprire il modale -->
+            <img src="assets/images/demo/render-list.png" (click)="openModal('myModalRList')" class="img-thumbnail cur-p scale">
+          </div>
+
+          <!-- Modale per Render List -->
+          <!-- La visibilità è controllata dalle proprietà Angular [class.show] e [style.display] -->
+          <div id="myModalRList" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalRList" aria-hidden="true" [class.show]="isModalOpen['myModalRList']" [style.display]="isModalOpen['myModalRList'] ? 'block' : 'none'">
+            <div class="modal-dialog" style="max-width: 80%;">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Render List Example</h5>
+                  <button type="button" class="close" (click)="closeModal('myModalRList')" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <img src="assets/images/demo/render-list.png" class="img-fluid">
+                </div>
+              </div>
+            </div>
+          </div>
+          <small class="text-muted">Example - Render List</small>
+        </div>
+        <div class="col-2 text-center">
+          <div class="crop-height rounded border">
+            <img src="assets/images/demo/render-list-detail.png" (click)="openModal('myModalRListD')" class="img-thumbnail cur-p scale">
+          </div>
+
+          <!-- Modale per Render List Detail -->
+          <div id="myModalRListD" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalRListD" aria-hidden="true" [class.show]="isModalOpen['myModalRListD']" [style.display]="isModalOpen['myModalRListD'] ? 'block' : 'none'">
+            <div class="modal-dialog" style="max-width: 80%;">
+              <div class="modal-content">
+                <div class="modal-header">
+                   <h5 class="modal-title">Render List Detail Example</h5>
+                  <button type="button" class="close" (click)="closeModal('myModalRListD')" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <img src="assets/images/demo/render-list-detail.png" class="img-fluid">
+                </div>
+              </div>
+            </div>
+          </div>
+          <small class="text-muted">Example - Render List Detail</small>
+        </div>
+      </div>
+      <div>
+        <br> The following is an example of how to setup a simple Dymer Viewer.
+        <p>Create a js function named <b>mainDymerView()</b>, define the json that configures the Viewer and pass it in the funtion <b>drawEntities()</b></p>
+        <!-- Nota: {{ '{' }} viene usato per evitare che Angular interpreti le parentesi graffe -->
+        <pre><code class="language-javascript hljs">&lt;script&gt;
+    var jsonDymerConfig = {{ '{' }}
+        query: {{ '{' }} // define the query to do in dymer
+            "instance": {{ '{' }}
+                "index": index-entity,
+                "type":  type-entity
+            &#125;
+        &#125;,
+        endpoint: 'entity.search', // set the endpoint to execute the query of entities
+        viewtype: 'teaserlist', // set to use the 'Preview in List' template
+        target: {{ '{' }}
+            teaserlist: {{ '{' }} // configure where and how to render the preview of entities
+                    id: "#cont-MyList", // the entities will be render inside the element with id "#cont-MyList"
+                    action: "html", // set the method to insert the content (html/append/prepend)
+                    reload: false // if false the query will be executed only on page load
+            &#125;,
+            fullcontent: {{ '{' }}// configure where and how to render the detail of an entity
+                id: "#cont-MyList", // the entity will be rendered inside the element with id "#cont-MyList"
+                action: "html" // set the method to insert the content (html/append/prepend)
+            &#125;
+        &#125;
+    &#125;;
+    function mainDymerView() {{ '{' }}
+        drawEntities(jsonDymerConfig);
+    &#125;
+ &lt;/script&gt;
+</code></pre>
+
+        <p>
+          Import the <b>dymer.viewer.js</b> with id 'dymerurl' and set the &lt;dymerip&gt; </p>
+        <pre><code class="language-javascript"> &lt;script id="dymerurl" src="&lt;dymerip&gt;/public/cdn/js/dymer.viewer.js"&gt; &lt;/script&gt;
+</code></pre>
+        <p>Create a DOM element where render the entities and another which onclick invokes the function <b>drawEntities()</b> to redraw them</p>
+        <pre><code class="language-javascript"> &lt;span class="btn btn-mini btn-info " onclick="drawEntities(jsonDymerConfig)"&gt; My List &lt;/span&gt;
+ &lt;div id="cont-MyList"&gt;&lt;/div&gt;
+</code></pre>
+
+        <p>
+          Dymer Viewer imports Bootstrap v4 and jQuery 3, if you use previous versions add a json object called <b>dymerconf</b> as below to exclude the import. To set the 'user id' and 'group id' add the variables <b>d_uid</b> and <b>d_gid</b>.
+        </p>
+        <pre><code class="language-javascript"> var d_uid = '&lt;user-id&gt;'; // user id
+ var d_gid = '&lt;group-id&gt;'; // group id
+ var dymerconf = {{ '{' }} // disable import bootstrap & jquery
+    notImport : ["bootstrap","jquery"]
+ &#125;;
+</code></pre>
+
+        <p>Create a DOM element where render the entities and more elements which on onclick event invokes the function <b>switchQuery()</b> to redraw them with different query</p>
+
+        <pre><code class="language-javascript hljs"> var dymerQueries = [
+   {{ '{' }}// 1* query
+        "match": {{ '{' }}
+            "_index": "geopoint"
+        &#125;
+    &#125;,
+    {{ '{' }}// 2* query
+        "match": {{ '{' }}
+            "_index": "multir"
+        &#125;
+    &#125;,
+    {{ '{' }}// 3* query
+        "terms": {{ '{' }}
+            "_index": ["multir", "geopoint" ]
+        &#125;
+    &#125;
+    ];
+</code></pre>
+        <pre><code class="language-javascript">&lt;span class="btn btn-mini btn-info " onclick="switchQuery(dymerQueries[0])"&gt; My List 1 &lt;/span&gt;
+&lt;div id="cont-MyList"&gt;&lt;/div&gt;
+&lt;span class="btn btn-mini btn-info " onclick="switchQuery(dymerQueries[1])"&gt; My List 2&lt;/span&gt;
+&lt;div id="cont-MyList"&gt;&lt;/div&gt;
+&lt;span class="btn btn-mini btn-info " onclick="switchQuery(dymerQueries[2])"&gt; My List 3&lt;/span&gt;
+&lt;div id="cont-MyList"&gt;&lt;/div&gt;
+</code></pre>
+      </div>
+    </div>
+
+    <div class="card-footer">
+      <hr />
+      <div class="stats"><i class="fa fa-history"></i> Updated 09/24/2019</div>
+    </div>
+  </div>
+</div>

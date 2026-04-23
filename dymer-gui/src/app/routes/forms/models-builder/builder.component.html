@@ -1,0 +1,470 @@
+<div class="flex h-screen bg-gray-100 overflow-hidden" cdkDropListGroup [class.dark]="isDarkMode" [class.select-none]="isResizingSidebar">
+  <!-- Sidebar -->
+  <app-models-sidebar class="bg-white border-r border-gray-200 flex-shrink-0 dark:bg-gray-900 dark:border-gray-700"
+    [style.width.px]="sidebarWidth" (requestCreatePage)="openNewPageModal()"
+    (requestAttachFile)="openAttachModal($event)" (requestEditModel)="openModelModal($event)"
+    (requestAttachFile)="onAttachClick($event)"></app-models-sidebar>
+
+  <!-- Sidebar Resizer -->
+  <div
+    class="w-1 cursor-col-resize bg-gray-200 hover:bg-blue-500 z-20 dark:bg-gray-700 dark:hover:bg-blue-500 transition-colors"
+    [class.bg-blue-500]="isResizingSidebar" (mousedown)="startResizeSidebar($event)"></div>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-800">
+    <!-- Toolbar -->
+    <div
+      class="h-14 bg-white border-b border-gray-200 flex items-center px-4 justify-between flex-shrink-0 dark:bg-gray-900 dark:border-gray-700">
+      <div class="flex items-center space-x-2">
+        <h1 class="text-lg font-semibold text-gray-800 dark:text-white">{{ currentModelName }}</h1>
+      </div>
+
+      <!-- Center: Breakpoints -->
+      <div
+        class="flex items-center bg-gray-100 rounded-lg p-1 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+        <button (click)="setBreakpoint('mobile')"
+          class="p-1.5 rounded text-gray-500 hover:text-gray-700 hover:bg-white dark:hover:bg-gray-700 dark:text-gray-400 transition-all"
+          [class.bg-white]="currentBreakpoint === 'mobile'" [class.text-blue-600]="currentBreakpoint === 'mobile'"
+          [class.shadow-sm]="currentBreakpoint === 'mobile'" [class.dark:bg-gray-700]="currentBreakpoint === 'mobile'"
+          [class.dark:text-blue-400]="currentBreakpoint === 'mobile'" title="Mobile View">
+          <mat-icon class="text-sm">smartphone</mat-icon>
+        </button>
+        <button (click)="setBreakpoint('tablet')"
+          class="p-1.5 rounded text-gray-500 hover:text-gray-700 hover:bg-white dark:hover:bg-gray-700 dark:text-gray-400 transition-all"
+          [class.bg-white]="currentBreakpoint === 'tablet'" [class.text-blue-600]="currentBreakpoint === 'tablet'"
+          [class.shadow-sm]="currentBreakpoint === 'tablet'" [class.dark:bg-gray-700]="currentBreakpoint === 'tablet'"
+          [class.dark:text-blue-400]="currentBreakpoint === 'tablet'" title="Tablet View">
+          <mat-icon class="text-sm">tablet_mac</mat-icon>
+        </button>
+        <button (click)="setBreakpoint('desktop')"
+          class="p-1.5 rounded text-gray-500 hover:text-gray-700 hover:bg-white dark:hover:bg-gray-700 dark:text-gray-400 transition-all"
+          [class.bg-white]="currentBreakpoint === 'desktop'" [class.text-blue-600]="currentBreakpoint === 'desktop'"
+          [class.shadow-sm]="currentBreakpoint === 'desktop'" [class.dark:bg-gray-700]="currentBreakpoint === 'desktop'"
+          [class.dark:text-blue-400]="currentBreakpoint === 'desktop'" title="Desktop View">
+          <mat-icon class="text-sm">desktop_windows</mat-icon>
+        </button>
+      </div>
+
+      <!-- Zoom & Pan Controls -->
+      <div
+        class="flex items-center bg-gray-100 rounded-lg p-1 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 mx-2">
+        <button (click)="togglePanMode()"
+          class="p-1.5 rounded text-gray-500 hover:text-gray-700 hover:bg-white dark:hover:bg-gray-700 dark:text-gray-400 transition-all"
+          [class.bg-white]="isPanMode" [class.text-blue-600]="isPanMode" [class.shadow-sm]="isPanMode" title="Pan Tool">
+          <mat-icon class="text-sm">pan_tool</mat-icon>
+        </button>
+        <div class="w-px h-4 bg-gray-300 mx-1 dark:bg-gray-600"></div>
+        <button (click)="zoomOut()"
+          class="p-1.5 rounded text-gray-500 hover:text-gray-700 hover:bg-white dark:hover:bg-gray-700 dark:text-gray-400 transition-all"
+          title="Zoom Out">
+          <mat-icon class="text-sm">remove</mat-icon>
+        </button>
+        <span class="text-xs font-medium px-2 text-gray-600 dark:text-gray-300 w-12 text-center">{{ zoomLevel }}%</span>
+        <button (click)="zoomIn()"
+          class="p-1.5 rounded text-gray-500 hover:text-gray-700 hover:bg-white dark:hover:bg-gray-700 dark:text-gray-400 transition-all"
+          title="Zoom In">
+          <mat-icon class="text-sm">add</mat-icon>
+        </button>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <button (click)="toggleDarkMode()"
+          class="p-2 hover:bg-gray-100 rounded-lg text-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+          title="Toggle Dark Mode">
+          <mat-icon>{{ isDarkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
+        </button>
+        <div class="w-px h-6 bg-gray-300 mx-2 dark:bg-gray-600"></div>
+        <button (click)="togglePreview()"
+          class="p-2 hover:bg-gray-100 rounded-lg text-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+          [class.bg-blue-100]="previewMode" [class.text-blue-600]="previewMode" title="Toggle Preview">
+          <mat-icon>visibility</mat-icon>
+        </button>
+        <button (click)="toggleCode()"
+          class="p-2 hover:bg-gray-100 rounded-lg text-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+          title="Toggle Code Editor">
+          <mat-icon>code</mat-icon>
+        </button>
+        <button (click)="downloadZip()"
+          class="p-2 hover:bg-gray-100 rounded-lg text-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+          title="Download ZIP">
+          <mat-icon>download</mat-icon>
+        </button>
+        <button (click)="saveTemplate()"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium flex items-center gap-2 transition-colors">
+          <mat-icon class="text-sm">save</mat-icon> Save
+        </button>
+      </div>
+    </div>
+
+    <!-- Canvas Area -->
+    <div class="flex-1 overflow-hidden relative bg-gray-50 flex dark:bg-gray-800">
+      <div class="flex-1 flex flex-col overflow-hidden relative">
+        <div #scrollContainer class="flex-1 overflow-auto p-8 flex justify-center bg-gray-100/50 dark:bg-gray-900/50"
+          [class.p-0]="previewMode" [class.bg-white]="previewMode" [class.cursor-grab]="isPanMode && !isDragging"
+          [class.cursor-grabbing]="isPanMode && isDragging"
+          [class.pointer-events-none]="isResizingSidebar" (mousedown)="onPanStart($event)"
+          (mousemove)="onPanMove($event)" (mouseup)="onPanEnd()" (mouseleave)="onPanEnd()">
+          <div class="transition-all duration-300 ease-in-out bg-white shadow-sm rounded-lg dark:bg-black origin-top"
+            [style.width]="getCanvasWidth()" [style.min-height]="previewMode ? '100%' : '800px'"
+            [style.transform]="'scale(' + (zoomLevel / 100) + ')'" [class.shadow-none]="previewMode"
+            [class.rounded-none]="previewMode" [class.pointer-events-none]="isPanMode">
+            <app-models-canvas class="w-full block"></app-models-canvas>
+          </div>
+        </div>
+
+        <!-- Code Editor Panel (Bottom 50%) -->
+        @if (builderService.showCodeEditor()) {
+        <div
+          class="h-1/2 border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-20 flex flex-col bg-white dark:bg-gray-900 dark:border-gray-700">
+          <app-models-code-editor class="flex-1 overflow-hidden"></app-models-code-editor>
+        </div>
+        } @else {
+        <!-- Bottom Bar with Code Editor Button -->
+        <div
+          class="h-10 bg-white border-t border-gray-200 flex items-center px-4 justify-center flex-shrink-0 dark:bg-gray-900 dark:border-gray-700">
+          <button (click)="toggleCode()"
+            class="text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white flex items-center gap-2">
+            <mat-icon class="text-[18px] w-[18px] h-[18px] leading-[18px]">code</mat-icon> Code Editor
+          </button>
+        </div>
+        }
+      </div>
+
+          <!-- Floating AI Chat -->
+          <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+            @if (showAiChat) {
+              <div class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 w-96 h-[500px] mb-4 flex flex-col overflow-hidden animate-in slide-in-from-bottom-5">
+                <app-ai-models-chat class="flex-1 overflow-hidden"></app-ai-models-chat>
+              </div>
+            }
+            <button (click)="showAiChat = !showAiChat" class="bg-purple-600 hover:bg-purple-700 text-white rounded-full p-4 shadow-lg flex items-center justify-center transition-transform hover:scale-105">
+              <mat-icon>{{ showAiChat ? 'close' : 'auto_awesome' }}</mat-icon>
+            </button>
+          </div>
+    </div>
+  </div>
+
+  <!-- New Page Modal Overlay -->
+  @if (showNewPageModal) {
+  <div class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div
+      class="bg-white rounded-lg shadow-xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200 dark:bg-gray-800 flex flex-col max-h-[90vh]">
+      <div
+        class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+        <h3 class="font-semibold text-gray-800 dark:text-white">Create New Model</h3>
+        <button (click)="closeNewPageModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="flex flex-1 overflow-hidden">
+        <!-- Left: Form -->
+        <div class="w-1/2 p-4 space-y-4 border-r border-gray-100 dark:border-gray-700 overflow-y-auto">
+          <div>
+            <label for="pageName" class="block text-xs font-medium text-gray-700 mb-1 dark:text-gray-300">Model
+              Name</label>
+            <input id="pageName" [(ngModel)]="newPageData.name" type="text"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-none dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              placeholder="e.g. Contact Us">
+          </div>
+
+          <div>
+            <label for="pageSlug" class="block text-xs font-medium text-gray-700 mb-1 dark:text-gray-300">Index </label>
+            <input id="pageSlug" [(ngModel)]="newPageData.slug" type="text"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-none dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              placeholder="e.g. contact-us">
+          </div>
+
+          <div>
+            <label for="pageDescription"
+              class="block text-xs font-medium text-gray-700 mb-1 dark:text-gray-300">Description</label>
+            <textarea id="pageDescription" [(ngModel)]="newPageData.description"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-none min-h-[80px] dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              placeholder="Brief description of the page..."></textarea>
+          </div>
+        </div>
+
+        <!-- Right: Templates -->
+        <div class="w-1/2 p-4 bg-gray-50 dark:bg-gray-900/50 overflow-y-auto">
+          <span class="block text-xs font-medium text-gray-700 mb-2 dark:text-gray-300">Choose Template</span>
+          <div class="grid grid-cols-1 gap-3">
+            @for (template of templates; track template.id) {
+            <div
+              class="border rounded-lg p-3 cursor-pointer transition-all hover:border-blue-400 hover:shadow-sm outline-none focus:ring-2 focus:ring-blue-500"
+              [class.border-blue-500]="newPageData.template === template.id"
+              [class.bg-blue-50]="newPageData.template === template.id"
+              [class.dark:bg-blue-900]="newPageData.template === template.id"
+              [class.border-gray-200]="newPageData.template !== template.id"
+              [class.bg-white]="newPageData.template !== template.id"
+              [class.dark:bg-gray-800]="newPageData.template !== template.id"
+              [class.dark:border-gray-700]="newPageData.template !== template.id"
+              (click)="newPageData.template = template.id" (keydown.enter)="newPageData.template = template.id"
+              tabindex="0">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400">
+                  <mat-icon>{{ template.icon }}</mat-icon>
+                </div>
+                <div>
+                  <h4 class="text-sm font-medium text-gray-800 dark:text-white">{{ template.name }}</h4>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">{{ template.description }}</p>
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-2 dark:bg-gray-700 dark:border-gray-600">
+        <button (click)="closeNewPageModal()"
+          class="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 font-medium dark:text-gray-300 dark:hover:text-white">Cancel</button>
+        <button (click)="saveNewPage()" [disabled]="!newPageData.name || !newPageData.slug"
+          class="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+          @if (isCreatingPage) {
+          <mat-icon class="animate-spin text-sm">refresh</mat-icon> Creating...
+          } @else {
+          Create Model
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Attach File Modal Overlay -->
+  @if (showAttachModal) {
+  <div class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div
+      class="bg-white rounded-lg shadow-xl w-full max-w-5xl overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col h-[80vh] dark:bg-gray-800">
+      <div
+        class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+        <h3 class="font-semibold text-gray-800 dark:text-white">Manage Assets</h3>
+        <button (click)="closeAttachModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="flex flex-1 overflow-hidden">
+        <!-- Left Column: File List -->
+        <div class="w-1/3 border-r border-gray-200 dark:border-gray-600 flex flex-col bg-gray-50 dark:bg-gray-800">
+          <div class="p-3 border-b border-gray-200 dark:border-gray-600 flex gap-2">
+            <button class="flex-1 py-1.5 px-3 text-xs font-medium rounded-md transition-colors"
+              [class.bg-blue-100]="attachModalData.activeTab === 'create'"
+              [class.text-blue-700]="attachModalData.activeTab === 'create'"
+              [class.bg-white]="attachModalData.activeTab !== 'create'"
+              [class.text-gray-600]="attachModalData.activeTab !== 'create'"
+              [class.border]="attachModalData.activeTab !== 'create'"
+              [class.border-gray-300]="attachModalData.activeTab !== 'create'"
+              [class.dark:bg-blue-900]="attachModalData.activeTab === 'create'"
+              [class.dark:text-blue-300]="attachModalData.activeTab === 'create'"
+              [class.dark:bg-gray-700]="attachModalData.activeTab !== 'create'"
+              [class.dark:text-gray-300]="attachModalData.activeTab !== 'create'"
+              [class.dark:border-gray-600]="attachModalData.activeTab !== 'create'" (click)="setAttachTab('create')">
+              <mat-icon class="text-[16px] w-4 h-4 align-middle mr-1">add</mat-icon> New
+            </button>
+            <button class="flex-1 py-1.5 px-3 text-xs font-medium rounded-md transition-colors"
+              [class.bg-blue-100]="attachModalData.activeTab === 'upload'"
+              [class.text-blue-700]="attachModalData.activeTab === 'upload'"
+              [class.bg-white]="attachModalData.activeTab !== 'upload'"
+              [class.text-gray-600]="attachModalData.activeTab !== 'upload'"
+              [class.border]="attachModalData.activeTab !== 'upload'"
+              [class.border-gray-300]="attachModalData.activeTab !== 'upload'"
+              [class.dark:bg-blue-900]="attachModalData.activeTab === 'upload'"
+              [class.dark:text-blue-300]="attachModalData.activeTab === 'upload'"
+              [class.dark:bg-gray-700]="attachModalData.activeTab !== 'upload'"
+              [class.dark:text-gray-300]="attachModalData.activeTab !== 'upload'"
+              [class.dark:border-gray-600]="attachModalData.activeTab !== 'upload'" (click)="setAttachTab('upload')">
+              <mat-icon class="text-[16px] w-4 h-4 align-middle mr-1">upload</mat-icon> Upload
+            </button>
+          </div>
+          <!--  -->
+          <div class="flex-1 overflow-y-auto p-2 space-y-1">
+            @let attachments = pageService.getAttachments(attachModalData.pageId);
+
+            @if (attachments.length === 0) {
+            <div class="text-center p-4 text-sm text-gray-500 dark:text-gray-400 italic">
+              No assets attached to this page.
+            </div>
+            }
+
+            @for (attachment of attachments; track attachment._id) {
+            <div class="flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors border"
+              [class.bg-blue-50]="attachModalData.selectedAttachmentId === attachment._id"
+              [class.border-blue-200]="attachModalData.selectedAttachmentId === attachment._id"
+              [class.bg-white]="attachModalData.selectedAttachmentId !== attachment._id"
+              [class.border-gray-200]="attachModalData.selectedAttachmentId !== attachment._id"
+              [class.hover:bg-gray-100]="attachModalData.selectedAttachmentId !== attachment._id"
+              [class.dark:bg-blue-900]="attachModalData.selectedAttachmentId === attachment._id"
+              [class.dark:border-blue-700]="attachModalData.selectedAttachmentId === attachment._id"
+              [class.dark:bg-gray-800]="attachModalData.selectedAttachmentId !== attachment._id"
+              [class.dark:border-gray-700]="attachModalData.selectedAttachmentId !== attachment._id"
+              [class.dark:hover:bg-gray-700]="attachModalData.selectedAttachmentId !== attachment._id"
+              (click)="selectAttachment(attachment)">
+              <div class="flex items-center gap-2 overflow-hidden">
+                <mat-icon class="text-gray-400 text-sm w-4 h-4">
+                  {{ attachment.contentType === 'application/javascript' ? 'javascript' : 'css' }}
+                </mat-icon>
+
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-200 truncate"
+                  [title]="attachment.filename">
+                  {{ attachment.filename }}
+                </span>
+              </div>
+
+              <button (click)="deleteAttachment(attachment._id); $event.stopPropagation()"
+                class="text-gray-400 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30">
+                <mat-icon class="text-[16px] w-4 h-4">delete</mat-icon>
+              </button>
+            </div>
+            }
+          </div>
+          <!--  -->
+        </div>
+
+        <!-- Right Column: Editor / Uploader -->
+        <div class="w-2/3 flex flex-col bg-white dark:bg-gray-800">
+          <div class="p-4 space-y-4 overflow-y-auto flex-1">
+            @if (attachModalData.activeTab === 'create' || attachModalData.activeTab === 'edit') {
+            <!-- File Type (Only for Create) -->
+            @if (attachModalData.activeTab === 'create') {
+            <div>
+              <span class="block text-xs font-medium text-gray-700 mb-1 dark:text-gray-300">File Type</span>
+              <div class="flex gap-4">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="radio" name="fileType" value="js" [(ngModel)]="attachModalData.fileType"
+                    class="text-blue-600 focus:ring-blue-500">
+                  <span class="text-sm text-gray-700 dark:text-gray-300">JavaScript (.js)</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="radio" name="fileType" value="css" [(ngModel)]="attachModalData.fileType"
+                    class="text-blue-600 focus:ring-blue-500">
+                  <span class="text-sm text-gray-700 dark:text-gray-300">CSS (.css)</span>
+                </label>
+              </div>
+            </div>
+            }
+
+            <div>
+              <label for="fileName" class="block text-xs font-medium text-gray-700 mb-1 dark:text-gray-300">File
+                Name</label>
+              <input id="fileName" [(ngModel)]="attachModalData.fileName" type="text"
+                [disabled]="attachModalData.activeTab === 'edit'"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-gray-100 disabled:text-gray-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:disabled:bg-gray-600"
+                placeholder="e.g. custom-script">
+              @if (attachModalData.activeTab === 'create') {
+              <span class="text-xs text-gray-400 mt-1 block">Extension .{{attachModalData.fileType}} will be added
+                automatically</span>
+              }
+            </div>
+
+            <div
+              class="flex-1 flex flex-col min-h-[300px] h-full border border-gray-300 rounded-md overflow-hidden dark:border-gray-600">
+              <div class="px-3 py-2 bg-gray-50 border-b border-gray-300 dark:bg-gray-700 dark:border-gray-600">
+                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300">Code Content</label>
+              </div>
+              <ngx-codemirror class="flex-1 overflow-hidden codemirror-wrapper"
+                [(ngModel)]="attachModalData.fileContent" [options]="{
+                          lineNumbers: true,
+                          theme: 'dracula',
+                          mode: attachModalData.fileType === 'js' ? 'javascript' : 'css'
+                        }"></ngx-codemirror>
+            </div>
+            }
+
+            @if (attachModalData.activeTab === 'upload') {
+            <div>
+              <span class="block text-xs font-medium text-gray-700 mb-1 dark:text-gray-300">File Type</span>
+              <div class="flex gap-4 mb-4">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="radio" name="fileType" value="js" [(ngModel)]="attachModalData.fileType"
+                    class="text-blue-600 focus:ring-blue-500">
+                  <span class="text-sm text-gray-700 dark:text-gray-300">JavaScript (.js)</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="radio" name="fileType" value="css" [(ngModel)]="attachModalData.fileType"
+                    class="text-blue-600 focus:ring-blue-500">
+                  <span class="text-sm text-gray-700 dark:text-gray-300">CSS (.css)</span>
+                </label>
+              </div>
+            </div>
+            <div
+              class="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:bg-gray-50 transition-colors cursor-pointer relative dark:border-gray-600 dark:hover:bg-gray-700 mt-4">
+              <input type="file" (change)="onFileSelected($event)"
+                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                [accept]="attachModalData.fileType === 'js' ? '.js' : '.css'">
+              <mat-icon class="text-gray-400 text-5xl mb-4">cloud_upload</mat-icon>
+              <p class="text-base text-gray-600 font-medium dark:text-gray-300">Click to upload or drag and drop</p>
+              <p class="text-sm text-gray-400 mt-2">
+                {{ attachModalData.selectedFile ? attachModalData.selectedFile.name : 'Supported: .' +
+                attachModalData.fileType }}
+              </p>
+            </div>
+            }
+          </div>
+
+          <div
+            class="p-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-2 dark:bg-gray-700 dark:border-gray-600">
+            <button (click)="closeAttachModal()"
+              class="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 font-medium dark:text-gray-300 dark:hover:text-white">Close</button>
+            <button (click)="saveAttachment()" [disabled]="!isValidAttachment()"
+              class="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+              <mat-icon class="text-sm">save</mat-icon> {{ attachModalData.activeTab === 'edit' ? 'Update Asset' : 'Save
+              Asset' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!--  -->
+  @if (showEditModal) {
+  <div class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg p-6">
+
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-semibold text-gray-800 dark:text-white">Edit Model</h3>
+        <button (click)="closeModelModal()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+
+        <!-- Model Name -->
+        <div>
+          <label class="text-sm text-gray-600 dark:text-gray-300">Model Name</label>
+          <input [(ngModel)]="modelEditModalData.title"
+            class="w-full mt-1 p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600" />
+        </div>
+
+        <!-- Model Type (readonly) -->
+        <div>
+          <label class="text-sm text-gray-600 dark:text-gray-300">Model Type</label>
+          <input [(ngModel)]="modelEditModalData.modelType" readonly
+            class="w-full mt-1 p-2 border rounded-md bg-gray-100 dark:bg-gray-600 cursor-not-allowed" />
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label class="text-sm text-gray-600 dark:text-gray-300">Description</label>
+          <textarea [(ngModel)]="modelEditModalData.description"
+            class="w-full mt-1 p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600"></textarea>
+        </div>
+
+      </div>
+
+      <div class="flex justify-end gap-2 mt-6">
+        <button (click)="closeModelModal()" class="px-4 py-2 text-sm">Cancel</button>
+        <button (click)="saveModel()" class="px-4 py-2 bg-blue-600 text-white rounded-md">
+          Save
+        </button>
+      </div>
+
+    </div>
+  </div>
+  }
+  <!--  -->
+</div>

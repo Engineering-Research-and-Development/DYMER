@@ -1,0 +1,126 @@
+<a id="back-to-top" href="#" class="btn btn-sm back-to-top" role="button" (click)="scrollToTop(); $event.preventDefault()"><i class="fa fa-chevron-up"></i></a>
+
+<div class="col-md-12">
+    <div class="card ">
+        <div class="card-header ">
+            <h5 class="card-title">Dymer Search</h5>
+            <div class="card-category">
+                <div>
+                   <a href="#lnksnippsetsearch" (click)="scrollToAnchor('lnksnippsetsearch', $event)" class="text-warning">
+                        <h6> &nbsp;&nbsp;# Search Bar for snippets
+                        </h6>
+                    </a>
+                    <a href="#lnkdymersearch" (click)="scrollToAnchor('lnkdymersearch', $event)" class="text-warning">
+                        <h6> &nbsp;&nbsp;# Dymer Search Bar
+                        </h6>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body ">
+
+            <div class="row row-eq-height">
+                <div class="col-2  text-center">
+                    <div class="crop-height rounded border ">
+                        <img src="assets/images/demo/searchbaropenflat.png" (click)="openModal('myModalRList')" class="img-thumbnail   cur-p scale  ">
+                    </div>
+
+                    <div id="myModalRList" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalRList" aria-hidden="true" [class.show]="isModalOpen['myModalRList']" [style.display]="isModalOpen['myModalRList'] ? 'block' : 'none'">
+                        <div class="modal-dialog" style=" max-width: 80%;  ">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Search bar filters opened</h5>
+                                    <button type="button" class="close" (click)="closeModal('myModalRList')" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                </div>
+                                <div class="modal-body">
+                                    <img src="assets/images/demo/searchbaropenflat.png" class="img-fluid">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Example - Search bar filters opened </small>
+                </div>
+                <div class="col-2  text-center">
+                    <div class="crop-height rounded border ">
+                        <img src="assets/images/demo/searchbarpopover.png" (click)="openModal('myModalRList1')" class="img-thumbnail   cur-p scale  ">
+                    </div>
+
+                    <div id="myModalRList1" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalRList1" aria-hidden="true" [class.show]="isModalOpen['myModalRList1']" [style.display]="isModalOpen['myModalRList1'] ? 'block' : 'none'">
+                        <div class="modal-dialog" style=" max-width: 80%;  ">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Search bar modal filters</h5>
+                                    <button type="button" class="close" (click)="closeModal('myModalRList1')" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                </div>
+                                <div class="modal-body">
+                                    <img src="assets/images/demo/searchbarpopover.png" class="img-fluid">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Example - Search bar modal filters </small>
+                </div>
+                <div class="col-2  text-center">
+                    <div class="crop-height rounded border ">
+                        <img src="assets/images/demo/dymersearchbar.png" (click)="openModal('myModalRList2')" class="img-thumbnail   cur-p scale  ">
+                    </div>
+
+                    <div id="myModalRList2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalRList2" aria-hidden="true" [class.show]="isModalOpen['myModalRList2']" [style.display]="isModalOpen['myModalRList2'] ? 'block' : 'none'">
+                        <div class="modal-dialog" style=" max-width: 80%;  ">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Dymer Search bar</h5>
+                                    <button type="button" class="close" (click)="closeModal('myModalRList2')" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                </div>
+                                <div class="modal-body">
+                                    <img src="assets/images/demo/dymersearchbar.png" class="img-fluid">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Example - Dymer Search bar</small>
+                </div>
+            </div>
+            <div>
+                <br>
+                <p id="lnksnippsetsearch">Search bar script to add.</p>
+                <pre><code class="language-javascript hljs" [appHighlight]="codeSnippetSearchJs" language="javascript"></code></pre>
+                <br>
+                <p>Search bar modal filter with custom filters.</p>
+                <pre><code class="language-html hljs" [appHighlight]="codeModalFilterHtml" language="html"></code></pre>
+                <br>
+                <p>Search bar flat opened on load.</p>
+                <pre><code class="language-html hljs" [appHighlight]="codeFlatFilterHtml" language="html"></code></pre>
+                in your model elements add data-filterpos="2" searchable-label="Titolo" <br> searchable-multiple="true" if is multiple search <br> in relation element where data-torelation='...' <br> searchable-override="data[hashtags]"
+                if not composed<br>
+                <b>query.query.relationdymer</b>:{{'{'}}"indice_relazione":["id_entità_relazione"]{{'}'}} contiene il filtro con le relazioni<br> <b>query.getfields</b> <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-fields.html">doc</a>recupera
+                solo determinati attributi
+                <br><b>qoptions: {{'{'}} relations: false {{'}'}}</b>: true/false recupera o meno le relazioni nel risultato di ricerca ex. var query = {{'{'}}"query": {{'{'}}"query": {{'{'}}"bool": {{'{'}}"must": [{{'{'}}"term": {{'{'}}"_index": originalrelquery&#125;&#125;]&#125;&#125;&#125;&#125;&#125;;
+                <br><b>"qoptions": {{'{'}} "relations": "false" &#125;</b>;
+                <br><b>"qoptions":</b> {{'{'}}<br>
+                &nbsp;&nbsp;<b>"relations": false,</b><span style="display: inline-block; width: 2em;"></span>//true/false aggiunge o meno le relazioni<br>
+                &nbsp;&nbsp;<b>"fields": {{'{'}} "include": ["title"] &#125;,</b><span style="display: inline-block; width: 2em;"></span>//array of fields that will be returned in the obj <br>
+                &nbsp;&nbsp;<b>"sort": ["_index.keyword:asc"]</b><span style="display: inline-block; width: 2em;"></span>//key fields for sorting<br>
+                &#125;
+            </div>
+            <h4 class="text-info" id="lnkdymersearch"><i class="fa fa-caret-right" aria-hidden="true"></i> Dymer Search Bar
+            </h4>
+            <p>Create new object <b>dymerSearch</b> inside mainDymerView() function</p>
+            <pre><code class="language-javascript hljs" [appHighlight]="codeDymerSearchJs" language="javascript"></code></pre>
+            <p>Create a <b>form</b> element with id (same value in dymerSearch.formid) and class="dymerSearch", create a
+                <b>div</b> element with id (same value in dymerSearch.innerContainerid)
+                <br> How to use Multiselect
+                <a href="https://developer.snapappointments.com/bootstrap-select/" target="_blank"><i
+                        class="fa fa-external-link-square" aria-hidden="true"></i></a>
+
+            </p>
+            <pre><code class="language-html hljs" [appHighlight]="codeDymerSearchForm" language="html"></code></pre>
+            <p>Custom Condition Query as filter</p>
+            <pre><code class="language-html hljs" [appHighlight]="codeCustomCondition" language="html"></code></pre>
+        </div>
+        <div class="card-footer ">
+            <hr />
+            <div class="stats"><i class="fa fa-history"></i> Updated 27/07/2021</div>
+        </div>
+    </div>
+</div>

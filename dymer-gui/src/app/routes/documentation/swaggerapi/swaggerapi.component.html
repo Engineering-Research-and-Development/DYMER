@@ -1,0 +1,24 @@
+<page-header class="bg-indigo-600" title="API Documentation" subtitle="Swagger UI"></page-header>
+
+<mat-card>
+  <mat-card-content>
+    <div class="swagger-container">
+      <!-- Indicatore di caricamento in sovrapposizione -->
+      <div *ngIf="isLoading" class="loading-overlay">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
+
+      <!-- Mostra un messaggio di errore se il caricamento dell'URL fallisce -->
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <!-- 
+        Usa un iframe per incorporare la pagina di Swagger. L'evento (load) nasconde lo spinner.
+        La visibilità è controllata per evitare che un iframe vuoto appaia prima del caricamento.
+      -->
+      <iframe *ngIf="swaggerDocUrl && !errorMessage" [src]="swaggerDocUrl" (load)="onIframeLoad()"
+              [style.visibility]="isLoading ? 'hidden' : 'visible'" width="100%" height="800px" frameborder="0"></iframe>
+    </div>
+  </mat-card-content>
+</mat-card>

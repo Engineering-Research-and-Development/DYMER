@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DYMER Modern - Demo Template Serviced</title>
+  
+  <!-- Lit -->
+  <script type="importmap">
+  {
+    "imports": {
+      "lit": "https://cdn.jsdelivr.net/gh/lit/dist@3/all/lit-all.min.js"
+    }
+  }
+  </script>
+  
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 2rem;
+      background: #f5f5f5;
+    }
+    
+    .demo-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 0.5rem;
+    }
+    
+    .subtitle {
+      color: #666;
+      margin-bottom: 2rem;
+    }
+    
+    .demo-section {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .demo-section h2 {
+      margin-top: 0;
+      color: #444;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 0.5rem;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      padding: 0.5rem 1rem;
+      border: 1px solid #d1d5db;
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    
+    button:hover {
+      background: #f3f4f6;
+    }
+    
+    button.primary {
+      background: #3b82f6;
+      color: white;
+      border-color: #3b82f6;
+    }
+    
+    button.primary:hover {
+      background: #2563eb;
+    }
+    
+    .log {
+      background: #1f2937;
+      color: #10b981;
+      padding: 1rem;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 0.875rem;
+      max-height: 200px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <h1>🔧 DYMER Modern - Demo Template "Serviced"</h1>
+    <p class="subtitle">
+      Test del sistema di template con dati reali dal microservizio dymer-templates
+    </p>
+
+    <!-- Sezione 1: Componente Entity Card -->
+    <div class="demo-section">
+      <h2>1. DymerEntityCard (Vista Teaser)</h2>
+      <div class="controls">
+        <button class="primary" onclick="loadTeaser()">Carica Card</button>
+        <button onclick="toggleEdit()">Toggle Edit Mode</button>
+        <button onclick="toggleFeatured()">Toggle Featured</button>
+      </div>
+      <div id="card-container"></div>
+    </div>
+
+    <!-- Sezione 2: Lista -->
+    <div class="demo-section">
+      <h2>2. DymerEntityList (Vista Lista)</h2>
+      <div class="controls">
+        <button class="primary" onclick="loadList()">Carica Lista</button>
+        <button onclick="changeView('teaser')">Vista Teaser</button>
+        <button onclick="changeView('teaserlist')">Vista Lista</button>
+      </div>
+      <div id="list-container"></div>
+    </div>
+
+    <!-- Sezione 3: Filtri -->
+    <div class="demo-section">
+      <h2>3. DymerFilterPanel</h2>
+      <div class="controls">
+        <button class="primary" onclick="loadFilters()">Carica Filtri</button>
+        <button onclick="applyFilters()">Applica Filtri</button>
+        <button onclick="clearFilters()">Cancella Filtri</button>
+      </div>
+      <div id="filter-container"></div>
+    </div>
+
+    <!-- Sezione 4: Modale Form -->
+    <div class="demo-section">
+      <h2>4. DymerFormModal</h2>
+      <div class="controls">
+        <button class="primary" onclick="openCreateModal()">Crea Nuovo Servizio</button>
+        <button onclick="openEditModal()">Modifica Servizio</button>
+      </div>
+    </div>
+
+    <!-- Sezione 5: Log -->
+    <div class="demo-section">
+      <h2>5. Console Log</h2>
+      <div class="controls">
+        <button onclick="clearLog()">Pulisci Log</button>
+        <button onclick="runTests()">Esegui Test</button>
+      </div>
+      <div class="log" id="console-log">Console pronta...</div>
+    </div>
+  </div>
+
+  <!-- Modale Form -->
+  <dymer-form-modal id="demo-modal"></dymer-form-modal>
+
+  <script type="module">
+    import { 
+      DymerEntityCard, 
+      DymerEntityList, 
+      DymerFilterPanel,
+      DymerFormModal 
+    } from '../modern-dymer.js';
+    
+    import { 
+      servicedApiResponse, 
+      servicedEntityExample,
+      runTests as runExampleTests 
+    } from './serviced-template-example.js';
+
+    // Configurazione globale
+    window.kmsconfig = {
+      serverUrl: 'http://195.201.83.104',
+      cdn: 'http://195.201.83.104/public/cdn/',
+      endpoints: [
+        { type: 'entity', endpoint: 'http://195.201.83.104/api/entities' },
+        { type: 'template', endpoint: 'http://195.201.83.104/api/templates' }
+      ]
+    };
+
+    // Logger
+    function log(message, data = null) {
+      const logEl = document.getElementById('console-log');
+      const timestamp = new Date().toLocaleTimeString();
+      const logLine = `[${timestamp}] ${message}`;
+      
+      if (data) {
+        logEl.textContent += logLine + '\n' + JSON.stringify(data, null, 2) + '\n\n';
+      } else {
+        logEl.textContent += logLine + '\n';
+      }
+      
+      logEl.scrollTop = logEl.scrollHeight;
+      console.log(logLine, data);
+    }
+
+    // 1. Carica Card
+    window.loadTeaser = async () => {
+      log('🔄 Caricamento EntityCard...');
+      
+      const container = document.getElementById('card-container');
+      container.innerHTML = `
+        <dymer-entity-card
+          id="demo-card"
+          entity-id="srv123"
+          template-id="serviced"
+          view-type="teaser"
+          editable
+          selectable
+        ></dymer-entity-card>
+      `;
+      
+      const card = container.querySelector('dymer-entity-card');
+      
+      // Imposta dati di esempio
+      card.entity = servicedEntityExample;
+      
+      // Event listeners
+      card.addEventListener('dymer-select', (e) => {
+        log('✅ Entity selezionata:', e.detail);
+      });
+      
+      card.addEventListener('dymer-edit', (e) => {
+        log('✏️ Richiesta modifica:', e.detail);
+        openEditModal();
+      });
+      
+      card.addEventListener('dymer-delete', (e) => {
+        log('🗑️ Richiesta cancellazione:', e.detail);
+        if (confirm('Confermare cancellazione?')) {
+          card.remove();
+          log('✅ Entity rimossa');
+        }
+      });
+      
+      log('✅ Card caricata con successo');
+    };
+
+    // Toggle edit
+    window.toggleEdit = () => {
+      const card = document.querySelector('#demo-card');
+      if (card) {
+        card.editable = !card.editable;
+        log('🔄 Edit mode:', card.editable ? 'ON' : 'OFF');
+      }
+    };
+
+    // Toggle featured
+    window.toggleFeatured = () => {
+      const card = document.querySelector('#demo-card');
+      if (card && card.entity) {
+        card.entity = {
+          ...card.entity,
+          featured: !card.entity.featured
+        };
+        log('🔄 Featured:', card.entity.featured ? 'ON' : 'OFF');
+      }
+    };
+
+    // 2. Carica Lista
+    window.loadList = () => {
+      log('🔄 Caricamento EntityList...');
+      
+      const container = document.getElementById('list-container');
+      
+      // Crea lista mock
+      const mockItems = Array(6).fill(null).map((_, i) => ({
+        ...servicedEntityExample,
+        _id: `srv${i + 1}`,
+        title: `Service ${i + 1}`,
+        featured: i === 0,
+        price: 100 + (i * 50)
+      }));
+      
+      container.innerHTML = `
+        <dymer-entity-list
+          id="demo-list"
+          index="serviced"
+          view-type="teaser"
+          page-size="6"
+        ></dymer-entity-list>
+      `;
+      
+      const list = container.querySelector('dymer-entity-list');
+      
+      // Simula caricamento dati
+      setTimeout(() => {
+        list.items = mockItems;
+        list.totalItems = mockItems.length;
+        log('✅ Lista caricata con', mockItems.length, 'elementi');
+      }, 500);
+      
+      list.addEventListener('dymer-select', (e) => {
+        log('✅ Elemento selezionato:', e.detail.entity.title);
+      });
+    };
+
+    // Cambia vista
+    window.changeView = (viewType) => {
+      const list = document.querySelector('#demo-list');
+      if (list) {
+        list.viewType = viewType;
+        log('🔄 Vista cambiata a:', viewType);
+      }
+    };
+
+    // 3. Carica Filtri
+    window.loadFilters = () => {
+      log('🔄 Caricamento FilterPanel...');
+      
+      const container = document.getElementById('filter-container');
+      container.innerHTML = `
+        <dymer-filter-panel
+          id="demo-filters"
+          index="serviced"
+          expanded
+          show-tags
+        ></dymer-filter-panel>
+      `;
+      
+      const filters = container.querySelector('dymer-filter-panel');
+      
+      // Schema filtri di esempio
+      filters.filterSchema = [
+        { key: 'title', label: 'Titolo', type: 'text' },
+        { key: 'status', label: 'Stato', type: 'select', options: ['active', 'pending', 'inactive'] },
+        { key: 'price', label: 'Prezzo', type: 'numberrange' },
+        { key: 'tags', label: 'Tag', type: 'multiselect', options: ['Consulting', 'Business', 'Strategy', 'Premium'] }
+      ];
+      
+      filters.addEventListener('dymer-filter-change', (e) => {
+        log('🔍 Filtri cambiati:', e.detail.filterCount, 'filtri attivi');
+        log('Query:', JSON.stringify(e.detail.query, null, 2));
+      });
+      
+      log('✅ Filtri caricati');
+    };
+
+    // Applica filtri
+    window.applyFilters = () => {
+      log('🔍 Applicazione filtri...');
+      // Simula query
+    };
+
+    // Cancella filtri
+    window.clearFilters = () => {
+      const filters = document.querySelector('#demo-filters');
+      if (filters) {
+        filters.clearAll();
+        log('🧹 Filtri cancellati');
+      }
+    };
+
+    // 4. Modale
+    window.openCreateModal = async () => {
+      log('🔄 Apertura modale creazione...');
+      
+      const modal = document.getElementById('demo-modal');
+      
+      await modal.openModal({
+        mode: 'create',
+        formIndex: 'serviced'
+      });
+      
+      modal.addEventListener('dymer-submit', (e) => {
+        log('✅ Form inviato:', e.detail);
+        modal.close();
+      });
+      
+      modal.addEventListener('dymer-error', (e) => {
+        log('❌ Errore:', e.detail.error);
+      });
+    };
+
+    window.openEditModal = async () => {
+      log('🔄 Apertura modale modifica...');
+      
+      const modal = document.getElementById('demo-modal');
+      
+      await modal.openModal({
+        mode: 'edit',
+        formIndex: 'serviced',
+        entityId: 'srv123'
+      });
+      
+      modal.addEventListener('dymer-submit', (e) => {
+        log('✅ Modifiche salvate:', e.detail);
+        modal.close();
+      });
+    };
+
+    // 5. Utility
+    window.clearLog = () => {
+      document.getElementById('console-log').textContent = 'Console pronta...\n';
+    };
+
+    window.runTests = () => {
+      log('🧪 Esecuzione test...');
+      try {
+        runExampleTests();
+        log('✅ Test completati con successo');
+      } catch (err) {
+        log('❌ Test falliti:', err.message);
+      }
+    };
+
+    // Inizializza
+    log('🚀 Demo DYMER Modern inizializzato');
+    log('ℹ️ Configurazione:', window.kmsconfig);
+    
+    // Carica esempio automatico
+    setTimeout(() => {
+      loadTeaser();
+    }, 500);
+  </script>
+</body>
+</html>

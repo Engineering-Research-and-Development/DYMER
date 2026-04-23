@@ -1,0 +1,48 @@
+<!-- <div
+  class="w-full max-w-xs bg-white rounded-2xl shadow-md p-6 flex items-center justify-between border
+         border-gray-100 transition-all duration-300 hover:shadow-xl hover:-translate-y-1
+         cursor-pointer group"
+>
+  <div class="flex flex-col">
+    <span class="text-3xl font-semibold text-gray-900">{{ value }}</span>
+    <span class="text-gray-500 text-sm">{{ label }}</span>
+
+    <div class="w-full h-1 bg-gray-200 rounded-full mt-4 overflow-hidden">
+      <div
+        class="h-1 bg-purple-400 rounded-full transition-all duration-1200 ease-out"
+        [style.width]="progress"
+      ></div>
+    </div>
+  </div>
+
+  <div
+    class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center
+           transition-transform duration-300 group-hover:scale-110 group-hover:bg-purple-200"
+  >
+    <img src="assets/icons/lightning.svg" class="w-6 h-6 transition-opacity duration-300 group-hover:opacity-80" />
+  </div>
+</div>
+-->
+<div class="card stats-card">
+  <div class="card-body d-flex justify-content-between align-items-center" [style.borderColor]="colorCode">
+    
+    <!-- Testo -->
+    <div>
+        <h3 class="card-value mb-1">  {{ value }}</h3>
+      <p class="card-label mb-3">{{ label }}</p>
+
+       
+    </div>
+
+    <!-- Icona -->
+    <div class="icon-box" [ngStyle]="iconStyle" >
+         
+         <i [ngClass]="icon" [ngStyle]="iconStyle"></i>
+    </div>
+
+
+  </div>
+ <div class="progress custom-progress">
+        <div class="progress-bar " [style.background-color]="colorCode" [style.borderColor]="colorCode"></div>
+      </div>
+</div>

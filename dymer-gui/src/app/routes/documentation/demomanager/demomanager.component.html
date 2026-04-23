@@ -1,0 +1,146 @@
+<div class="col-md-12">
+    <div class="card ">
+        <div class="card-header ">
+            <h5 class="card-title">Dymer Administration</h5>
+            <div class="card-category">
+                Manager Light
+                <!--  <a href="/demodownload/Form/ExampleFormTemplate.zip" class="btn btn-wd btn-warning  float-right " target="_self">
+                    <i class="fa fa-download"></i> Example Entity Form/Templates
+                </a>-->
+                <a [href]="downloadBaseUrl + '/demodownload/dymer_manager.html'" class="btn btn-wd btn-info float-right text-white" target="_self">
+                    <i class="fa fa-download"></i>&nbsp;Manager Light
+                </a>
+
+            </div>
+        </div>
+        <div class="card-body ">
+
+            <div class="row row-eq-height">
+                <div class="col-2  text-center">
+                    <div class="crop-height rounded border ">
+                        <img src="assets/images/demo/manager_home.png" data-toggle="modal" data-target="#myModalRList" class="img-thumbnail   cur-p scale  ">
+                    </div>
+
+                    <div id="myModalRList" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalRList" aria-hidden="true">
+                        <div class="modal-dialog" style=" max-width: 80%;  ">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <img src="assets/images/demo/manager_home.png">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Manager Light </small>
+                </div>
+                <div class="col-2  text-center">
+                    <div class="crop-height  rounded border">
+                        <img src="assets/images/demo/manager_genform.png" data-toggle="modal" data-target="#myModalRListD" class="img-thumbnail  cur-p scale  ">
+                    </div>
+
+                    <div id="myModalRListD" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalRListD" aria-hidden="true">
+                        <div class="modal-dialog" style=" max-width: 80%;  ">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <img src="assets/images/demo/manager_genform.png">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Model</small>
+                </div>
+
+                <div class="col-2   text-center">
+                    <div class="crop-height  rounded border">
+                        <img src="assets/images/demo/manafer_gentemplate.png" data-toggle="modal" data-target="#myModalCList" class="img-thumbnail   cur-p scale  ">
+                    </div>
+
+                    <div id="myModalCList" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalCList" aria-hidden="true">
+                        <div class="modal-dialog" style=" max-width: 80%; max-height: 80%; ">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <img src="assets/images/demo/manafer_gentemplate.png" style="margin:0 auto;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Template</small>
+                </div>
+                <div class="col-2   text-center">
+                    <div class="crop-height  rounded border">
+                        <img src="assets/images/demo/example_formrender.png" data-toggle="modal" data-target="#example_formrender" class="img-thumbnail   cur-p scale  ">
+                    </div>
+
+                    <div id="example_formrender" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="example_formrender" aria-hidden="true">
+                        <div class="modal-dialog" style=" max-width: 80%; max-height: 80%; ">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <img src="assets/images/demo/example_formrender.png" style="margin:0 auto;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Example Model</small>
+                </div>
+                <div class="col-2   text-center">
+                    <div class="crop-height  rounded border">
+                        <img src="assets/images/demo/exmaple-codeform.png" data-toggle="modal" data-target="#exmaple-codeform" class="img-thumbnail   cur-p scale  ">
+                    </div>
+
+                    <div id="exmaple-codeform" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exmaple-codeform" aria-hidden="true">
+                        <div class="modal-dialog" style=" max-width: 80%; max-height: 80%; ">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <img src="assets/images/demo/exmaple-codeform.png" style="margin:0 auto;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Example Code Model </small>
+                </div>
+                <div class="col-2   text-center">
+                    <div class="crop-height  rounded border">
+                        <img src="assets/images/demo/example_elastic.jpg" data-toggle="modal" data-target="#example_elastic" class="img-thumbnail   cur-p scale  ">
+                    </div>
+
+                    <div id="example_elastic" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="example_elastic" aria-hidden="true">
+                        <div class="modal-dialog" style=" max-width: 80%; max-height: 80%; ">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <img src="assets/images/demo/example_elastic.jpg" style="margin:0 auto;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Example Entity Saved</small>
+                </div>
+            </div>
+            <div>
+                <br>
+                <p>
+                    Following the code needed to view a light version of DYMER administration system. <br> With the light version it is possible:
+                </p>
+                <ul>
+                    <li>Upload and View a Model</li>
+                    <li>Upload and View a Template</li>
+                    <li>Create new Entity</li>
+                </ul>
+                <p>Create a js function named <b>mainDymerModel()</b>, define the json that configures the query to execute and pass it in the funtion <b>loadFormList(url,target,query)</b></p>
+                <pre><code class="language-javascript hljs" [appHighlight]="codeBlockAdmin1" language="javascript"></code></pre>
+                <p>Import the <b>dymer.manager.js</b> with id 'dymerurl' and set the &lt;dymerip&gt;
+                </p>
+                <pre><code class="language-html hljs" [appHighlight]="codeBlockAdmin2" language="html"></code></pre>
+                <p>Create a DOM element where render the lists of models and templates with the same id passed in loadFormList and one lement with <b>id="cont-RenderForm"</b> where will be rendered the Models/Templates</p>
+                <pre><code class="language-html hljs" [appHighlight]="codeBlockAdmin3" language="html"></code></pre>
+                <p>
+                    Dymer Viewer imports Bootstrap v4 and jQuery 3, if you use previous versions add a json object called <b>dymerconf</b> as below to exclude the import. To set the 'user id' and 'group id' add the variables <b>d_uid</b> and <b>d_gid</b>.
+                </p>
+                <pre><code class="language-javascript hljs" [appHighlight]="codeBlockAdmin4" language="javascript"></code></pre>
+            </div>
+        </div>
+
+        <div class="card-footer ">
+            <hr />
+            <div class="stats"><i class="fa fa-history"></i> Updated 11/03/2019</div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,249 @@
+/* Stili per il Wizard di Importazione */
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.3s, background-color 0.3s;
+  text-align: center;
+  background-color: #f9f9f9;
+
+  &:hover {
+    border-color: #007bff;
+  }
+
+  &.drag-over {
+    background-color: #f0f8ff;
+    border-color: #007bff;
+  }
+
+  .dropzone-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: #888;
+    margin-bottom: 16px;
+  }
+
+  .dropzone-icon-file {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: #007bff;
+    margin-bottom: 8px;
+  }
+
+  .dropzone-text {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .dropzone-browse-text {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 4px;
+    a {
+      color: #007bff;
+      text-decoration: underline;
+    }
+  }
+
+  .file-name {
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .file-size {
+    color: #666;
+  }
+
+  .file-info-container {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    width: 100%;
+  }
+}
+
+.wizard-section {
+  padding: 20px 0;
+}
+
+.form-wizard-import {
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+.form-wizard-import-header {
+  text-align: center;
+  margin-bottom: 20px;
+  p {
+    margin-bottom: 20px;
+    color: #666;
+  }
+}
+
+.form-wizard-import-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #eee;
+    margin: 0 15px;
+    color: #999;
+    border: 2px solid #ddd;
+    position: relative;
+
+    &:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      width: 30px; /* Distanza tra i cerchi */
+      height: 2px;
+      background-color: #ddd;
+      transform: translateY(-50%);
+    }
+
+    &.active {
+      background-color: #ffc107; /* Giallo/Arancione per lo step attivo */
+      border-color: #ffc107;
+      color: white;
+    }
+
+    &.activated {
+      background-color: #28a745; /* Verde per gli step completati */
+      border-color: #28a745;
+      color: white;
+      &:not(:last-child)::after {
+        background-color: #28a745;
+      }
+    }
+  }
+}
+
+.wizard-import-fieldset {
+  border: none;
+  padding: 20px;
+  margin-top: 20px;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+  h5 {
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  p {
+    color: #777;
+    margin-bottom: 20px;
+  }
+}
+
+.form-wizard-import-scroll-table {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #eee;
+}
+
+.csv-errors {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 15px;
+}
+
+/* Stili per la schermata di successo */
+.check-container {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 40px auto;
+  position: relative;
+}
+
+.check-background {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom right, #5de593, #41d67c);
+  border-radius: 50%;
+  animation: scale-in 0.5s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 50px;
+    path {
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      animation: draw-check 0.5s 0.5s ease-in-out forwards;
+    }
+  }
+}
+
+.check-shadow {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 10px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  filter: blur(5px);
+  animation: fade-in 0.5s 0.5s ease-in-out forwards;
+  opacity: 0;
+}
+
+@keyframes scale-in {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+
+@keyframes draw-check {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes fade-in {
+  to { opacity: 1; }
+}
+
+mat-card-content {
+  min-height: 300px;
+  padding-bottom: 48px;
+}
+
+.d-flex {
+  display: flex;
+}
+.justify-content-between {
+  justify-content: space-between;
+}
+.justify-content-end {
+  justify-content: flex-end;
+}
+
+.wizard-buttons-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 24px;
+}

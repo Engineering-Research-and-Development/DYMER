@@ -1,0 +1,112 @@
+<a id="back-to-top" href="#" class="btn btn-sm back-to-top ng-scope" role="button" (click)="scrollToTop($event)"><i class="fa fa-chevron-up"></i></a>
+<div class="col-md-12">
+    <div class="card ">
+        <div class="card-header ">
+            <h5 class="card-title">Models</h5>
+            <div class="card-category">
+                <div class="d-flex flex-wrap">
+                    <a href="javascript:void(0)" (click)="scrollToAnchor('lnkstatusvis', $event)" class="text-warning">
+                        <span> &nbsp;&nbsp;# Status/Visibility
+                        </span>
+                    </a>
+                    <a href="javascript:void(0)" (click)="scrollToAnchor('lnkselectlistmulti', $event)" class="text-warning">
+                        <span> &nbsp;&nbsp;# Select list multiple
+                        </span>
+                    </a>
+                    <a href="javascript:void(0)" (click)="scrollToAnchor('lnksdymerelement', $event)" class="text-warning">
+                        <span> &nbsp;&nbsp;# Element private/public
+                        </span>
+                    </a>
+                    <a href="javascript:void(0)" (click)="scrollToAnchor('lnksdymervalidation', $event)" class="text-warning">
+                        <span> &nbsp;&nbsp;# Form validation
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body ">
+            <div>
+                <h4 class="text-info"> Status & Visibility </h4>
+
+                <p id="lnkstatusvis">Entity display rules :</p>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Status / Visibility</th>
+                            <th scope="col">Restricted <i class="fa fa-unlock-alt icon-action" title="restricted"></i>
+                            </th>
+                            <th scope="col">Private <i class="fa fa-lock icon-action" title="private"></i></th>
+                            <th scope="col">Public</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">Published</th>
+                            <td>Owner <i class="fa fa-user icon-action" title="Owner"></i> & <br> Workspace Members</td>
+                            <td>Owner <i class="fa fa-user icon-action" title="Owner"></i> & </td>
+                            <td>All</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Draft</th>
+                            <td>Owner <i class="fa fa-user icon-action" title="Owner"></i> & <br> Workspace Members</td>
+                            <td>Owner <i class="fa fa-user icon-action" title="Owner"></i> & </td>
+                            <td>Owner <i class="fa fa-user icon-action" title="Owner"></i> & </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Unpublished</th>
+                            <td>Owner <i class="fa fa-user icon-action" title="Owner"></i> & </td>
+                            <td>Owner <i class="fa fa-user icon-action" title="Owner"></i> & </td>
+                            <td>Owner <i class="fa fa-user icon-action" title="Owner"></i> & </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <b>Visibility</b><br>
+                <b>Restricted</b>: resource visibility restricted only to the current workspace members<br>
+                <b>Private</b>: visibility restricted to the resource owner<br>
+                <b>Public</b>: resource is visible also to other platform workspaces that are using the same resource model
+                <h3 class="text-success text-center" id="lnkselectlistmulti"><b>Search for snippets</b></h3>
+                <ul>
+                    <h4 class="text-info">- Select List Multiple</h4>
+                    List of attributes to use
+                    <ul>
+                        <li><span></span>="your-label" : </li>
+                        <li>searchable-multiple="true" </li>
+                        <li>searchable-override="data[json-key]": </li>
+                        <li>searchable-text=" span to render if is checkbox&gt;": </li>
+                    </ul>
+                    <label>Example of multiple search</label>
+                </ul>
+                <div>
+                    <pre><code #codeBlock1 class="language-html">{{ codeBlockExample1 }}</code></pre>
+                </div>
+                <h3 class="text-success text-center" id="lnksdymerelement"><b>Element Public/Private</b></h3>
+                <div>
+                    Add the following attributes to the model element:
+                    <br><b> dymer-model-element="" dymer-model-visibility="private" </b>
+                    <br> the corresponding value will be visible only to authenticated users.
+                    <br>Instead
+                    <br><b> dymer-model-element="" dymer-model-visibility="public" </b>
+                    <br> the corresponding value will be visible to all users.
+                </div>
+                <h3 class="text-success text-center" id="lnksdymervalidation"><b>Form validation</b></h3>
+                <div>
+                    Add class needs-validation and attribute novalidate in your model form, if they do not exist
+                    <pre><code #codeBlock2 class="language-html">{{ codeBlockValidation1 }}</code></pre>
+                    <br>for each element in you want to display error messages, add this div with class invalid-feedbach
+                    <pre><code #codeBlock3 class="language-html">{{ codeBlockValidation2 }}</code></pre>
+                    <br>for each element in you want to a custom validate, add attribute dymer-element-validation="your_function_name"
+                    <br> your_function must be return true/false.
+                    <br> Ex
+                    <pre><code #codeBlock4 class="language-javascript">{{ codeBlockValidation3 }}</code></pre>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card-footer ">
+            <hr />
+            <div class="stats"><i class="fa fa-history"></i> Updated 29/09/2021</div>
+        </div>
+    </div>
+</div>

@@ -50,7 +50,6 @@ var storageEngine = multer.diskStorage({
 });
 var upload = multer({ storage: storageEngine }).any(); // .single('file');
 router.post('/setConfig', util.checkIsAdmin, function(req, res) {
-
     let callData = util.getAllQuery(req);
     let data = callData.data;
     var copiaData = Object.assign({}, data);
@@ -97,7 +96,6 @@ router.post('/setConfig', util.checkIsAdmin, function(req, res) {
 });
 
 router.post('/addconfig', util.checkIsAdmin, function(req, res) {
-
     let callData = util.getAllQuery(req);
     //console.log(callData);
     let data = callData.data;
@@ -128,9 +126,7 @@ router.post('/addconfig', util.checkIsAdmin, function(req, res) {
         }
     })
 });
-
 router.get('/renderpage/:id', function(req, res) {
-
     let formData;
     let dataView;
     let dataSearch;
@@ -164,8 +160,7 @@ router.get('/renderpage/:id', function(req, res) {
             importStringJQ = "jquery";
             importStringBT = "bootstrap";
             importString = importStringJQ + importStringBT;
-        } else {
-        }
+        } else {}
         if (formData.viewtype == 0) {
             dymerJs = "dymer.viewer.js";
             scriptSRC = ' <script> var dTagFilter;\n' +
@@ -313,7 +308,6 @@ router.get('/renderpage/:id', function(req, res) {
 });
 
 router.get('/renderdetail/:id', function(req, res) {
-
     let formData;
     let dataView;
     let dataSearch;
@@ -368,7 +362,6 @@ router.get('/renderdetail/:id', function(req, res) {
 });
 
 router.get('/configrules/', (req, res) => {
-
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
     return findRuleConfig(queryFind, res);
@@ -394,16 +387,13 @@ function findRuleConfig(queryFind, res) {
 }
 
 router.get('/getconfig/', (req, res) => {
-
-    //console.log(req);
+   // console.log(req);
     console.log('get-d-config', "invoco config rules");
     //  let callData = util.getAllQuery(req);
     //let queryFind = callData.query;
     //return findRuleConfig(queryFind, res);
 });
-
 router.delete('/configrule/:id', util.checkIsAdmin, (req, res) => {
-
     var ret = new jsonResponse();
     var id = req.params.id;
     var myfilter = { "_id": id };
@@ -423,13 +413,12 @@ router.delete('/configrule/:id', util.checkIsAdmin, (req, res) => {
 });
 
 router.post('/listener', function(req, res) {
-
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let data = callData.data;
     res.send(ret);
     //eventSource:
-    var eventSource = (data.eventSource).split('_');
+    var eventSource = (data.eventSource).split('_');;
     var queryFind = {
         "_index": data.obj._index,
         "_type": data.obj._type
@@ -459,5 +448,4 @@ router.post('/listener', function(req, res) {
     //prendo i parametri di config ed inoltro la chiamata
     //fatto in addassett
 });
-
 module.exports = router;

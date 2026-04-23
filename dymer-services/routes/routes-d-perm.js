@@ -64,7 +64,6 @@ mongoose
 */
 
 router.get('/mongostate', [util.checkIsDymerUser], (req, res) => {
-
     let ret = new jsonResponse();
     let dbState = [{
             value: 0,
@@ -94,39 +93,51 @@ router.get('/mongostate', [util.checkIsDymerUser], (req, res) => {
     ret.setSuccess(true);
     return res.send(ret);
 });
-
 router.get('/entityrole/:act/:index', (req, res) => {
-
-    let act = req.params.act; //azione da passare
-    let index = req.params.index; //indice per cercare
-    //console.log(req.query.role); //lista dei miei ruoli
+    let act = req.params.act;
+    let index = req.params.index;
+    console.log(nameFile + ' | entityrole | roles: ' + req.query.role);
+    logger.info(nameFile + ' | entityrole | roles: ' + req.query.role);
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let data = callData.data;
     var retData = { result: false };
     var message = "Permission denied";
     var queryFind = { role: { $in: req.query.role } };
-
+    //console.log(nameFile + ' | entityrole | queryFind: ' + JSON.stringify(queryFind));
+    //logger.info( nameFile + ' | entityrole | queryFind: ' + JSON.stringify(queryFind));
     DymRule.find(queryFind).then((els) => {
-        //logger.info(nameFile + ' | get/entityrole/:act/:index | DymRule : ' + JSON.stringify(els));
+        //console.log(nameFile + ' | entityrole | DymRule: ' + JSON.stringify(els));
+        //logger.info(nameFile + ' | entityrole | DymRule: ' + JSON.stringify(els));
         if (els.length > 0) {
             els.forEach(el => {
                 if ((el.perms.entities[act]) != undefined) {
+                    logger.info(nameFile + ' | act: ' + act + ' | index: ' + index);
                     if ((el.perms.entities[act]).includes(index)) {
+                        /*
+                        console.log(nameFile + ' | entityrole | DymRule: ' + JSON.stringify(els));
+                        logger.info(nameFile + ' | el.perms.entities[act]: ' + el.perms.entities[act]);
+                        logger.info(nameFile + ' | index: ' + index);
+                        */
                         retData.result = true;
                         message = "Permission approved";
                     }
                 }
             });
         }
-        //logger.info(nameFile + ' | get/entityrole/:act/:index | queryFind : ' + act + " , " + index + " , " + JSON.stringify(queryFind) + "," + retData.result);
+        /*
+        console.log(nameFile + ' | entityrole | result: ' + retData.result);
+        console.log(nameFile + ' | entityrole | message:: ' + message);
+        logger.info(nameFile + ' | entityrole | result: ' +retData.result);
+        logger.info(nameFile + ' | entityrole | message: ' + message);
+        */
         ret.setMessages(message);
         ret.setData(retData);
         return res.send(ret);
     }).catch((err) => {
         if (err) {
-            console.error("ERROR | " + nameFile + " | get/entityrole/:act/:index|find  ", JSON.stringify(queryFind), err);
-            logger.error(nameFile + ' | get/entityrole/:act/:index|find   : ' + JSON.stringify(queryFind) + " " + err);
+            console.error("ERROR | " + nameFile + " | entityrole | find:  ", JSON.stringify(queryFind), err);
+            logger.error(nameFile + ' |  entityrole | find: ' + JSON.stringify(queryFind) + " " + err);
             ret.setMessages("Get error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -134,9 +145,7 @@ router.get('/entityrole/:act/:index', (req, res) => {
         }
     })
 });
-
 router.get('/permbyroles', (req, res) => {
-
     //role[]
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -162,13 +171,13 @@ router.get('/permbyroles', (req, res) => {
         } else {
             ret.setMessages(message);
            // ret.setData(grpPermEnt);
-           ret.setData({});
+           ret.setData({}); 
            return res.send(ret);
         }
     }).catch((err) => {
         if (err) {
-            console.error("ERROR | " + nameFile + " | get/permbyroles  ", err);
-            logger.error(nameFile + ' | get/permbyroles ' + err);
+            console.error("ERROR | " + nameFile + " | permbyroles ", err);
+            logger.error(nameFile + ' | permbyroles ' + err);
             ret.setMessages("Get error");
             ret.setSuccess(false);
             ret.setExtraData({ "log": err.stack });
@@ -176,9 +185,7 @@ router.get('/permbyroles', (req, res) => {
         }
     })
 });
-
 router.get('/', (req, res) => {
-
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -200,7 +207,6 @@ router.get('/', (req, res) => {
 });
 
 router.post('/:id?', util.checkIsAdmin, async function(req, res) {
-
     let id = req.params.id;
     let callData = util.getAllQuery(req);
     let data = callData.data;
@@ -214,9 +220,9 @@ router.post('/:id?', util.checkIsAdmin, async function(req, res) {
             const EntitiesURL = util.getServiceUrl("entity") + "/api/v1/entity/redisroleupdate";
             try {
                 await axios.post(EntitiesURL, { updated: callData.data.role });
-            } catch (err) {
-                console.error("ERROR | " + nameFile + " | post | updateOne ", err);
-                logger.error(nameFile + ' | post | updateOne  : ' + err);
+            } catch (e) {
+                console.error("ERROR | " + nameFile + " | post | updateOne ", e);
+                logger.error(nameFile + ' | post | updateOne  : ' + e);
                 ret.setSuccess(false);
                 ret.setMessages("Model Error");
                 return res.send(ret);
@@ -260,9 +266,7 @@ router.post('/:id?', util.checkIsAdmin, async function(req, res) {
         })
     }
 });
-
 router.delete('/:id', util.checkIsAdmin, (req, res) => {
-
     var ret = new jsonResponse();
     var id = req.params.id;
     var myfilter = { "_id": id };
@@ -280,5 +284,4 @@ router.delete('/:id', util.checkIsAdmin, (req, res) => {
         }
     })
 });
-
 module.exports = router;

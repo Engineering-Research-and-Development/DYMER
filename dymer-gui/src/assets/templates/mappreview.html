@@ -1,0 +1,78 @@
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8 text-center text-gray-900 dark:text-white">Our Location</h1>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+        <div class="grid md:grid-cols-3">
+            <!-- Map Column -->
+            <div class="md:col-span-2 h-96 min-h-[400px] relative bg-gray-200 dark:bg-gray-700">
+                <iframe 
+                    width="100%" 
+                    height="100%" 
+                    frameborder="0" 
+                    scrolling="no" 
+                    marginheight="0" 
+                    marginwidth="0" 
+                    src="https://www.openstreetmap.org/export/embed.html?bbox=-0.12859344482421878%2C51.50085639422676%2C-0.10868072509765626%2C51.50874245880332&amp;layer=mapnik" 
+                    style="border: 0;"
+                    title="Location Map"
+                ></iframe>
+                <div class="absolute bottom-4 left-4 bg-white dark:bg-gray-900 px-4 py-2 rounded-sm shadow-md text-sm">
+                    <a href="https://www.openstreetmap.org/#map=16/51.5048/-0.1186" target="_blank" class="text-blue-600 hover:underline dark:text-blue-400">View Larger Map</a>
+                </div>
+            </div>
+            
+            <!-- Info Column -->
+            <div class="p-8 flex flex-col justify-center">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Visit Us</h2>
+                
+                <div class="space-y-6">
+                    <div class="flex items-start">
+                        <div class="shrink-0 w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-300 mr-4">
+                            <span class="material-icons">location_on</span>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">Address</h3>
+                            <p class="text-gray-600 dark:text-gray-400 mt-1">
+                                123 Innovation Drive<br>
+                                Tech City, TC 90210<br>
+                                United Kingdom
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="shrink-0 w-10 h-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center text-green-600 dark:text-green-300 mr-4">
+                            <span class="material-icons">email</span>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">Email</h3>
+                            <p class="text-gray-600 dark:text-gray-400 mt-1">
+                                contact@example.com<br>
+                                support@example.com
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="shrink-0 w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center text-purple-600 dark:text-purple-300 mr-4">
+                            <span class="material-icons">phone</span>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">Phone</h3>
+                            <p class="text-gray-600 dark:text-gray-400 mt-1">
+                                +44 (0) 20 1234 5678<br>
+                                Mon-Fri, 9am-5pm
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 pt-6 border-t border-gray-100 dark:border-gray-700">
+                    <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
+                        <span class="material-icons mr-2">directions</span> Get Directions
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

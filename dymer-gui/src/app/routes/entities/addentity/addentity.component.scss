@@ -1,0 +1,22 @@
+.mat-list-item.active {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.team-members .mat-mdc-list-item-unscoped-content {
+  width: 100%;
+}
+
+/* Stili per i gruppi di checkbox generati dinamicamente */
+::ng-deep .checkbox-group-container {
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+}
+
+::ng-deep .mat-checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  padding: 2px 0;
+}

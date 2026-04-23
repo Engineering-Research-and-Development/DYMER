@@ -5,8 +5,15 @@ const util = require( "./utility" );
 const gblConfigService = global.configService;
 const host = gblConfigService.ip + ":" + gblConfigService.port;	//TODO check if port exist or not
 const contextPath = util.getContextPath( 'webserver' );
-
 const serverUrl = gblConfigService.protocol + "://" + host + contextPath
+//const serverUrl = "http://localhost";
+/*
+1. set serverUrl to domain name or IP, serverURl isn't container name ex: http://localhost
+2. run swagger with right serverUrl
+3. in local env run node swagger.js
+4. push swagger_webserver.json
+5. start dymer-webserver
+*/
 
 const doc = {
 	info     : {
@@ -68,11 +75,11 @@ endpointsFiles.unshift( '../dymer-templates/server.js' );
 endpointsFiles.unshift( '../dymer-services/server.js' );
 endpointsFiles.unshift( '../dymer-forms/server.js' );
 endpointsFiles.unshift( '../dymer-entities/server.js' );
-
+//kms_entities/server.js
 console.log( "Searching endpoints in: ", endpointsFiles );
 
 swaggerAutogen( outputFile, endpointsFiles, doc )
-// // Uncomment to first automatically create SwaggerDoc and immediately after run the webserver module
+ // Uncomment to first automatically create SwaggerDoc and immediately after run the webserver module
 // .then( () => {
 // 	require( './server' )
 // } )

@@ -118,6 +118,7 @@ module.exports = {
             await client.hSet(hash, "typeservice", typeservice);
             await client.hSet(hash, "ids", ids);
             await client.hSet(hash, "indexes", indexes);
+            console.log(nameFile + ' | writeCacheByKey | writing cache hash: ' + hash);
             logger.info(nameFile + ' | writeCacheByKey | writing cache hash: ' + hash);
         } catch (e) {
             logger.error(nameFile + ` | writeCacheByKey | Unable to execute REDIS writing key ${hash} operation due to: ${e.message}`)
@@ -131,6 +132,8 @@ module.exports = {
         let hash = await this.getRelationKey()
         try {
             await client.hSet(hash, "response", response);
+            console.log(nameFile + ' | writeAllRelations ');
+            logger.info(nameFile + ' | writeAllRelations ');
         } catch (e) {
             logger.error(nameFile + ` | writeAllRelations | Unable to execute REDIS writing key ${hash} operation due to: ${e.message}`)
             console.error(`Unable to execute REDIS writing key ${hash} operation due to: ${e.message} `)
@@ -261,7 +264,7 @@ module.exports = {
 
             let newRelation = {
                 _index: "entity_relation",
-                _type: "entity_relation",
+                //_type: "entity_relation",
                 _id: relationId,
                 score: null,
                 sort: [
@@ -288,7 +291,7 @@ module.exports = {
     },
     removeRelationsFromCacheById: async function (ids_, isEnable) {
         if (!isEnable) { return false }
-      //  console.log("REDIS | removeRelationsFromCacheById | ids_ ", ids_)
+        //  console.log("REDIS | removeRelationsFromCacheById | ids_ ", ids_)
         logger.info(nameFile + ` | removeRelationsFromCacheById | Deleting relation`)
         try {
             let relToCheck = JSON.parse(await client.hGet(this.relationsKey, "response"))

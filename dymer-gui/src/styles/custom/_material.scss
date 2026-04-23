@@ -1,0 +1,16 @@
+/** Custom Material styles */
+
+mat-card {
+  margin-bottom: var(--gutter);
+}
+
+mat-card-header + mat-card-content {
+  margin-top: var(--gutter);
+}
+
+.form-field-full {
+  .mat-mdc-form-field {
+    width: 100%;
+  }
+}
+

@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 //var proxy = require("http-proxy-middleware");
-const {createProxyMiddleware} = require('http-proxy-middleware');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const util = require("../utility");
 const axios = require('axios');
@@ -12,73 +12,58 @@ const SESSION_LIFETIME = 3600 * 1000 * 2;
 const SESSION_NAME = 'dymersid';
 const SESSION_SECRET = 'keyboard cat';
 const users = [];
-//require("../config/config.js");
-//router.use(proxy(global.gConfig.services.entity.ip_port));
 
+let allowedOrigins =util.getAllowedOrigins("dymer-forms")//VL new gui
 router.use(cookieParser());
 router.use(session({
-					   name:              SESSION_NAME,
-					   secret:            SESSION_SECRET,
-					   resave:            false,
-					   saveUninitialized: false,
-					   cookie:            {
-						   httpOnly: false,
-						   maxAge:   SESSION_LIFETIME
-						   /*,
-								   secure: true*/
-					   }
-				   }));
-router.get('*', (req, res, next) => {
-	// #swagger.tags = ['Webserver']
+    name: SESSION_NAME,
+    secret: SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: false,
+        maxAge: SESSION_LIFETIME
+            /*,
+                    secure: true*/
+    }
+}));
 
-	next();
-});
-
-router.post('*', (req, res, next) => {
-	// #swagger.tags = ['Webserver']
-
-	next();
-});
-
-router.put('*', (req, res, next) => {
-	// #swagger.tags = ['Webserver']
-
-	next();
-});
-
-router.delete('*', (req, res, next) => {
-	// #swagger.tags = ['Webserver']
-
-	next();
-});
-
-router.use('*', async (req, res, next) => {
-	// console.log('FORMMM Session: ', req.session);
-	//  console.log('FORMMM Cookies: ', req.cookies)
-	next();
+router.use('*', async(req, res, next) => {
+    // console.log('FORMMM Session: ', req.session);
+    // console.log('FORMMM Cookies: ', req.cookies)
+    next();
 })
 
-
 const jsonPlaceholderProxy = createProxyMiddleware({
-													   target:       util.getServiceUrl("form"),
-													   changeOrigin: true, // proxy websockets
-													   ws:           true,
-													   onProxyReq:   (proxyReq, req) => {
+    target: util.getServiceUrl("form"),
+    changeOrigin: true, // proxy websockets
+    ws: true,
+    onProxyReq: (proxyReq, req) => {
 
-														   //   console.log("proxyReq");
-														   //    console.log('UUUUUUUU: ', req.path, req.session)
-														   //    console.log('Cookies: ', req.cookies)
-													   },
-													   pathRewrite:  function (path, req) {
-														   path = path.replace(util.getContextPath('webserver'), util.getContextPath('form'));
-														   path = path.replace("/api/forms", "");
-														   return path;
+        // console.log("proxyReq");
+        // console.log('UUUUUUUU: ', req.path, req.session)
+        // console.log('Cookies: ', req.cookies)
+    },
+    pathRewrite: function(path, req) {
+        path = path.replace(util.getContextPath('webserver'), util.getContextPath('form'));
+        path = path.replace("/api/forms", "");
+        return path;
 
-													   }
+    },
+	//VL new gui
+    onProxyRes: function(proxyRes, req, res) {
+        const origin = req.headers.origin;
+        if (allowedOrigins.includes(origin)) {
+            proxyRes.headers['Access-Control-Allow-Origin'] = origin;
+            proxyRes.headers['Access-Control-Allow-Credentials'] = 'true';
+        }
+    }
+    //VL new gui
 
-												   });
+
+});
 router.use(
-	jsonPlaceholderProxy
+    jsonPlaceholderProxy
 );
 
 /*

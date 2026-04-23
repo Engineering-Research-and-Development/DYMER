@@ -16,8 +16,8 @@ Handlebars.registerHelper('loadfile', function(eid, fid, options) {
     var ret = (kmsconfig.cdn).replace('public/cdn/', "") + "api/entities/api/v1/entity/contentfile/" + eid + "/" + fid;
     var tk = localStorage.getItem('DYMAT');
     var tk_extra = localStorage.getItem('DYM_EXTRA');
-    if (tk != null)
-        return ret += "?tkdymat=" + tk + "&tkextra=" + tk_extra;
+    //bugfix docs if (tk != null)
+    //    return ret += "?tkdymat=" + tk + "&tkextra=" + tk_extra;
     tk = localStorage.getItem('DYM');
     if (tk != null)
         return ret += "?tkdym=" + tk + "&tkextra=" + tk_extra;
@@ -76,6 +76,148 @@ Handlebars.registerHelper('DymerPaginationPageIndex', function(len, index, optio
     }
     return (indexPage + 1);
 });
+
+Handlebars.registerHelper('isEven', function(index) {
+    return index % 2 === 0;
+});
+
+Handlebars.registerHelper('colorByIndex', function(index) {
+    const colors = ['primary', 'success', 'info', 'warning', 'danger'];
+    // Usa l'operatore modulo per ricominciare da capo se l'indice supera la lunghezza dell'array
+    return colors[index % colors.length];
+});
+
+Handlebars.registerHelper('and', function() {
+    return Array.prototype.slice.call(arguments, 0, -1).every(Boolean);
+});
+
+Handlebars.registerHelper('truncate', function(str, len) {
+    if (str.length > len && str.length > 0) {
+        return str.substring(0, len) + '...';
+    }
+    return str;
+});
+
+Handlebars.registerHelper('limit', function(arr, limit) {
+    if (!Array.isArray(arr)) return [];
+    return arr.slice(0, limit);
+});
+
+
+
+Handlebars.registerHelper('toCSV', function (context, options) {
+
+  let data = [];
+
+  if (context?.actualitem) {
+    data = context.actualitem;
+  } else if (context?.kmsrenderdetail) {
+    data = context.kmsrenderdetail;
+  } else if (context?.kmsdataset) {
+    data = context.kmsdataset;
+  } else if (Array.isArray(context)) {
+    data = context;
+  } else if (context) {
+    data = [context];
+  }
+
+  if (!Array.isArray(data)) data = [data];
+  if (data.length === 0) return "";
+
+  const exclude = (options.hash.exclude || "")
+    .split(",")
+    .map(f => f.trim())
+    .filter(Boolean);
+
+  const filename = options.hash.filename || "export.csv";
+  const download = options.hash.download === true;
+
+  const flattenObject = (obj, prefix = "", res = {}) => {
+    for (let key in obj) {
+      if (!obj.hasOwnProperty(key)) continue;
+
+      const newKey = prefix ? `${prefix}.${key}` : key;
+      const value = obj[key];
+
+      if (
+        value &&
+        typeof value === "object" &&
+        !Array.isArray(value)
+      ) {
+        flattenObject(value, newKey, res);
+      } else {
+        res[newKey] = value;
+      }
+    }
+    return res;
+  };
+
+  const flatData = data.map(item => flattenObject(item));
+
+  const stripHtml = (html) => {
+    if (!html) return "";
+    return html
+      .replace(/<[^>]*>?/gm, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  };
+
+  const escapeCSV = (value) => {
+    if (value === null || value === undefined) return "";
+
+    let v = value;
+
+    if (typeof v === "object") {
+      v = Array.isArray(v) ? v.join(" | ") : JSON.stringify(v);
+    }
+
+    v = stripHtml(String(v));
+    v = v.replace(/"/g, '""');
+
+    return `"${v}"`;
+  };
+
+  const headersSet = new Set();
+
+  flatData.forEach(item => {
+    Object.keys(item).forEach(k => {
+      if (!exclude.includes(k)) {
+        headersSet.add(k);
+      }
+    });
+  });
+
+  const headers = Array.from(headersSet);
+
+  let csv = headers.join(",") + "\n";
+
+  // =========================
+  // 7. righe
+  // =========================
+  flatData.forEach(item => {
+    const row = headers.map(key => escapeCSV(item[key]));
+    csv += row.join(",") + "\n";
+  });
+
+  // =========================
+  // 8. download browser
+  // =========================
+  if (download && typeof window !== "undefined") {
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  return new Handlebars.SafeString(csv);
+});
+
+
 Handlebars.registerHelper('DymerPagination', function(arr, options) {
     let translation = {
         first: "First",
@@ -158,6 +300,21 @@ Handlebars.registerHelper('DymerViewTags', function(obj, hookCheckSatusconf, obj
     }
     return ret;
 });
+
+const serviceCardTemplate = `
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title">{{title}}</h5>
+      <span class="badge bg-primary">{{category}}</span>
+    </div>
+     <span class="pull-right text-info " style="padding-top: 10px;cursor:pointer" title="{{name}}" onclick="kmsrenderdetail('{{_id}}')"><i class="fa fa-info-circle" aria-hidden="true"></i></span>
+  </div>
+`;
+
+
+Handlebars.registerPartial('serviceCard', serviceCardTemplate);
+
+
 Handlebars.registerHelper('EntityStatus', function(obj, hookCheckSatusconf, obj2) {
     var ret = '';
     var args = [],
@@ -315,7 +472,7 @@ Handlebars.registerHelper('EntityLike', function (obj, hookCheckSatusconf,iconup
     let nLikes = likes.length
     let likeBtn = '';
     let userDYM64 = localStorage.getItem('DYM')
-    let userDYM = JSON.parse(atob(userDYM64))
+    //let userDYM = JSON.parse(atob(userDYM64))
 
     let likesList = "";
     if(likes != undefined) {
@@ -323,17 +480,20 @@ Handlebars.registerHelper('EntityLike', function (obj, hookCheckSatusconf,iconup
             likesList += user.split("@")[0] + '<br>';
         });
     }
-
+	//VL 0 day start
+	let email = localStorage.getItem('d_uid')
+    let roles = [];										 
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
     })
-
-    if (likes.includes(userDYM.email)) {
+	
+    if (likes.includes(email)) {
         
-        likeBtn += '<a href="#" class="likeCount" id="viewlike'+obj._id+'"> <span id="likeBtn-' + obj._id + '" class="fa '+iconup+' active" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\',\'' + obj.title + '\', \'' + obj._index + '\', \'' + userDYM.email + '\', \'' + userDYM.roles + '\', \'' + iconup + '\', \'' + icondown + '\')"> ' + nLikes + ' </a>'
+        likeBtn += '<a href="#" class="likeCount" id="viewlike'+obj._id+'"> <span id="likeBtn-' + obj._id + '" class="fa '+iconup+' active" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\',\'' + obj.title.replace(/['"]/g, '') + '\', \'' + obj._index + '\', \'' + email + '\', \'' + roles + '\', \'' + iconup + '\', \'' + icondown + '\')"> ' + nLikes + ' </a>'
     } else {
-        likeBtn += '<a href="#" class="likeCount" id="viewlike'+obj._id+'"> <span id="likeBtn-' + obj._id + '" class="fa '+icondown+'" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\',\'' + obj.title + '\', \'' + obj._index + '\', \'' + userDYM.email + '\', \'' + userDYM.roles + '\', \'' + iconup + '\',\'' + icondown + '\')"> ' + nLikes + ' </a>'
+        likeBtn += '<a href="#" class="likeCount" id="viewlike'+obj._id+'"> <span id="likeBtn-' + obj._id + '" class="fa '+icondown+'" style="cursor:pointer" data-toggle="tooltip" data-placement="bottom" data-html="true" title="' + likesList + '" ' + ' onclick="like(\'' + obj._id + '\',\'' + obj.title.replace(/['"]/g, '') + '\', \'' + obj._index + '\', \'' + email + '\', \'' + roles + '\', \'' + iconup + '\',\'' + icondown + '\')"> ' + nLikes + ' </a>'
     }
+	//VL 0 day end
     ret = likeBtn;
     return ret
 });

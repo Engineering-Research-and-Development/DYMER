@@ -1,0 +1,202 @@
+    <div class="flex flex-col h-full relative">
+      
+      <!-- Pages Section -->
+      <div class="p-4 border-b border-gray-200 bg-gray-50 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">Pages</h2>
+          <button (click)="requestCreatePage.emit()" class="text-blue-600 hover:text-blue-800 text-xs font-medium flex items-center">
+            <mat-icon class="text-sm mr-1">add</mat-icon> New
+          </button>
+        </div>
+        
+        <!-- Search Bar -->
+        <div class="relative">
+          <mat-icon class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 text-[18px] w-[18px] h-[18px] leading-[18px]">search</mat-icon>
+          <input 
+            type="text" 
+            [(ngModel)]="searchQuery"
+            placeholder="Search pages..." 
+            class="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+          >
+          @if (searchQuery()) {
+            <button (click)="searchQuery.set('')" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+              <mat-icon class="text-[16px] w-[16px] h-[16px] leading-[16px]">close</mat-icon>
+            </button>
+          }
+        </div>
+
+        <div class="space-y-1 max-h-40 overflow-y-auto">
+          @if (filteredPages().length === 0) {
+            <div class="text-xs text-gray-500 text-center py-2 italic">No pages found</div>
+          }
+          @for (page of filteredPages(); track page._id) {
+            <div 
+              class="flex items-center justify-between p-2 rounded-md cursor-pointer hover:bg-white hover:shadow-sm transition-all group"
+              [class.bg-blue-50]="pageService.currentPageId() === page._id"
+              [class.border-blue-200]="pageService.currentPageId() === page._id"
+              [class.border]="pageService.currentPageId() === page._id"
+              (click)="loadPage(page._id)"
+              (keydown.enter)="loadPage(page._id)"
+              tabindex="0"
+            >
+              <div class="flex items-center truncate">
+                <mat-icon class="text-gray-400 text-sm mr-2 group-hover:text-blue-500">description</mat-icon>
+                <div class="flex flex-col truncate">
+                  <span class="text-sm text-gray-700 truncate max-w-[100px]" [class.font-medium]="pageService.currentPageId() === page._id">{{ page.title }}</span>
+                  <!-- <span class="text-[10px] text-gray-400 truncate">{{ page.slug }}</span> -->
+                </div>
+              </div>
+              <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button (click)="onAttachClick($event, page._id)" class="text-gray-400 hover:text-blue-500" title="Attach JS/CSS">
+                  <mat-icon class="text-sm">attachment</mat-icon>
+                </button>
+                <button (click)="deletePage($event, page._id)" class="text-gray-400 hover:text-red-500">
+                  <mat-icon class="text-sm">delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex border-b border-gray-200 bg-white">
+        <button 
+          (click)="setActiveTab('components')"
+          title="Components"
+          class="flex-1 py-3 flex justify-center items-center border-b-2 transition-colors outline-none"
+          [class.border-blue-500]="activeTab === 'components'"
+          [class.text-blue-600]="activeTab === 'components'"
+          [class.border-transparent]="activeTab !== 'components'"
+          [class.text-gray-500]="activeTab !== 'components'"
+          [class.hover:text-gray-700]="activeTab !== 'components'"
+        >
+          <mat-icon>widgets</mat-icon>
+        </button>
+        <button 
+          (click)="setActiveTab('sections')"
+          title="Sections"
+          class="flex-1 py-3 flex justify-center items-center border-b-2 transition-colors outline-none"
+          [class.border-blue-500]="activeTab === 'sections'"
+          [class.text-blue-600]="activeTab === 'sections'"
+          [class.border-transparent]="activeTab !== 'sections'"
+          [class.text-gray-500]="activeTab !== 'sections'"
+          [class.hover:text-gray-700]="activeTab !== 'sections'"
+        >
+          <mat-icon>view_quilt</mat-icon>
+        </button>
+        <button 
+          (click)="setActiveTab('properties')"
+          title="Properties"
+          class="flex-1 py-3 flex justify-center items-center border-b-2 transition-colors outline-none"
+          [class.border-blue-500]="activeTab === 'properties'"
+          [class.text-blue-600]="activeTab === 'properties'"
+          [class.border-transparent]="activeTab !== 'properties'"
+          [class.text-gray-500]="activeTab !== 'properties'"
+          [class.hover:text-gray-700]="activeTab !== 'properties'"
+        >
+          <mat-icon>tune</mat-icon>
+        </button>
+        <button 
+          (click)="setActiveTab('navigator')"
+          title="Navigator"
+          class="flex-1 py-3 flex justify-center items-center border-b-2 transition-colors outline-none"
+          [class.border-blue-500]="activeTab === 'navigator'"
+          [class.text-blue-600]="activeTab === 'navigator'"
+          [class.border-transparent]="activeTab !== 'navigator'"
+          [class.text-gray-500]="activeTab !== 'navigator'"
+          [class.hover:text-gray-700]="activeTab !== 'navigator'"
+        >
+          <mat-icon>layers</mat-icon>
+        </button>
+      </div>
+      
+      @if (activeTab === 'components' || activeTab === 'sections') {
+        <div class="flex-1 overflow-y-auto p-4 space-y-2" cdkDropList [cdkDropListConnectedTo]="[]">
+          @if (activeTab === 'components') {
+            @for (category of categories; track category.name) {
+              <div class="border border-gray-200 rounded-lg overflow-hidden">
+                <button 
+                  (click)="toggleCategory(category.name)"
+                  class="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
+                >
+                  <span class="text-xs font-medium text-gray-700 uppercase">{{ category.name }}</span>
+                  <mat-icon class="text-gray-400 text-sm transition-transform duration-200" [class.rotate-180]="!category.expanded">expand_more</mat-icon>
+                </button>
+                
+                @if (category.expanded) {
+                  <div class="p-3 bg-white grid grid-cols-2 gap-3 border-t border-gray-200">
+                    @for (item of category.items; track item.name) {
+                      <div 
+                        cdkDrag 
+                        [cdkDragData]="item" 
+                        class="flex flex-col items-center justify-center p-3 bg-gray-50 hover:bg-white border border-gray-200 hover:border-blue-400 rounded-lg cursor-move transition-all shadow-sm hover:shadow-md group"
+                      >
+                        <mat-icon class="text-gray-400 group-hover:text-blue-500 mb-2">{{ item.icon }}</mat-icon>
+                        <span class="text-xs text-gray-600 font-medium text-center">{{ item.name }}</span>
+                        
+                        <!-- Drag Preview -->
+                        <div *cdkDragPreview class="bg-white p-4 rounded-lg shadow-xl border border-blue-500 opacity-90 flex items-center gap-2 z-50">
+                          <mat-icon class="text-blue-500">{{ item.icon }}</mat-icon>
+                          <span class="font-medium">{{ item.name }}</span>
+                        </div>
+
+                        <!-- Drag Placeholder -->
+                        <div *cdkDragPlaceholder class="flex flex-col items-center justify-center p-3 bg-gray-50 border border-gray-200 rounded-lg opacity-50">
+                          <mat-icon class="text-gray-400">{{ item.icon }}</mat-icon>
+                          <span class="text-xs text-gray-600 font-medium text-center">{{ item.name }}</span>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          } @else {
+            @for (section of sections; track section.name) {
+              <div class="border border-gray-200 rounded-lg overflow-hidden">
+                <button 
+                  (click)="toggleSection(section.name)"
+                  class="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
+                >
+                  <span class="text-xs font-medium text-gray-700 uppercase">{{ section.name }}</span>
+                  <mat-icon class="text-gray-400 text-sm transition-transform duration-200" [class.rotate-180]="!section.expanded">expand_more</mat-icon>
+                </button>
+                
+                @if (section.expanded) {
+                  <div class="p-3 bg-white grid grid-cols-1 gap-3 border-t border-gray-200">
+                    @for (item of section.items; track item.name) {
+                      <div 
+                        cdkDrag 
+                        [cdkDragData]="item" 
+                        class="flex flex-col items-center justify-center p-3 bg-gray-50 hover:bg-white border border-gray-200 hover:border-blue-400 rounded-lg cursor-move transition-all shadow-sm hover:shadow-md group"
+                      >
+                        <div class="flex items-center gap-3 w-full">
+                          <mat-icon class="text-gray-400 group-hover:text-blue-500">{{ item.icon }}</mat-icon>
+                          <span class="text-xs text-gray-600 font-medium">{{ item.name }}</span>
+                        </div>
+                        
+                        <!-- Drag Preview -->
+                        <div *cdkDragPreview class="bg-white p-4 rounded-lg shadow-xl border border-blue-500 opacity-90 flex items-center gap-2 z-50">
+                          <mat-icon class="text-blue-500">{{ item.icon }}</mat-icon>
+                          <span class="font-medium">{{ item.name }}</span>
+                        </div>
+
+                        <!-- Drag Placeholder -->
+                        <div *cdkDragPlaceholder class="flex flex-col items-center justify-center p-3 bg-gray-50 border border-gray-200 rounded-lg opacity-50">
+                          <mat-icon class="text-gray-400">{{ item.icon }}</mat-icon>
+                          <span class="text-xs text-gray-600 font-medium text-center">{{ item.name }}</span>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          }
+        </div>
+      } @else if (activeTab === 'properties' || activeTab === 'navigator') {
+        <app-models-properties [activeTab]="activeTab" class="flex-1 overflow-hidden block"></app-models-properties>
+      }
+    </div>
+  

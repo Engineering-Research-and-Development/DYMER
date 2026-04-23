@@ -1,0 +1,39 @@
+@use '@angular/material' as mat;
+
+html {
+  color-scheme: light;
+
+  @include mat.theme((
+    color: (
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+      theme-type: light,
+    ),
+    typography: Roboto,
+    density: 0
+  ));
+}
+
+.theme-dark {
+  color-scheme: dark;
+
+  @include mat.theme((
+    color: (
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+      theme-type: dark,
+    ),
+    typography: Roboto,
+    density: 0
+  ));
+
+  body,
+  .mat-app-background,
+  .mat-drawer-container,
+  .mat-drawer,
+  .mat-sidenav-container,
+  .mat-sidenav {
+    background-color: black !important;
+  }
+}
+}

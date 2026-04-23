@@ -1,0 +1,51 @@
+<breadcrumb />
+
+<mat-card>
+  <mat-card-content>
+    <h2>Filtering and selection</h2>
+    <p>Select your favorite state</p>
+    <mat-form-field>
+      <mat-label>Search for a state</mat-label>
+      <input
+        matInput
+        [matAutocomplete]="autocomplete"
+        [(ngModel)]="value"
+        (ngModelChange)="filteredStates = filter(value)"
+      />
+      <mat-autocomplete #autocomplete="matAutocomplete">
+        @for (state of filteredStates; track state) {
+          <mat-option [value]="state.name">
+            <span>{{ state.name }}</span>
+          </mat-option>
+        }
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <p>Selected value: {{ value }}</p>
+
+    <h2>Option groups autocomplete</h2>
+    <form [formGroup]="stateForm">
+      <mat-form-field>
+        <mat-label>States Group</mat-label>
+        <input
+          type="text"
+          matInput
+          formControlName="stateGroup"
+          required
+          [matAutocomplete]="autoGroup"
+        />
+        <mat-autocomplete #autoGroup="matAutocomplete">
+          @for (group of stateGroupOptions | async; track group) {
+            <mat-optgroup [label]="group.letter">
+              @for (name of group.names; track name) {
+                <mat-option [value]="name">{{ name }}</mat-option>
+              }
+            </mat-optgroup>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+    </form>
+
+    <p>Selected value: {{ stateForm.value | json }}</p>
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,120 @@
+<a id="back-to-top" href="#" class="btn btn-sm back-to-top ng-scope" role="button" (click)="scrollToTop($event)"><i
+        class="fa fa-chevron-up"></i></a>
+<div class="col-md-12">
+    <div class="card ">
+        <div class="card-header ">
+            <h5 class="card-title">Templates</h5>
+            <div class="card-category">
+                <div class="d-flex flex-wrap">
+                    <a href="javascript:void(0)" (click)="scrollToAnchor('lnktemplatelist', $event)"
+                        class="text-warning">
+                        <span> &nbsp;&nbsp;# List Template
+                        </span>
+                    </a>
+                    <a href="javascript:void(0)" (click)="scrollToAnchor('lnktemplatesetvariable', $event)"
+                        class="text-warning">
+                        <span> &nbsp;&nbsp;# Set Variable
+                        </span>
+                    </a>
+                    <a href="javascript:void(0)" (click)="scrollToAnchor('lnktemplateifEquals', $event)"
+                        class="text-warning">
+                        <span> &nbsp;&nbsp;# If Equals
+                        </span>
+                    </a>
+                    <a href="javascript:void(0)" (click)="scrollToAnchor('lnktemplaterenderfile', $event)"
+                        class="text-warning">
+                        <span> &nbsp;&nbsp;# Render File
+                        </span>
+                    </a>
+                    <a href="javascript:void(0)" (click)="scrollToAnchor('lnktemplateformatDate', $event)"
+                        class="text-warning">
+                        <span> &nbsp;&nbsp;# Format Date
+                        </span>
+                    </a>
+                    <a href="javascript:void(0)" (click)="scrollToAnchor('lnktemplateifIsNthItem', $event)"
+                        class="text-warning">
+                        <span> &nbsp;&nbsp;# if Is Nth Item
+                        </span>
+                    </a>
+                    <a href="javascript:void(0)" (click)="scrollToAnchor('lnktemplateBlockHelpers', $event)"
+                        class="text-warning">
+                        <span> &nbsp;&nbsp;# Block Helpers
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body ">
+
+            <div>
+                <h4 class="text-info"> What is Handlebars? </h4>
+                <p>Handlebars <a href="https://handlebarsjs.com/guide/#what-is-handlebars" target="_blank"><i
+                            class="fa fa-external-link-square" aria-hidden="true"></i></a> is a simple templating
+                    language.
+                    <br> It uses a template and an input object to generate HTML or other text formats. Handlebars
+                    templates look like regular text with embedded Handlebars expressions.
+                </p>
+                <p id="lnktemplatelist">Below is an example of a list template:</p>
+                <div>
+                    <pre><code #codeBlock1 class="language-html">{{ templateListExample }}</code></pre>
+                </div>
+                <div ngNonBindable>
+                    <h5>Paginator label</h5>
+                    <p>
+                        Sets the "d_pagination_label" variable as an array of joined pipe strings corresponding to the
+                        buttons First|Previous|Next|Last.<br> ex: {{setVariable "d_pagination_label" "Prima|Prossima|Precedente|Ultima"}}
+                        <br>To not display a button, omit the string between the pipes.<br> ex: {{setVariable "d_pagination_label" "|Next|Prev|"}}.
+                        <br>If the variable is not set, the following tuple "First|Previous|Next|Last" will be used.
+                    </p>
+                </div>
+                <h4 class="text-info" id="lnktemplatesetvariable"><i class="fa fa-caret-right"
+                        aria-hidden="true"></i> Set Variable
+                </h4>
+                <div>
+                    <pre><code #codeBlock2 class="language-javascript">{{ setVariableExample }}</code></pre>
+                </div>
+                <h4 class="text-info" id="lnktemplateifEquals"><i class="fa fa-caret-right" aria-hidden="true"></i>
+                    If Equals
+                </h4>
+                <div>
+                    <pre><code #codeBlock3 class="language-javascript">{{ ifEqualsExample }}</code></pre>
+                </div>
+                <h4 class="text-info" id="lnktemplaterenderfile"><i class="fa fa-caret-right"
+                        aria-hidden="true"></i> Render File
+                </h4>
+                <div>
+                    <pre><code #codeBlock4 class="language-javascript">{{ renderFileExample1 }}</code></pre>
+                </div>
+                <p>If the attached file is in a json array structure</p>
+                <div>
+                    <pre><code #codeBlock5 class="language-javascript">{{ lenderFileExample2 }}</code></pre>
+                </div>
+                <h4 class="text-info" id="lnktemplateformatDate"><i class="fa fa-caret-right"
+                        aria-hidden="true"></i> Format Date
+                </h4>
+                <div>
+                    <pre><code #codeBlock6 class="language-javascript">{{ formatDateExample }}</code></pre>
+                </div>
+                <h4 class="text-info" id="lnktemplateifIsNthItem"><i class="fa fa-caret-right"
+                        aria-hidden="true"></i> If Is Nth Item
+                </h4>
+                <div>
+                    <pre><code #codeBlock7 class="language-javascript">{{ ifIsNthItemExample }}</code></pre>
+                </div>
+                <h4 class="text-info" id="lnktemplateBlockHelpers"><i class="fa fa-caret-right"
+                        aria-hidden="true"></i> Block Helpers
+                </h4>
+                <p>
+                    How to create a registerhelper <a href="https://handlebarsjs.com/guide/hooks.html#helpermissing"
+                        target="_blank"><i class="fa fa-external-link-square" aria-hidden="true"></i></a>. Add your
+                    registerhelper in dymer-webserver\public\cdn\js\handlebarshook.js
+                </p>
+            </div>
+        </div>
+
+        <div class="card-footer ">
+            <hr />
+            <div class="stats"><i class="fa fa-history"></i> Updated 29/09/2021</div>
+        </div>
+    </div>
+</div>

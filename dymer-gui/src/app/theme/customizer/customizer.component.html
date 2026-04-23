@@ -1,0 +1,189 @@
+<div
+  class="customizer-handle"
+  cdkDrag
+  (cdkDragStarted)="onDragStart($event)"
+>
+  <!-- Bacchetta magica come bottone flottante -->
+  <button *ngIf="!isChatbotOpen" type="button"
+          class="magic-wand-button"
+          (click)="openPanel(customizerPanel)"
+          [attr.aria-label]="'magicai.openPanel' | translate"
+          title="Open MagicAI panel">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+      <!-- corpo della bacchetta -->
+      <path d="M3 21L21 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- scintille / stelle decorative -->
+      <path d="M14 3l1.5 1.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M18 7l1 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="6.5" cy="6.5" r="0.9" fill="currentColor"/>
+      <circle cx="9.5" cy="3.5" r="0.7" fill="currentColor"/>
+    </svg>
+  </button>
+</div>
+
+<ng-template #customizerPanel>
+  <div class="magicai-container">
+    <div class="card-body">
+      <form [formGroup]="zeroFormGroup">
+        <header class="header">
+          <div class="header-top">
+            <h1 class="title">{{ 'magicai.title' | translate }}</h1>
+                      <p class="subtitle">{{ 'magicai.subtitle' | translate }}</p>
+                      <!-- <div class="status-indicator" [title]="isOnline ? 'Ollama Online' : 'Ollama Offline'">
+                        <span class="dot" [ngClass]="isOnline ? 'online' : 'offline'"></span>
+                        <small>{{ isOnline ? 'Ready' : 'Offline' }}</small>
+                      </div> -->
+          </div>
+          
+          <div class="chat-header p-16 bg-primary text-white">
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center">
+                    <span class="status-dot m-r-8" [ngClass]="agentStatus()"></span>
+                    
+                    <button mat-button [matMenuTriggerFor]="agentMenu" class="text-white">
+                        <h2 class="m-0 fs-16">{{ selectedAgent()?.name || 'Seleziona Agente' }}</h2>
+                        <mat-icon>arrow_drop_down</mat-icon>
+                      </button>
+
+                      <mat-menu #agentMenu="matMenu" xPosition="before">
+                        <div class="p-8 fs-12 text-muted fw-600">I TUOI AGENTI AI</div>
+                        <mat-divider></mat-divider>
+                        
+                        @for (agent of agents(); track agent._id) {
+                        <button mat-menu-item (click)="onAgentChange(agent)">
+                          <mat-icon [color]="agent.provider === 'openai' ? 'primary' : ''">
+                            {{ agent.provider === 'openai' ? 'cloud' : 'storage' }}
+                          </mat-icon>
+                          <span>{{ agent.name }}</span>
+                          <small class="text-muted m-l-8">({{ agent.model }})</small>
+                        </button>
+                      }
+
+                      @if (agents().length === 0) {
+                        <button mat-menu-item disabled>Nessun agente trovato</button>
+                      }
+
+                      <mat-divider></mat-divider>
+                      <button mat-menu-item routerLink="services/agents" class="text-primary">
+                        <mat-icon color="primary">settings</mat-icon>
+                        <span>Gestisci Agenti</span>
+                      </button>
+                    </mat-menu>
+                  </div>
+                  
+                  
+                </div>
+              </div>
+          <div class="model-selector">
+                    <!-- <button mat-button [matMenuTriggerFor]="agentMenu" class="text-white">
+                  <mat-icon class="m-r-8">smart_toy</mat-icon>
+                  {{ selectedAgent()?.name || 'Seleziona Agente' }}
+                  <mat-icon>arrow_drop_down</mat-icon>
+                </button>
+                
+                <mat-menu #agentMenu="matMenu">
+                  <button mat-menu-item *ngFor="let agent of agents()" (click)="selectedAgent.set(agent)">
+                    <mat-icon>{{ agent.provider === 'openai' ? 'cloud' : 'lan' }}</mat-icon>
+                    <span>{{ agent.name }} ({{ agent.model }})</span>
+                  </button>
+                  <mat-divider></mat-divider>
+                  <button mat-menu-item routerLink="/ai-manager/agents">
+                    <mat-icon>settings</mat-icon>
+                    <span>Gestisci Agenti</span>
+                  </button>
+                </mat-menu> -->
+                <!-- <label>Available Models </label>
+                <select formControlName="model" *ngIf="availableModels.length">
+                <option *ngFor="let m of availableModels" [value]="m.name">{{ m.name }} ({{ (m.size / 1024 / 1024 / 1024).toFixed(2) }} GB)</option>
+              </select> -->
+            <!-- <mat-form-field appearance="outline" subsample="true">
+              <mat-select formControlName="model" (selectionChange)="selectedModel = $event.value">
+                <mat-option *ngFor="let m of availableModels" [value]="m.name">
+                  {{ m.name }} ({{ (m.size / 1024 / 1024 / 1024).toFixed(2) }} GB)
+                </mat-option>
+              </mat-select>
+            </mat-form-field> -->
+          </div>
+        </header>
+
+           <div class="typing-area">
+                <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+           </div>
+
+
+
+        <div class="chat-response">
+          <!-- Display messages here -->
+          <div *ngFor="let message of messages" class="message" [ngClass]="message.from">
+            <div class="meta">
+              {{ (message.from === 'user' ? ('magicai.you' | translate) : ('magicai.magicai' | translate)) }} • {{ message.time | date:'shortTime' }}
+            </div>
+
+            <!-- mostra sempre la parte testuale se presente -->
+            <div class="text" *ngIf="message.text" [innerHTML]="message.text"></div>
+
+            <!-- codice evidenziato se presente -->
+            <div *ngIf="message.code" class="code-block-wrapper">
+              <div class="code-header">
+                <div class="copy-area">
+                  <button mat-stroked-button color="primary" class="copy-button" (click)="copyCode(message)" title="{{ 'magicai.copyTitle' | translate }}">
+                    <span class="material-icons">content_copy</span>
+                    <span *ngIf="!message.copied">{{ 'magicai.copy' | translate }}</span>
+                    <span *ngIf="message.copied">{{ 'magicai.copied' | translate }}</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- <pre class="hljs"><code [highlight]="message.code" [language]="message.codeLanguage || ('magicai.plaintext' | translate)"></code></pre> -->
+                <ngx-codemirror
+                  [ngModel]="message.code"
+                  [options]="getCodeMirrorOptions(message.codeLanguage ?? 'plaintext')">
+                </ngx-codemirror>
+            </div>
+          </div>
+            <div class="footer-status">
+             
+             
+            </div>
+          <div *ngIf="isLoading" class="loader">
+            {{ 'magicai.loading' | translate }}
+          </div>
+        </div>
+
+        <div class="typing-area typing-form">
+          <div class="prompt-main-controls">
+            <div class="input-wrapper">
+              <input type="text" class="typing-input" required formControlName="userInput"
+                     [placeholder]="'magicai.askPlaceholder' | translate"
+                     (keyup.enter)="sendMessage()"
+                     [disabled]="isLoading" />
+            </div>
+
+            <!-- simple button (no mat- attribute) to avoid dependency issues -->
+            <button id="send-message-button"
+                    type="button"
+                    class="send-button"
+                    (click)="sendMessage()"
+                    [disabled]="zeroFormGroup.invalid || isLoading"
+                    [attr.title]="'magicai.send' | translate"
+                    [attr.aria-label]="'magicai.send' | translate">
+              <span class="material-symbols-rounded">send</span>
+              <span class="visually-hidden">{{ 'magicai.send' | translate }}</span>
+            </button>
+
+            <button id="delete-chat-button"
+                    (click)="clearPromptInput()"
+                    class="icon-button"
+                    [attr.aria-label]="'magicai.delete' | translate"
+                    [attr.title]="'magicai.delete' | translate">
+              <span class="material-symbols-rounded">delete</span>
+              <span class="visually-hidden">{{ 'magicai.delete' | translate }}</span>
+            </button>
+          </div>
+
+          <p class="disclaimer-text"></p>
+        </div>
+      </form>
+    </div>
+  </div>
+</ng-template>

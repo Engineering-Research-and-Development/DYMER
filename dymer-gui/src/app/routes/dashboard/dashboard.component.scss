@@ -1,0 +1,102 @@
+.dashboard-root {
+  ::ng-deep {
+    // Override Material Tabs (Vercel Style)
+    .vercel-tabs {
+      .mat-mdc-tab-header {
+        border-bottom: 1px solid #f1f5f9;
+        background: #fafafa;
+      }
+      .mdc-tab__text-label {
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        color: #64748b !important;
+      }
+      .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+        color: #000 !important;
+      }
+      .mat-mdc-tab-indicator__content--underline {
+        border-color: #000 !important;
+        border-width: 1px !important;
+      }
+    }
+
+    // Grid Compact Styling
+    .compact-grid {
+      .mat-mdc-header-cell {
+        background: #fff;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #94a3b8;
+      }
+      .mat-mdc-cell {
+        font-size: 13px;
+        padding-top: 12px;
+        padding-bottom: 12px;
+      }
+    }
+  }
+}
+.vercel-tabs {
+  ::ng-deep {
+    .mat-mdc-tab-header { border-bottom: 1px solid #f1f5f9; background: #fafafa; }
+    .mdc-tab__text-label { font-size: 12px !important; font-weight: 600 !important; color: #64748b !important; }
+    .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label { color: #000 !important; }
+    .mat-mdc-tab-indicator__content--underline { border-color: #000 !important; }
+  }
+}
+
+.compact-grid {
+  ::ng-deep {
+    .mat-mdc-header-cell { background: #fff; font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 700; }
+    .mat-mdc-cell { font-size: 13px; color: #334155; }
+    .mtx-grid-tag { border-radius: 4px; font-size: 10px; padding: 2px 8px; }
+  }
+}
+
+.pillar-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  &:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+}
+
+// Stile Terminale per i Log
+.bg-slate-900 {
+  scrollbar-width: thin;
+  scrollbar-color: #334155 transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #334155;
+    border-radius: 10px;
+  }
+}
+
+// Override per rendere i bottoni tab più "Vercel"
+.bg-slate-100 {
+    button {
+        border: none;
+        cursor: pointer;
+    }
+}

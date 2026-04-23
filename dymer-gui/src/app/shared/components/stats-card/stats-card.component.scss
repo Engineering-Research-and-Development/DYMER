@@ -1,0 +1,84 @@
+.stats-card {
+  border-radius: 20px;
+  border: 1px solid #eee;
+  transition: all 0.25s ease;
+  padding:10px;
+  background-color: white;
+}
+
+.stats-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+.card-value {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #222;
+}
+
+.card-label {
+  color: #777;
+  font-size: 0.9rem;
+}
+
+.icon-box {
+  background: #f3e8ff;
+  padding: 14px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.25s;
+}
+
+.stats-card:hover .icon-box {
+  transform: scale(1.1);
+  background: #e9d5ff;
+}
+
+
+/* Progress bar */
+.custom-progress {
+  height: 6px;
+  overflow: hidden;
+  background: #e5e5e5;
+  border-radius: 10px;
+}
+
+/* progress bar iniziale: larghezza 0 */
+.custom-progress .progress-bar {
+  width: 0%;
+  transition: width 0.3s ease-out;
+}
+
+/* Quando la card è in hover: portiamo al 100% */
+.stats-card:hover .custom-progress .progress-bar {
+  width: 100%;
+}
+
+/* Dark theme overrides */
+:host-context(.theme-dark) .stats-card {
+  border-color: #4a4b58;
+  background-color: #2a2b38;
+}
+
+:host-context(.theme-dark) .card-value {
+  color: #ffffff;
+}
+
+:host-context(.theme-dark) .card-label {
+  color: #b0b0b0;
+}
+
+:host-context(.theme-dark) .icon-box {
+  background: #3a3b48;
+}
+
+:host-context(.theme-dark) .stats-card:hover .icon-box {
+  background: #4a4b58;
+}
+
+:host-context(.theme-dark) .custom-progress {
+  background: #4a4b58;
+}

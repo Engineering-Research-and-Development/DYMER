@@ -1,0 +1,181 @@
+<div class="row">
+    <div class="col-md-12">
+        <mat-card>
+            <mat-card-header style="display: flex; justify-content: space-between; align-items: center;">
+                <mat-card-title>{{ 'importcron.config_title' | translate }}</mat-card-title>
+                <button mat-icon-button (click)="showConfigAuthentication = !showConfigAuthentication">
+                    <i class="fa fa-cogs" aria-hidden="true"></i>
+                </button>
+            </mat-card-header>
+            <mat-card-content *ngIf="showConfigAuthentication">
+                <h4>{{ 'importcron.form_subtitle' | translate }}</h4>
+                <form #formCONJOB="ngForm" id="formCONJOB">
+                    <input type="hidden" [(ngModel)]="configCONJOB._id" name="_id">
+                    <input type="hidden" [(ngModel)]="configCONJOB.authtype" name="authtype">
+                    <div class="row">
+                        <div class="col-12">
+
+                            <div class="form-group">
+                                <div class="text-info pull-right">
+                                    <mat-checkbox [(ngModel)]="configCONJOB.active" name="active">{{ 'importcron.enabled' | translate }}</mat-checkbox>
+                                </div>
+                            </div>
+
+                            <mat-form-field class="w-100">
+                                <mat-label>{{ 'importcron.title_label' | translate }} *</mat-label>
+                                <input matInput [(ngModel)]="configCONJOB.title" name="title" required>
+                            </mat-form-field>
+
+                            <mat-form-field class="w-100">
+                                <mat-label>{{ 'importcron.cron_pattern' | translate }} <a href="http://crontab.org/" target="_blank"><i class="fa fa-external-link-square" aria-hidden="true"></i></a></mat-label>
+                                <input matInput [(ngModel)]="configCONJOB.time" name="time">
+                            </mat-form-field>
+
+                            <mat-form-field class="w-100">
+                                <mat-label>{{ 'importcron.source_path' | translate }} *</mat-label>
+                                <input matInput [(ngModel)]="configCONJOB.sourcepath" name="sourcepath" required>
+                            </mat-form-field>
+
+                            <mat-form-field class="w-100">
+                                <mat-label>{{ 'importcron.source_api_search_path' | translate }} *</mat-label>
+                                <input matInput [(ngModel)]="configCONJOB.apisearchpath" name="apisearchpath" required>
+                                <mat-hint>{{ 'importcron.source_api_search_path_help' | translate }}</mat-hint>
+                            </mat-form-field>
+
+                            <mat-form-field class="w-100">
+                                <mat-label>{{ 'importcron.source_index' | translate }} *</mat-label>
+                                <input matInput [(ngModel)]="configCONJOB.sourceindex" name="sourceindex" required>
+                            </mat-form-field>
+
+                            <mat-form-field class="w-100">
+                                <mat-label>{{ 'importcron.target_index' | translate }} *</mat-label>
+                                <input matInput [(ngModel)]="configCONJOB.targetindex" name="targetindex" required>
+                            </mat-form-field>
+
+                            <mat-form-field class="w-100">
+                                <mat-label>{{ 'importcron.target_prefix' | translate }}</mat-label>
+                                <input matInput [(ngModel)]="configCONJOB.targetprefix" name="targetprefix">
+                                <mat-hint>{{ 'importcron.target_prefix_help' | translate }}</mat-hint>
+                            </mat-form-field>
+
+                            <div class="form-group">
+                                <mat-checkbox [(ngModel)]="configCONJOB.sameid" name="sameid">{{ 'importcron.same_id' | translate }}</mat-checkbox>
+                                <small style="color: #8c8985;"> {{ 'importcron.same_id_help' | translate }}</small>
+                            </div>
+
+                            <div class="form-group">
+                                <mat-checkbox [(ngModel)]="configCONJOB.importrelation" name="importrelation">{{ 'importcron.import_relations' | translate }}</mat-checkbox>
+                                <small style="color: #8c8985;"> {{ 'importcron.import_relations_help' | translate }}</small>
+                            </div>
+
+                            <mat-form-field class="w-100" *ngIf="configCONJOB.importrelation">
+                                <mat-label>{{ 'importcron.relation_indexes' | translate }}</mat-label>
+                                <input matInput [(ngModel)]="configCONJOB.typerelations" name="typerelations">
+                                <mat-hint>{{ 'importcron.relation_indexes_help' | translate }}</mat-hint>
+                            </mat-form-field>
+
+                            <div class="form-group">
+                                <mat-checkbox [(ngModel)]="configCONJOB.importentities" name="importentities">{{ 'importcron.import_entities' | translate }}</mat-checkbox>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="text-info">{{ 'importcron.condition' | translate }}</label>
+                                <p [innerHTML]="'importcron.condition_help' | translate"></p>
+                                <pre>{{ 'importcron.condition_json_structure' | translate }}</pre>
+                                <mat-form-field class="w-100">
+                                    <textarea matInput [(ngModel)]="configCONJOB.condition" name="condition" rows="5"></textarea>
+                                </mat-form-field>
+                            </div>
+
+                            <div class="form-group">
+                                <mat-checkbox [(ngModel)]="configCONJOB.importmodel" name="importmodel">{{ 'importcron.import_model' | translate }}</mat-checkbox>
+                                <small style="color: #8c8985;"> {{ 'importcron.import_model_help' | translate }}</small>
+                            </div>
+
+                            <div class="form-group" *ngIf="configCONJOB.importmodel">
+                                &nbsp;&nbsp;
+                                <mat-checkbox [(ngModel)]="configCONJOB.forceimportmodel" name="forceimportmodel">{{ 'importcron.force_import' | translate }}</mat-checkbox>
+                                <small style="color: #8c8985;"> {{ 'importcron.force_import_model_help' | translate }}</small>
+                            </div>
+
+                            <div class="form-group">
+                                <mat-checkbox [(ngModel)]="configCONJOB.importtemplates" name="importtemplates">{{ 'importcron.import_templates' | translate }}</mat-checkbox>
+                                <small style="color: #8c8985;"> {{ 'importcron.import_templates_help' | translate }}</small>
+                            </div>
+
+                            <div class="form-group" *ngIf="configCONJOB.importtemplates">
+                                &nbsp;&nbsp;
+                                <mat-checkbox [(ngModel)]="configCONJOB.forceimporttemplates" name="forceimporttemplates">{{ 'importcron.force_import' | translate }}</mat-checkbox>
+                                <small style="color: #8c8985;"> {{ 'importcron.force_import_templates_help' | translate }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-right ">
+                        <div class="col-12 ">
+                            <button mat-flat-button color="primary" *ngIf="!configCONJOB._id" [disabled]="!formCONJOB.valid" (click)="saveCRONJOB(configCONJOB)">{{ 'menu.actions.save' | translate }}</button>
+                            <button mat-flat-button color="primary" *ngIf="configCONJOB._id" [disabled]="!formCONJOB.valid" (click)="saveCRONJOB(configCONJOB)">{{ 'menu.actions.update' | translate }}</button>
+                            <button mat-button color="warn" *ngIf="configCONJOB._id" (click)="configCONJOB = {}">{{ 'menu.actions.cancel' | translate }}</button>
+                        </div>
+                    </div>
+                </form>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-md-12">
+        <mat-card>
+            <mat-card-header style="display: flex; justify-content: space-between; align-items: center;">
+                <mat-card-title>{{ 'importcron.rules_title' | translate }}</mat-card-title>
+                <button mat-icon-button (click)="showRules = !showRules">
+                    <i class="fa fa-bars" aria-hidden="true"></i>
+                </button>
+            </mat-card-header>
+
+            <mat-card-content *ngIf="showRules" style="overflow-x:auto;">
+                <table class="table">
+                    <thead class="text-primary">
+                        <th style="text-align: left;">{{ 'importcron.table.title' | translate }}</th>
+                        <th style="text-align: left;">{{ 'importcron.table.time' | translate }}</th>
+                        <th style="text-align: left;">{{ 'importcron.table.source_path' | translate }}</th>
+                        <th style="padding-left: 70px; text-align: center;">{{ 'importcron.table.source_target_index' | translate }}</th>
+                        <th>{{ 'importcron.table.prefix_target_id' | translate }}</th>
+                        <th style="text-align: center">{{ 'importcron.table.import_relations' | translate }}</th>
+                        <th class="text-center"></th>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let el of List; let i = index">
+                            <td style="max-width: 100px;">{{ el.title }}</td>
+                            <td style="max-width: 100px;">
+                                <i class="fa fa-power-off" [ngClass]="el.active ? 'text-success' : 'text-danger'" aria-hidden="true"></i> {{ el.time }}
+                            </td>
+                            <td style="max-width: 100px;">{{ el.sourcepath }}<br>{{ el.apisearchpath }}</td>
+                            <td style="max-width: 100px; padding-left: 70px; text-align: center;">{{ el.sourceindex }}->{{ el.targetindex }}</td>
+                            <td style="max-width: 100px; text-align: left;">{{ el.targetprefix }}</td>
+                            <td style="max-width: 100px; text-align: center;">
+                                <i class="fa" [ngClass]="el.importrelation ? 'fa-check' : 'fa-times'" aria-hidden="true"></i><br> {{ el.typerelations }}
+                            </td>
+                            <td class="text-center">
+                                <button mat-icon-button (click)="setupdateCRONJOB(i, 'clone')" [title]="'importcron.clone' | translate">
+                                    <i class="fa fa-clone cloneAction" aria-hidden="true"></i>
+                                </button>
+                                <button mat-icon-button (click)="setupdateCRONJOB(i)" [title]="'menu.actions.update' | translate">
+                                    <i class="fa fa-pencil updateAction" aria-hidden="true"></i>
+                                </button>
+                                <button mat-icon-button (click)="removeCRONJOB(i)" [title]="'menu.actions.delete' | translate">
+                                    <i class="fa fa-trash deleteAction" aria-hidden="true"></i>
+                                </button>
+                                <button mat-icon-button (click)="runCRONJOB(i)" [title]="'importcron.run' | translate">
+                                    <i class="fa fa-play deleteAction" aria-hidden="true"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </mat-card-content>
+            <mat-card-footer>
+            </mat-card-footer>
+        </mat-card>
+    </div>
+</div>

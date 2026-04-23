@@ -1,0 +1,100 @@
+<div class="magicai-container">
+  <mat-card>
+    <mat-card-content>
+      <div class="card-body">
+        <form [formGroup]="zeroFormGroup">
+          <header class="header">
+            <h1 class="title">{{ 'magicai.title' | translate }}</h1>
+            <p class="subtitle">{{ 'magicai.subtitle' | translate }}</p>
+            <p>ciao</p>
+            <!--
+            <ul class="suggestion-list">
+              <li class="suggestion">
+                <h4 class="text">Help me plan a game night with my 5 best friends for under $100.</h4>
+                <span class="icon material-symbols-rounded">draw</span>
+              </li>
+              <li class="suggestion">
+                <h4 class="text">What are the best tips to improve my public speaking skills?</h4>
+                <span class="icon material-symbols-rounded">lightbulb</span>
+              </li>
+              <li class="suggestion">
+                <h4 class="text">Can you help me find the latest news on web development?</h4>
+                <span class="icon material-symbols-rounded">explore</span>
+              </li>
+              <li class="suggestion">
+                <h4 class="text">Write JavaScript code to sum all elements in an array.</h4>
+                <span class="icon material-symbols-rounded">code</span>
+              </li>
+            </ul>
+            -->
+          </header>
+
+          <div class="chat-response">
+            <!-- Display messages here -->
+            <div *ngFor="let message of messages" class="message" [ngClass]="message.from">
+              <div class="meta">
+                {{ (message.from === 'user' ? ('magicai.you' | translate) : ('magicai.magicai' | translate)) }} • {{ message.time | date:'shortTime' }}
+              </div>
+
+              <!-- mostra sempre la parte testuale se presente -->
+              <div class="text" *ngIf="message.text" [innerHTML]="message.text"></div>
+
+              <!-- codice evidenziato se presente -->
+              <div *ngIf="message.code" class="code-block-wrapper">
+                <div class="code-header">
+                  <div class="copy-area">
+                    <button mat-stroked-button color="primary" class="copy-button" (click)="copyCode(message)" title="{{ 'magicai.copyTitle' | translate }}">
+                      <span class="material-icons">content_copy</span>
+                      <span *ngIf="!message.copied">{{ 'magicai.copy' | translate }}</span>
+                      <span *ngIf="message.copied">{{ 'magicai.copied' | translate }}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <pre class="hljs"><code [highlight]="message.code" [language]="message.codeLanguage || ('magicai.plaintext' | translate)"></code></pre>
+              </div>
+            </div>
+
+            <div *ngIf="isLoading" class="loader">
+              {{ 'magicai.loading' | translate }}
+            </div>
+          </div>
+
+          <div class="typing-area typing-form">
+            <div class="prompt-main-controls">
+              <div class="input-wrapper">
+                <input type="text" class="typing-input" required formControlName="userInput"
+                       [placeholder]="'magicai.askPlaceholder' | translate"
+                       (keyup.enter)="sendMessage()"
+                       [disabled]="isLoading" />
+              </div>
+
+              <!-- simple button (no mat- attribute) to avoid dependency issues -->
+              <button id="send-message-button"
+                      type="button"
+                      class="send-button"
+                      (click)="sendMessage()"
+                      [disabled]="zeroFormGroup.invalid || isLoading"
+                      [attr.title]="'magicai.send' | translate"
+                      [attr.aria-label]="'magicai.send' | translate">
+                <span class="material-symbols-rounded">send</span>
+                <span class="visually-hidden">{{ 'magicai.send' | translate }}</span>
+              </button>
+
+              <button id="delete-chat-button"
+                      (click)="clearPromptInput()"
+                      class="icon-button"
+                      [attr.aria-label]="'magicai.delete' | translate"
+                      [attr.title]="'magicai.delete' | translate">
+                <span class="material-symbols-rounded">delete</span>
+                <span class="visually-hidden">{{ 'magicai.delete' | translate }}</span>
+              </button>
+            </div>
+
+            <p class="disclaimer-text"></p>
+          </div>
+        </form>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

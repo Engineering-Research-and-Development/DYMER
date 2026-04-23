@@ -1,0 +1,48 @@
+@use '@angular/material' as mat;
+
+html {
+  color-scheme: light;
+
+  @include mat.theme((
+    color: (
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+      theme-type: light,
+    ),
+    typography: Kumbh Sans,
+    density: 0
+  ));
+}
+
+.theme-dark {
+  color-scheme: dark;
+
+  @include mat.theme((
+    color: (
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+      theme-type: dark,
+    ),
+    typography: Kumbh Sans,
+    density: 0
+  ));
+
+  body,
+  .mat-app-background,
+  .mat-drawer-container,
+  .mat-drawer,
+  .mat-sidenav-container,
+  .mat-sidenav,
+  .mat-sidenav-content,
+  .matero-content {
+    background-color: #2a2b38 !important;
+  }
+
+  --sidemenu-active-heading-background-color: #4a4b58;
+  --sidemenu-active-heading-hover-background-color: #5a5b68;
+  --placeholder-color: #b0b0b0;
+}
+
+.theme-dark .bg-white {
+  background-color: #2a2b38 !important;
+}

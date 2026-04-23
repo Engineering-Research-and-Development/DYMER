@@ -1,0 +1,302 @@
+<div class="flex h-screen bg-gray-100 overflow-hidden" cdkDropListGroup [class.dark]="isDarkMode">
+  <!-- Sidebar -->
+  <app-templates-sidebar class="w-64 bg-white border-r border-gray-200 shrink-0 dark:bg-gray-900 dark:border-gray-700"
+    (requestCreatePage)="openNewPageModal()" (requestAttachFile)="openAttachModal($event)"></app-templates-sidebar>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-800">
+    <!-- Toolbar -->
+    <div
+      class="h-14 bg-white border-b border-gray-200 flex items-center px-4 justify-between shrink-0 dark:bg-gray-900 dark:border-gray-700">
+      <div class="flex items-center space-x-2">
+        <h1 class="text-lg font-semibold text-gray-800 dark:text-white">VvvebJs Lite Templates</h1>
+      </div>
+
+      <!-- Center: Breakpoints -->
+      <div
+        class="flex items-center bg-gray-100 rounded-lg p-1 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+        <button (click)="setBreakpoint('mobile')"
+          class="p-1.5 rounded-sm text-gray-500 hover:text-gray-700 hover:bg-white dark:hover:bg-gray-700 dark:text-gray-400 transition-all"
+          [class.bg-white]="currentBreakpoint === 'mobile'" [class.text-blue-600]="currentBreakpoint === 'mobile'"
+          [class.shadow-xs]="currentBreakpoint === 'mobile'" [class.dark:bg-gray-700]="currentBreakpoint === 'mobile'"
+          [class.dark:text-blue-400]="currentBreakpoint === 'mobile'" title="Mobile View">
+          <mat-icon class="text-sm">smartphone</mat-icon>
+        </button>
+        <button (click)="setBreakpoint('tablet')"
+          class="p-1.5 rounded-sm text-gray-500 hover:text-gray-700 hover:bg-white dark:hover:bg-gray-700 dark:text-gray-400 transition-all"
+          [class.bg-white]="currentBreakpoint === 'tablet'" [class.text-blue-600]="currentBreakpoint === 'tablet'"
+          [class.shadow-xs]="currentBreakpoint === 'tablet'" [class.dark:bg-gray-700]="currentBreakpoint === 'tablet'"
+          [class.dark:text-blue-400]="currentBreakpoint === 'tablet'" title="Tablet View">
+          <mat-icon class="text-sm">tablet_mac</mat-icon>
+        </button>
+        <button (click)="setBreakpoint('desktop')"
+          class="p-1.5 rounded-sm text-gray-500 hover:text-gray-700 hover:bg-white dark:hover:bg-gray-700 dark:text-gray-400 transition-all"
+          [class.bg-white]="currentBreakpoint === 'desktop'" [class.text-blue-600]="currentBreakpoint === 'desktop'"
+          [class.shadow-xs]="currentBreakpoint === 'desktop'" [class.dark:bg-gray-700]="currentBreakpoint === 'desktop'"
+          [class.dark:text-blue-400]="currentBreakpoint === 'desktop'" title="Desktop View">
+          <mat-icon class="text-sm">desktop_windows</mat-icon>
+        </button>
+      </div>
+
+      <div class="flex items-center space-x-2">
+        <button (click)="toggleDarkMode()"
+          class="p-2 hover:bg-gray-100 rounded-lg text-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+          title="Toggle Dark Mode">
+          <mat-icon>{{ isDarkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
+        </button>
+        <div class="w-px h-6 bg-gray-300 mx-2 dark:bg-gray-600"></div>
+        <button (click)="togglePreview()"
+          class="p-2 hover:bg-gray-100 rounded-lg text-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+          [class.bg-blue-100]="previewMode" [class.text-blue-600]="previewMode" title="Toggle Preview">
+          <mat-icon>visibility</mat-icon>
+        </button>
+        <button (click)="toggleCode()"
+          class="p-2 hover:bg-gray-100 rounded-lg text-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+          title="Toggle Code Editor">
+          <mat-icon>code</mat-icon>
+        </button>
+        <button (click)="downloadZip()"
+          class="p-2 hover:bg-gray-100 rounded-lg text-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+          title="Download ZIP">
+          <mat-icon>download</mat-icon>
+        </button>
+        <button (click)="saveTemplate()"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium flex items-center gap-2 transition-colors">
+          <mat-icon class="text-sm">save</mat-icon> Save
+        </button>
+      </div>
+    </div>
+
+    <!-- Canvas Area -->
+    <div class="flex-1 overflow-hidden relative bg-gray-50 flex dark:bg-gray-800">
+      <div class="w-80 overflow-auto p-8 flex justify-center bg-gray-100/50 dark:bg-gray-900/50"
+        [class.p-0]="previewMode" [class.bg-white]="previewMode">
+        <div class="transition-all duration-300 ease-in-out bg-white shadow-xs rounded-lg overflow-hidden dark:bg-black"
+          [style.width]="getCanvasWidth()" [style.height]="previewMode ? '100%' : 'min(100%, 800px)'"
+          [class.shadow-none]="previewMode" [class.rounded-none]="previewMode">
+          <app-templates-canvas class="w-full h-full block"></app-templates-canvas>
+        </div>
+      </div>
+
+      <!-- Code Editor Overlay/Panel -->
+      @if (builderService.showCodeEditor()) {
+      <app-code-templates-editor
+        class="w-1/2 border-l border-gray-200 bg-white h-full absolute right-0 top-0 bottom-0 shadow-xl z-20 dark:bg-gray-900 dark:border-gray-700"></app-code-templates-editor>
+      }
+
+      <!-- Right Panel (Properties + AI Chat) -->
+      @if (!previewMode) {
+      <div
+        class="flex-1 bg-white border-l border-gray-200 flex flex-col shrink-0 z-10 dark:bg-gray-900 dark:border-gray-700">
+        <app-templates-properties
+          class="flex-1 overflow-hidden border-b border-gray-200 dark:border-gray-700"></app-templates-properties>
+        <app-ai-templates-chat class="h-[40%] shrink-0"></app-ai-templates-chat>
+      </div>
+      }
+    </div>
+  </div>
+
+  <!-- New Page Modal Overlay -->
+  @if (showNewPageModal) {
+  <div class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div
+      class="bg-white rounded-lg shadow-xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200 dark:bg-gray-800 flex flex-col max-h-[90vh]">
+      <div
+        class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+        <h3 class="font-semibold text-gray-800 dark:text-white">Create New Page</h3>
+        <button (click)="closeNewPageModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="flex flex-1 overflow-hidden">
+        <!-- Left: Form -->
+        <div class="w-1/2 p-4 space-y-4 border-r border-gray-100 dark:border-gray-700 overflow-y-auto">
+          <div>
+            <label for="pageName" class="block text-xs font-medium text-gray-700 mb-1 dark:text-gray-300">Page
+              Name</label>
+            <input id="pageName" [(ngModel)]="newPageData.name" type="text"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-hidden dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              placeholder="e.g. Contact Us">
+          </div>
+
+          <div>
+            <label for="pageSlug" class="block text-xs font-medium text-gray-700 mb-1 dark:text-gray-300">Index /
+              Slug</label>
+            <input id="pageSlug" [(ngModel)]="newPageData.slug" type="text"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-hidden dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              placeholder="e.g. contact-us">
+            </div>
+            <!-- Select list start -->
+            <div>
+              <label for="pageModel" class="block text-xs font-medium text-gray-700 mb-1 dark:text-gray-300">
+                Model
+              </label>
+            
+              <select id="pageModel" [(ngModel)]="newPageData.model"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-hidden dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                @for (model of models; track model) {
+                <option [value]="model">{{ model }}</option>
+                }
+              </select>
+            </div>
+            <!-- Select list end -->
+            <div>
+              <label for="pageDescription"
+                class="block text-xs font-medium text-gray-700 mb-1 dark:text-gray-300">Description</label>
+              <textarea id="pageDescription" [(ngModel)]="newPageData.description"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-hidden min-h-[80px] dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                placeholder="Brief description of the page..."></textarea>
+            </div>
+            </div>
+            
+            <!-- Right: Templates -->
+            <div class="w-1/2 p-4 bg-gray-50 dark:bg-gray-900/50 overflow-y-auto">
+              <span class="block text-xs font-medium text-gray-700 mb-2 dark:text-gray-300">Choose Template</span>
+              <div class="grid grid-cols-1 gap-3">
+                @for (template of templates; track template.id) {
+                <div
+                  class="border rounded-lg p-3 cursor-pointer transition-all hover:border-blue-400 hover:shadow-xs outline-hidden focus:ring-2 focus:ring-blue-500"
+                  [class.border-blue-500]="newPageData.template === template.id"
+                  [class.bg-blue-50]="newPageData.template === template.id"
+              [class.dark:bg-blue-900]="newPageData.template === template.id"
+              [class.border-gray-200]="newPageData.template !== template.id"
+              [class.bg-white]="newPageData.template !== template.id"
+              [class.dark:bg-gray-800]="newPageData.template !== template.id"
+              [class.dark:border-gray-700]="newPageData.template !== template.id"
+              (click)="newPageData.template = template.id" (keydown.enter)="newPageData.template = template.id"
+              tabindex="0">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400">
+                  <mat-icon>{{ template.icon }}</mat-icon>
+                </div>
+                <div>
+                  <h4 class="text-sm font-medium text-gray-800 dark:text-white">{{ template.name }}</h4>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">{{ template.description }}</p>
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-2 dark:bg-gray-700 dark:border-gray-600">
+        <button (click)="closeNewPageModal()"
+          class="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 font-medium dark:text-gray-300 dark:hover:text-white">Cancel</button>
+        <button (click)="saveNewPage()" [disabled]="!newPageData.name || !newPageData.slug"
+          class="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+          @if (isCreatingPage) {
+          <mat-icon class="animate-spin text-sm">refresh</mat-icon> Creating...
+          } @else {
+          Create Page
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Attach File Modal Overlay -->
+  @if (showAttachModal) {
+  <div class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div
+      class="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh] dark:bg-gray-800">
+      <div
+        class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+        <h3 class="font-semibold text-gray-800 dark:text-white">Attach Asset</h3>
+        <button (click)="closeAttachModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="flex border-b border-gray-200 dark:border-gray-600">
+        <button class="flex-1 py-2 text-sm font-medium text-center transition-colors"
+          [class.text-blue-600]="attachModalData.activeTab === 'create'"
+          [class.border-b-2]="attachModalData.activeTab === 'create'"
+          [class.border-blue-600]="attachModalData.activeTab === 'create'"
+          [class.text-gray-500]="attachModalData.activeTab !== 'create'"
+          [class.dark:text-blue-400]="attachModalData.activeTab === 'create'"
+          [class.dark:text-gray-400]="attachModalData.activeTab !== 'create'"
+          (click)="attachModalData.activeTab = 'create'">
+          Create New
+        </button>
+        <button class="flex-1 py-2 text-sm font-medium text-center transition-colors"
+          [class.text-blue-600]="attachModalData.activeTab === 'upload'"
+          [class.border-b-2]="attachModalData.activeTab === 'upload'"
+          [class.border-blue-600]="attachModalData.activeTab === 'upload'"
+          [class.text-gray-500]="attachModalData.activeTab !== 'upload'"
+          [class.dark:text-blue-400]="attachModalData.activeTab === 'upload'"
+          [class.dark:text-gray-400]="attachModalData.activeTab !== 'upload'"
+          (click)="attachModalData.activeTab = 'upload'">
+          Upload File
+        </button>
+      </div>
+
+      <div class="p-4 space-y-4 overflow-y-auto flex-1">
+        <!-- Common: File Type -->
+        <div>
+          <span class="block text-xs font-medium text-gray-700 mb-1 dark:text-gray-300">File Type</span>
+          <div class="flex gap-4">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="fileType" value="js" [(ngModel)]="attachModalData.fileType"
+                class="text-blue-600 focus:ring-blue-500">
+              <span class="text-sm text-gray-700 dark:text-gray-300">JavaScript (.js)</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="fileType" value="css" [(ngModel)]="attachModalData.fileType"
+                class="text-blue-600 focus:ring-blue-500">
+              <span class="text-sm text-gray-700 dark:text-gray-300">CSS (.css)</span>
+            </label>
+          </div>
+        </div>
+
+        @if (attachModalData.activeTab === 'create') {
+        <div>
+          <label for="fileName" class="block text-xs font-medium text-gray-700 mb-1 dark:text-gray-300">File
+            Name</label>
+          <input id="fileName" [(ngModel)]="attachModalData.fileName" type="text"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-hidden dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            placeholder="e.g. custom-script">
+          <span class="text-xs text-gray-400 mt-1 block">Extension .{{attachModalData.fileType}} will be added
+            automatically</span>
+        </div>
+
+        <div class="flex-1 flex flex-col min-h-[200px]">
+          <label for="fileContent" class="block text-xs font-medium text-gray-700 mb-1 dark:text-gray-300">Code
+            Content</label>
+          <textarea id="fileContent" [(ngModel)]="attachModalData.fileContent"
+            class="w-full flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm font-mono focus:ring-2 focus:ring-blue-500 outline-hidden resize-none dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            placeholder="// Write your code here..."></textarea>
+        </div>
+        }
+
+        @if (attachModalData.activeTab === 'upload') {
+        <div
+          class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:bg-gray-50 transition-colors cursor-pointer relative dark:border-gray-600 dark:hover:bg-gray-700">
+          <input type="file" (change)="onFileSelected($event)"
+            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            [accept]="attachModalData.fileType === 'js' ? '.js' : '.css'">
+          <mat-icon class="text-gray-400 text-4xl mb-2">cloud_upload</mat-icon>
+          <p class="text-sm text-gray-600 font-medium dark:text-gray-300">Click to upload or drag and drop</p>
+          <p class="text-xs text-gray-400 mt-1">
+            {{ attachModalData.selectedFile ? attachModalData.selectedFile.name : 'Supported: .' +
+            attachModalData.fileType }}
+          </p>
+        </div>
+        }
+      </div>
+
+      <div class="p-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-2 dark:bg-gray-700 dark:border-gray-600">
+        <button (click)="closeAttachModal()"
+          class="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 font-medium dark:text-gray-300 dark:hover:text-white">Cancel</button>
+        <button (click)="saveAttachment()" [disabled]="!isValidAttachment()"
+          class="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+          <mat-icon class="text-sm">save</mat-icon> Save Asset
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+</div>

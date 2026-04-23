@@ -1,0 +1,121 @@
+
+<!-- Subscribe Card -->
+<mat-card class="mt-3">
+  <mat-card-header>
+    <mat-card-title>{{ 'hooks.subscribe' | translate }}</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="row">
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{ 'hooks.index' | translate }}</mat-label>
+          <input matInput [(ngModel)]="hook._index" readonly>
+        </mat-form-field>
+      </div>
+      <div class="col-2">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{ 'hooks.hook_type' | translate }}</mat-label>
+          <mat-select [(ngModel)]="hook.eventType">
+            <mat-option value="after_insert">{{ 'hooks.options.after_insert' | translate }}</mat-option>
+            <mat-option value="after_update">{{ 'hooks.options.after_update' | translate }}</mat-option>
+            <mat-option value="after_delete">{{ 'hooks.options.after_delete' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>{{ 'hooks.service' | translate }}</mat-label>
+          <mat-select [(ngModel)]="hook.service">
+            <mat-option value="openness_search">{{ 'hooks.options.openness_search' | translate }}</mat-option>
+            <mat-option value="fwadapter">{{ 'hooks.options.fwadapter' | translate }}</mat-option>
+            <mat-option value="sync">{{ 'hooks.options.dymer_sync' | translate }}</mat-option>
+            <mat-option value="eaggregation_hook">{{ 'hooks.options.eaggregation' | translate }}</mat-option>
+            <mat-option value="workflow">{{ 'hooks.options.workflow' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div *ngIf="listEntitiesAvailable.length > 0">
+      <label>{{ 'hooks.entities_available' | translate }}
+        <button mat-icon-button (click)="showlistEntitiesAvailable = !showlistEntitiesAvailable">
+          <mat-icon>menu</mat-icon>
+        </button>
+      </label>
+      <div class="row" *ngIf="showlistEntitiesAvailable">
+        <div class="col-3" *ngFor="let el of listEntitiesAvailable">
+          <div (click)="copyPastIndType(el)" style="cursor: pointer;">
+            <mat-icon>arrow_circle_up</mat-icon> {{el._index}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="listModelsAvailable.length > 0" class="mt-2">
+      <label>{{ 'hooks.models_available' | translate }}
+        <button mat-icon-button (click)="showlistModelsAvailable = !showlistModelsAvailable">
+          <mat-icon>menu</mat-icon>
+        </button>
+      </label>
+      <div class="row" *ngIf="showlistModelsAvailable">
+        <div class="col-3" *ngFor="let el of listModelsAvailable">
+          <div (click)="copyPastIndType(el)" style="cursor: pointer;">
+            <mat-icon>arrow_circle_up</mat-icon> {{el._index}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row text-right mt-3">
+      <div class="col-12">
+        <button mat-raised-button color="primary" (click)="createDymerHook(hook)" [disabled]="!hook._index || !hook.eventType || !hook.service">
+          <mat-icon>add</mat-icon> {{ 'hooks.add' | translate }}
+        </button>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<!-- Hooks List Card -->
+<mat-card class="mt-3">
+  <mat-card-header>
+    <mat-card-title class="text-warning">{{ 'hooks.entities_vs_services' | translate }}</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div>
+      <table class="table table-hover">
+        <thead>
+          <tr class="text-primary">
+            <th (click)="changeSorting('_index')" [ngClass]="selectedCls('_index')" style="cursor: pointer;">
+              {{ 'hooks.index' | translate }}
+              <mat-icon>{{ sort.column === '_index' ? (sort.descending ? 'arrow_downward' : 'arrow_upward') : 'sort' }}</mat-icon>
+            </th>
+            <th>{{ 'hooks.hook_type' | translate }}</th>
+            <th (click)="changeSorting('service.serviceType')" [ngClass]="selectedCls('service.serviceType')" style="cursor: pointer;">
+              {{ 'hooks.service' | translate }}
+              <mat-icon>{{ sort.column === 'service.serviceType' ? (sort.descending ? 'arrow_downward' : 'arrow_upward') : 'sort' }}</mat-icon>
+            </th>
+            <th (click)="changeSorting('service.servicePath')" [ngClass]="selectedCls('service.servicePath')" style="cursor: pointer;">
+              {{ 'hooks.service_path' | translate }}
+              <mat-icon>{{ sort.column === 'service.servicePath' ? (sort.descending ? 'arrow_downward' : 'arrow_upward') : 'sort' }}</mat-icon>
+            </th>
+            <th class="text-center">{{ 'hooks.actions' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let el of getSortedHooks()">
+            <td>{{ el._index }}</td>
+            <td>{{ el.eventType }}</td>
+            <td>{{ el.service.serviceType }}</td>
+            <td>{{ el.service.servicePath }}</td>
+            <td class="text-center">
+              <button mat-icon-button color="warn" (click)="removeDymerHook(el._id)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </mat-card-content>
+</mat-card>

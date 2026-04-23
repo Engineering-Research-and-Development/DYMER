@@ -19,7 +19,6 @@ router.use(bodyParser.urlencoded({
     extended: false,
     limit: '100MB'
 }));
-
 //   /api/v1/opn/
 /*
 const mongoURI = util.mongoUrlForm();
@@ -38,16 +37,14 @@ mongoose
     })
     .catch(err => {
         console.error("ERROR | " + nameFile + ` | Error connecting to mongo! Database name: "${x.connections[0].name}"`, err);
-    });
-*/
-
+    });*/
 router.post('/addhook', util.checkIsAdmin, function(req, res) {
     let callData = util.getAllQuery(req);
     let data = callData.data;
     var ret = new jsonResponse();
     var newObj = {
         _index: data.op_index,
-        _type: data.op_type,
+        _type: data.op_index,
         microserviceType: data.op_microserviceType,
         eventType: data.op_eventType,
         service: data.op_service
@@ -68,7 +65,6 @@ router.post('/addhook', util.checkIsAdmin, function(req, res) {
         }
     })
 });
-
 router.get('/hooks/', (req, res) => {
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
@@ -92,7 +88,6 @@ function findHook(queryFind, res) {
         }
     })
 }
-
 router.delete('/hook/:id', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     var id = req.params.id;
@@ -113,16 +108,20 @@ router.delete('/hook/:id', util.checkIsAdmin, (req, res) => {
 });
 
 router.post('/checkhook', function(req, res) {
+    console.log("routes-d-servicehooks.js | checkhook");
+    
     let callData = util.getAllQuery(req);
     let data = callData.data;
     let extraInfo = callData.extraInfo;
     let origindata = callData.origindata;
-    let originheader = callData.originheader;
+    let originheader = callData.originheader; 
     var queryFind = {};
     var eventSource = data.eventSource;
+
+    
     var queryFind = {
         "_index": data.obj._index,
-        "_type": data.obj._type,
+       // "_type": data.obj._index, //VL
         "eventType": eventSource
     };
     var wbsUrl = util.getServiceUrl('webserver');
@@ -130,23 +129,23 @@ router.post('/checkhook', function(req, res) {
     if (contp != "")
         wbsUrl += contp;
     //wbsUrl = util.getServiceUrl('dservice');
-    //console.log("chekkkk", JSON.stringify(queryFind));
+    console.log(nameFile + ' | post/checkhook :' + JSON.stringify(queryFind));
     logger.info(nameFile + ' | post/checkhook :' + JSON.stringify(queryFind));
     const headers = {
         'reqfrom': req.headers["reqfrom"]
     }
     HookModel.find(queryFind).then((els) => {
         els.forEach(el => {
-            // console.log("chekkkk el", JSON.stringify(el));
+            
+            console.log(nameFile + ' | post/checkhook | HookModel: chek el' + JSON.stringify(el));
             logger.info(nameFile + ' | post/checkhook | HookModel: chek el' + JSON.stringify(el));
-             var pt = wbsUrl + el.service.servicePath;
-            // pt = el.service.servicePath;
-            //let pt = util.getServiceUrl("dservice") + '/api/v1/workflow/listener';
+            var pt = wbsUrl + el.service.servicePath;
+           
+            console.log("==>checkhook pt ", pt);
             axios.post(pt, { 'data': data, "extraInfo": extraInfo,"origindata":origindata, "originheader":  originheader }, {
                     headers: headers
                 }).then(response => {
-                    // console.log("checkhook resp axios ", response);
-                    // console.log(nameFile + " | post/checkhook | inoltro | response :", response);
+                    console.log(nameFile + " | post/checkhook | inoltro | response :", response);
                     logger.info(nameFile + '| post/checkhook | inoltro | response ' + response);
                 })
                 .catch(error => {
@@ -161,5 +160,4 @@ router.post('/checkhook', function(req, res) {
         }
     })
 });
-
 module.exports = router;

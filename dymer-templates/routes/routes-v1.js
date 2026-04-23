@@ -22,7 +22,8 @@ var db;
 const mongoURI = util.mongoUrl();
 console.log(nameFile + ' | mongoURI :', JSON.stringify(mongoURI));
 logger.info(nameFile + " | mongoURI: " + JSON.stringify(mongoURI));
-mongoose.connect(mongoURI, {
+mongoose
+    .connect(mongoURI, {
         //  useCreateIndex: true,
         useNewUrlParser: true,
         useUnifiedTopology: true
@@ -53,7 +54,6 @@ mongoose.connect(mongoURI, {
         console.error("ERROR | " + nameFile + ` | Error connecting to mongo! Database  : "${mongoURI}"`, err);
         logger.error(nameFile + ` | Error connecting to mongo! Database name: "${mongoURI}" ` + err);
     });
-
 // Validator function
 function isValidObjectId(id) {
     if (ObjectId.isValid(id)) {
@@ -64,18 +64,7 @@ function isValidObjectId(id) {
     return false;
 }
 
-/*
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- */
-
 router.get('/mongostate', (req, res) => {
-
     let ret = new jsonResponse();
     let dbState = [{
             value: 0,
@@ -105,7 +94,6 @@ router.get('/mongostate', (req, res) => {
     ret.setSuccess(true);
     return res.send(ret);
 });
-
 var getfilesArrays = function(er) {
     return new Promise(function(resolve, reject) {
         var attachments = [];
@@ -128,8 +116,8 @@ var getfilesArrays = function(er) {
             resolve(ret_json);
         });
     });
-}
 
+}
 var recFile = function(file_id) {
     return new Promise(function(resolve, reject) {
         //console.log('file_id', file_id);
@@ -165,33 +153,24 @@ var recFile = function(file_id) {
     });
 }
 
-/*
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- *************************************************************************************************************
- */
-
 router.get('/', (req, res) => {
-
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
     let queryFind = callData.query;
-    console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
+    //console.log(nameFile + ' | get | queryFind:', JSON.stringify(queryFind));
     logger.info(nameFile + '  | get  | queryFind:' + JSON.stringify(queryFind));
     Template.find(queryFind, {}).collation({ locale: "en" }).sort({ title: +1 }).then((templates) => {
+    //TODO upgrade to "mongoose": "8.4.1",
+    //Template.find(queryFind, {}).collation({ locale: "en" }).sort({ title: +1 }).exec().then((templates) => {
         //Template.find(queryFind).then((templates) => {
         // console.log('dat', JSON.stringify(templates));
         var actions = templates.map(getfilesArrays);
         var results = Promise.all(actions); // pass array of promises
         results.then(function(dat) {
-            console.log("Query result ===>", dat);
+            //console.log("dymer-templates | route-v1.js | templates list: ", dat);
             ret.setMessages("List");
             ret.setData(dat);
-            //  console.log('dat', JSON.stringify(dat));
+            //console.log('==>dat ', JSON.stringify(dat));
             return res.send(ret);
         })
     }).catch(function(err) {
@@ -201,7 +180,6 @@ router.get('/', (req, res) => {
 });
 
 router.get('/content/:fileid', function(req, res, next) {
-
     var file_id = req.params.fileid;
     //console.log(nameFile + ' | get/content/:fileid |  fileid :', file_id);
     logger.info(nameFile + '  | get/content/:fileid |  fileid :' + file_id);
@@ -211,9 +189,11 @@ router.get('/content/:fileid', function(req, res, next) {
         return;
     }
     recFile(mongoose.Types.ObjectId(file_id))
+    //TODO upgrade mongoose 8
+    //recFile(mongoose.Types.ObjectId(file_id)).exec()
         .then(function(result) {
-            // console.log(nameFile + ' | get/content/:fileid |  fileid :', result);
-            // logger.info(nameFile + '  | get/content/:fileid |  fileid :' + JSON.stringify(queryFind));
+            //console.log(nameFile + ' | get/content/:fileid |  fileid :', result);
+            //logger.info(nameFile + '  | get/content/:fileid |  fileid :' + JSON.stringify(queryFind));
             res.setHeader('Content-type', result.contentType);
             res.setHeader('Content-disposition', 'filename=' + result.filename);
             res.charset = 'utf-8';
@@ -228,7 +208,6 @@ router.get('/content/:fileid', function(req, res, next) {
 });
 
 router.post('/', util.checkIsAdmin, function(req, res) {
-
     var ret = new jsonResponse();
     upload(req, res, function(err) {
         if (err) {
@@ -241,6 +220,7 @@ router.post('/', util.checkIsAdmin, function(req, res) {
         }
         let callData = util.getAllQuery(req);
         let data = callData.data;
+        console.log("template root POST / ", data);
         let files_arr = [];
         req.files.forEach(element => {
             files_arr.push(element.id);
@@ -283,7 +263,6 @@ router.post('/', util.checkIsAdmin, function(req, res) {
 });
 
 router.post('/create', util.checkIsAdmin, function(req, res) {
-
     var ret = new jsonResponse();
     upload(req, res, function(err) {
         if (err) {
@@ -317,7 +296,6 @@ router.post('/create', util.checkIsAdmin, function(req, res) {
 });
 
 router.post('/addAsset', util.checkIsAdmin, function(req, res) {
-
     var ret = new jsonResponse();
     upload(req, res, function(err) {
         if (err) {
@@ -325,7 +303,7 @@ router.post('/addAsset', util.checkIsAdmin, function(req, res) {
             logger.error(nameFile + ' | post/addAsset | upload  : ' + err);
             ret.setMessages("Upload Error");
             ret.setSuccess(false);
-            ret.setExtraData({ "log": error.stack });
+            ret.setExtraData({ "log": err.stack });
             return res.send(ret);
         }
         let callData = util.getAllQuery(req);
@@ -356,7 +334,6 @@ router.post('/addAsset', util.checkIsAdmin, function(req, res) {
 });
 
 router.post('/update', util.checkIsAdmin, function(req, res) {
-
     var ret = new jsonResponse();
     upload(req, res, function(err) {
         if (err) {
@@ -398,7 +375,6 @@ router.post('/update', util.checkIsAdmin, function(req, res) {
 });
 
 router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
-
     var ret = new jsonResponse();
     upload(req, res, function(err) {
         if (err) {
@@ -438,7 +414,7 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
                     console.error("ERROR | " + nameFile + ' | post/updateAsset | delete  : ', err);
                     logger.error(nameFile + ' | post/updateAsset | delete  : ' + err);
                     ret.setMessages("Template Error");*/
-                     /*MG - Se l'asset non viene trovato, accedo per recuperare il suo id aggiornato,
+                     /*MG - Se l'asset non viene trovato, accedo per recuperare il suo id aggiornato, 
                            in modo da poterlo eliminare
                     INIZIO MODIFICHE*/
                     //ret.setSuccess(false);
@@ -487,7 +463,6 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
 });
 
 router.delete('/:id', util.checkIsAdmin, (req, res) => {
-
     var ret = new jsonResponse();
     var id = req.params.id;
     var myfilter = { "_id": id };
@@ -513,7 +488,6 @@ router.delete('/:id', util.checkIsAdmin, (req, res) => {
 });
 
 router.delete('/:id/:fid', util.checkIsAdmin, (req, res) => {
-
     var ret = new jsonResponse();
     var id = req.params.id;
     var fid = req.params.fid;
