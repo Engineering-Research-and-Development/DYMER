@@ -82,12 +82,15 @@ graph TB
 
 | Service | Purpose | Port (default) | Technology |
 |---------|---------|----------------|-------------|
-| `dymer-webserver` | API Gateway & routing | 8888 | Node.js + Express |
-| `dymer-entities` | Entity CRUD + search | 3001 | Node.js + Elasticsearch |
-| `dymer-forms` | Data model management | 3002 | Node.js + MongoDB |
-| `dymer-templates` | Template storage & rendering | 3003 | Node.js + Handlebars |
+| `dymer-webserver` | API Gateway & routing | 8080 | Node.js + Express |
+| `dymer-entities` | Entity CRUD + search | 1358 | Node.js + Elasticsearch |
+| `dymer-forms` | Data model management | 4747 | Node.js + MongoDB |
+| `dymer-templates` | Template storage & rendering | 4545 | Node.js + Handlebars |
 | `dymer-gui` | Admin interface | 4200 | TypeScript + Modern Framework |
-| `dymer-services` | Auxiliary services | variable | Node.js |
+| `dymer-services` | Auxiliary services | 5050 | Node.js |
+| `mongodb` | Db store for settings   | 27017 |   |
+| `elasticsearch` | Index store   | 9200/9300 |   |
+| `Ollama` | AI code agent  | 7869 |   |
 
 ## 🚀 Quick Start
 
@@ -146,7 +149,7 @@ docker-compose ps
 curl http://localhost:8080/api/v1/health
 
 # Expected response:
-# {"status":"ok","version":"3.0.1"}
+{"status":"ok","version":"3.0.1"}
   
  
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
