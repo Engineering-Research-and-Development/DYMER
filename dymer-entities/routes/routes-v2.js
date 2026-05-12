@@ -83,7 +83,7 @@ console.log("multitenancyEnabled", multitenancyEnabled)
 function replaceAll(str, cerca, sostituisci) {
     return str.split(cerca).join(sostituisci);
 }
-var auth = 'elastic:changeme';
+ 
 var port = global.configService.repository.entity.port;
 var protocol = global.configService.repository.entity.protocol;
 var hostUrls = [global.configService.repository.entity.ip];
@@ -92,8 +92,8 @@ var hosts = hostUrls.map(function(host) {
     return {
         protocol: protocol,
         host: host,
-        port: port,
-        auth: auth
+        port: port
+       
     };
 });
 var elasticTimer = 3000;
