@@ -17,7 +17,16 @@ exports.getContextPath = function(typeServ) {
         cpath = "";
     return cpath;
 };
+exports.format = function(seconds){
+  function pad(s){
+    return (s < 10 ? '0' : '') + s;
+  }
+  var hours = Math.floor(seconds / (60*60));
+  var minutes = Math.floor(seconds % (60*60) / 60);
+  var seconds = Math.floor(seconds % 60);
 
+  return pad(hours) + ':' + pad(minutes) + ':' + pad(seconds);
+}
 exports.getServiceUrl = function(typeServ) {
     let url = global.gConfig.services[typeServ].protocol + "://" + global.gConfig.services[typeServ].ip + ':' + global.gConfig.services[typeServ].port;
     // url += this.getContextPath(typeServ);

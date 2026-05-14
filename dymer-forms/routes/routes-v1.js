@@ -62,25 +62,25 @@ mongoose
 router.get('/mongostate', (req, res) => {
     let ret = new jsonResponse();
     let dbState = [{
-            value: 0,
-            label: "Disconnected",
-            css: "text-danger"
-        },
-        {
-            value: 1,
-            label: "Connected",
-            css: "text-success"
-        },
-        {
-            value: 2,
-            label: "Connecting",
-            css: "text-info"
-        },
-        {
-            value: 3,
-            label: "Disconnecting",
-            css: "text-warning"
-        }
+        value: 0,
+        label: "Disconnected",
+        css: "text-danger"
+    },
+    {
+        value: 1,
+        label: "Connected",
+        css: "text-success"
+    },
+    {
+        value: 2,
+        label: "Connecting",
+        css: "text-info"
+    },
+    {
+        value: 3,
+        label: "Disconnecting",
+        css: "text-warning"
+    }
     ];
     let mongostate = mongoose.connection.readyState;
     ret.setMessages("Mongodb state");
@@ -90,12 +90,12 @@ router.get('/mongostate', (req, res) => {
     return res.send(ret);
 });
 
-var getfilesArrays = function(er) {
-    return new Promise(function(resolve, reject) {
+var getfilesArrays = function (er) {
+    return new Promise(function (resolve, reject) {
         var attachments = [];
         var actions = (er.files).map(recFile);
         var results = Promise.all(actions);
-        results.then(function(dt) {
+        results.then(function (dt) {
             var ret_json = {
                 "_id": er._id,
                 "title": er.title,
@@ -124,10 +124,10 @@ function convertString(input) {
     return output;
 }
 //VL
-var recFile = function(file_id) {
-    return new Promise(function(resolve, reject) {
+var recFile = function (file_id) {
+    return new Promise(function (resolve, reject) {
         //  gridFSBucket.openDownloadStream(file_id);
-        db.collection('fs.files').findOne(file_id._id, function(err, filedata) {
+        db.collection('fs.files').findOne(file_id._id, function (err, filedata) {
             var chunks = [];
             var bucket = gridFSBucket.openDownloadStream(file_id);
             bucket.on('data', (chunk) => {
@@ -152,7 +152,7 @@ var recFile = function(file_id) {
                 reject("Error");
             });
         });
-    }).catch(function(err) {
+    }).catch(function (err) {
         console.error("ERROR | " + nameFile + ' | recFile  : ', err);
         logger.error(nameFile + ' | recFile  : ' + err);
     });
@@ -193,8 +193,8 @@ router.get('/modeldetail', [util.checkIsDymerUser], (req, res) => {
             let type = node.attr.type;
             name = convertString(name);
             let nodeType = "";
-            if (type){
-                nodeType = 'type ="' + type+ '"';
+            if (type) {
+                nodeType = 'type ="' + type + '"';
             }
             templateNodeList = templateNodeList + `<section class="container-fluid"> \n<div class="row  ">\n<div class="col-md-12 col-sx-12 col-lg-12">\n	<div class="row"><h3 class="primaryColor primaryTitlesection"><b> ${name}</b></h3></div>\n <div class="row">{{ ${name} }}  </div>\n</div>\n</div> \n</section>\n`;
             // templateNodeList = templateNodeList + `<div class="row"><div class="col-md-12 col-sx-12 col-lg-12"><label>${name}</label><${tag} ${nodeType}>${name}</div></div>\n`;
@@ -209,7 +209,7 @@ router.get('/modeldetail', [util.checkIsDymerUser], (req, res) => {
         //TODO verificare esistenza del modello
         //TODO gestire edit
         return res.send(ret);
-    }).catch(function(err) {
+    }).catch(function (err) {
         console.error("ERROR | " + nameFile + ' | get | queryFind : ', err);
         logger.error(nameFile + ' | get/modeldetail | queryFind : ' + err);
     });
@@ -236,7 +236,7 @@ router.get('/modeldetailwizard', [util.checkIsDymerUser], (req, res) => {
                 for (const node of childNodes) {
                     /*TO DO - Check attributo form-control e form-select*/
                     if (node.node === "element" && node.attr.class && node.attr.class.includes("form-control")) {
-                        formControlNodes.push(node);     
+                        formControlNodes.push(node);
                     }
                 }
             }
@@ -251,8 +251,8 @@ router.get('/modeldetailwizard', [util.checkIsDymerUser], (req, res) => {
             let type = node.attr.type;
             name = convertString(name);
             let nodeType = "";
-            if (type){
-                nodeType = 'type ="' + type+ '"'; 
+            if (type) {
+                nodeType = 'type ="' + type + '"';
             }
             templateNodeList = templateNodeList + `<section class="container-fluid"> \n<div class="row  ">\n<div class="col-md-12 col-sx-12 col-lg-12">\n	<div class="row"><h3 class="primaryColor primaryTitlesection"><b> ${name}</b></h3></div>\n <div class="row">{{ ${name} }}  </div>\n</div>\n</div> \n</section>\n`;
             // templateNodeList = templateNodeList + `<div class="row"><div class="col-md-12 col-sx-12 col-lg-12"><label>${name}</label><${tag} ${nodeType}>${name}</div></div>\n`;
@@ -261,20 +261,20 @@ router.get('/modeldetailwizard', [util.checkIsDymerUser], (req, res) => {
                             {{{EntityStatus this}}}</div> ${templateNodeList}\n`;
             ret.setMessages("HTML");
             ret.setData(templateHtml);
-            
+
         });
 
         //TODO verificare esistenza del modello
         //TODO gestire edit
         return res.send(ret);
-    }).catch(function(err) {
+    }).catch(function (err) {
         console.error("ERROR | " + nameFile + ' | get | queryFind : ', err);
         logger.error(nameFile + ' | get/modeldetail | queryFind : ' + err);
     });
 });
 //VL master
 
- 
+
 
 
 router.get('/dettagliomodel', [util.checkIsDymerUser], (req, res) => {
@@ -289,7 +289,7 @@ router.get('/dettagliomodel', [util.checkIsDymerUser], (req, res) => {
         ret.setMessages("List");
         ret.setData(Models);
         return res.send(ret);
-    }).catch(function(err) {
+    }).catch(function (err) {
         console.error("ERROR | " + nameFile + ' | get | queryFind : ', err);
         logger.error(nameFile + ' | get/dettagliomodel | queryFind : ' + err);
     });
@@ -307,25 +307,25 @@ router.get('/', [util.checkIsDymerUser], (req, res) => {
         //console.log('Models', Models);
         var actions = Models.map(getfilesArrays);
         var results = Promise.all(actions); // pass array of promises
-        results.then(function(dat) {
-            //console.log(nameFile +  " | Models List: ", dat);
+        results.then(function (dat) {
+            //console.log(nameFile + " | Models List: ", dat);
             ret.setMessages("List");
             ret.setData(dat);
             return res.send(ret);
         })
-    }).catch(function(err) {
+    }).catch(function (err) {
         console.error("ERROR | " + nameFile + ' | get | queryFind : ', err);
         logger.error(nameFile + ' | get | queryFind : ' + err);
     });
 });
 
-router.get('/content/:entype/:fileid', function(req, res, next) {
+router.get('/content/:entype/:fileid', function (req, res, next) {
     var file_id = req.params.fileid;
     let enttype = req.params.entype;
     //   console.log("file_id", file_id);
     console.log(nameFile + ' | get/content/:entype/:fileid |  fileid: ', file_id);
     recFile(mongoose.Types.ObjectId(file_id))
-        .then(function(result) {
+        .then(function (result) {
             if (result != undefined) {
                 res.writeHead(200, {
                     'Content-Type': result.contentType,
@@ -339,18 +339,17 @@ router.get('/content/:entype/:fileid', function(req, res, next) {
                 res.end();
             }
         })
-        .catch(function(err) {
+        .catch(function (err) {
             console.error("ERROR | " + nameFile + ' | get/content/:entype/:fileid  : ', err);
             logger.error(nameFile + ' | get/content/:entype/:fileid : ' + err);
         });
 });
 
-router.post('/', util.checkIsAdmin, function(req, res) {
+router.post('/', util.checkIsAdmin, function (req, res) {
     const ret = new jsonResponse();
     const endpointName = "POST / (Create Model)";
-    console.log("" + nameFile + " | " + endpointName);
-    logger.info(nameFile + " | " + endpointName);
-    upload(req, res, function(err) {
+    var host = req.get('host');
+    upload(req, res, function (err) {
         if (err) {
             logger.error(`${nameFile} | ${endpointName} | Upload Error: ${err.message}`);
             ret.setMessages("Errore durante l'upload dei file");
@@ -361,23 +360,23 @@ router.post('/', util.checkIsAdmin, function(req, res) {
 
         const callData = util.getAllQuery(req);
         const data = callData.data;
-        
+
         // Estrazione ID file caricati
         const files_arr = (req.files || []).map(file => file.id);
 
         // --- LOGICA DI ESTRAZIONE INTEROPERABILITÀ (DCAT + IDS) ---
         let dcatMappings = {};
         let idsMappings = {};
-        
+
         if (data.structure) {
             try {
                 const $ = cheerio.load(data.structure);
                 // Scansione di tutti i campi che hanno mapping semantici
-                $('[data-dcat-map], [data-ids-map]').each(function() {
+                $('[data-dcat-map], [data-ids-map]').each(function () {
                     const fieldName = $(this).attr('name');
                     const dcatVal = $(this).attr('data-dcat-map');
                     const idsVal = $(this).attr('data-ids-map');
-                    
+
                     if (fieldName) {
                         if (dcatVal) dcatMappings[fieldName] = dcatVal;
                         if (idsVal) idsMappings[fieldName] = idsVal;
@@ -394,7 +393,7 @@ router.post('/', util.checkIsAdmin, function(req, res) {
             author: data.author,
             description: data.description,
             posturl: data.posturl,
-            instance: data.instance, 
+            instance: data.instance,
             structure: data.structure,
             files: files_arr,
             // Nuova sezione Interoperabilità Multi-Standard
@@ -408,16 +407,17 @@ router.post('/', util.checkIsAdmin, function(req, res) {
                     type: "dcat:Dataset",
                     ids_resource: "ids:DataResource",
                     created: new Date(),
-                    publisher: data.author || "DYMER Instance"
+                    publisher: data.author || "DYMER Instance",
+                    baseUri: host ? `https://${host}` : 'http://dymer-instance.eu'
                 }
             }
         };
-        console.log (newObj );
+
         const mod = new Model(newObj);
         mod.save().then((el) => {
             logger.info(`${nameFile} | ${endpointName} | Modello salvato con successo: ${el._id}`);
             ret.setMessages("Modello caricato con successo con mapping di interoperabilità");
-            
+
             // Recupero e restituzione lista aggiornata
             const queryFind = { '_id': mongoose.Types.ObjectId(el._id) };
             Model.find(queryFind).then((Models) => {
@@ -440,10 +440,10 @@ router.post('/', util.checkIsAdmin, function(req, res) {
 
 
 
-router.post('/create', util.checkIsAdmin, function(req, res) {
+router.post('/create', util.checkIsAdmin, function (req, res) {
     //console.log(">>>create");
     var ret = new jsonResponse();
-    upload(req, res, function(err) {
+    upload(req, res, function (err) {
         if (err) {
             console.error("ERROR | " + nameFile + ' | post/create | upload  : ', err);
             logger.error(nameFile + ' | post/create | upload  : ' + err);
@@ -474,9 +474,9 @@ router.post('/create', util.checkIsAdmin, function(req, res) {
     });
 });
 
-router.post('/addAsset', util.checkIsAdmin, function(req, res) {
+router.post('/addAsset', util.checkIsAdmin, function (req, res) {
     var ret = new jsonResponse();
-    upload(req, res, function(err) {
+    upload(req, res, function (err) {
         if (err) {
             console.error("ERROR | " + nameFile + ' | post/addAsset | upload  : ', err);
             logger.error(nameFile + ' | post/addAsset | upload  : ' + err);
@@ -492,7 +492,7 @@ router.post('/addAsset', util.checkIsAdmin, function(req, res) {
         var updateData = { "files": element.id };
         var myquery = { "$push": updateData };
         Model.updateOne(myfilter, myquery,
-            function(err, raw) {
+            function (err, raw) {
                 if (err) {
                     console.error("ERROR | " + nameFile + ' | post/addAsset | updateOne  : ', err);
                     logger.error(nameFile + ' | post/addAsset | updateOne  : ' + err);
@@ -511,11 +511,11 @@ router.post('/addAsset', util.checkIsAdmin, function(req, res) {
     });
 });
 
-router.post('/update', util.checkIsAdmin, function(req, res) {
+router.post('/update', util.checkIsAdmin, function (req, res) {
     console.log(">>>update");
     console.log("RICEVUTO ", req.body)
     var ret = new jsonResponse();
-    upload(req, res, function(err) {
+    upload(req, res, function (err) {
         if (err) {
             console.error("ERROR | " + nameFile + ' | post/update | upload  : ', err);
             logger.error(nameFile + ' | post/update | upload  : ' + err);
@@ -535,7 +535,7 @@ router.post('/update', util.checkIsAdmin, function(req, res) {
         };
         //console.log("---data ", data);
         Model.updateOne(myfilter, myquery,
-            function(err, raw) {
+            function (err, raw) {
                 if (err) {
                     ret.setSuccess(false);
                     console.error("ERROR | " + nameFile + ' | post/update | updateOne  : ', err);
@@ -557,135 +557,98 @@ router.post('/update', util.checkIsAdmin, function(req, res) {
     });
 });
 
-router.post('/updatestructure_NO', util.checkIsAdmin, function(req, res) {
-        const ret = new jsonResponse();
+// router.post('/updatestructure', util.checkIsAdmin, function(req, res) {
+//         const ret = new jsonResponse();
+//     const endpointName = "POST /updatestructure (Update Model)";
+
+//     upload(req, res, function(err) {
+//         if (err) {
+//             logger.error(`${nameFile} | ${endpointName} | Upload Error: ${err.message}`);
+//             ret.setMessages("Errore durante l'upload");
+//             ret.setSuccess(false);
+//             ret.setExtraData({ "log": err.stack });
+//             return res.status(500).send(ret);
+//         }
+
+//         const callData = util.getAllQuery(req);
+//         const data = callData.data;
+
+//         if (!data.pageId || !data.structure) {
+//             ret.setSuccess(false);
+//             ret.setMessages("Parametri mancanti: pageId o structure");
+//             return res.status(400).send(ret);
+//         }
+
+//         let strct;
+//         try {
+//             strct = (typeof data.structure === 'string') ? JSON.parse(data.structure) : data.structure;
+//         } catch (e) {
+//             strct = data.structure; // Fallback se non è una stringa JSON
+//         }
+
+//         // --- RICALCOLO MAPPINGS (Sincronizzazione DCAT + IDS) ---
+//         let dcatMappings = {};
+//         let idsMappings = {};
+
+//         try {
+//             const $ = cheerio.load(strct);
+//             $('[data-dcat-map], [data-ids-map]').each(function() {
+//                 const fieldName = $(this).attr('name');
+//                 const dcatVal = $(this).attr('data-dcat-map');
+//                 const idsVal = $(this).attr('data-ids-map');
+
+//                 if (fieldName) {
+//                     if (dcatVal) dcatMappings[fieldName] = dcatVal;
+//                     if (idsVal) idsMappings[fieldName] = idsVal;
+//                 }
+//             });
+//         } catch (parseErr) {
+//             logger.error(`${nameFile} | ${endpointName} | Errore analisi struttura HTML: ${parseErr.message}`);
+//         }
+
+//         const myfilter = { "_id": data.pageId };
+//         const myquery = {
+//             "$set": {
+//                 'structure': strct,
+//                 'interoperability.profiles.dcat.mappings': dcatMappings,
+//                 'interoperability.profiles.ids.mappings': idsMappings,
+//                 'interoperability.enabled': (Object.keys(dcatMappings).length > 0 || Object.keys(idsMappings).length > 0),
+//                 'interoperability.metadata.lastUpdate': new Date()
+//             }
+//         };
+
+//         Model.updateOne(myfilter, myquery, function(err, raw) {
+//             if (err) {
+//                 logger.error(`${nameFile} | ${endpointName} | UpdateOne Error: ${err.message}`);
+//                 ret.setSuccess(false);
+//                 ret.setMessages("Errore durante l'aggiornamento del modello");
+//                 return res.status(500).send(ret);
+//             } else {
+//                 logger.info(`${nameFile} | ${endpointName} | Modello aggiornato con successo: ${data.title} (ID: ${data.pageId})`);
+//                 ret.setMessages("Modello aggiornato con successo e mapping sincronizzati");
+//                 return res.send(ret);
+//             }
+//         });
+//     });
+
+// });
+
+router.post('/updatestructure', util.checkIsAdmin, function (req, res) {
+    const ret = new jsonResponse();
     const endpointName = "POST /updatestructure (Update Model)";
-    console.log(">>>updatestructure");
-    upload(req, res, function(err) {
+    const host = req.get('host');
+    
+    upload(req, res, function (err) {
         if (err) {
             logger.error(`${nameFile} | ${endpointName} | Upload Error: ${err.message}`);
             ret.setMessages("Errore durante l'upload");
             ret.setSuccess(false);
-            ret.setExtraData({ "log": err.stack });
+            ret.setExtraData({ log: err.stack });
             return res.status(500).send(ret);
         }
 
         const callData = util.getAllQuery(req);
         const data = callData.data;
-        
-        if (!data.pageId || !data.structure) {
-            ret.setSuccess(false);
-            ret.setMessages("Parametri mancanti: pageId o structure");
-            return res.status(400).send(ret);
-        }
-
-        let strct;
-        try {
-            strct = (typeof data.structure === 'string') ? JSON.parse(data.structure) : data.structure;
-        } catch (e) {
-            strct = data.structure; // Fallback se non è una stringa JSON
-        }
-
-        // --- RICALCOLO MAPPINGS (Sincronizzazione DCAT + IDS) ---
-        let dcatMappings = {};
-        let idsMappings = {};
-        
-        try {
-            const $ = cheerio.load(strct);
-            $('[data-dcat-map], [data-ids-map]').each(function() {
-                const fieldName = $(this).attr('name');
-                const dcatVal = $(this).attr('data-dcat-map');
-                const idsVal = $(this).attr('data-ids-map');
-                
-                if (fieldName) {
-                    if (dcatVal) dcatMappings[fieldName] = dcatVal;
-                    if (idsVal) idsMappings[fieldName] = idsVal;
-                }
-            });
-        } catch (parseErr) {
-            logger.error(`${nameFile} | ${endpointName} | Errore analisi struttura HTML: ${parseErr.message}`);
-        }
-
-        const myfilter = { "_id": data.pageId };
-        const myquery = {
-            "$set": {
-                'structure': strct,
-                'interoperability.profiles.dcat.mappings': dcatMappings,
-                'interoperability.profiles.ids.mappings': idsMappings,
-                'interoperability.enabled': (Object.keys(dcatMappings).length > 0 || Object.keys(idsMappings).length > 0),
-                'interoperability.metadata.lastUpdate': new Date()
-            }
-        };
-
-        Model.updateOne(myfilter, myquery, function(err, raw) {
-            if (err) {
-                logger.error(`${nameFile} | ${endpointName} | UpdateOne Error: ${err.message}`);
-                ret.setSuccess(false);
-                ret.setMessages("Errore durante l'aggiornamento del modello");
-                return res.status(500).send(ret);
-            } else {
-                logger.info(`${nameFile} | ${endpointName} | Modello aggiornato con successo: ${data.title} (ID: ${data.pageId})`);
-                ret.setMessages("Modello aggiornato con successo e mapping sincronizzati");
-                return res.send(ret);
-            }
-        });
-    });
-
-});
-
-// Funzione helper per gestire l'upload come Promise
-const runUpload = (req, res) => {
-    return new Promise((resolve, reject) => {
-        upload(req, res, (err) => {
-            if (err) reject(err);
-            else resolve();
-        });
-    });
-};
-
-// Funzione helper per estrarre i mapping dalla struttura
-const extractInteroperabilityMappings = (structure) => {
-    const dcatMappings = {};
-    const idsMappings = {};
-    try {
-        const $ = cheerio.load(structure);
-        console.log("cheerio loaded for mapping extraction", $.html());
-        $('[data-dcat-map], [data-ids-map]').each(function() {
-            const fieldName = $(this).attr('name');
-            const dcatVal = $(this).attr('data-dcat-map');
-            const idsVal = $(this).attr('data-ids-map');
-            console.log(`Mapping found - field: ${fieldName}, DCAT: ${dcatVal}, IDS: ${idsVal}`);
-            if (fieldName) {
-                if (dcatVal) dcatMappings[fieldName] = dcatVal;
-                if (idsVal) idsMappings[fieldName] = idsVal;
-            }
-        });
-    } catch (e) {
-        logger.error(`Errore parsing HTML per mapping: ${e.message}`);
-    }
-    return { dcatMappings, idsMappings };
-};
-
-// --- ROTTA REFACTORIZZATA ---
-router.post('/updatestructure', util.checkIsAdmin, (req, res) => {
-    const ret = new jsonResponse();
-    const endpointName = "POST /updatestructure";
-    upload(req, res, function (err) {
-        if (err) {
-            console.error("ERROR | " + nameFile + ' | ' + endpointName + ' | Upload:', err);
-            logger.error(nameFile + ' | ' + endpointName + ' | Upload Error: ' + err.message);
-
-            ret.setMessages("Errore durante l'upload");
-            ret.setSuccess(false);
-            ret.setExtraData({ log: err.stack });
-
-            return res.status(500).send(ret);
-        }
-
-        let callData = util.getAllQuery(req);
-        let data = callData.data;
-
-        logger.info(nameFile + ' | ' + endpointName + ' | data: ' + JSON.stringify(data));
 
         if (!data || !data.pageId || !data.structure) {
             ret.setSuccess(false);
@@ -694,43 +657,56 @@ router.post('/updatestructure', util.checkIsAdmin, (req, res) => {
         }
 
         let strct;
+
+        // --- PARSE STRUTTURA ---
         try {
             strct = (typeof data.structure === 'string')
                 ? JSON.parse(data.structure)
                 : data.structure;
         } catch (e) {
-            console.warn(nameFile + ' | ' + endpointName + ' | JSON parse fallback');
-            strct = data.structure;
+            logger.error(`${nameFile} | ${endpointName} | JSON parse error: ${e.message}`);
+            ret.setSuccess(false);
+            ret.setMessages("Structure non è un JSON valido");
+            return res.status(400).send(ret);
         }
 
+        // --- RICALCOLO MAPPINGS (JSON traversal) ---
         let dcatMappings = {};
         let idsMappings = {};
+        let baseUri = host ? `https://${host}` : 'http://dymer-instance.eu';
 
-        try {
-            if (typeof strct === 'string') {
-                const $ = cheerio.load(strct);
+        function extractMappings(node) {
+            if (!node) return;
 
-                $('[data-dcat-map], [data-ids-map]').each(function () {
-                    const fieldName = $(this).attr('name');
-                    const dcatVal = $(this).attr('data-dcat-map');
-                    const idsVal = $(this).attr('data-ids-map');
+            // Legge attributi
+            if (node.attr) {
+                const fieldName = node.attr.name;
+                const dcatVal = node.attr['data-dcat-map'];
+                const idsVal = node.attr['data-ids-map'];
 
-                    if (fieldName) {
-                        if (dcatVal) dcatMappings[fieldName] = dcatVal;
-                        if (idsVal) idsMappings[fieldName] = idsVal;
-                    }
-                    console.log(`Mapping found - field: ${fieldName}, DCAT: ${dcatVal}, IDS: ${idsVal}`);
-                });
+                if (fieldName) {
+                    if (dcatVal) dcatMappings[fieldName] = dcatVal;
+                    if (idsVal) idsMappings[fieldName] = idsVal;
+                }
             }
-        } catch (parseErr) {
-            console.error("ERROR | " + nameFile + ' | ' + endpointName + ' | Cheerio:', parseErr);
-            logger.error(nameFile + ' | ' + endpointName + ' | Errore analisi HTML: ' + parseErr.message);
+
+            // Figli
+            if (Array.isArray(node.child)) {
+                node.child.forEach(child => extractMappings(child));
+            }
         }
 
-        const myfilter = { "_id": data.pageId };
+        try {
+            extractMappings(strct);
+        } catch (parseErr) {
+            logger.error(`${nameFile} | ${endpointName} | Errore parsing struttura: ${parseErr.message}`);
+        }
+
+        // --- QUERY DB ---
+        const myfilter = { _id: data.pageId };
 
         const myquery = {
-            "$set": {
+            $set: {
                 structure: strct,
                 'interoperability.profiles.dcat.mappings': dcatMappings,
                 'interoperability.profiles.ids.mappings': idsMappings,
@@ -738,48 +714,37 @@ router.post('/updatestructure', util.checkIsAdmin, (req, res) => {
                     Object.keys(dcatMappings).length > 0 ||
                     Object.keys(idsMappings).length > 0
                 ),
+                'interoperability.metadata.baseUri': baseUri,
                 'interoperability.metadata.lastUpdate': new Date()
             }
         };
 
+        // --- UPDATE ---
         Model.updateOne(myfilter, myquery, function (err, raw) {
             if (err) {
-                console.error("ERROR | " + nameFile + ' | ' + endpointName + ' | updateOne:', err);
-                logger.error(nameFile + ' | ' + endpointName + ' | UpdateOne Error: ' + err.message);
-
+                logger.error(`${nameFile} | ${endpointName} | UpdateOne Error: ${err.message}`);
                 ret.setSuccess(false);
                 ret.setMessages("Errore durante l'aggiornamento del modello");
-
                 return res.status(500).send(ret);
             }
 
-            logger.info(
-                nameFile + ' | ' + endpointName +
-                ' | Modello aggiornato: ' + data.title +
-                ' (ID: ' + data.pageId + ')'
-            );
+            logger.info(`${nameFile} | ${endpointName} | Modello aggiornato con successo (ID: ${data.pageId})`);
 
-            ret.setMessages("Modello aggiornato con successo");
+            ret.setSuccess(true);
+            ret.setMessages("Modello aggiornato con successo e mapping sincronizzati");
             ret.setExtraData({
-                dcatMappingsCount: Object.keys(dcatMappings).length,
-                idsMappingsCount: Object.keys(idsMappings).length,
-                interoperabilityEnabled: myquery.$set['interoperability.enabled']
+                dcatMappings,
+                idsMappings
             });
 
             return res.send(ret);
         });
     });
-     
 });
 
-
-
-
-
-
-router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
+router.post('/updateAsset', util.checkIsAdmin, function (req, res) {
     var ret = new jsonResponse();
-    upload(req, res, function(err) {
+    upload(req, res, function (err) {
         if (err) {
             console.error("ERROR | " + nameFile + ' | post/updateAsset | upload  : ', err);
             logger.error(nameFile + ' | post/updateAsset | upload  : ' + err);
@@ -798,13 +763,14 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
         // console.log('element1', req.files[1]);
         var myfilter = { "_id": mongoose.Types.ObjectId(data.pageId) };
         var bulk = Model.collection.initializeOrderedBulkOp();
-        bulk.find(myfilter).updateOne({ "$pull": { "files": mongoose.Types.ObjectId(data.assetId)},
-                                        /*MG - Inserito aggiornamento data di modifica*/                                
-                                         "$set":  { "properties.changed": new Date().toISOString()}
-                                      });
+        bulk.find(myfilter).updateOne({
+            "$pull": { "files": mongoose.Types.ObjectId(data.assetId) },
+            /*MG - Inserito aggiornamento data di modifica*/
+            "$set": { "properties.changed": new Date().toISOString() }
+        });
         bulk.find(myfilter).updateOne({ "$push": { "files": mongoose.Types.ObjectId(element.id) } });
 
-        bulk.execute(function(err, result) {
+        bulk.execute(function (err, result) {
             if (err) {
                 ret.setSuccess(false);
                 console.error("ERROR | " + nameFile + ' | post/updateAsset | execute  : ', err);
@@ -818,10 +784,10 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
                     ret.setMessages("Model Updated");
                     ret.setExtraData({ newAssetId: element.id });
                     return res.send(ret);
-                }).catch(function(err) {
-                     /*MG - Se l'asset non viene trovato, accedo per recuperare il suo id aggiornato, 
-                           in modo da poterlo eliminare
-                    INIZIO MODIFICHE*/
+                }).catch(function (err) {
+                    /*MG - Se l'asset non viene trovato, accedo per recuperare il suo id aggiornato, 
+                          in modo da poterlo eliminare
+                   INIZIO MODIFICHE*/
                     //ret.setSuccess(false);
                     //console.error("ERROR | " + nameFile + ' | post/updateAsset | delete  : ', err);
                     //logger.error(nameFile + ' | post/updateAsset | delete  : ' + err);
@@ -829,18 +795,19 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
                     Model.find(myfilter).then((Models) => {
                         var actions = Models.map(getfilesArrays);
                         var results = Promise.all(actions);
-                        results.then(function(data) {
+                        results.then(function (data) {
                             data.forEach(d => {
                                 var found = false;
                                 d.files.forEach(file => {
-                                    if (file.filename == element.filename && !found){
+                                    if (file.filename == element.filename && !found) {
                                         found = true;
-                                        var myquery = { "$pull": { "files": mongoose.Types.ObjectId(file._id) },
-                                                         /*MG - Inserito aggiornamento data di modifica*/                                
-                                                         "$set":  { "properties.changed": new Date().toISOString()}
-                                                      };
+                                        var myquery = {
+                                            "$pull": { "files": mongoose.Types.ObjectId(file._id) },
+                                            /*MG - Inserito aggiornamento data di modifica*/
+                                            "$set": { "properties.changed": new Date().toISOString() }
+                                        };
                                         Model.updateOne(myfilter, myquery,
-                                            function(err, raw) {
+                                            function (err, raw) {
                                                 if (err) {
                                                     cconsole.error("ERROR | " + nameFile + ' | post/updateAsset | delete  : ', err);
                                                     logger.error(nameFile + ' | post/updateAsset | delete  : ' + err);
@@ -855,15 +822,15 @@ router.post('/updateAsset', util.checkIsAdmin, function(req, res) {
                                 });
                             });
                         })
-                    }).catch(function(err) {
+                    }).catch(function (err) {
                         console.error("ERROR | " + nameFile + ' | post/updateAsset | delete  : ', err);
                         logger.error(nameFile + ' | post/updateAsset | delete  : ' + err);
                     });
                     /*MG - FINE MODIFICHE*/
-                  /*  ret.setSuccess(false);
-                    console.error("ERROR | " + nameFile + ' | post/updateAsset | delete  : ', err);
-                    logger.error(nameFile + ' | post/updateAsset | delete  : ' + err);
-                    ret.setMessages("Model Error");*/
+                    /*  ret.setSuccess(false);
+                      console.error("ERROR | " + nameFile + ' | post/updateAsset | delete  : ', err);
+                      logger.error(nameFile + ' | post/updateAsset | delete  : ' + err);
+                      ret.setMessages("Model Error");*/
                     return res.send(ret);
                 });
             }
@@ -902,7 +869,7 @@ router.delete('/:id/:fid', util.checkIsAdmin, (req, res) => {
     var myfilter = { "_id": id };
     var myquery = { "$pull": { "files": mongoose.Types.ObjectId(fid) } };
     Model.updateOne(myfilter, myquery,
-        function(err, raw) {
+        function (err, raw) {
             if (err) {
                 ret.setSuccess(false);
                 console.error("ERROR | " + nameFile + ' | delete/:id/:fid | updateOne : ', err);

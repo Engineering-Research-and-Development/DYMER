@@ -116,7 +116,7 @@ const getModelDetail = async (req, res, next) => {
     try {
         const callData = getAllQuery(req);
         const queryFind = callData.query;
-        logger.info(`GET /modeldetail | queryFind: ${JSON.stringify(queryFind)}`);
+        logger.info(`GET /modeldetail | queryFind:`, { queryFind });
 
         const Models = await Model.find(queryFind, {}, { title: 1, instance: 1, structure: 1 })
             .collation({ locale: "en" })

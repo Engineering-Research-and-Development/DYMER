@@ -231,7 +231,7 @@ app.post('/setlogconfig', (req, res) => {
 
 app.get('/checkservice', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Models']
-
+    var uptime = process.uptime();
     var ret = new jsonResponse();
     let infosize = logger.filesize("info");
     let errorsize = logger.filesize("error");
@@ -242,7 +242,8 @@ app.get('/checkservice', util.checkIsAdmin, (req, res) => {
         error: {
             size: errorsize
         },
-        infomicroservice: global.gConfig
+        infomicroservice: global.gConfig,
+        uptime: util.format(uptime)
     });
     ret.setMessages("Service is up");
     res.status(200);
