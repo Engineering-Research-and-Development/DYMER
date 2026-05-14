@@ -26,14 +26,17 @@ const nameFile = path.basename(__filename);
 var redisClient = require('./redisModule')
 const logger = require('./dymerlogger');
 var db;
+var dbForms;
 var storage;
 var upload;
 const mongoURI = util.mongoUrlFiles();
+const mongoFormsURI = util.mongoUrlForms()
 console.log(nameFile + '| mongoURI :', JSON.stringify(mongoURI));
 logger.info(nameFile + " | mongoURI: " + JSON.stringify(mongoURI));
 let fs = require('fs')
 const jsonexport = require('jsonexport');
 const { stringify } = require('querystring');
+const archiver = require("archiver")    // AC per l'export
 
 mongoose
     .connect(mongoURI, {
@@ -68,6 +71,22 @@ mongoose
         console.error("ERROR | " + nameFile + ` | Error connecting to mongo! Database name: "${mongoURI}"`, err);
         logger.error(nameFile + ` | Error connecting to mongo! Database name: "${mongoURI}" ` + err);
     });
+
+// Connessione ai Forms
+const formsConnection = mongoose.createConnection(mongoFormsURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});
+
+formsConnection.on('connected', () => {
+    console.log("Connected to Forms DB");
+    dbForms = formsConnection.db;
+});
+
+formsConnection.on('error', err => {
+    console.error("Errore connessione Forms DB:", err);
+});
+
 //let redisUrl = 'redis://cache:6379'
 //redisClient.init()
 redisEnabled = global.configService.cache ? global.configService.cache.isEnabled : false;
@@ -396,75 +415,209 @@ router.post('/invalidateallcache', util.checkIsAdmin, async(req, res) => {
     return res.send(ret);
 });
 
+// router.post('/export-json-entities', util.checkIsAdmin, async (req, res) => {
+//     let index = req.body.index
+//     let params = {}
+//     params["index"] = index
+//     //params["type"] = index
+//     params["body"] = {
+//         query: {
+//             match_all: {}
+//         }
+//     }
+//     params["body"].size = 10000
+
+//     let entitiesFromElastic = await client.search(params)
+//     let response = entitiesFromElastic.hits.hits;
+
+//     for (element of response) {
+//         if (element._id) {
+//             element._source.logo = util.getImgLink(element._id, element._source.logo?.id)
+//         } else {
+//             delete element._source.logo
+//         }
+//     }
+
+//     res.json(response);
+
+// })
+
+// AC new export con le immagini
 router.post('/export-json-entities', util.checkIsAdmin, async (req, res) => {
-    let index = req.body.index
-    let params = {}
-    params["index"] = index
-    //params["type"] = index
-    params["body"] = {
-        query: {
-            match_all: {}
+    try {
+        const index = req.body.index;
+
+        const params = {
+            index,
+            body: {
+                query: { match_all: {} },
+                size: 10000
+            }
+        };
+
+        const entitiesFromElastic = await client.search(params);
+        const response = entitiesFromElastic.hits.hits;
+
+        res.status(200);
+        res.setHeader("Content-Type", "application/zip");
+        res.setHeader(
+            "Content-Disposition",
+            `attachment; filename=${index}_export.zip`
+        );
+
+        const archive = archiver("zip", { zlib: { level: 9 } });
+        archive.pipe(res);
+
+        // entities.json nello zip
+        archive.append(JSON.stringify(response, null, 2), { name: "entities.json" });
+
+        const dymeruser = req.headers.dymeruser;
+
+        for (const element of response) {
+
+            let arrlistFiles = [];
+            util.checkFilesFormdata(arrlistFiles, element._source);
+
+            for (const fl of arrlistFiles) {
+                const url = `${util.getServiceUrl("webserver")}/api/entities/api/v1/entity/contentfile/${element._id}/${fl.id}`
+
+                try {
+                    const fileStream = await util.downloadFileStream(url, dymeruser);
+
+                    archive.append(fileStream, {
+                        name: `${element._id}/${fl.filename}`
+                    });
+
+                } catch (err) {
+                    console.error("download err:", fl.filename, err.message);
+                }
+            }
         }
+
+        await archive.finalize();
+
+    } catch (err) {
+        console.error("Export error:", err);
+        res.status(500).json({ error: "Export failed" });
     }
-    params["body"].size = 10000
-
-    let entitiesFromElastic = await client.search(params)
-    let response = entitiesFromElastic.hits.hits;
-
-    for (element of response) {
-        if (element._id) {
-            element._source.logo = util.getImgLink(element._id, element._source.logo?.id)
-        } else {
-            delete element._source.logo
-        }
-    }
-
-    res.json(response);
-
-})
+});
 
 router.post('/export-csv-entities', util.checkIsAdmin, async (req, res) => {
-    let index = req.body.index
-    let keysToExlude = req.body.exclude
+    try {
+        const index = req.body.index;
+        const keysToExclude = req.body.exclude || [];
 
-    let params = {}
-    params["index"] = index
-    //params["type"] = index
-    params["body"] = {
-        query: {
-            match_all: {}
-        }
-    }
-    params["body"].size = 10000
-
-    let entitiesFromElastic = await client.search(params)
-    let response = util.flatJSON(entitiesFromElastic.hits.hits);
-
-    let partialJSON = response.map(resp => {
-        let newResponse = { ...resp };
-    
-        keysToExlude.forEach(field => {
-            if (newResponse.hasOwnProperty(field)) {
-                delete newResponse[field];
+        const params = {
+            index,
+            body: {
+                query: { match_all: {} },
+                size: 10000
             }
+        };
+
+        const entitiesFromElastic = await client.search(params);
+
+        let response = util.flatJSON(entitiesFromElastic.hits.hits);
+
+        let partialJSON = response.map(resp => {
+            let newResponse = { ...resp };
+            keysToExclude.forEach(field => delete newResponse[field]);
+
+            return newResponse;
         });
-    
-        return newResponse;
-    });    
-    
-    jsonexport(partialJSON, { textDelimiter: "\'" }, function (err, csv) {
-        if (err) {
-            console.error('Error converting JSON to CSV:', err);
-            res.status(500).send({
-                error: err,
-                msg: 'Error converting JSON to CSV'
+
+        res.status(200);
+        res.setHeader("Content-Type", "application/zip");
+        res.setHeader(
+            "Content-Disposition",
+            `attachment; filename=${index}_export.zip`
+        );
+
+        const archive = archiver("zip", { zlib: { level: 9 } });
+        archive.pipe(res);
+
+        const csv = await new Promise((resolve, reject) => {
+            jsonexport(partialJSON, { textDelimiter: "'" }, (err, csv) => {
+                if (err) return reject(err);
+                resolve(csv);
             });
-            return;
+        });
+
+        archive.append(csv, { name: "entities.csv" });
+
+        const dymeruser = req.headers.dymeruser;
+
+        for (const element of entitiesFromElastic.hits.hits) {
+
+            let arrlistFiles = [];
+            util.checkFilesFormdata(arrlistFiles, element._source);
+
+            for (const fl of arrlistFiles) {
+                const url = `${util.getServiceUrl("webserver")}/api/entities/api/v1/entity/contentfile/${element._id}/${fl.id}`;
+
+                try {
+                    const fileStream = await util.downloadFileStream(url, dymeruser);
+
+                    archive.append(fileStream, {
+                        name: `${element._id}/${fl.filename}`
+                    });
+
+                } catch (err) {
+                    console.error("download err:", fl.filename, err.message);
+                }
+            }
         }
 
-        res.send(csv)
-    });
+        await archive.finalize();
+
+    } catch (err) {
+        console.error("Export CSV error:", err);
+        res.status(500).json({ error: "Export failed" });
+    }
 });
+
+// router.post('/export-csv-entities', util.checkIsAdmin, async (req, res) => {
+//     let index = req.body.index
+//     let keysToExlude = req.body.exclude
+
+//     let params = {}
+//     params["index"] = index
+//     //params["type"] = index
+//     params["body"] = {
+//         query: {
+//             match_all: {}
+//         }
+//     }
+//     params["body"].size = 10000
+
+//     let entitiesFromElastic = await client.search(params)
+//     let response = util.flatJSON(entitiesFromElastic.hits.hits);
+
+//     let partialJSON = response.map(resp => {
+//         let newResponse = { ...resp };
+    
+//         keysToExlude.forEach(field => {
+//             if (newResponse.hasOwnProperty(field)) {
+//                 delete newResponse[field];
+//             }
+//         });
+    
+//         return newResponse;
+//     });    
+    
+//     jsonexport(partialJSON, { textDelimiter: "\'" }, function (err, csv) {
+//         if (err) {
+//             console.error('Error converting JSON to CSV:', err);
+//             res.status(500).send({
+//                 error: err,
+//                 msg: 'Error converting JSON to CSV'
+//             });
+//             return;
+//         }
+
+//         res.send(csv)
+//     });
+// });
 
 router.get('/getstructure/:id', async (req, res) => {
     let index = req.params.id
@@ -1933,7 +2086,10 @@ router.get('/', (req, res) => {
     console.log(nameFile + '| GET | params:', JSON.stringify(params));
     logger.info(nameFile + '| GET | params:' + JSON.stringify(params));
     const hdymeruser = req.headers.dymeruser;
-    const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+    
+    //const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+    const dymeruser = util.getDymerUser(req, res);
+    
     console.log(nameFile + '| GET | dymeruser:', JSON.stringify(dymeruser));
     logger.info(nameFile + '| GET | dymeruser:' + JSON.stringify(dymeruser));
     client.search(params, function(err, resp, status) {
@@ -2279,12 +2435,6 @@ router.post('/_search', (req, res) => {
     // var decoded = jwt.decode(req.headers.authdata);
     var ret = new jsonResponse();
     const hdymeruser = req.headers.dymeruser;
-
-    const endpointName = "POST /_search";
-    const callData = util.getAllQuery(req);
-    const { format } = callData; // Estrai il parametro 'format'
-
-
     //console.log("==>req.hostname ", req.hostname);
     //console.log("==>req.headers ", JSON.stringify(req.headers));
 
@@ -2321,6 +2471,7 @@ router.post('/_search', (req, res) => {
         console.log('==>' + nameFile + '|_search| upload _source : ', _source);
         */
         let qoptions = callData.qoptions;
+        const { format } = callData;
  
         let recoverRelation = true;
         let size = 10000;
@@ -2343,18 +2494,17 @@ router.post('/_search', (req, res) => {
         logger.info(nameFile + '|_search| dymeruser:' + dymeruser.id + "/" + dymeruser.roles + "/" + JSON.stringify(dymeruser.extrainfo));
         logger.info(nameFile + '|_search| callData :' + JSON.stringify(callData));
         var rr = [];
-        
+        // console.log("indextosearch", indextosearch);
         //var bridgeConf = bE.findByIndex("e7");
         var rr = { indextosearch: [], query: [] };
-        rr = retriveIndex_Query_ToSearch(rr, query.query);
-          console.log(nameFile + '|_search| retriveIndex_Query_ToSearch:', JSON.stringify(rr));
-          logger.info(nameFile + '|_search| retriveIndex_Query_ToSearch :' + JSON.stringify(rr));
+        rr = retriveIndex_Query_ToSearch(rr, query.query); // query per l'indice
+        // console.log(nameFile + '|_search| retriveIndex_Query_ToSearch:', JSON.stringify(rr));
+        // logger.info(nameFile + '|_search| retriveIndex_Query_ToSearch :' + JSON.stringify(rr));
         var bridgeConf = undefined;
         if (rr != undefined)
             bridgeConf = bE.findByIndex(rr.indextosearch[0]);
         // console.log(nameFile + '|_search| bridgeConf:', JSON.stringify(bridgeConf));
         if (bridgeConf != undefined) {
-             console.log("aaaaaaaaaaaaaaa");
             logger.info(nameFile + '|_search| bridgeConf :' + JSON.stringify(bridgeConf));
             bridgeEsternalEntities(bridgeConf, "search", undefined, rr).then(function(callresp) {
                 jsonMappingExternalToDymerEntity(callresp.data, bridgeConf, "search").then(function(mapdata) {
@@ -2588,162 +2738,135 @@ router.post('/_search', (req, res) => {
                     ret.setMessages("Entity " + err.displayName);
                     return res.send(ret);
                 }
-                let msg = (resp.hits.total > 0) ? "List entities" : "Empty list";
+                if (format === 'json-ld') {
+                    logger.info(`${nameFile} | _search| search: | Richiesta di trasformazione in JSON-LD`);
+                    const index = rr.indextosearch[0]
+                    const hits = resp.hits.hits
 
+                    const form = await dbForms.collection('forms').findOne({ "instance._index": index })
 
+                    if (!form) {
+                        logger.warn(`${nameFile} | _search| search: | ID modello form mancante`);
+                        return null;
+                    }
 
-                // console.log("SSSSSSSS | " + nameFile + '|resp:', resp);
-                ret.setMessages(msg);
+                    const transformedResults = hits.map(hit => util.transformToJSONLD(hit, form)).filter(result => result !== null);
+                   // console.log(`${nameFile} | _search| search: | Risultati trasformati in JSON-LD`, transformedResults);
+
+                    ret.setMessages("Risultati trasformati in formato JSON-LD");
+                    ret.setData(transformedResults);
+                    return res.send(ret);
+
+                } else {
+                    let msg = (resp.hits.total > 0) ? "List entities" : "Empty list";
+                    // console.log("SSSSSSSS | " + nameFile + '|resp:', resp);
+                    ret.setMessages(msg);
+                }
                 if (resp.hits.total == 0) {
                     logger.info(nameFile + '|_search| resp:count 0');
                     return res.send(ret);
                 }
 
-                 //fra 31-03-2026
-                     if (format === 'json-ld') {
-                                    logger.info(`${nameFile} | ${endpointName} | Richiesta di trasformazione in JSON-LD`);
-                                    
-                                    const transformationPromises = hits.map(async (hit) => {
-                                        const entity = hit._source;
-                                        // Assumiamo che l'ID del modello del form sia salvato nell'entità
-                                        // Adatta questo campo al nome che usi, es. 'modelId' o 'formId'
-                                        const formModelId = entity.model_id; 
+                const unique = [...new Set((resp.hits.hits).map(item => item._index))];
+                let minmodelist = [];
+                minmodelist = unique;
 
-                                        if (!formModelId) {
-                                            logger.warn(`${nameFile} | ${endpointName} | ID modello form mancante per l'entità ${entity._id}`);
-                                            return null; // Salta le entità senza un modello associato
-                                        }
+                if (recoverRelation == 'false' || recoverRelation == false) {
+                    filertEntitiesFields(resp.hits.hits, minmodelist, hdymeruser).then(async function(nlist) {
 
-                            try {
-                                // Recupera il modello del form da MongoDB
-                                const formModel = await FormModel.findById(formModelId).lean();
-                                if (!formModel) {
-                                    logger.warn(`${nameFile} | ${endpointName} | Modello form non trovato: ${formModelId}`);
-                                    return null;
-                                }
-                                // Trasforma l'entità in JSON-LD
-                                return transformToJSONLD(entity, formModel);
-                            } catch (dbErr) {
-                                logger.error(`${nameFile} | ${endpointName} | Errore recupero modello form ${formModelId}: ${dbErr.message}`);
-                                return null;
-                            }
-                        });
-
-                        const transformedResults = (await Promise.all(transformationPromises)).filter(r => r !== null);
-                        ret.setData(transformedResults);
-                        ret.setMessages("Risultati trasformati in formato JSON-LD");
+                        ret.setData(nlist);
+                        //console.log(nameFile + '|_search| resp no relations:', JSON.stringify(resp.hits.hits)); 
+                        logger.info(nameFile + '|_search| resp no relations: count:' + resp.hits.hits.length);
+                        if (redisEnabled) {
+                            let ids = await redisClient.extractIds(ret, redisEnabled)
+                            let indexes = await redisClient.extractIndexes(ret, redisEnabled)
+                            await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                //logger.info(nameFile + '|_search| resp no relations: response cached  ');
+                        }
                         return res.send(ret);
+                    }).catch(function(err) {
+                        console.error("ERROR | " + nameFile + '|_search| checkUnionRelation:', err);
+                        logger.error(nameFile + '|_search| checkUnionRelation : ' + err);
+                    });
 
-                    } else {
-
-
-
-
-                            const unique = [...new Set((resp.hits.hits).map(item => item._index))];
-                            let minmodelist = [];
-                            minmodelist = unique;
-
-                            if (recoverRelation == 'false' || recoverRelation == false) {
-                                filertEntitiesFields(resp.hits.hits, minmodelist, hdymeruser).then(async function(nlist) {
-
-                                    ret.setData(nlist);
-                                    //console.log(nameFile + '|_search| resp no relations:', JSON.stringify(resp.hits.hits)); 
-                                    logger.info(nameFile + '|_search| resp no relations: count:' + resp.hits.hits.length);
-                                    if (redisEnabled) {
-                                        let ids = await redisClient.extractIds(ret, redisEnabled)
-                                        let indexes = await redisClient.extractIndexes(ret, redisEnabled)
-                                        await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                //logger.info(nameFile + '|_search| resp no relations: response cached  ');
-                                    }
-                                    return res.send(ret);
-                                }).catch(function(err) {
-                                    console.error("ERROR | " + nameFile + '|_search| checkUnionRelation:', err);
-                                    logger.error(nameFile + '|_search| checkUnionRelation : ' + err);
-                                });
-
-                            } else {
-                                // console.log("entro qui",query );
-                                //marco-antonino cache
-                                checkUnionRelationV2(resp.hits.hits, filterRelationDymer).then(function(meatch) {
-                                    var fileterdList = meatch; //temp
-                                    // console.log('meatch', meatch);
-                                    (meatch).map(item => item.relations).filter(
-                                        function(thing, i, arr) {
-                                            let cc = [...minmodelist, ...new Set((thing).map(item => item._index))];
-                                            minmodelist = cc.filter((item, pos) => cc.indexOf(item) === pos)
-                                        }
-                                    );
-                                    //console.log("Object.keys(filterRelationDymer).length", Object.keys(filterRelationDymer).length);
-                                    if (Object.keys(filterRelationDymer).length > 0) {
-                                        /*  var fileterdList = [];
-                                        meatch.forEach(element => {
-                                            var append = false;
-                                            element.relations.forEach(listelement => {
-                                                if (filterRelationDymer[listelement["_index"]] != undefined) {
-                                                    if (filterRelationDymer[listelement["_index"]].indexOf(listelement._id) >= 0) {
-                                                        append = true;
-                                                    }
-                                                }
-                                            });
-                                            if (append)
-                                                fileterdList.push(element);
-                                        });*/
-                                        filertEntitiesFields(fileterdList, minmodelist, hdymeruser).then(async function(nlist) {
-                                            // console.log("prepre", nlist);
-                                            // console.log(nameFile + '|_search| resp filter relations:count ', nlist.length);
-                                            logger.info(nameFile + '|_search| resp filter relations:count ' + nlist.length);
-                                            ret.setData(nlist);
-                                            if (redisEnabled) {
-                                                let ids = await redisClient.extractIds(ret, redisEnabled)
-                                                let indexes = await redisClient.extractIndexes(ret, redisEnabled)
-                                                await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                }
-                                        
-                                            logger.info(nameFile + '|_search| resp filter relations: response cached  ');
-                                            return res.send(ret);
-                                        }).catch(function(err) {
-                                            // console.log(nameFile + '|_search| resp filter relations:count ', resp.hits.hits.length);
-                                            console.error("ERROR | " + nameFile + '|_search| resp filter relations:count:', err);
-                                            logger.error(nameFile + '|_search| resp filter relations count: ' + err);
-                                        });
-                                        /* ret.setData(fileterdList);
-                                        console.log(nameFile + '|_search| resp filter relations:count ', resp.hits.hits.length);
-                                        return res.send(ret);*/
-                                    } else {
-                                        // ret.setData(meatch);
-                                        // console.log("resp.hits.hits", meatch)
-                                        // const uniqueRel = (meatch).map(item => item.relations);
-
-                                        //console.log(' minmodelist ', minmodelist);
-                                        //console.log(nameFile + '|_search| resp no detect relations: count ', resp.hits.hits.length);
-                                        logger.info(nameFile + '|_search| resp no detected relations: count ' + resp.hits.hits.length);
-                                        filertEntitiesFields(meatch, minmodelist, hdymeruser).then(async function(nlist) {
-                                            //  console.log("prepre", nlist);
-                                            ret.setData(nlist);
-                                            if (redisEnabled) {
-                                                let ids = await redisClient.extractIds(ret, redisEnabled)
-                                                let indexes = await redisClient.extractIndexes(ret, redisEnabled)
-                                                await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                        //logger.info(nameFile + '|_search| resp no detected relations: response cached  ');
-                                            }
-                                            return res.send(ret);
-                                        }).catch(function(err) {
-                                            console.error("ERROR | " + nameFile + '|_search| checkUnionRelation:', err);
-                                            logger.error(nameFile + '|_search| checkUnionRelation: ' + err);
-                                        });
-                                        // return res.send(ret);
-                                    }
-                                }).catch(function(err) {
-                                    console.error("ERROR | " + nameFile + '|_search| checkUnionRelationv2:', err);
-                                    logger.error(nameFile + '|_search| checkUnionRelationv2: ' + err);
-                                });
-
-
-
-
+                } else {
+                    // console.log("entro qui",query );
+                    //marco-antonino cache
+                    checkUnionRelationV2(resp.hits.hits, filterRelationDymer).then(function(meatch) {
+                        var fileterdList = meatch; //temp
+                        // console.log('meatch', meatch);
+                        (meatch).map(item => item.relations).filter(
+                            function(thing, i, arr) {
+                                let cc = [...minmodelist, ...new Set((thing).map(item => item._index))];
+                                minmodelist = cc.filter((item, pos) => cc.indexOf(item) === pos)
                             }
+                        );
+                        //console.log("Object.keys(filterRelationDymer).length", Object.keys(filterRelationDymer).length);
+                        if (Object.keys(filterRelationDymer).length > 0) {
+                            /*  var fileterdList = [];
+                              meatch.forEach(element => {
+                                  var append = false;
+                                  element.relations.forEach(listelement => {
+                                      if (filterRelationDymer[listelement["_index"]] != undefined) {
+                                          if (filterRelationDymer[listelement["_index"]].indexOf(listelement._id) >= 0) {
+                                              append = true;
+                                          }
+                                      }
+                                  });
+                                  if (append)
+                                      fileterdList.push(element);
+                              });*/
+                            filertEntitiesFields(fileterdList, minmodelist, hdymeruser).then(async function(nlist) {
+                                // console.log("prepre", nlist);
+                                // console.log(nameFile + '|_search| resp filter relations:count ', nlist.length);
+                                logger.info(nameFile + '|_search| resp filter relations:count ' + nlist.length);
+                                ret.setData(nlist);
+                                if (redisEnabled) {
+                                    let ids = await redisClient.extractIds(ret, redisEnabled)
+                                    let indexes = await redisClient.extractIndexes(ret, redisEnabled)
+                                    await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                }
+                               
+                                logger.info(nameFile + '|_search| resp filter relations: response cached  ');
+                                return res.send(ret);
+                            }).catch(function(err) {
+                                // console.log(nameFile + '|_search| resp filter relations:count ', resp.hits.hits.length);
+                                console.error("ERROR | " + nameFile + '|_search| resp filter relations:count:', err);
+                                logger.error(nameFile + '|_search| resp filter relations count: ' + err);
+                            });
+                            /* ret.setData(fileterdList);
+                             console.log(nameFile + '|_search| resp filter relations:count ', resp.hits.hits.length);
+                             return res.send(ret);*/
+                        } else {
+                            // ret.setData(meatch);
+                            // console.log("resp.hits.hits", meatch)
+                            // const uniqueRel = (meatch).map(item => item.relations);
+
+                            //console.log(' minmodelist ', minmodelist);
+                            //console.log(nameFile + '|_search| resp no detect relations: count ', resp.hits.hits.length);
+                            logger.info(nameFile + '|_search| resp no detected relations: count ' + resp.hits.hits.length);
+                            filertEntitiesFields(meatch, minmodelist, hdymeruser).then(async function(nlist) {
+                                //  console.log("prepre", nlist);
+                                ret.setData(nlist);
+                                if (redisEnabled) {
+                                    let ids = await redisClient.extractIds(ret, redisEnabled)
+                                    let indexes = await redisClient.extractIndexes(ret, redisEnabled)
+                                    await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                        //logger.info(nameFile + '|_search| resp no detected relations: response cached  ');
+                                }
+                                return res.send(ret);
+                            }).catch(function(err) {
+                                console.error("ERROR | " + nameFile + '|_search| checkUnionRelation:', err);
+                                logger.error(nameFile + '|_search| checkUnionRelation: ' + err);
+                            });
+                            // return res.send(ret);
+                        }
+                    }).catch(function(err) {
+                        console.error("ERROR | " + nameFile + '|_search| checkUnionRelationv2:', err);
+                        logger.error(nameFile + '|_search| checkUnionRelationv2: ' + err);
+                    });
+                }
                 // })
-                    }
 
             }).catch(function(error) {
-                console.log("ERROR | " + nameFile + '|_search| redis:', err);
+                console.log("ERROR | " + nameFile + '|_search| client.search error:', error);
                 ret.setMessages("Search Error");
                 ret.setSuccess(false);
                 ret.setExtraData({ "log": error });
@@ -2753,8 +2876,9 @@ router.post('/_search', (req, res) => {
     });
 });
 
-router.get('/_search/:enttype?', (req, res) => {
-    let enttype = req.params.enttype ? req.params.enttype : ""
+router.get('/_search/:enttype/:id?', (req, res) => {
+    const enttype = req.params.enttype;
+    const entityId = req.params.id; //gestione singolo item
 
     let origin = req.get('origin');
     let fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
@@ -2801,13 +2925,22 @@ router.get('/_search/:enttype?', (req, res) => {
                 }
             }
         }
-        
+
+        // Gestione singolo item
+        if (entityId) {
+            callData.query.query.bool.must.push({
+                "term": { "_id": entityId }
+            });
+        }
+
         let instance = callData.instance;
         let query = callData.query;
         let source = callData.query.getfields;
         let _source = callData.source;
 
         let qoptions = callData.qoptions;
+        
+        const format = req.query.format; // AC per la gestione del formato json-ld
 
         let recoverRelation = true;
         let size = 10000;
@@ -2834,8 +2967,8 @@ router.get('/_search/:enttype?', (req, res) => {
         var rr = [];
 
         var rr = { indextosearch: [], query: [] };
-        rr = retriveIndex_Query_ToSearch(rr, query.query);
-        console.log("rr",rr);
+        rr = retriveIndex_Query_ToSearch(rr, query.query); // query per l'indice
+
         var bridgeConf = undefined;
         if (rr != undefined)
             bridgeConf = bE.findByIndex(rr.indextosearch[0]);
@@ -2844,7 +2977,6 @@ router.get('/_search/:enttype?', (req, res) => {
         if (bridgeConf != undefined) {
             logger.info(nameFile + '|_search| bridgeConf :' + JSON.stringify(bridgeConf));
             bridgeEsternalEntities(bridgeConf, "search", undefined, rr).then(function (callresp) {
-                console.log("callresp.data", callresp);
                 jsonMappingExternalToDymerEntity(callresp.data, bridgeConf, "search").then(function (mapdata) {
                     let msg = (mapdata.length > 0) ? "List entities" : "Empty list";
                     ret.setData(mapdata);
@@ -2959,17 +3091,40 @@ router.get('/_search/:enttype?', (req, res) => {
                                                 }
                                             }]
                                         }
-                                    }]
+                                        }]
                                 }
                             }]
                         }
                     }
                 };
+
+                /*AC multitenancy filter start*/
+                if (multitenancyEnabled) {
+                    if (!origin) return;
+
+                    const keywordFilter = {
+                        wildcard: {
+                            "properties.ipsource.keyword": origin + "*"
+                        }
+                    };
+
+                    const fallbackFilter = { // nel caso kewword non prenda bene il filtro: dipende dall'Elastic
+                        wildcard: {
+                            "properties.ipsource": "*" + origin + "*"
+                        }
+                    };
+
+                    try {
+                        query.query.bool.must.push(keywordFilter);
+                    } catch (e) {
+                        query.query.bool.must.push(fallbackFilter);
+                    }
+                }
+                /*AC multitenancy filter end*/
+
                 if (my_oldquery != null) {
                     query.query.bool.must.push(my_oldquery);
-
                 }
-
             }
 
             if (source != undefined)
@@ -3002,7 +3157,7 @@ router.get('/_search/:enttype?', (req, res) => {
             }
 
 
-            client.search(params).then(function (resp) {
+            client.search(params).then(async function (resp) {
                 if (err) {
                     console.error("ERROR | " + nameFile + '|_search| search:', err);
                     logger.error(nameFile + '|_search| search : ' + err);
@@ -3011,9 +3166,30 @@ router.get('/_search/:enttype?', (req, res) => {
                     ret.setMessages("Entity " + err.displayName);
                     return res.send(ret);
                 }
-                let msg = (resp.hits.total > 0) ? "List entities" : "Empty list";
 
-                ret.setMessages(msg);
+                if (format === 'json-ld') { // AC per la gestione del formato json-ld DCAT e IDS
+                    logger.info(`${nameFile} | _search| search: | Richiesta di trasformazione in JSON-LD`);
+                    console.log(`${nameFile} | _search| search: | Richiesta di trasformazione in JSON-LD`);
+                    const index = rr.indextosearch[0]
+                    const hits = resp.hits.hits
+
+                    const form = await dbForms.collection('forms').findOne({ "instance._index": index })
+
+                    if (!form) {
+                        logger.warn(`${nameFile} | _search| search: | ID modello form mancante`);
+                        return null;
+                    }
+
+                    const transformedResults = hits.map(hit => util.transformToJSONLD(hit, form)).filter(result => result !== null);
+
+                    ret.setMessages("Risultati trasformati in formato JSON-LD");
+                    ret.setData(transformedResults);
+                    return res.send(ret);
+
+                } else {
+                    let msg = (resp.hits.total > 0) ? "List entities" : "Empty list";
+                    ret.setMessages(msg);
+                }
                 if (resp.hits.total == 0) {
                     logger.info(nameFile + '|_search| resp:count 0');
                     return res.send(ret);
@@ -3577,40 +3753,19 @@ const bridgeEsternalEntities = (objconf, callkey, datatosend, reqConfig, files) 
 }
 const jsonMappingExternalToDymerEntity = (obj, conf, calltype) => {
     return new Promise((resolve, reject) => {
-     
-         // console.log("obj******* FIRST*****************",obj.hits.hits);
-
         logger.info(nameFile + '| jsonMappingExternalToDymerEntity |  conf.mapping.dentity["_source"]  :' + JSON.stringify(conf.mapping.dentity["_source"]));
-       //  console.log(nameFile + '| jsonMappingExternalToDymerEntity |  conf.mapping.dentity["_source"] :', JSON.stringify(conf.mapping.dentity["_source"]));
-       /*  if (conf.api[calltype].hasOwnProperty("containerkey")) {
-            console.log("a9",conf.api[calltype] );
+        //console.log(nameFile + '| jsonMappingExternalToDymerEntity |  conf.mapping.dentity["_source"] :', JSON.stringify(conf.mapping.dentity["_source"]));
+        if (conf.api[calltype].hasOwnProperty("containerkey")) {
             /*MG - Bridge Entities - INIZIO*/
             /*if (conf.api[calltype]["containerkey"] != "") {
-                 console.log('conf.api[calltype]["containerkey"] ', conf.api[calltype]["containerkey"]);
-                 var chiave=conf.api[calltype]["containerkey"];
-                 obj =  obj.hits.hits;
+                obj = obj[conf.api[calltype]["containerkey"]];
             }*/
            if (conf.api[calltype]["containerkey"] !== "") {
                 const keys = conf.api[calltype]["containerkey"].split(".");
                 obj = keys.reduce((acc, k) => acc && acc[k], obj);
             }
             /*MG - Bridge Entities - FINE*/
-//}
-        //  console.log("calltype calltype ", calltype);
-
-        if (conf.api[calltype].hasOwnProperty("containerkey")) {
-            if (conf.api[calltype]["containerkey"] !== "") {
-                const keys = conf.api[calltype]["containerkey"].split(".");
-                obj = keys.reduce((acc, k) => acc && acc[k], obj);
-            }
         }
-
-
-
-        console.log("obj******** LAST ******",obj);
-
-        //logger.info(nameFile + '| jsonMappingExternalToDymerEntity |  obj  :' + JSON.stringify(obj));
-
         jsonMapper(obj, conf.mapping.dentity).then((result) => {
             logger.info(nameFile + '| jsonMappingExternalToDymerEntity |  jsonMapper  :' + JSON.stringify(result));
             // console.log(nameFile + '| jsonMappingExternalToDymerEntity | jsonMapper :', JSON.stringify(result));
@@ -3621,7 +3776,7 @@ const jsonMappingExternalToDymerEntity = (obj, conf, calltype) => {
             console.error("ERROR | " + nameFile + '| jsonMappingExternalToDymerEntity | jsonMapper : ', error);
             reject("ERROR:jsonMappingExternalToDymerEntity error")
         });
-    });
+    })
 }
 const jsonMappingDymerEntityToExternal = (obj, conf, calltype, files) => {
     return new Promise((resolve, reject) => {
@@ -3699,9 +3854,7 @@ router.put('/entitiesbridge/:id', (req, res) => {
 
 router.get('/entitiesbridge/:doevaljson', (req, res) => {
     var ret = new jsonResponse();
-    console.log("req.params.doevaljson",req.params.doevaljson);
     var list = bE.getmappingList(req.params.doevaljson);
-    console.log("list",list);
     ret.setData(list);
     return res.send(ret);
 });
@@ -3759,68 +3912,246 @@ function appendFormdata(FormData, data, name) {
     }
 }
 
-// Funzione per trasformare un'entità in formato JSON-LD
-function transformToJSONLD(entity, formModel) {
-    const { interoperability } = formModel;
-    if (!interoperability || !interoperability.enabled) {
-        return entity; // Restituisce l'entità originale se l'interoperabilità non è abilitata
-    }
+// router.post('/:enttype', function(req, res) {
+// 	console.log(nameFile +" | /:enttype  ");//ex. by dymer-viewer, by add entity into dashboard
+//     var ret = new jsonResponse();
+//     let origin=(req.get('origin'))?req.headers.referer:req.get('origin');
+//     /*
+//     console.log(nameFile +" | /:enttype | req.headers: ", JSON.stringify(req.headers));
+//     logger.info(nameFile +" | /:enttype | req.headers: "+ JSON.stringify(req.headers));
+//     logger.info(nameFile +" | /:enttype | req.headers.authdata: "+ JSON.stringify(req.headers.authdata));
+//     logger.info(nameFile + '| /:enttype | create | dymeruser:' + JSON.stringify(req.headers.dymeruser));
+//     console.log(nameFile +' | /:enttype | req.headers.dymeruser: '+JSON.stringify(req.headers.dymeruser));
+//     */
+//     const hdymeruser = req.headers.dymeruser;
+//     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+//     let requestjsonpath=req.headers.requestjsonpath;
+//     let dymerextrainfo = dymeruser.extrainfo;
+// 	//console.log("dymeruser", JSON.stringify(dymeruser));
+//     //var dymerextrainfo = req.headers.extrainfo;
+//     /*if (dymerextrainfo != undefined && dymerextrainfo != "null" && dymerextrainfo != null) {
+//         dymerextrainfo = JSON.parse(Buffer.from(req.headers.extrainfo, 'base64').toString('utf-8'));
+//     } else {
+//         dymerextrainfo = undefined;
+//     } */
+//     let urs_uid = dymeruser.id;
+//     let urs_gid = dymeruser.gid;
+//     /* if (dymerextrainfo != undefined)
+//          urs_gid = dymerextrainfo.extrainfo.groupId;*/
+//     if (dymerextrainfo != undefined)
+//         urs_gid = dymerextrainfo.groupId;
+//     var hasperm = false;
+//     var act = "create";
+//     var index = req.params.enttype;
+//     var queryString = "";
+//     let asis = false;
+//     if (dymeruser.roles.indexOf("app-admin") > -1) {
+//         hasperm = true;
+//     }
+//     if ((dymeruser.roles.indexOf("app-admin") > -1) || (dymeruser.roles.indexOf("app-adapter") > -1)) {
+//         asis = true;
+//     }
+//     //logger.info(nameFile + ' | /:enttype | hasperm: '+ hasperm);
+//     //logger.info(nameFile + ' | /:enttype | asis: '+ asis);
+//     queryString = "?role[]=" + dymeruser.roles.join("&role[]=");
+//     var url = util.getServiceUrl("dservice") + "/api/v1/perm/entityrole/";
+//     url += act + "/";
+//     url += index + "/";
+//     url += queryString;
+//     //console.log(nameFile + '| /:enttype | permission url:', url);
+//     //logger.info(nameFile + '| /:enttype | permission url:'+ url);
+//     //console.log(nameFile + '| /:enttype | create | dymeruser:', JSON.stringify(dymeruser));
+//     axios.get(url)
+//         .then((response) => {
+//             console.log(nameFile + '| /:enttype | create | permission create:', JSON.stringify(response.data.data.result));
+//             logger.info(nameFile + '| /:enttype | create | permission create:' + JSON.stringify(response.data.data.result));
+//             if (response.data.data.result || hasperm) {
+//                 /*
+//                 console.log(nameFile + '| /:enttype | entityrole response.data.data.result: ', JSON.stringify(response.data.data.result));
+//                 logger.info(nameFile + '| /:enttype | entityrole response.data.data.result: ', JSON.stringify(response.data.data.result));
+//                 console.log(' >>> ' +nameFile + '| /:enttype | hasperm: ' + hasperm);
+//                 logger.info(' >>> ' +nameFile + '| /:enttype | hasperm: ' + hasperm);
+//                 */
+//                 upload(req, res, function(err) {
+//                     if (err) {
+//                         console.error("ERROR | " + nameFile + '| /:enttype | create | upload:', err);
+//                         logger.error(nameFile + '| /:enttype | create | upload : ' + err);
+//                         ret.setMessages("Upload Error");
+//                         ret.setSuccess(false);
+//                         ret.setExtraData({ "log": err.stack });
+//                         return res.send(ret);
+//                     }
+//                     try {
+//                         let callData = util.getAllQuery(req);
+//                         let instance = callData.instance;
+//                         let elIndex = instance.index;
+//                         let elDymerUuid = instance.id;
+//                         let data = callData.data;
+//                         /*
+//                         logger.info(nameFile + '| /:enttype | elIndex: ' +  elIndex);
+//                         console.log(nameFile + '| /:enttype | elIndex: ', elIndex);
+//                         logger.info(nameFile + '| /:enttype | data: ' +  JSON.stringify(data));
+//                         console.log(nameFile + '| /:enttype | data: ', JSON.stringify(data));
+//                         */
+//                         //External
 
-    const dcatMappings = interoperability.profiles.dcat.mappings || {};
-    const idsMappings = interoperability.profiles.ids.mappings || {};
-    const metadata = interoperability.metadata || {};
-
-    // Contesto JSON-LD di base
-    const jsonLdContext = {
-        "@context": {
-            "dcat": "http://www.w3.org/ns/dcat#",
-            "dct": "http://purl.org/dc/terms/",
-            "ids": "https://w3id.org/idsa/core/",
-            "vcard": "http://www.w3.org/2006/vcard/ns#"
-        }
-    };
-
-    // Costruzione dell'oggetto JSON-LD
-    let jsonLdObject = { ...jsonLdContext };
-
-    // Applica i mapping DCAT
-    for (const dymerField in dcatMappings ) {
-        const dcatProperty = dcatMappings[dymerField];
-        if (entity[dymerField] !== undefined) {
-            jsonLdObject[dcatProperty] = entity[dymerField];
-        }
-    }
-
-    // Applica i mapping IDS
-    for (const dymerField in idsMappings) {
-        const idsProperty = idsMappings[dymerField];
-        if (entity[dymerField] !== undefined) {
-            jsonLdObject[idsProperty] = entity[dymerField];
-        }
-    }
-
-    // Aggiungi metadati globali del dataset
-    jsonLdObject["@type"] = [metadata.type || "dcat:Dataset", metadata.ids_resource || "ids:Resource"];
-    if (metadata.publisher) {
-        jsonLdObject["dct:publisher"] = { "@type": "vcard:Organization", "vcard:fn": metadata.publisher };
-    }
-    if (metadata.theme) {
-        jsonLdObject["dcat:theme"] = { "@id": metadata.theme };
-    }
-
-    // Aggiungi un riferimento all'endpoint originale di DYMER
-    jsonLdObject["dcat:accessURL"] = `/${entity.instance}/${entity.type}/${entity._id}`;
-
-    return jsonLdObject;
-}
-
-
-
+//                         var globalData = req.body;
+//                         var trq = Object.assign({}, req);
+//                         var bridgeConf = bE.findByIndex(elIndex);
+//                         //console.log(nameFile + '| /:enttype | create | bridgeConf:', JSON.stringify(bridgeConf));
+//                         //logger.info(nameFile + '| /:enttype | create | bridgeConf:'+ JSON.stringify(bridgeConf));
+//                         if (bridgeConf != undefined) {
+//                             //logger.info(nameFile + '| /:enttype | create | if bridgeConf:' + JSON.stringify(bridgeConf));
+//                             //console.log(nameFile + '| /:enttype | create | if bridgeConf:', JSON.stringify(bridgeConf));
+//                             if (trq.files != undefined) {
+//                                 trq.files.forEach(function(element) {
+//                                     var ark = replaceAll(element.fieldname, '[', '@@');
+//                                     delete element.fieldname;
+//                                     ark = replaceAll(ark, ']', '');
+//                                     ark = ark.split("@@");
+//                                     ark.shift();
+//                                     stringAsKey(globalData.data, ark, element);
+//                                 });
+//                             }
+//                             jsonMappingDymerEntityToExternal(globalData, bridgeConf, "create", req.files).then(function(mapdata) {
+//                                 //console.log("jsonMappingDymerEntityToExternal");
+//                                 //logger.info("jsonMappingDymerEntityToExternal");
+//                                 bridgeEsternalEntities(bridgeConf, "create", mapdata, undefined, req.files).then(function(callresp) {
+//                                     //console.log(nameFile + '| /:enttype | create | bridgeEsternalEntities: ', JSON.stringify(mapdata), JSON.stringify(callresp.data));
+//                                     //logger.info(nameFile + '| /:enttype | create | bridgeEsternalEntities:' + JSON.stringify(mapdata) + " , " + JSON.stringify(callresp.data));
+//                                     ret.setData(callresp.data);
+//                                     ret.setMessages("Entity Created successfully");
+//                                     return res.send(ret);
+//                                 }).catch(function(error) {
+//                                     console.error("ERROR | " + nameFile + '| /:enttype | create | bridgeEsternalEntities:', error);
+//                                     logger.error(nameFile + '| /:enttype | create | bridgeEsternalEntities: ' + error);
+//                                     ret.setSuccess(false);
+//                                     ret.setMessages("Entity Create Problem");
+//                                     return res.send(ret);
+//                                 });
+//                             }).catch(function(error) {
+//                                 console.error("ERROR | " + nameFile + '| /:enttype | create | jsonMappingDymerEntityToExternal:', error);
+//                                 logger.error(nameFile + '| /:enttype | create | jsonMappingDymerEntityToExternal: ' + error);
+//                                 ret.setSuccess(false);
+//                                 ret.setMessages("Entity Mapping Problem");
+//                                 return res.send(ret);
+//                             });
+//                         } else {
+//                             //fine externale
+//                             console.log("- jsonMappingDymerEntityToExternal");
+//                             logger.info("- jsonMappingDymerEntityToExternal");
+//                             var files_arr = [];
+//                             var label_index = -1;
+//                             //  console.log('reqfile', req.files);
+//                             if (req.files != undefined) {
+//                                 req.files.forEach(function(element) {
+//                                     var ark = replaceAll(element.fieldname, '[', '@@');
+//                                     var temp_el = element;
+//                                     delete element.fieldname;
+//                                     ark = replaceAll(ark, ']', '');
+//                                     ark = ark.split("@@");
+//                                     ark.shift();
+//                                     stringAsKey(data, ark, element);
+//                                 });
+//                             }
+//                             //  logger.info("predata" + JSON.stringify(data));
+//                             logger.info(nameFile + '| /:enttype | create | predata: ' + JSON.stringify(data));
+//                             //       if (!((JSON.parse(data.properties)).hasOwnProperty("owner") && asis)) {
+//                              if (!(data.properties?.owner != undefined && asis) || req.headers?.fromCsv == "true") { // AC from CSV owner FIX
+//                                 data.properties.owner = {};
+//                                 data.properties.owner.uid = urs_uid;
+//                                 data.properties.owner.gid = urs_gid;
+//                                 data.properties.lang = "und";
+//                                 data.properties.tid = "0";
+//                                 data.properties.created = new Date().toISOString();
+//                                 data.properties.changed = new Date().toISOString();
+//                                 data.properties.extrainfo = {};
+//                                 data.properties.extrainfo.lastupdate = { "uid": urs_uid ,"origin":origin };
+//                                 data.properties.ipsource=origin; 
+//                             }
+//                             if (elDymerUuid == undefined) {
+//                                 instance.id = util.generateDymerUuid();
+//                             }
+//                             let params = (instance) ? instance : {};
+//                             params["body"] = data;
+//                             // params["body"].size = 10000;
+//                             params["refresh"] = true;
+//                             let ref = Object.assign({}, data.relation);
+//                             console.log(nameFile + '| /:enttype | create | data.relation: ', data.relation);
+//                             if (data != undefined)
+//                                 delete data.relation;
+//                             //console.log(nameFile + '| /:enttype | create entity in Elastic | params:', dymeruser.id, JSON.stringify(params));
+//                             //logger.info(nameFile + '| /:enttype | create entity in Elastic | params :' + dymeruser.id + " , " + JSON.stringify(params));
+//                             client.index(params, async function(err, resp, status) {
+//                                 if (err) {
+//                                     console.error("ERROR | " + nameFile + '| /:enttype | create:', err);
+//                                     logger.error(nameFile + '| /:enttype | create : ' + err);
+//                                     ret.setSuccess(false);
+//                                     ret.setExtraData({ "log": resp });
+//                                     ret.setMessages("Entity creation error");
+//                                     return res.send(ret);
+//                                 }
+//                                 var respResult = resp.result;
+//                                 //console.log(nameFile + '| /:enttype | client.index: ', respResult);
+//                                 //logger.info(nameFile + '| /:enttype | client.index: '+ JSON.stringify(respResult));
+//                                 ret.setMessages("Entity " + respResult + " successfully");
+// 			                    ret.addData(resp);
+// 			                    /*MG - Creazione organizzazione in LR - Inizio*/
+//                                 ret.addData(data);
+//                                 /*MG - Creazione organizzazione in LR - Fine*/
+//                                 //   console.log('new ent ', resp);
+//                                 var elId = resp["_id"];
+//                                 logger.info(nameFile + '| /:enttype | create | dymeruser.id, params:' + dymeruser.id + ' , ' + JSON.stringify(params));
+//                                 logger.info(nameFile + '| /:enttype | create | ref, elIndex, elId:' + JSON.stringify(ref) + ' , ' + elIndex + ' , ' + elId);
+//                                 try {
+//                                     //marco-antonino cache
+//                                     console.log(nameFile + '| /:enttype | checkRelation');
+//                                     logger.info(nameFile + '| /:enttype | checkRelation');
+//                                     checkRelation(ref, elIndex, elId);
+//                                 } catch (error) {
+//                                     logger.error(nameFile + '| /:enttype | create | checkRelation:' + error);
+//                                 }
+//                                 /* var extraInfo = dymerextrainfo;
+//                                  if (extraInfo != undefined)
+//                                      extraInfo.extrainfo.emailAddress = dymeruser.id;*/
+//                                 console.log(nameFile + '| /:enttype | create | pre check hook extraInfo: ', dymerextrainfo);
+//                                 logger.info(nameFile + '| /:enttype | create | pre check hook| obj, extraInfo:' + JSON.stringify(resp) + ' , ' + JSON.stringify(dymerextrainfo));
+//                                 setTimeout(() => {
+//                                     checkServiceHook('after_insert', resp, dymerextrainfo, req);
+//                                 }, 3000);
+//                                 await redisClient.invalidateCacheByIndex(ret.data[0]._index, redisEnabled)
+//                                 return res.send(ret);
+//                             });
+//                         }
+//                     } catch (error) {
+//                         console.error("ERROR | " + nameFile + '| /:enttype | core:', error);
+//                         logger.error(nameFile + '| /:enttype | core : ' + error);
+//                         ret.setMessages("ERROR create");
+//                         res.status(200);
+//                         ret.setSuccess(false);
+//                         return res.send(ret);
+//                     }
+//                 });
+//             } else {
+//                 ret.setMessages("Sorry, something went wrong: you don't have permission or your authentication has expired");
+//                 res.status(200);
+//                 ret.setSuccess(false);
+//                 return res.send(ret);
+//             }
+//         }, (error) => {
+//             console.error("ERROR | " + nameFile + '| /:enttype | permission: ', error);
+//             logger.error(nameFile + '| /:enttype | permission: ' + error);
+//             ret.setMessages("No permission");
+//             res.status(200);
+//             ret.setSuccess(false);
+//             return res.send(ret);
+//         });
+// });
 
 router.post('/:enttype', function(req, res) {
-	console.log(nameFile +" | /:enttype  ");//ex. by dymer-viewer, by add entity into dashboard
+    console.log(nameFile +" | /:enttype  ");//ex. by dymer-viewer, by add entity into dashboard
     var ret = new jsonResponse();
-    
+   
     const endpointName = `POST /${req.params.enttype} (Create Entity)`;
     let origin=(req.get('origin'))?req.headers.referer:req.get('origin');
     /*
@@ -3834,7 +4165,7 @@ router.post('/:enttype', function(req, res) {
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     let requestjsonpath=req.headers.requestjsonpath;
     let dymerextrainfo = dymeruser.extrainfo;
-	//console.log("dymeruser", JSON.stringify(dymeruser));
+    //console.log("dymeruser", JSON.stringify(dymeruser));
     //var dymerextrainfo = req.headers.extrainfo;
     /*if (dymerextrainfo != undefined && dymerextrainfo != "null" && dymerextrainfo != null) {
         dymerextrainfo = JSON.parse(Buffer.from(req.headers.extrainfo, 'base64').toString('utf-8'));
@@ -3894,58 +4225,66 @@ router.post('/:enttype', function(req, res) {
                         let elIndex = instance.index;
                         let elDymerUuid = instance.id;
                         let data = callData.data;
-
-                          
+ 
+                         
                         let entityData = callData.data;
                         const entType = req.params.enttype;
                         const indexName = entityData.instance || 'dymer_default';
+                       
                         
-                        //TODO:  integrare chiamata form , prendere i dati del form partendo dall'entità e prendere da lì i dati per il mapping verso l'esterno
-                        //logger.info(nameFile + '| /:enttype | create | entityData:' + JSON.stringify(entityData)); 
+                        /*AC Chiamata al From per recuperare il model */
+                        //logger.info(nameFile + '| /:enttype | create | entityData:' + JSON.stringify(entityData));
                         
-                        const modelId = entityData.modelId || entityData._modelId; 
+                        const modelId = entType;
                         let semanticMetadata = {};
-                    
                         //try to insert
                          if (modelId) {
-                    
-                            const formModel = await Model.findById(modelId).lean();
+                   
+                            const formModel = await dbForms.collection('forms').findOne({ "instance._index": modelId }); //await Model.findById(modelId).lean();
+
                             if (formModel && formModel.interoperability && formModel.interoperability.enabled) {
                             logger.info(`${nameFile} | ${endpointName} | Mapping interoperabilità trovato per modello: ${modelId}`);
-                            
+                           
                             const { profiles, metadata } = formModel.interoperability;
-                            
+                            const isEnabled = formModel.interoperability.enabled;
+                            const { type, ids_resource, ...rest } = metadata || {};
+
                             // Creiamo una sezione 'interoperability' nell'entità per ES
                             data.interoperability = {
                                 dcat_type: metadata.type || "dcat:Dataset",
                                 ids_type: metadata.ids_resource || "ids:DataResource",
-                                publisher: metadata.publisher,
+                                ...rest,
+                                // publisher: metadata.publisher,
+                                enabled: isEnabled,
                                 mappings: {
                                     dcat: {},
                                     ids: {}
                                 }
-                            };
+                                };
 
-                                // Applichiamo i mapping DCAT ai dati reali
-                            if (profiles.dcat && profiles.dcat.mappings) {
-                                for (const [field, property] of Object.entries(profiles.dcat.mappings)) {
-                                    if (data[field] !== undefined) {
-                                        data.interoperability.mappings.dcat[property] = data[field];
-                                    }
+                                if (profiles.dcat && profiles.dcat.mappings) {
+                                    for (const [field, property] of Object.entries(profiles.dcat.mappings)) {
+
+                                        const key = field.replace(/^data\[(.*)\]$/, '$1');
+                                        console.log(`DCATnel for: data[${key}]: ${data[key]}`)
+                                        if (data[key] !== undefined && data[key] !== "") {
+                                            data.interoperability.mappings.dcat[property] = data[key];
+                                        }
                                     }
                                 }
 
-                                // Applichiamo i mapping IDS ai dati reali
                                 if (profiles.ids && profiles.ids.mappings) {
                                     for (const [field, property] of Object.entries(profiles.ids.mappings)) {
-                                        if (data[field] !== undefined) {
-                                            data.interoperability.mappings.ids[property] = entityData[field];
+
+                                        const key = field.replace(/^data\[(.*)\]$/, '$1');
+                                        console.log(`DCATnel for: data[${key}]: ${data[key]}`)
+                                        if (data[key] !== undefined && data[key] !== "") {
+                                            data.interoperability.mappings.ids[property] = data[key];
                                         }
                                     }
                                 }
                             }
                         }
-            
 
                         /*
                         logger.info(nameFile + '| /:enttype | elIndex: ' +  elIndex);
@@ -3954,7 +4293,7 @@ router.post('/:enttype', function(req, res) {
                         console.log(nameFile + '| /:enttype | data: ', JSON.stringify(data));
                         */
                         //External
-
+ 
                         var globalData = req.body;
                         var trq = Object.assign({}, req);
                         var bridgeConf = bE.findByIndex(elIndex);
@@ -4027,7 +4366,7 @@ router.post('/:enttype', function(req, res) {
                                 data.properties.changed = new Date().toISOString();
                                 data.properties.extrainfo = {};
                                 data.properties.extrainfo.lastupdate = { "uid": urs_uid ,"origin":origin };
-                                data.properties.ipsource=origin; 
+                                data.properties.ipsource=origin;
                             }
                             if (elDymerUuid == undefined) {
                                 instance.id = util.generateDymerUuid();
@@ -4055,8 +4394,8 @@ router.post('/:enttype', function(req, res) {
                                 //console.log(nameFile + '| /:enttype | client.index: ', respResult);
                                 //logger.info(nameFile + '| /:enttype | client.index: '+ JSON.stringify(respResult));
                                 ret.setMessages("Entity " + respResult + " successfully");
-			                    ret.addData(resp);
-			                    /*MG - Creazione organizzazione in LR - Inizio*/
+                                ret.addData(resp);
+                                /*MG - Creazione organizzazione in LR - Inizio*/
                                 ret.addData(data);
                                 /*MG - Creazione organizzazione in LR - Fine*/
                                 //   console.log('new ent ', resp);
@@ -4444,11 +4783,13 @@ router.put('/:id', async (req, res) => {
                             delete editValues.todeleteObj;
                         }
                         let listRelation_old = await getAllIdsRelationsById1([oldElement._id]);
+
                         //let listRelation_old = await getAllIdsRelations([oldElement._id]);
                         // console.log('listRelation_old', listRelation_old);
                         let listRelation_New_indexes = Object.keys(listRelation_New);
                         let listRelation_old_filtered = listRelation_old.filter(a => (listRelation_New_indexes.includes(a._source._index1) || listRelation_New_indexes.includes(a._source._index2)));
                         // console.log('listRelation_old_filtered', listRelation_old_filtered);
+
                         let listRelation_New_ids = [];
                         for (const [key, value] of Object.entries(listRelation_New)) {
                             //console.log(`${key}: ${value}`);

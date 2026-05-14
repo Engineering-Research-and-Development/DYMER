@@ -4,8 +4,10 @@
     "description": "",
     "main": "server.js",
     "dependencies": {
+        "@elastic/elasticsearch": "^9.4.0",
         "angular": "1.8.2",
         "angular-file-upload": "2.6.1",
+        "archiver": "^7.0.1",
         "await": "0.2.6",
         "axios": "1.6.2",
         "bcryptjs": "3.0.2",

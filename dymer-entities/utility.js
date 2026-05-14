@@ -10,11 +10,26 @@ const path = require("path");
 const nameFile = path.basename(__filename);
 const logger = require('./routes/dymerlogger');
 const http = require('http');
+let fs = require('fs')
+const axios = require('axios');
 
 const flatnest = require("flatnest")
 exports.getDymerUuid = function() {
     return global.dymer_uuid;
 };
+
+
+exports.format = function(seconds){
+  function pad(s){
+    return (s < 10 ? '0' : '') + s;
+  }
+  var hours = Math.floor(seconds / (60*60));
+  var minutes = Math.floor(seconds % (60*60) / 60);
+  var seconds = Math.floor(seconds % 60);
+
+  return pad(hours) + ':' + pad(minutes) + ':' + pad(seconds);
+}
+
 
 const stringToUuid = (str) => {
     str = str.replace('-', '');
@@ -65,6 +80,10 @@ exports.mongoUrl = function(el) {
 };
 exports.mongoUrlEntitiesBridge = function() {
     let url = "mongodb://" + global.configService.repository.entitiesbridge.ip + ':' + global.configService.repository.entitiesbridge.port + "/" + global.configService.repository.entitiesbridge.index_ref;
+    return url;
+};
+exports.mongoUrlForms = function(el) {
+    let url = "mongodb://" + global.configService.repository.forms.ip + ':' + global.configService.repository.forms.port + "/" + global.configService.repository.forms.index_ref;
     return url;
 };
 exports.getServiceConfig = function(typeServ) {
@@ -199,9 +218,9 @@ exports.checkIsAdmin = function(req, res, next) {
 exports.checkIsAdminRun = function(req, res, next) {
     const hdymeruser = req.headers.dymeruser;
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
-    //console.log("==> checkIsAdmin dymeruser:", dymeruser);
+    
     if ((dymeruser.roles.indexOf("app-admin") > -1)) {
-        //console.log("==>ruolo app-admin");
+        
         req.dymeruser = dymeruser;
         console.log(nameFile + ' | checkIsAdmin | Yes permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
         logger.info(nameFile + ' | checkIsAdmin | Yes permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
@@ -245,18 +264,6 @@ exports.getDymerUser = function(req, res, next) {
         return dymeruser;
     }
 }
-exports.getDymerUser2 = function(req, res, next) {
-    /*const hdymeruser = req.headers.dymeruser;
-    if (hdymeruser == undefined) {
-        console.log("==> getDymerUser hdymeruser is undefined");
-        return "test"";
-    } else {
-        const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
-        console.log("==> getDymerUser dymeruser:", dymeruser);
-        return "test2"";
-    }*/
-    return "test";
-}
 
 function jsonValueClean(valore) {
     if (typeof valore === 'string') {
@@ -286,4 +293,208 @@ exports.flatJSON = function (nestedJSONArray) {
 
 exports.getImgLink = function(resourceId, logoId) {
     return logoId ? `${this.getServiceUrl("entity")}/api/entities/api/v1/entity/contentfile/${resourceId}/${logoId}` : ""
+	
+}
+
+// AC prendere le immagini nell'export
+
+function checkFilesFormdata(arr, data, name) {
+    var name = name || '';
+    if (typeof data === 'object' && data != null) {
+        var index = 0
+        if (data.hasOwnProperty("filename") && data.hasOwnProperty("bucketName")) {
+            arr.push(data);
+        }
+        for (var key in data) {
+            if (data.hasOwnProperty(key)) {
+                if (name === '') {
+                    checkFilesFormdata(arr, data[key], key);
+                } else {
+                    checkFilesFormdata(arr, data[key], name + '[' + key + ']');
+                }
+            }
+            index++;
+        }
+    }
+}
+
+exports.checkFilesFormdata = checkFilesFormdata
+
+// function downloadFile(url, dest, filename, dymeruser) {
+//     return axios({
+//         method: "get",
+//         url,
+//         responseType: "arraybuffer",
+//         headers: {
+//             dymeruser: dymeruser
+//         }
+//     }).then(response => {
+//         const path = `${dest}/${filename}`;
+//         fs.writeFileSync(path, response.data);
+//     });
+// }
+function downloadFileStream(url, dymeruser) {
+    return axios({
+        method: "get",
+        url,
+        responseType: "stream",
+        headers: {
+            dymeruser: dymeruser
+        }
+    }).then(res => res.data); // ← stream
+}
+
+exports.downloadFileStream = downloadFileStream
+
+function removeDir(path) {
+    if (fs.existsSync(path)) {
+        const files = fs.readdirSync(path)
+        if (files.length > 0) {
+            files.forEach(function(filename) {
+                if (fs.statSync(path + "/" + filename).isDirectory()) {
+                    removeDir(path + "/" + filename)
+                } else {
+                    fs.unlinkSync(path + "/" + filename)
+                }
+            })
+            fs.rmdirSync(path)
+        } else {
+            fs.rmdirSync(path)
+        }
+    } else {
+        console.error("ERROR | " + nameFile + " | Directory path not found ", path);
+        logger.error(nameFile + ' | removeDir | Directory path not found  : ' + path);
+    }
+}
+
+exports.removeDir = removeDir
+
+exports.transformToJSONLD_v0 = function(hit, formModel) {
+    let entity = hit._source
+    const entityIndex = hit._index
+    const entityId = hit._id
+    const { interoperability } = formModel;
+
+    if (!interoperability || !interoperability.enabled) {
+        return entity; // Restituisce l'entità originale se l'interoperabilità non è abilitata
+    }
+
+    const metadata = interoperability.metadata || {};
+
+    // Contesto JSON-LD di base
+    const jsonLdContext = {
+        "@context": {
+            "dcat": "http://www.w3.org/ns/dcat#",
+            "dct": "http://purl.org/dc/terms/",
+            "ids": "https://w3id.org/idsa/core/",
+            "vcard": "http://www.w3.org/2006/vcard/ns#"
+        }
+    };
+
+    // Costruzione dell'oggetto JSON-LD
+    let jsonLdObject = { ...jsonLdContext, ...entity.interoperability.mappings.dcat, ...entity.interoperability.mappings.ids };
+
+    // Aggiungi metadati globali del dataset
+    jsonLdObject["@type"] = [metadata.type || "dcat:Dataset", metadata.ids_resource || "ids:Resource"];
+    if (metadata.publisher) {
+        jsonLdObject["dct:publisher"] = { "@type": "vcard:Organization", "vcard:fn": metadata.publisher };
+    }
+    if (metadata.theme) {
+        jsonLdObject["dcat:theme"] = { "@id": metadata.theme };
+    }
+    // Aggiungi un riferimento all'endpoint originale di DYMER
+    jsonLdObject["dcat:accessURL"] = `/${entityIndex}/${entityId}`;
+
+    return jsonLdObject;
+}
+
+exports.transformToJSONLD = function(hit, formModel) {
+    let entity = hit._source;
+    const entityIndex = hit._index;
+    const entityId = hit._id;
+    const { interoperability } = formModel;
+
+    if (!interoperability || !interoperability.enabled) {
+        return entity; 
+    }
+
+    const metadata = interoperability.metadata || {};
+
+    // 1. Definizione dei namespace (Context)
+    const jsonLdContext = {
+        "@context": {
+            "dcat": "http://www.w3.org/ns/dcat#",
+            "dct": "http://purl.org/dc/terms/",
+            "ids": "https://w3id.org/idsa/core/",
+            "foaf": "http://xmlns.com/foaf/0.1/",
+            "vcard": "http://www.w3.org/2006/vcard/ns#",
+            "odrl": "http://www.w3.org/ns/odrl/2/"
+        }
+    };
+
+    // 2. Costruzione dell'oggetto base
+    // Recuperiamo i mapping predefiniti se presenti nell'entità
+    const baseMappings = (entity.interoperability && entity.interoperability.mappings) ? 
+                         { ...entity.interoperability.mappings.dcat, ...entity.interoperability.mappings.ids } : {};
+
+    let jsonLdObject = { 
+        ...jsonLdContext, 
+        ...baseMappings 
+    };
+
+    // 3. Identità e Tipologia
+    // Usiamo un URI univoco basato sull'ID di Dymer
+    const baseUri = interoperability.metadata.baseUri || "https://tuo-dominio-reale.it";
+    jsonLdObject["@id"] = `${baseUri}/resource/${entityId}`;
+     
+    jsonLdObject["@type"] = metadata.type || "dcat:DataService";
+
+    // 4. Mapping campi DCAT-AP core
+    jsonLdObject["dct:title"] = entity.title || metadata.title;
+    jsonLdObject["dct:description"] = entity.description || metadata.description;
+    
+    // Publisher (Il DIH che offre il servizio)
+    if (metadata.publisher) {
+        jsonLdObject["dct:publisher"] = {
+            "@type": "dct:Agent",
+            "foaf:name": metadata.publisher,
+            "@id": metadata.publisherId || `https://dih.eu/agent/${metadata.publisher.replace(/\s+/g, '-').toLowerCase()}`
+        };
+    }
+
+    // Temi e Parole Chiave
+    if (metadata.theme) {
+        jsonLdObject["dcat:theme"] = { "@id": metadata.theme };
+    }
+    if (entity.tags) {
+        jsonLdObject["dcat:keyword"] = entity.tags;
+    }
+
+    // 5. Endpoint e Accesso (Punto di accesso al servizio DIH)
+    jsonLdObject["dcat:endpointURL"] = { "@id": metadata.endpointURL || `https://dymer-platform.it/api/v1/${entityIndex}/${entityId}` };
+
+    // 6. Licenze e Policy IDSA (Il "Contract Offer")
+    // Mappiamo la licenza standard DCAT
+    if (metadata.license) {
+        jsonLdObject["dct:license"] = { "@id": metadata.license };
+    }
+
+    // Aggiungiamo la logica IDSA per la sovranità (Contract Offer)
+    // Se non definita esplicitamente, creiamo una policy di default "USE"
+    jsonLdObject["ids:contractOffer"] = {
+        "@type": "ids:ContractOffer",
+        "@id": `https://catalog.dih.eu/contract/${entityId}`,
+        "ids:permission": [{
+            "@type": "ids:Permission",
+            "ids:action": [{ "@id": "ids:USE" }],
+            "ids:constraint": metadata.usageConstraint ? [{
+                "@type": "ids:Constraint",
+                "ids:leftOperand": { "@id": "ids:PURPOSE" },
+                "ids:operator": { "@id": "ids:EQUALS" },
+                "ids:rightOperand": { "@value": metadata.usageConstraint } // es. "Research" o "Commercial"
+            }] : []
+        }]
+    };
+
+    return jsonLdObject;
 }

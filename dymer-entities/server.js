@@ -9,6 +9,8 @@ const util = require("./utility");
 const app = express();
 const portExpress = global.configService.port; //4646;
 const path = require('path');
+const fs = require('fs');
+const readline = require('readline');
 const nameFile = path.basename(__filename);
 const logger = require('./routes/dymerlogger');
 const contextPath = util.getContextPath('entity');
@@ -134,7 +136,8 @@ app.get('/logtypes', async(req, res) => {
     ret.setSuccess(true);
     let loggerdebug = global.loggerdebug;
     let redisValue = global.configService.cache ? global.configService.cache.isEnabled : false;
-    ret.setData({ consolelog: loggerdebug, redisactive: redisValue});
+    let multitenancyValue = global.configService.multitenancy ? global.configService.multitenancy.isEnabled : false;
+    ret.setData({ consolelog: loggerdebug, redisactive: redisValue, multitenancyactive: multitenancyValue});
     ret.setMessages("logtypes");
     return res.send(ret);
 });
@@ -145,7 +148,7 @@ app.post('/setlogconfig', (req, res) => {
     var ret = new jsonResponse();
     logger.ts_infologger(req.body.consoleactive);
     ret.setMessages("Settings updated");
-    ret.setData({ consoleactive: req.body.consoleactive });
+    ret.setData({ consoleactive: req.body.consoleactive, multitenancyactive: req.body.multitenancyactive }); //multitenancy AC
     return res.send(ret);
 });
 
@@ -157,9 +160,56 @@ app.get('/openLog/:filetype', util.checkIsAdmin, (req, res) => {
     console.log('openLog/:filety', path.join(__dirname + "/logs/" + filetype + ".log"));
     return res.sendFile(path.join(__dirname + "/logs/" + filetype + ".log"));
 });
+
+app.get('/tailLog/:filetype', util.checkIsAdmin, async (req, res) => {
+  const filetype = req.params.filetype;
+
+  // Protezione Path Traversal
+  if (filetype.includes('..') || filetype.includes('/') || filetype.includes('\\')) {
+    return res.status(400).send("Invalid filename");
+  }
+
+  const filePath = path.join(__dirname, "logs", `${filetype}.log`);
+
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).send("Log file not found");
+  }
+
+  try {
+    const MAX_LINES = 50;
+    const lines = [];
+    
+    // Creiamo un'interfaccia di lettura riga per riga (Stream)
+    const rl = readline.createInterface({
+      input: fs.createReadStream(filePath),
+      terminal: false
+    });
+
+    // Leggiamo tutto lo stream, ma teniamo solo le ultime N righe
+    // Nota: Per file GIGANTESCHI (>1GB) si userebbe fs.read con seek finale,
+    // ma readline su stream è sicura per la memoria (non carica tutto il file in RAM).
+    for await (const line of rl) {
+      lines.push(line);
+      if (lines.length > MAX_LINES) {
+        lines.shift(); // Rimuove la riga più vecchia
+      }
+    }
+
+    res.json({
+      file: `${filetype}.log`,
+      lines: lines,
+      count: lines.length
+    });
+
+  } catch (err) {
+    console.error("Error reading log:", err);
+    res.status(500).send("Internal Server Error during log parsing");
+  }
+});
+
 app.get('/checkservice', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Entities']
-
+    var uptime = process.uptime();
     var ret = new jsonResponse();
     let infosize = logger.filesize("info");
     let errorsize = logger.filesize("error");
@@ -178,7 +228,8 @@ app.get('/checkservice', util.checkIsAdmin, (req, res) => {
         error: {
             size: errorsize
         },
-        infomicroservice: infomserv
+        infomicroservice: infomserv,
+        uptime: util.format(uptime)
     });
     ret.setMessages("Service is up");
     res.status(200);

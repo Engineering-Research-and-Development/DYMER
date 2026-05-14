@@ -22,7 +22,8 @@ let infoLog = [
     new(winston.transports.File)({ filename: './logs/info.log', level: 'info' })
 ];
 
-let loggerdebug = (process.env.DYMER_LOGGER == undefined) ? false : process.env.DYMER_LOGGER;
+let loggerdebug = (process.env.DYMER_LOGGER == undefined) ? true : process.env.DYMER_LOGGER;
+// let loggerdebug = (process.env.DYMER_LOGGER == undefined) ? false : process.env.DYMER_LOGGER;
 global.loggerdebug = loggerdebug;
 var info = winston.createLogger({
     levels: {
