@@ -50,18 +50,6 @@
       }
     },
     {
-      "route": "aimagic",
-      "name": "AI",
-      "type": "link",
-      "iconLibrary": "font-awesome",
-      "icon": "wand-sparkles",
-      "permissions": {
-        "only": [
-          "ADMIN"
-        ]
-      }
-    },
-    {
       "route": "wizard",
       "name": "wizard",
       "type": "link",
@@ -187,6 +175,13 @@
           "type": "link",
           "iconLibrary": "matero",
           "icon": "format_list_bulleted"
+        },
+        {
+          "route": "payment-config",
+          "name": "payment",
+          "type": "link",
+          "iconLibrary": "font-awesome",
+          "icon": "credit-card"
         },
         {
           "route": "socialStatistics",

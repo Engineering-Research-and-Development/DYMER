@@ -1,0 +1,427 @@
+ <h1 class="text-center">{{titolo}}</h1>
+<form id="entityForm" class="senderForm needs-validation" novalidate="">
+    <input name="instance[index]" type="hidden" value="{{instance}}">
+
+        <div class="rendered-form">
+            <div class="form-group collectionField">
+                <fieldset>
+                    <legend class="kms-title-label">DIH Name *</legend>
+                    <input type="text" searchable="" id="dihnameForm" searchable-label="DIH" class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[title]" required="">
+                    <small class="form-text text-muted">Please provide the name of the Organization</small>
+                </fieldset>
+            </div>
+
+
+
+            <div class="form-group collectionField">
+                <div class="row">
+                    <div class="col-md-6 ">
+                        <div class="form-group">
+
+                            <legend class="kms-title-label">DIH website</legend>
+                            <input type="text" class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[website]">
+                            <small class="form-text text-muted">Please provide the Organization web site url</small>
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group " name="">
+                            <legend class="kms-title-label">Logo</legend>
+                            <input type="file" class="form-control  col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" accept="image/*" name="data[logo]">
+                            <small class="form-text text-muted">Please insert the Organization logo image file (png,
+                                jpg).</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="form-group collectionField">
+                <fieldset>
+                    <legend class="kms-title-label">Organization business description</legend>
+                    <textarea type="textarea" class="form-control col-12 span12 summernote w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" required="" name="data[description]" style="text-align: justify;"></textarea>
+                    <small class="form-text text-muted">Please describe the organization, its most important issues and
+                        the value the organization provides.</small>
+                </fieldset>
+            </div>
+
+
+            <div class="form-group collectionField searchable">
+                <fieldset>
+                    <label class="kms-title-label">Organization Type</label>
+                    <small class="form-text text-muted">Select DIH type</small>
+                    <div class="form-group  ">
+                        <div>
+                            <select class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[dihtype]" searchable-override="data[dihtype]" searchable-element="true" searchable-label="DIH Type">
+
+                                <option value="DIH">Digital Innovation Hub</option>
+                                <option value="EDIH">European Digital Innovation Hub</option>
+                                <option value="DF">Didactic Factory</option>
+                                <option value="TEF">Testing and experimentation facility</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </fieldset>
+            </div>
+
+
+
+
+
+
+
+
+            <div class="form-group collectionField">
+                <div class="row">
+                    <div class="col-md-6 ">
+
+                        <div class="form-group">
+                            <fieldset>
+                                <legend class="kms-title-label">Company legal address</legend>
+                                <div>
+                                    <label for="description" class=" ">Street</label>
+                                    <input type="text" class="form-control  col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[address][0][street]" id="street">
+                                    <label for="description" class=" ">Postal code</label>
+                                    <input type="text" class="form-control  col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 " name="data[address][0][postalcode]" id="postalcode">
+                                    <label for="description" class=" ">City</label>
+                                    <input type="text" class="form-control  col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[address][0][city]" id="city">
+
+
+                                    <label for="description" class=" ">Country</label>
+                                    <select class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[address][0][country]" searchable="" searchable-label="Country" id="country">
+                                        <option value=""> </option>
+                                        <option value="Albania">Albania</option>
+                                        <option value="Austria">Austria</option>
+                                        <option value="Belgium">Belgium</option>
+                                        <option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
+                                        <option value="Bulgaria">Bulgaria</option>
+                                        <option value="Croatia">Croatia</option>
+                                        <option value="Cyprus">Cyprus</option>
+                                        <option value="Czech Republic">Czech Republic</option>
+                                        <option value="Denmark">Denmark</option>
+                                        <option value="Estonia">Estonia</option>
+                                        <option value="Finland">Finland</option>
+                                        <option value="France">France</option>
+                                        <option value="Germany">Germany</option>
+                                        <option value="Greece">Greece</option>
+                                        <option value="Hungary">Hungary</option>
+                                        <option value="Ireland">Ireland</option>
+                                        <option value="Italy">Italy</option>
+                                        <option value="Kosovo">Kosovo</option>
+                                        <option value="Latvia">Latvia</option>
+                                        <option value="Lithuania">Lithuania</option>
+                                        <option value="Luxembourg">Luxembourg</option>
+                                        <option value="Malta">Malta</option>
+                                        <option value="Montenegro">Montenegro</option>
+                                        <option value="Netherlands">Netherlands</option>
+                                        <option value="North Macedonia">North Macedonia</option>
+                                        <option value="Norway">Norway</option>
+                                        <option value="Poland">Poland</option>
+                                        <option value="Portugal">Portugal</option>
+                                        <option value="Romania">Romania</option>
+                                        <option value="Serbia">Serbia</option>
+                                        <option value="Slovakia">Slovakia</option>
+                                        <option value="Slovenia">Slovenia</option>
+                                        <option value="Spain">Spain</option>
+                                        <option value="Sweden">Sweden</option>
+                                        <option value="Switzerland">Switzerland</option>
+                                        <option value="Turkey">Turkey</option>
+                                        <option value="Ukraine">Ukraine</option>
+                                        <option value="United Kingdom">United Kingdom</option>
+                                    </select>
+
+                                    <label for="description" class=" ">Region</label>
+                                    <input type="text" class="form-control  col-12 span12" name="data[address][0][region]" id="region">
+                                    <small class="form-text text-muted">Please provide information about registered
+                                        address</small>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <fieldset>
+
+                                <legend class="kms-title-label">Geo Point</legend>
+
+
+
+                                <div class="geopointcontgrp form-group field-description ">
+
+                                    <div>
+                                        <div data-component-geopoint="" class="form-group  ">
+                                            <input type="hidden" class="form-control" name="data[location][type]" value="Point">
+                                            <label class="">Longitude </label>
+                                            <input type="number" class="form-control w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" id="lon" name="data[location][coordinates][0]" min="-180" max="180" step="any">
+                                            <label class="">Latitude</label>
+                                            <input type="number" class="form-control w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" id="lat" name="data[location][coordinates][1]" min="-180" max="180" step="any">
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="btn btn-info pull-right1" onclick="getCoords()">GET COORDS</span>
+                                <div id="geoerror"></div>
+
+
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            
+
+
+
+            <div class="form-group repeatable first-repeatable collectionField">
+                <fieldset>
+                    <legend class="kms-title-label">Representatives *</legend>
+                    <div>
+                        <label for="description" class=" ">Name</label>
+                        <input type="text" class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" required="" name="data[representatives][0][name]">
+                        <label for="description" class=" ">Surname</label>
+                        <input type="text" class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" required="" name="data[representatives][0][surname]">
+                        <label for="description" class=" ">Email</label>
+                        <input type="email" class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" required="" dymer-model-element="" dymer-model-visibility="private" name="data[representatives][0][email]">
+                        <label class=" ">Role in Organization</label>
+                        <input type="text" class="form-control  col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[representatives][0][role]">
+                        <small class="form-text text-muted">Please provide a main contact to ask for more information;
+                            in particular details about: name, surname, email, role in the organization.</small>
+                        <label class=" ">Responsibilities</label>
+                        <textarea type="textarea" class="form-control  col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400  " name="data[representatives][0][responsibilities]"></textarea>
+                        <small class="form-text text-muted">Please add here the responsibilities in terms of either
+                            technology area or expertise
+                            <div class="alert alert-primary" role="alert">
+                                Click on <i class="fa fa-plus" aria-hidden="true"></i> to add other Representatives
+                            </div>
+                        </small>
+
+                    </div>
+                    <div class="action-br">
+                        <span class="btn  btn-outline-primary  btn-sm" onclick="cloneRepeatable($(this))">+</span>
+                        <span class="btn  btn-outline-danger  btn-sm act-remove" onclick="removeRepeatable($(this))">-</span>
+                    </div>
+                </fieldset>
+            </div>
+
+
+
+
+            <div class="form-group searchable repeatable collectionField">
+                <label class="kms-title-label">Domains of application **</label>
+                <div>
+                    <select class="form-control col-12 span12 selectpicker w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[domain]" data-live-search="true" data-actions-box="true" multiple="" searchable-multiple="true" searchable-override="data[domain]" searchable-label="Domains of application">
+                        <option value="">Select One </option>
+                        <optgroup label="Manufacturing">
+                            <option value="Manufacture of food products, beverages and tobacco">Manufacture of food
+                                products, beverages and tobacco</option>
+                            <option value="Manufacture of textiles and textile products">Manufacture of textiles and
+                                textile products</option>
+                            <option value="Manufacture of leather and leather products">Manufacture of leather and
+                                leather products</option>
+                            <option value="Manufacture of wood and wood products">Manufacture of wood and wood products
+                            </option>
+                            <option value="Manufacture of pulp, paper and paper products; publishing and printing">
+                                Manufacture of pulp, paper and paper products; publishing and printing</option>
+                            <option value="Manufacture of coke, refined petroleum products and nuclear fuel">Manufacture
+                                of coke, refined petroleum products and nuclear fuel</option>
+                            <option value="Manufacture of chemicals, chemical products and man-made fibres">Manufacture
+                                of chemicals, chemical products and man-made fibres</option>
+                            <option value="Manufacture of rubber and plastic products">Manufacture of rubber and plastic
+                                products</option>
+                            <option value="Manufacture of other non-metallic mineral products">Manufacture of other
+                                non-metallic mineral products</option>
+                            <option value="Manufacture of basic metals and fabricated metal products">Manufacture of
+                                basic metals and fabricated metal products</option>
+                            <option value="Manufacture of machinery and equipment">Manufacture of machinery and
+                                equipment</option>
+                            <option value="Manufacture of electrical and optical equipment">Manufacture of electrical
+                                and optical equipment</option>
+                            <option value="Manufacture of transport equipment">Manufacture of transport equipment
+                            </option>
+                            <option value="Other Manufacturing">Other Manufacturing</option>
+                        </optgroup>
+                        <optgroup label="Other domain">
+                            <option value="Agriculture, hunting and forestry">Agriculture, hunting and forestry</option>
+                            <option value="Fishing">Fishing</option>
+                            <option value="Mining and quarrying">Mining and quarrying</option>
+                            <option value="Electricity, gas and water supply">Electricity, gas and water supply</option>
+                            <option value="Construction">Construction</option>
+                            <option value="Wholesale and retail trade">Wholesale and retail trade</option>
+                            <option value="Hotels and restaurants">Hotels and restaurants</option>
+                            <option value="Transport, storage and communication">Transport, storage and communication
+                            </option>
+                            <option value="Real estate, renting and business activities">Real estate, renting and
+                                business activities</option>
+                            <option value="Research">Research</option>
+                            <option value="Public administration and defence">Public administration and defence</option>
+                            <option value="Education">Education</option>
+                            <option value="Health and social work">Health and social work</option>
+                            <option value="Other community, social and personal service activities (media, entertainment, etc.)">
+                                Other community, social and personal service activities (media, entertainment, etc.)
+                            </option>
+                            <option value="Other Markets">Other Markets</option>
+                        </optgroup>
+                    </select>
+                    <small class="form-text text-muted"> Please specify main domains of interest for the organization
+                        and its activities (e.g. manufacturing, logistics, etc.) <div class="alert alert-primary" role="alert">
+                            Multiselect option
+                        </div> </small>
+                </div>
+
+            </div>
+
+            <div class="form-group  searchable repeatable collectionField">
+                <label class="kms-title-label">Areas of Competences **</label>
+                <div>
+                    <select class="form-control col-12 span12 selectpicker w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[competences]" data-live-search="true" data-actions-box="true" multiple="" searchable-multiple="true" searchable-override="data[competences]" searchable-label="Main Competences">
+                        <option value="">Select One </option>
+                        <option value="Additive manufacturing (3D printing)">Additive manufacturing (3D printing)
+                        </option>
+                        <option value="Advanced or High performance computing">Advanced or High performance computing
+                        </option>
+                        <option value="Artificial Intelligence and cognitive systems">Artificial Intelligence and
+                            cognitive systems</option>
+                        <option value="Augmented and virtual reality, visualization">Augmented and virtual reality,
+                            visualization</option>
+                        <option value="Broadband and other communication networks (e.g. 5G)">Broadband and other
+                            communication networks (e.g. 5G)</option>
+                        <option value="Cloud computing">Cloud computing</option>
+                        <option value="Cyber physical systems">Cyber physical systems</option>
+                        <option value="Cyber security (including biometrics)">Cyber security (including biometrics)
+                        </option>
+                        <option value="Data mining, big data, database management">Data mining, big data, database
+                            management</option>
+                        <option value="Gamification">Gamification</option>
+                        <option value="ICT management, logistics and business systems">ICT management, logistics and
+                            business systems</option>
+                        <option value="Interaction technologies (e.g. human-machine Interaction, motion recognition and language technologies)">
+                            Interaction technologies (e.g. human-machine Interaction, motion recognition and language
+                            technologies)</option>
+                        <option value="Internet of Things">Internet of Things</option>
+                        <option value="Internet services (e.g. web development, web production, design, networking, and e-commerce)">
+                            Internet services (e.g. web development, web production, design, networking, and e-commerce)
+                        </option>
+                        <option value="Laser based manufacturing">Laser based manufacturing</option>
+                        <option value="Location based technologies (e.g. GPS, GIS, in-house localization)">Location
+                            based technologies (e.g. GPS, GIS, in-house localization)</option>
+                        <option value="Micro and nano electronics, smart system integration">Micro and nano electronics,
+                            smart system integration</option>
+                        <option value="New Media technologies">New Media technologies</option>
+                        <option value="Organic and Large Area Electronics (OLAE)">Organic and Large Area Electronics
+                            (OLAE)</option>
+                        <option value="Photonics, electronic and optical functional materials">Photonics, electronic and
+                            optical functional materials</option>
+                        <option value="Robotics and autonomous systems">Robotics and autonomous systems</option>
+                        <option value="Screens and display technologies">Screens and display technologies</option>
+                        <option value="Sensors, actuators, MEMS, NEMS, RF">Sensors, actuators, MEMS, NEMS, RF</option>
+                        <option value="Simulation and modelling">Simulation and modelling</option>
+                        <option value="Software as a service and service architectures">Software as a service and
+                            service architectures</option>
+                        <option value="Other">Other</option>
+                    </select> <small class="form-text text-muted">
+                        <div class="alert alert-primary" role="alert">
+                            Multiselect Options
+                        </div>
+                    </small>
+                </div>
+
+
+            </div>
+
+
+            <div class="form-group collectionField">
+                <fieldset>
+                    <legend class="kms-title-label">Membership </legend>
+                    <textarea type="textarea  w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" class="form-control col-12 span12 " name="data[membership]"> </textarea>
+                    <small class="form-text text-muted">Please specify if the organization is member of relevant
+                        associations, groups, organizations, etc.</small>
+                </fieldset>
+            </div>
+
+
+
+            <div class="form-group collectionField">
+                <label class="kms-title-label">Linkedin</label>
+                <input type="text" class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[linkedin]" placeholder="http://www.linkedin.com/">
+                <small class="form-text text-muted"> Social Account</small>
+            </div>
+            <div class="form-group collectionField ">
+                <label class="kms-title-label">Facebook</label>
+                <input type="text" class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[facebook]" placeholder="http://www.facebook.com/">
+                <small class="form-text text-muted"> Social Account</small>
+            </div>
+            <div class="form-group collectionField">
+                <label class="kms-title-label" contenteditable="true" spellcheckker="false">Twitter/X<br></label>
+                <input type="text" class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[twitter]" placeholder="http://www.twitter.com/">
+                <small class="form-text text-muted"> Social Account</small>
+            </div>
+            <div class="form-group collectionField ">
+                <label class="kms-title-label">Instagram</label>
+                <input type="text" class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[instagram]" placeholder="http://www.instagram.com/">
+                <small class="form-text text-muted"> Social Account</small>
+            </div>
+            <div class="form-group collectionField ">
+                <label class="kms-title-label">YouTube</label>
+                <input type="text" class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[youtube]" placeholder="http://www.youtube.com/">
+                <small class="form-text text-muted"> Social Account</small>
+            </div>
+
+
+
+
+
+            <hr>
+
+            <p id="newFields">{{newFields}}</p>
+
+
+            <div class="col-md-4 " >
+                <div class="form-group ">
+                    <label class="kms-title-label">Author</label>
+                    <input type="text" class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400  " name="data[author]" id="author" readonly="">
+
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="kms-title-label">Status</label>
+                <select class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[properties][status]">
+                    <option value="1">Published</option>
+                    <option value="2">Not Published</option>
+                    <option value="3">Draft</option>
+                    <!--<option value="0">Deleted</option>-->
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="kms-title-label">Visibility</label>
+                <select class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[properties][visibility]">
+
+                    <option value="0">Public</option>
+                    <option value="1">Private</option>
+                    <option value="2">Restricted</option>
+                </select>
+                <small class="form-text text-muted"><b>Restricted:</b> resource visibility restricted only to the
+                    current
+                    workspace members</small>
+                <small class="form-text text-muted"><b>Private:</b> visibility restricted to the resource owner</small>
+                <small class="form-text text-muted"><b>Public:</b> resource is visible also to other platform workspaces
+                    that are using the same resource model</small>
+            </div>
+            <div class="alert alertaction" role="alert" style="display: none;">
+                <button type="button" class="close" onclick="$(this).closest('.alert').slideUp()">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <div class="msg_title"></div>
+                <div class="msg_txt"></div>
+            </div>
+            <div class="text-right actionsAddEntity">
+                <span type="button" id="btnCloseDymerModal" class="btn btn-default" onclick="resetContainer('#entityAdd form')">Reset</span>
+                <span type="button" id="btnCloseDymerModal" class="btn btn-default" onclick="closeDymerModal('entityAdd')">Close</span>
+                <span class="btn btn-info pull-right" id="btnAddDymerModal" onclick="actionPostMultipartForm('entity/{{instance}}', $(this),undefined, undefined,undefined,undefined,true)">Submit</span>
+            </div>
+
+        </div>
+    </form>

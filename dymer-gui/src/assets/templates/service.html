@@ -1,0 +1,414 @@
+ <h1 class="text-center">{{titolo}}</h1>
+<form id="entityForm" class="senderForm needs-validation" novalidate="">
+    <input name="instance[index]" type="hidden" value="{{instance}}">
+ 
+    <div class="rendered-form">
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Title</label>
+            <input type="text" class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" dymer-model-element="" name="data[title]" required="">
+            <small class="form-text text-muted">Please provide the name of the Service</small>
+        </div>
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Description</label>
+            <textarea type="textarea" class="form-control  col-12 span12 summernote w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" dymer-model-element="" name="data[description]" required=""></textarea>
+
+        </div>
+        <div class="form-group collectionField">
+            <input name="data[likes]" type="hidden" dymer-model-element="" dymer-model-visibility="private" value="[]">
+            <input name="data[viewsCounter]" type="hidden" dymer-model-element="" dymer-model-visibility="public" value="0">
+        </div>
+     <div class="relationcontgrp form-group field-description collectionField">
+   <label for="description" class="kms-title-label">Provider *</label>
+      <small class="form-text text-muted" spellcheckker="false" contenteditable="true">Please provide the name of the services providers.</small>
+   <div>
+      <div searchable-label="Service" data-component-kmsrelation="" class="form-group" data-torelation="dih" data-ddddt="true" searchable-multiple="true" data-filterpos="1" contenteditable="false"><span class="inforelation" contenteditable="false">Relation</span> <i class="fa fa-code-fork rotandflip inforelation" aria-hidden="true"></i> <span class="torelation inforelation" contenteditable="true" spellcheckker="false">DIH</span></div>
+   </div>
+  
+</div>
+        
+        
+       <div class="form-group collectionField ">
+           <label class="kms-title-label" contenteditable="true" spellcheckker="false">Image</label>
+            <input type="file" name="data[serviceimage]" class="form-control  col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400">
+               <small class="form-text text-muted">Please provide a representative image of the service</small> 
+         </div> 
+        
+        
+        
+        
+    <div class="form-group containerDRBEST " style="background: #E5FAE2; border-left: 3px solid #B4E8AB;  margin: 10px 0px 10px 0px;">
+              <label class="kms-title-label">AS-IS TO-BE Service</label>
+		 <div id="asisSelect">
+			<select class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[asistobe][type]" searchable-element="true" searchable-label="asis" searchable-text="as is" searchable-override="">
+                     <option value=""></option> 
+             		 <option value="AS-IS">AS-IS</option>
+              		 <option value="TO-BE">TO-BE</option>
+            </select>
+           <small class="form-text text-muted">Select if service is AS-IS or in TO-BE </small> 
+            <label class="kms-title-label">Rough Date</label>
+            <input type="text" name="data[asistobe][roughdate]" disabled="" id="roughdate" class="form-control  col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400">
+               <small class="form-text text-muted">Please provide the rough date</small> 
+         </div>
+		 	    
+ </div>   
+        
+        
+        
+        
+        
+        
+        
+   <div class="containerDRBEST">   
+     
+     <h3 class="text-center">DRBEST</h3>
+ <div class="form-group  searchable  ">
+              <label class="kms-title-label">Taxonomy Level 1 – Class *</label>
+				<div id="serviceCategorySelect">
+			<select required="" class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[category]">
+                    <option value=" ">Select DRBEST Category</option> 
+              <option value="Data">Data</option>  
+               <option value="Remotization">Remotization</option>
+                 <option value="Business">Business</option>
+                 <option value="Ecosystem">Ecosystem</option>
+                 <option value="Skill">Skill</option>
+                 <option value="Technology">Technology</option>
+       </select>
+         </div>
+		 	   <small class="form-text text-muted">Please provide the Service Taxonomy Level 1 – Class</small> 
+ </div> 
+      
+      
+      
+  <div class="form-group  searchable  ">
+              <label class="kms-title-label">Taxonomy Level 2 – Type</label>
+				<div>
+			  <input readonly="" class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[type]" id="typeTSelect" searchable-override="data[type]" searchable-label="Type">
+         </div>
+		 	   <small class="form-text text-muted">Service Taxonomy Level 2 – Type</small> 
+ </div> 
+      
+ <div class="form-group  searchable  ">
+              <label class="kms-title-label">Taxonomy Level 3 – Service *</label>
+				<div id="serviceTSelect">
+			<select required="" class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[service]" id="serviceTFilter" searchable-multiple="true" searchable-override="data[service]" searchable-label="Service">
+               	<option value="" data-id="0">Select One</option>
+              <optgroup label="Data - Data acquisition and sensing" lbltype="Data">
+      <option data-descr="">Data acquisition</option>
+      <option data-descr="">Data protection</option>
+   </optgroup>
+   <optgroup label="Data - Data processing &amp; analysis" lbltype="Data">
+      <option data-descr="">Data storage</option>
+      <option data-descr="">Data analytics</option>
+   </optgroup>
+   <optgroup label="Data - Decision-making" lbltype="Data">
+      <option data-descr="">Cognitive Big Data architectures</option>
+      <option data-descr="">Decision support and development</option>
+   </optgroup>
+   <optgroup label="Data - Physical-human action &amp; interaction" lbltype="Data">
+      <option data-descr="">Collaborative intelligence</option>
+      <option data-descr="">User experience</option>
+      <option data-descr="">Feedback loop</option>
+   </optgroup>
+   <optgroup label="Data - Data sharing" lbltype="Data">
+      <option data-descr="">GDPR and Data Sovereignity compliance</option>
+      <option data-descr="">Data Spaces</option>
+      <option data-descr="">Data Platform</option>
+   </optgroup>
+   
+   <optgroup label="Remotization - Data Space" lbltype="Remotization">
+      <option data-descr="How to access data generated in real time by Industrial IoT Systems">Real Time Industrial Data Platform</option>
+      <option data-descr="How to access structural data of the facility and assets">Assets Administration Shell</option>
+      <option data-descr="Collection of historical Findable Accessible Interoperable Reusable open data sets">Open Data Repository</option>
+      <option data-descr="Collection of high value data sets with associated value and monetisation">Assets Data Marketplace</option>
+   </optgroup>
+   <optgroup label="Remotization - ICT as a Service" lbltype="Remotization">
+      <option data-descr="Applicative Software components and resources licensed on a subscription basis and centrally hosted">Software as a Service</option>
+      <option data-descr="Cloud computing services that provide a platform allowing customers to develop, run, and manage applications without the complexity of building and maintaining the infrastructure">Platform as a Service</option>
+      <option data-descr="Online services that provide high-level APIs used to dereference various low-level details of underlying network infrastructure like physical computing resources, location, data partitioning, scaling, security, backup etc">Infrastructure as a Service</option>
+   </optgroup>
+   <optgroup label="Remotization - Digital Twin" lbltype="Remotization">
+      <option data-descr="Simulation of the physical behaviour of the system">FEM/CFD/FSI simulation</option>
+      <option data-descr="Simulation of the temporal behaviour of the process">Discrete event simulation</option>
+      <option data-descr="Digital representation of  the environment to create immersive reality">Ambient virtualization</option>
+   </optgroup>
+   <optgroup label="Remotization - Asset as a Service" lbltype="Remotization">
+      <option data-descr="Usage of tools to operate on the assets in remote and to transfer skills and expertise to remote place without physically presence.">Teleoperation</option>
+      <option data-descr="Usage of tools for the assessment  of the status of the assets and for evaluation of production working progress.">Monitoring platform</option>
+      <option data-descr="A physical system capable of replacing a person in the working environment to transfer his ability anywhere">Avatar</option>
+   </optgroup>
+   
+   
+   
+    <optgroup label="Business - Incubation acceleration support" lbltype="Business">
+      <option data-descr="">Basic facilities</option>
+      <option data-descr="">Specialised facilities</option>
+      <option data-descr="">Business development</option>
+      <option data-descr="">Guidance</option>
+   </optgroup>
+   <optgroup label="Business - Access to finance" lbltype="Business">
+      <option data-descr="">Financial engineering</option>
+      <option data-descr="">Connection to funding sources</option>
+   </optgroup>
+   <optgroup label="Business - Offering housing" lbltype="Business">
+      <option data-descr="">Innovation spaces</option>
+   </optgroup>
+   <optgroup label="Business - Business training and education" lbltype="Business">
+      <option data-descr="">Methods and Tools, Business Operations Modelling</option>
+      <option data-descr="">Secondment</option>
+   </optgroup>
+   <optgroup label="Business - Project development" lbltype="Business">
+      <option data-descr="">Strategic analysis and alignment of EU vs regional RDI investments</option>
+      <option data-descr="">Identification of opportunities</option>
+      <option data-descr="">Creating consortia</option>
+      <option data-descr="">Development of proposals</option>
+   </optgroup>
+   
+   
+   
+    <optgroup label="Ecosystem - Community building" lbltype="Ecosystem">
+      <option data-descr="">SME and People Engagement</option>
+      <option data-descr="">Brokerage, Awards, Challenges</option>
+      <option data-descr="">Technology scouting</option>
+      <option data-descr="">Communication</option>
+   </optgroup>
+   <optgroup label="Ecosystem - DIH Innovation Development" lbltype="Ecosystem">
+      <option data-descr="">Trend watching</option>
+      <option data-descr="">Visioning and strategy development</option>
+   </optgroup>
+   <optgroup label="Ecosystem - Ecosystem Governance" lbltype="Ecosystem">
+      <option data-descr="">Services Impact assessment </option>
+      <option data-descr="">Ecosystem strategy management</option>
+   </optgroup>
+   
+   
+   <optgroup label="Skill - Process &amp; Organizational Maturity" lbltype="Skill">
+      <option data-descr="">Maturity Assessment</option>
+      <option data-descr="">Maturity Strategy Development</option>
+   </optgroup>
+   <optgroup label="Skill - Human Capabilities Maturity" lbltype="Skill">
+      <option data-descr="">Human Skill Repository</option>
+      <option data-descr="">Human skills maturity</option>
+      <option data-descr="">Skills strategy development</option>
+   </optgroup>
+   <optgroup label="Skill - Skills Improvement" lbltype="Skill">
+      <option data-descr="">Human up-skilling, re-skilling training</option>
+      <option data-descr="">Educational Programs</option>
+      <option data-descr="">Scouting and Brokerage</option>
+      <option data-descr="">Standandization and certification</option>
+   </optgroup>
+   
+     <optgroup label="Technology - Ideas Management and Materialisation" lbltype="Technology">
+      <option data-descr="">Ideas Generation, Assessment. Feasibility study</option>
+      <option data-descr="">Technology Readiness assessment</option>
+   </optgroup>
+   <optgroup label="Technology - Contract research" lbltype="Technology">
+      <option data-descr="undefined">Strategic and Specific R&amp;D</option>
+      <option data-descr="">Technology concept development/ Proof of Concept (PoC)</option>
+   </optgroup>
+   <optgroup label="Technology - Provision of Infrastructure" lbltype="Technology">
+      <option data-descr="">Access to infrastructure and technological platforms</option>
+   </optgroup>
+   <optgroup label="Technology - Technical support on scale up" lbltype="Technology">
+      <option data-descr="">Concept validation</option>
+      <option data-descr="">Prototyping</option>
+   </optgroup>
+   <optgroup label="Technology - Verification and Validation" lbltype="Technology">
+      <option data-descr="">Product Qualification and Certification</option>
+      <option data-descr="">Product demonstration</option>
+   </optgroup>
+                </select>
+         </div>
+		 	   <small class="form-text text-muted">Please provide the Taxonomy Level 3 – Service</small> 
+ </div> 
+     <div class="infodrbest"></div>
+       
+       
+       
+       </div>
+   
+     
+  
+      
+     
+    
+     
+    <div class="form-group repeatable first-repeatable collectionField collectionField">
+            <label class="kms-title-label">Target Audience **</label>
+           <div>
+              <select class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400  " name="data[target]" data-live-search="true" data-actions-box="true" multiple="" searchable-multiple="true" searchable-override="data[target]" searchable-label="target">
+              
+                <option value="Directors">Directors</option>
+                 <option value="Plant Manager">Plant Manager</option>
+                  <option value="Engineers">Engineers</option>
+                  <option value="Operators">Operators</option>
+                 <option value="End users (Manufacturing OEMs and SMEs)">End users (Manufacturing OEMs and SMEs) </option>
+                 
+                 <option value="Software developer">Software developer</option>
+                <option value="Technology providers (Industry 4.0 Service and/or Equipment Providers)">Technology providers (Industry 4.0 Service and/or Equipment Providers)</option> 
+                
+                
+                  <option value="Other">Other</option>
+           </select>
+            <small class="form-text text-muted">Group(s) of people   <div class="alert alert-primary" role="alert">
+  Multiselect Options
+</div>  </small>
+          </div>
+         
+   </div>
+
+
+<div class="form-group collectionField">
+			 <label class="kms-title-label">Benefits</label>
+			 <textarea class="form-control  col-12 span12   " name="data[benefits]"></textarea>
+			 <small class="form-text text-muted">Benefits</small>
+ </div> 
+
+
+  
+        <div class="form-group repeatable first-repeatable collectionField">
+		 <label for="description" class="kms-title-label">Application Domain **</label>
+          	<div>
+              <select class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 " name="data[applicationdomain]" data-live-search="true" data-actions-box="true" multiple="" searchable-multiple="true" searchable-override="data[applicationdomain]" searchable-label="application domain">
+  <option value="Additive manufacturing (3D printing)">Additive manufacturing (3D printing)</option>
+<option value="Advanced or High performance computing">Advanced or High performance computing</option>
+<option value="Artificial Intelligence and cognitive systems">Artificial Intelligence and cognitive systems</option>
+<option value="Augmented and virtual reality, visualization">Augmented and virtual reality, visualization</option>
+<option value="Broadband and other communication networks (e.g. 5G)">Broadband and other communication networks (e.g. 5G)</option>
+<option value="Cloud computing">Cloud computing</option>
+<option value="Cyber physical systems">Cyber physical systems</option>
+<option value="Cyber security (including biometrics)">Cyber security (including biometrics)</option> 
+<option value="Data mining, big data, database management">Data mining, big data, database management</option>
+<option value="Gamification">Gamification</option>
+<option value="ICT management, logistics and business systems">ICT management, logistics and business systems</option>
+<option value="Interaction technologies (e.g. human-machine Interaction, motion recognition and language technologies)">Interaction technologies (e.g. human-machine Interaction, motion recognition and language technologies)</option>
+<option value="Internet of Things">Internet of Things</option>
+<option value="Internet services (e.g. web development, web production, design, networking, and e-commerce)">Internet services (e.g. web development, web production, design, networking, and e-commerce)</option>
+<option value="Laser based manufacturing">Laser based manufacturing</option>
+<option value="Location based technologies (e.g. GPS, GIS, in-house localization)">Location based technologies (e.g. GPS, GIS, in-house localization)</option>
+<option value="Micro and nano electronics, smart system integration">Micro and nano electronics, smart system integration</option>
+<option value="New Media technologies">New Media technologies</option>
+<option value="Organic and Large Area Electronics (OLAE)">Organic and Large Area Electronics (OLAE)</option>
+<option value="Photonics, electronic and optical functional materials">Photonics, electronic and optical functional materials</option>
+<option value="Robotics and autonomous systems">Robotics and autonomous systems</option>
+<option value="Screens and display technologies">Screens and display technologies</option>
+<option value="Sensors, actuators, MEMS, NEMS, RF">Sensors, actuators, MEMS, NEMS, RF</option>
+<option value="Simulation and modelling">Simulation and modelling</option>
+<option value="Software as a service and service architectures">Software as a service and service architectures</option> <option value="Other">Other</option>
+              </select>
+              <small class="form-text text-muted">To which application domains can the service be applied to? Please select from the below</small>
+      		</div>
+            
+    	</div>
+  <div class="form-group collectionField">
+            <label class="kms-title-label">Execution Scheme</label>
+            <textarea type="textarea" class="form-control  col-12 span12  w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[executionscheme]"></textarea>
+            <small class="form-text text-muted">Please provide Execution scheme</small>
+    </div>
+  <div class="form-group collectionField">
+            <label class="kms-title-label">Service Cost</label>
+            <textarea type="textarea" class="form-control  col-12 span12  w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[servicecost]"></textarea>
+            <small class="form-text text-muted">Please define the cost</small>
+  </div>
+   <div class="form-group collectionField">
+							<label class="kms-title-label">Additional information, e.g. URL </label>
+							<input type="text" class="form-control  col-12 span12" name="data[url]">
+							<small class="form-text text-muted">Reference to information and resources available online
+				</small>
+ </div>  
+		
+		 
+   <div class="form-group repeatable first-repeatable collectionField">
+      <label class="kms-title-label">Documents and material</label>
+            <div>
+               <label for="description" class=" ">Label</label>
+               <input type="text" class="form-control  col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[additionalmaterial][0][label]">
+			   <label>Pdf/Txt/Doc file</label>
+               <input type="file" class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[additionalmaterial][0][pdf]" accept="text/plain,application/pdf,application/msword">
+               <label>or url</label>
+               <input class="form-control" type="url" name="data[additionalmaterial][0][url]">
+               <small class="form-text text-muted">Link to web pages or document to upload  </small>
+            </div>
+            <div class="action-br">
+               <span class="btn  btn-outline-primary  btn-sm" onclick="cloneRepeatable($(this))">+</span>
+               <span class="btn  btn-outline-danger  btn-sm act-remove" onclick="removeRepeatable($(this))">-</span>
+            </div>
+   </div>
+		  
+         <div class="form-group repeatable first-repeatable collectionField">
+            <label for="description" class="kms-title-label">Contacts</label>
+            <div>
+               
+               <label for="description" class=" ">Name</label>
+               <input type="text" class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[contacts][0][name]">
+               <label for="description" class=" ">Surname</label>
+               <input type="text" class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[contacts][0][surname]">
+               <label for="description" class=" ">Email</label>
+               <input type="email" class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[contacts][0][email]">
+               
+               <small class="form-text text-muted">Please provide a contact to ask for more information.</small>
+            </div>
+            <div class="action-br">
+               <span class="btn  btn-outline-primary  btn-sm" onclick="cloneRepeatable($(this))">+</span>
+               <span class="btn  btn-outline-danger  btn-sm act-remove" onclick="removeRepeatable($(this))">-</span>
+            </div>
+         </div>
+      
+      <div class="row alert alert-info">
+             <div class="col-md-12">
+             <small class="form-text text-muted"><b>*</b> Required field</small>
+                      <small class="form-text text-muted"><b>**</b> To request a new option send an email to <a href="mailto:info@airedgio50-portal.eu">info@airedgio50-portal.eu</a></small>
+             </div>
+  	  </div>
+      
+      <p id="newFields">{{newFields}}</p>
+      
+       <div class="form-group "  >
+            <label class="kms-title-label">Author</label>
+            <input type="text" class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[author]" id="author" readonly="">
+             
+       </div>
+             
+        
+      
+     
+ 
+ 
+ 
+        <div class="form-group">
+            <label class="kms-title-label">Status</label>
+            <select class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[properties][status]">
+                <option value="1">Published</option>
+                <option value="2">Not Published</option>
+                <option value="3">Draft</option>
+                <!--<option value="0">Deleted</option>-->
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="kms-title-label">Visibility</label>
+            <select class="form-control col-12 span12 w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-hidden transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400" name="data[properties][visibility]">
+               
+                <option value="0">Public</option>
+                <option value="2">Restricted</option>
+                <option value="1">Private</option>
+            </select>
+            <small class="form-text text-muted"><b>Restricted:</b> resource visibility restricted only to the current
+                workspace members</small>
+            <small class="form-text text-muted"><b>Private:</b> visibility restricted to the resource owner</small>
+            <small class="form-text text-muted"><b>Public:</b> resource is visible also to other platform workspaces
+                that are using the same resource model</small>
+        </div>
+        <div class="alert alertaction" role="alert" style="display: none;">
+            <button type="button" class="close" onclick="$(this).closest('.alert').slideUp()">
+                <span aria-hidden="true">×</span>
+            </button>
+            <div class="msg_title"></div>
+            <div class="msg_txt"></div>
+        </div>
+        <div class="text-right actionsAddEntity">
+            <span type="button" id="btnCloseDymerModal" class="btn btn-default" onclick="resetContainer('#entityAdd form')">Reset</span>
+            <span type="button" id="btnCloseDymerModal" class="btn btn-default" onclick="closeDymerModal('entityAdd')">Close</span>
+            <span class="btn btn-info pull-right" id="btnAddDymerModal" onclick="actionPostMultipartForm('entity/{{instance}}', $(this),undefined, undefined,undefined,undefined,true)">Submit</span>
+        </div>
+
+    </div>
+</form>

@@ -1,0 +1,391 @@
+<h1 class="text-center">{{titolo}}</h1>
+
+<form id="entityForm" class="senderForm needs-validation" novalidate="">
+    <input name="instance[index]" type="hidden" value="{{instance}}">
+
+    <div class="rendered-form">
+
+        <!-- Title -->
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Title *</label>
+            <input
+                type="text"
+                class="form-control col-12 span12"
+                
+                name="data[title]"
+                required=""
+                searchable-element="true"
+                searchable-label="title"
+                dymer-model-element="" dymer-model-visibility="public"
+            >
+            <small class="form-text text-muted">
+                Please provide the article title
+            </small>
+        </div>
+
+        <!-- Subtitle -->
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Subtitle</label>
+            <input
+                type="text"
+                class="form-control col-12 span12"
+                dymer-model-element=""
+                name="data[subtitle]"
+                searchable-element="true"
+                searchable-label="subtitle"
+            >
+            <small class="form-text text-muted">
+                Optional short subtitle or summary line
+            </small>
+        </div>
+
+        <!-- Abstract / Summary -->
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Abstract / Summary *</label>
+            <textarea
+                class="form-control col-12 span12"
+                dymer-model-element=""
+                name="data[abstract]"
+                required=""
+                searchable-element="true"
+                searchable-label="abstract"
+            ></textarea>
+            <small class="form-text text-muted">
+                Please provide a short summary of the article
+            </small>
+        </div>
+
+        <!-- Article Body -->
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Content *</label>
+            <textarea
+                type="textarea"
+                class="form-control col-12 span12 summernote"
+                dymer-model-element="" dymer-model-visibility="public"
+                name="data[description]"
+                required=""
+                searchable-element="true"
+                searchable-label="Description"
+            ></textarea>
+            <small class="form-text text-muted">
+                Please provide the full article content
+            </small>
+        </div>
+
+        <!-- Hidden counters -->
+        <div class="form-group collectionField">
+            <input
+                name="data[likes]"
+                type="hidden"
+                dymer-model-element=""
+                dymer-model-visibility="private"
+                value="[]"
+            >
+            <input
+                name="data[viewsCounter]"
+                type="hidden"
+                dymer-model-element=""
+                dymer-model-visibility="public"
+                value="0"
+            >
+        </div>
+
+        <!-- Featured Image -->
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Featured Image</label>
+            <input
+                type="file"
+                name="data[featuredimage]"
+                class="form-control col-12 span12"
+                accept="image/*"
+            >
+            <small class="form-text text-muted">
+                Please provide a representative image for the article
+            </small>
+        </div>
+
+        <!-- Category -->
+        <div class="form-group searchable collectionField">
+            <label class="kms-title-label">Category *</label>
+            <select
+                required=""
+                class="form-control col-12 span12"
+                name="data[category]"
+                searchable-element="true"
+                searchable-label="category"
+            >
+                <option value="">Select Article Category</option>
+                <option value="News">News</option>
+                <option value="Event">Event</option>
+                <option value="Research">Research</option>
+                <option value="Technology">Technology</option>
+                <option value="Business">Business</option>
+                <option value="Innovation">Innovation</option>
+                <option value="Case Study">Case Study</option>
+                <option value="Press Release">Press Release</option>
+                <option value="Other">Other</option>
+            </select>
+            <small class="form-text text-muted">
+                Please select the main category of the article
+            </small>
+        </div>
+
+        <!-- Tags -->
+        <div class="form-group repeatable first-repeatable collectionField">
+            <label class="kms-title-label">Tags</label>
+            <div>
+                <select
+                    class="form-control col-12 span12"
+                    name="data[tags]"
+                    data-live-search="true"
+                    data-actions-box="true"
+                    multiple=""
+                    searchable-multiple="true"
+                    searchable-override="data[tags]"
+                    searchable-label="tags"
+                >
+                    <option value="AI">AI</option>
+                    <option value="Data">Data</option>
+                    <option value="Digital Transformation">Digital Transformation</option>
+                    <option value="Industry 4.0">Industry 4.0</option>
+                    <option value="Manufacturing">Manufacturing</option>
+                    <option value="Innovation">Innovation</option>
+                    <option value="Research">Research</option>
+                    <option value="Technology Transfer">Technology Transfer</option>
+                    <option value="SME">SME</option>
+                    <option value="Other">Other</option>
+                </select>
+                <small class="form-text text-muted">
+                    Select one or more tags related to the article
+                </small>
+            </div>
+        </div>
+
+        <!-- Publication Date -->
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Publication Date</label>
+            <input
+                type="date"
+                class="form-control col-12 span12"
+                dymer-model-element=""
+                name="data[publicationdate]"
+                searchable-element="true"
+                searchable-label="publication date"
+            >
+            <small class="form-text text-muted">
+                Please provide the publication date
+            </small>
+        </div>
+
+        <!-- Reading Time -->
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Reading Time</label>
+            <input
+                type="text"
+                class="form-control col-12 span12"
+                dymer-model-element=""
+                name="data[readingtime]"
+                placeholder="e.g. 5 min"
+            >
+            <small class="form-text text-muted">
+                Estimated reading time
+            </small>
+        </div>
+
+        <!-- Source / External URL -->
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Source URL</label>
+            <input
+                type="url"
+                class="form-control col-12 span12"
+                dymer-model-element=""
+                name="data[sourceurl]"
+                searchable-element="true"
+                searchable-label="source url"
+            >
+            <small class="form-text text-muted">
+                Optional external reference or original source URL
+            </small>
+        </div>
+
+        <!-- Author -->
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Author</label>
+            <input
+                type="text"
+                class="form-control col-12 span12"
+                name="data[author]"
+                id="author"
+                searchable-element="true"
+                searchable-label="author"
+            >
+            <small class="form-text text-muted">
+                Please provide the article author
+            </small>
+        </div>
+
+        <!-- Author Email -->
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Author Email</label>
+            <input
+                type="email"
+                class="form-control col-12 span12"
+                name="data[authoremail]"
+            >
+            <small class="form-text text-muted">
+                Optional contact email for the author
+            </small>
+        </div>
+
+        <!-- Related Organization / Provider relation -->
+        <div class="relationcontgrp form-group field-description collectionField">
+            <label class="kms-title-label">Related Organization</label>
+            <small class="form-text text-muted">
+                Please select the organization related to this article, if any.
+            </small>
+
+            <div>
+                <div
+                    searchable-label="Organization"
+                    data-component-kmsrelation=""
+                    class="form-group"
+                    data-torelation="organization"
+                    data-ddddt="true"
+                    searchable-multiple="true"
+                    data-filterpos="1"
+                    contenteditable="false"
+                >
+                    <span class="inforelation" contenteditable="false">Relation</span>
+                    <i class="fa fa-code-fork rotandflip inforelation" aria-hidden="true"></i>
+                    <span class="torelation inforelation" contenteditable="true" spellcheckker="false">
+                        Organization
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Attachments -->
+        <div class="form-group repeatable first-repeatable collectionField">
+            <label class="kms-title-label">Attachments</label>
+
+            <div>
+                <label>Label</label>
+                <input
+                    type="text"
+                    class="form-control col-12 span12"
+                    name="data[attachments][0][label]"
+                >
+
+                <label>File</label>
+                <input
+                    type="file"
+                    class="form-control col-12 span12"
+                    name="data[attachments][0][file]"
+                    accept="text/plain,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*"
+                >
+
+                <label>or URL</label>
+                <input
+                    class="form-control"
+                    type="url"
+                    name="data[attachments][0][url]"
+                >
+
+                <small class="form-text text-muted">
+                    Link to web pages or upload article-related material
+                </small>
+            </div>
+
+            <div class="action-br">
+                <span class="btn btn-outline-primary btn-sm" onclick="cloneRepeatable($(this))">+</span>
+                <span class="btn btn-outline-danger btn-sm act-remove" onclick="removeRepeatable($(this))">-</span>
+            </div>
+        </div>
+
+        <!-- SEO section -->
+        <div class="containerDRBEST" style="background: #f5f8ff; border-left: 3px solid #9dbdf5; margin: 10px 0;">
+            <h3 class="text-center">SEO / Metadata</h3>
+
+            <div class="form-group collectionField">
+                <label class="kms-title-label">SEO Title</label>
+                <input
+                    type="text"
+                    class="form-control col-12 span12"
+                    name="data[seo][title]"
+                >
+                <small class="form-text text-muted">
+                    Optional SEO title
+                </small>
+            </div>
+
+            <div class="form-group collectionField">
+                <label class="kms-title-label">SEO Description</label>
+                <textarea
+                    class="form-control col-12 span12"
+                    name="data[seo][description]"
+                ></textarea>
+                <small class="form-text text-muted">
+                    Optional SEO meta description
+                </small>
+            </div>
+
+            <div class="form-group collectionField">
+                <label class="kms-title-label">Slug</label>
+                <input
+                    type="text"
+                    class="form-control col-12 span12"
+                    name="data[seo][slug]"
+                    placeholder="article-url-slug"
+                >
+                <small class="form-text text-muted">
+                    Optional custom URL slug
+                </small>
+            </div>
+        </div>
+
+       
+
+        <p id="newFields">{{newFields}}</p>
+
+        <div class="kms-form-group">
+            <label class="kms-title-label">Status</label>
+            <select class="kms-input" name="data[properties][status]">
+                <option value="1">Published</option>
+                <option value="2">Not Published</option>
+                <option value="3">Draft</option>
+                <!--<option value="0">Deleted</option>-->
+            </select>
+        </div>
+        <div class="kms-form-group">
+            <label class="kms-title-label">Visibility</label>
+            <select class="kms-input" name="data[properties][visibility]">
+               
+                <option value="0">Public</option>
+                <option value="1">Private</option> <option value="2">Restricted</option>
+            </select>
+            <small class="kms-help-text"><b>Restricted:</b> resource visibility restricted only to the current
+                workspace members</small>
+            <small class="kms-help-text"><b>Private:</b> visibility restricted to the resource owner</small>
+            <small class="kms-help-text"><b>Public:</b> resource is visible also to other platform workspaces
+                that are using the same resource model</small>
+        </div>
+        <div class="alert alertaction" role="alert" style="display: none;">
+            <button type="button" class="close" onclick="$(this).closest('.alert').slideUp()">
+                <span aria-hidden="true">×</span>
+            </button>
+            <div class="msg_title"></div>
+            <div class="msg_txt"></div>
+        </div>
+        <div class="text-right actionsAddEntity">
+            <span type="button" id="btnCloseDymerModal" class="btn btn-default" onclick="resetContainer('#entityAdd form')">Reset</span>
+            <span type="button" id="btnCloseDymerModal" class="btn btn-default" onclick="closeDymerModal('entityAdd')">Close</span>
+            <span class="btn btn-info pull-right" id="btnAddDymerModal" onclick="actionPostMultipartForm('entity/{{instance}}', $(this),undefined, undefined,undefined,undefined,true)">Submit</span>
+        </div>
+
+      
+
+        
+       
+
+    </div>
+</form>

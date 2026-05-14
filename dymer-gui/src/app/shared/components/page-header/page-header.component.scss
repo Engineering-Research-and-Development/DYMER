@@ -1,21 +1,10 @@
-.matero-page-header {
-  display: block;
-  padding: 1rem;
-  margin-bottom: 1rem;
- /* color: rgba(255, 255, 255, .87);
-  background-color: #0074e9;*/
-  color: rgb(71 71 71 / 87%);
-    background-color: #f1f3f6;
-  border-radius: var(--mat-sys-corner-medium);
-
-  .matero-breadcrumb {
-    margin-top: 0.5rem;
-    margin-bottom: 0;
-  }
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(8px); 
+  background-color: rgba(255, 255, 255, 0.8);
 }
-
-.matero-page-title {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 400;
+.dark header {
+  background-color: rgba(9, 9, 11, 0.8);
 }

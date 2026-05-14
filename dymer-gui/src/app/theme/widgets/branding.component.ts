@@ -31,7 +31,7 @@ import { Component, Input } from '@angular/core';
       margin: 0 0.5rem;
       font-size: 1rem;
       font-weight: 500;
-      color: #fff;
+      color: #3d85c6;
     }
   `,
 })

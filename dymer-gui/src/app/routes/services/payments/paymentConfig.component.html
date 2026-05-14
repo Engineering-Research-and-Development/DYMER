@@ -1,0 +1,152 @@
+<div class=" mx-auto p-6 space-y-6 animate-in fade-in duration-500">
+  
+  <!-- Header Card con Stato Globale -->
+  <div class="bg-white dark:bg-zinc-950 p-8 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm">
+    <div class="flex items-center justify-between">
+      <div class="space-y-1">
+        <label class="block text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em]">
+          Payment Configuration
+        </label>
+        <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Gateways & Transactions</h2>
+      </div>
+      
+      <div class="flex items-center gap-4 bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-xl border border-zinc-100 dark:border-zinc-800">
+        <div class="flex flex-col items-end mr-2">
+          <span class="text-xs font-bold text-zinc-800 dark:text-zinc-200 uppercase tracking-tight">Global Status</span>
+          <p class="text-[10px] text-zinc-500 uppercase tracking-tighter">Attiva o disabilita tutti i pagamenti</p>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer group">
+          <input type="checkbox" [(ngModel)]="config.isEnabled" class="sr-only peer">
+          <div class="w-11 h-6 bg-zinc-200 dark:bg-zinc-800 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-zinc-900 dark:peer-checked:bg-zinc-100"></div>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Advanced Config (Expert Mode Style) -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-0 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm animate-in slide-in-from-top-4 duration-300">
+    
+    <!-- Left Column: Provider Selection -->
+    <div class="lg:col-span-4 border-r border-zinc-200 dark:border-zinc-800 bg-zinc-100/30 dark:bg-zinc-900/30 p-6">
+      <div class="flex items-center gap-2 mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-400"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg>
+        <h5 class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">1. Choose Gateway</h5>
+      </div>
+
+      <div class="space-y-3">
+        <!-- Stripe Toggle Card -->
+                <button type="button" (click)="activeProvider = 'stripe'"
+                  [class]="activeProvider === 'stripe' ? 'border-zinc-900 dark:border-zinc-100 bg-white dark:bg-zinc-800 shadow-md translate-x-1' : 'border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 hover:border-zinc-400 dark:hover:border-zinc-600'"
+                  class="w-full text-left p-4 rounded-xl border transition-all duration-200 group">
+            <div class="flex items-center justify-between mb-1.5">
+              <div class="flex items-center gap-2.5">
+                <i class="fa-brands fa-stripe text-lg text-[#635bff]" 
+                  [class.grayscale]="activeProvider !== 'stripe'"></i>
+                <span class="text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-tight">Stripe Business</span>
+              </div>
+              <div class="w-2 h-2 rounded-full" [class.bg-emerald-500]="config.stripe.active" [class.bg-zinc-300]="!config.stripe.active"></div>
+            </div>
+            <p class="text-[10px] leading-relaxed text-zinc-500 italic">Carte di credito, Apple Pay e Google Pay.</p>
+          </button>
+
+        <button type="button" (click)="activeProvider = 'paypal'"
+                [class]="activeProvider === 'paypal' ? 'border-zinc-900 dark:border-zinc-100 bg-white dark:bg-zinc-800 shadow-md translate-x-1' : 'border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 hover:border-zinc-400 dark:hover:border-zinc-600'"
+                class="w-full text-left p-4 rounded-xl border transition-all duration-200 group">
+          <div class="flex items-center justify-between mb-1.5">
+            <div class="flex items-center gap-2.5">
+              <i class="fa-brands fa-paypal text-lg text-[#003087]" 
+                [class.grayscale]="activeProvider !== 'paypal'"></i>
+              <span class="text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-tight">PayPal Express</span>
+            </div>
+            <div class="w-2 h-2 rounded-full" [class.bg-emerald-500]="config.paypal.active" [class.bg-zinc-300]="!config.paypal.active"></div>
+          </div>
+          <p class="text-[10px] leading-relaxed text-zinc-500 italic">Pagamenti diretti tramite account PayPal.</p>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Column: Form Fields -->
+    <div class="lg:col-span-8 p-8 bg-white dark:bg-zinc-950/20">
+      <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-400"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          <h5 class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">2. {{ activeProvider }} Credentials</h5>
+        </div>
+        
+        <!-- Individual Provider Toggle -->
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" [(ngModel)]="config[activeProvider].active" class="sr-only peer">
+          <div class="w-9 h-5 bg-zinc-200 dark:bg-zinc-800 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+          <span class="ml-2 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{{ activeProvider }} active</span>
+        </label>
+      </div>
+
+      <!-- STRIPE FIELDS -->
+      <div *ngIf="activeProvider === 'stripe'" class="grid grid-cols-12 gap-6 animate-in slide-in-from-right-4 duration-300">
+        <div class="col-span-12 md:col-span-6 space-y-2">
+          <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">Stripe Mode</label>
+          <select [(ngModel)]="config.stripe.mode" class="w-full h-10 px-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-xs font-bold uppercase tracking-widest outline-none transition-all">
+            <option value="test">Test Mode</option>
+            <option value="live">Live Mode</option>
+          </select>
+        </div>
+        <div class="col-span-12 md:col-span-6 space-y-2">
+          <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">Currency</label>
+          <input type="text" [(ngModel)]="config.stripe.currency" class="w-full h-10 px-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-xs font-mono">
+        </div>
+        <div class="col-span-12 space-y-2">
+          <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">Public Key</label>
+          <input type="text" [(ngModel)]="config.stripe.publicKey" placeholder="pk_test_..." class="w-full h-10 px-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-xs font-mono">
+        </div>
+        <div class="col-span-12 space-y-2">
+          <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">Secret Key</label>
+          <input type="password" [(ngModel)]="config.stripe.secretKey" placeholder="sk_test_..." class="w-full h-10 px-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-xs font-mono font-password">
+        </div>
+      </div>
+
+      <!-- PAYPAL FIELDS -->
+      <div *ngIf="activeProvider === 'paypal'" class="grid grid-cols-12 gap-6 animate-in slide-in-from-right-4 duration-300">
+        <div class="col-span-12 md:col-span-6 space-y-2">
+          <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">Environment</label>
+          <select [(ngModel)]="config.paypal.mode" class="w-full h-10 px-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-xs font-bold uppercase tracking-widest outline-none transition-all">
+            <option value="sandbox">Sandbox</option>
+            <option value="live">Live</option>
+          </select>
+        </div>
+        <div class="col-span-12 space-y-2">
+          <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">Client ID</label>
+          <input type="text" [(ngModel)]="config.paypal.clientId" class="w-full h-10 px-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-xs font-mono">
+        </div>
+        <div class="col-span-12 space-y-2">
+          <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">Client Secret</label>
+          <input type="password" [(ngModel)]="config.paypal.clientSecret" class="w-full h-10 px-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-xs font-mono font-password">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Card (Inferiore) -->
+  <div class="bg-white dark:bg-zinc-950 p-8 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm">
+    <div class="flex items-center gap-2 mb-6 border-b border-zinc-100 dark:border-zinc-900 pb-4">
+      <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em]">Global System Settings</span>
+    </div>
+    <div class="grid grid-cols-12 gap-6">
+      <div class="col-span-12 md:col-span-6 space-y-2">
+        <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">Success Redirect URL</label>
+        <input type="text" [(ngModel)]="config.settings.successUrl" class="w-full h-10 px-4 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg text-xs">
+      </div>
+      <div class="col-span-12 md:col-span-6 space-y-2">
+        <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">Cancel Redirect URL</label>
+        <input type="text" [(ngModel)]="config.settings.cancelUrl" class="w-full h-10 px-4 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-lg text-xs">
+      </div>
+    </div>
+
+    <div class="flex justify-end pt-8">
+      <button (click)="saveConfig()" [disabled]="isLoading"
+              class="h-11 px-10 bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold uppercase tracking-[0.2em] rounded-xl hover:opacity-90 transition-all shadow-lg flex items-center gap-2 disabled:opacity-20">
+        <svg *ngIf="!isLoading" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        {{ isLoading ? 'Saving...' : 'Save All Changes' }}
+      </button>
+    </div>
+  </div>
+</div>

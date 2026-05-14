@@ -1,0 +1,183 @@
+<div class="webhook-form-container">
+    <h3>{{ webhook?._id ? 'Edit Webhook' : 'Create New Webhook' }}</h3>
+
+    <!-- Success Message -->
+    <div *ngIf="successMessage" class="alert alert-success" role="alert">
+        {{ successMessage }}
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+        {{ errorMessage }}
+    </div>
+
+    <div class="row">
+        <!-- COLONNA SINISTRA: SELEZIONE PRESET -->
+        <div class="col-md-4 preset-sidebar">
+            <h5>1. Choose a Template</h5>
+            <div class="list-group">
+                <button *ngFor="let preset of WEBHOOK_PRESETS | keyvalue"
+                        type="button"
+                        class="list-group-item list-group-item-action"
+                        [class.active]="selectedPresetKey === preset.key"
+                        (click)="applyPreset(preset.key, preset.value)">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">{{ preset.value.label }}</h6>
+                        <i *ngIf="preset.value.icon.startsWith('fas')" class="{{ preset.value.icon }}"></i>
+                        <img *ngIf="!preset.value.icon.startsWith('fas')" [src]="preset.value.icon" alt="{{ preset.value.label }} icon" class="preset-icon">
+                    </div>
+                    <small>{{ preset.value.description }}</small>
+                </button>
+            </div>
+        </div>
+
+        <!-- COLONNA DESTRA: DETTAGLI E PERSONALIZZAZIONE -->
+        <div class="col-md-8">
+            <h5>2. Configure Endpoint</h5>
+            <form [formGroup]="webhookForm" (ngSubmit)="onSubmit()">
+                <div class="form-group mb-3">
+                    <label for="index">Entity Index (Model Name) *</label>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="index" 
+                        formControlName="_index"
+                        placeholder="e.g., product, article">
+                    <small class="form-text text-muted">The name of the entity model this webhook applies to.</small>
+                </div>
+        
+                <div class="form-group mb-3">
+                    <label for="type">Entity Type *</label>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="type" 
+                        formControlName="_type"
+                        placeholder="e.g., product, article">
+                    <small class="form-text text-muted">Usually the same as Entity Index.</small>
+                </div>
+        
+                <div class="form-group mb-3">
+                    <label for="microserviceType">Microservice Type *</label>
+                    <select class="form-control" id="microserviceType" formControlName="microserviceType">
+                        <option value="dymer-entities">dymer-entities</option>
+                        <option value="dymer-forms">dymer-forms</option>
+                        <option value="dymer-templates">dymer-templates</option>
+                    </select>
+                </div>
+        
+                <div class="form-group mb-3">
+                    <label for="eventType">Event Type *</label>
+                    <select class="form-control" id="eventType" formControlName="eventType">
+                        <option *ngFor="let event of eventTypes" [value]="event.value">
+                            {{ event.label }}
+                        </option>
+                    </select>
+                </div>
+        
+                <!-- URL Endpoint -->
+                <div class="form-group mb-3">
+                    <label for="webhookUrl">Webhook URL *</label>
+                    <input 
+                        type="url" 
+                        class="form-control" 
+                        id="webhookUrl" 
+                        formControlName="webhookUrl"
+                        placeholder="https://example.com/webhook">
+                    <small class="form-text text-muted">The URL endpoint where the webhook payload will be sent.</small>
+                </div>
+        
+                <!-- Header di Autorizzazione (Dinamico) -->
+                <div class="card mb-3 bg-light">
+                    <div class="card-body">
+                        <h6><i class="fas fa-lock"></i> Custom Headers</h6>
+                        <div class="row g-2 mb-2">
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" placeholder="Header Name (e.g., Authorization)" #headerNameInput>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" placeholder="Value (e.g., Bearer YOUR_TOKEN)" #headerValueInput>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-outline-primary w-100" (click)="addHeader(headerNameInput.value, headerValueInput.value); headerNameInput.value=''; headerValueInput.value='';">Add</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Lista Header Attivi -->
+                        <div class="d-flex flex-wrap gap-2">
+                            <span *ngFor="let h of activeHeaders | keyvalue" class="badge bg-secondary p-2 d-flex align-items-center">
+                                {{ h.key }}: {{ h.value.length > 20 ? (h.value | slice:0:20) + '...' : h.value }}
+                                <i class="fas fa-times ms-2 cursor-pointer" (click)="removeHeader(h.key)"></i>
+                            </span>
+                            <div *ngIf="(activeHeaders | keyvalue).length === 0" class="text-muted">No custom headers added.</div>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="form-group mb-3">
+                    <label for="httpMethod">HTTP Method *</label>
+                    <select class="form-control" id="httpMethod" formControlName="httpMethod">
+                        <option *ngFor="let method of httpMethods" [value]="method">
+                            {{ method }}
+                        </option>
+                    </select>
+                </div>
+        
+                <div class="form-group mb-3">
+                    <label for="payloadTemplate">Payload Template (Handlebars)</label>
+                    <textarea 
+                        class="form-control" 
+                        id="payloadTemplate" 
+                        formControlName="payloadTemplate"
+                        rows="8"
+                        placeholder='{
+  "id": "{{_id}}",
+  "name": "{{name}}",
+  "event": "{{eventType}}"
+}'>
+                    </textarea>
+                    <small class="form-text text-muted">Optional Handlebars template for custom payload. Leave empty to send the entire entity data.</small>
+                </div>
+        
+                <div class="form-check mb-3">
+                    <input 
+                        type="checkbox" 
+                        class="form-check-input" 
+                        id="isActive" 
+                        formControlName="isActive">
+                    <label class="form-check-label" for="isActive">
+                        Active
+                    </label>
+                </div>
+        
+                <div class="form-actions d-flex justify-content-between">
+                    <div>
+                        <button 
+                            type="submit" 
+                            class="btn btn-success me-2"
+                            [disabled]="isSubmitting || webhookForm.invalid">
+                            <span *ngIf="!isSubmitting">{{ webhook?._id ? 'Update' : 'Create' }} Webhook</span>
+                            <span *ngIf="isSubmitting">
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                Saving...
+                            </span>
+                        </button>
+                        <button 
+                            type="button" 
+                            class="btn btn-secondary"
+                            (click)="onCancel()">
+                            Cancel
+                        </button>
+                    </div>
+                    <button 
+                        *ngIf="webhook?._id"
+                        type="button" 
+                        class="btn btn-danger"
+                        (click)="onDelete()">
+                        Delete
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

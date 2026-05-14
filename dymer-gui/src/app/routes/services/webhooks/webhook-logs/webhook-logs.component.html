@@ -1,0 +1,51 @@
+<div class="webhook-logs-container">
+    <h3>Webhook Logs for: {{ webhook?._index }} ({{ webhook?.eventType }})</h3>
+
+    <div *ngIf="isLoading" class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading logs...</span>
+    </div>
+
+    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+        {{ errorMessage }}
+    </div>
+
+    <div *ngIf="!isLoading && logs.length > 0">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Status</th>
+                    <th>Message</th>
+                    <th>Payload Sent</th>
+                    <th>Response</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let log of logs">
+                    <td>{{ log.timestamp | date:
+                    'short' }}</td>
+                    <td>
+                        <span class="badge" [ngClass]="{
+                            'bg-success': log.status >= 200 && log.status < 300,
+                            'bg-warning': log.status >= 300 && log.status < 400,
+                            'bg-danger': log.status >= 400
+                        }">
+                            {{ log.status }}
+                        </span>
+                    </td>
+                    <td>{{ log.message }}</td>
+                    <td><pre>{{ log.payloadSent | json }}</pre></td>
+                    <td><pre>{{ log.responseReceived | json }}</pre></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div *ngIf="!isLoading && logs.length === 0 && !errorMessage" class="alert alert-info">
+        No logs found for this webhook.
+    </div>
+
+    <button type="button" class="btn btn-secondary mt-3" (click)="onBack()">
+        <i class="fas fa-arrow-left"></i> Back to Webhooks List
+    </button>
+</div>

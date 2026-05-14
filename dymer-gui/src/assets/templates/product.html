@@ -1,0 +1,650 @@
+<h1 class="text-center">{{titolo}}</h1>
+
+<form id="entityForm" class="senderForm needs-validation" novalidate="">
+    <input name="instance[index]" type="hidden" value="{{instance}}">
+
+    <div class="rendered-form">
+
+        <!-- Product Name -->
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Product Name *</label>
+            <input
+                type="text"
+                class="form-control col-12 span12"
+                dymer-model-element=""
+                name="data[title]"
+                required=""
+                searchable-element="true"
+                searchable-label="product name"
+            >
+            <small class="form-text text-muted">
+                Please provide the product name
+            </small>
+        </div>
+
+        <!-- Short Description -->
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Short Description *</label>
+            <textarea
+                class="form-control col-12 span12"
+                dymer-model-element=""
+                name="data[shortdescription]"
+                required=""
+                searchable-element="true"
+                searchable-label="short description"
+            ></textarea>
+            <small class="form-text text-muted">
+                Please provide a short product description
+            </small>
+        </div>
+
+        <!-- Full Description -->
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Full Description *</label>
+            <textarea
+                type="textarea"
+                class="form-control col-12 span12 summernote"
+                dymer-model-element=""
+                name="data[description]"
+                required=""
+                searchable-element="true"
+                searchable-label="description"
+            ></textarea>
+            <small class="form-text text-muted">
+                Please provide the full product page description
+            </small>
+        </div>
+
+        <!-- Hidden counters -->
+        <div class="form-group collectionField">
+            <input
+                name="data[likes]"
+                type="hidden"
+                dymer-model-element=""
+                dymer-model-visibility="private"
+                value="[]"
+            >
+
+            <input
+                name="data[viewsCounter]"
+                type="hidden"
+                dymer-model-element=""
+                dymer-model-visibility="public"
+                value="0"
+            >
+        </div>
+
+        <!-- Main Product Image -->
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Main Product Image *</label>
+            <input
+                type="file"
+                name="data[productimage]"
+                class="form-control col-12 span12"
+                accept="image/*"
+                required=""
+            >
+            <small class="form-text text-muted">
+                Please provide the main representative image of the product
+            </small>
+        </div>
+
+        <!-- Product Gallery -->
+        <div class="form-group repeatable first-repeatable collectionField">
+            <label class="kms-title-label">Product Gallery</label>
+
+            <div>
+                <label>Image Label</label>
+                <input
+                    type="text"
+                    class="form-control col-12 span12"
+                    name="data[gallery][0][label]"
+                >
+
+                <label>Image File</label>
+                <input
+                    type="file"
+                    class="form-control col-12 span12"
+                    name="data[gallery][0][image]"
+                    accept="image/*"
+                >
+
+                <small class="form-text text-muted">
+                    Upload additional images for the product gallery
+                </small>
+            </div>
+
+            <div class="action-br">
+                <span class="btn btn-outline-primary btn-sm" onclick="cloneRepeatable($(this))">+</span>
+                <span class="btn btn-outline-danger btn-sm act-remove" onclick="removeRepeatable($(this))">-</span>
+            </div>
+        </div>
+
+        <!-- Product Category -->
+        <div class="form-group searchable collectionField">
+            <label class="kms-title-label">Product Category *</label>
+            <select
+                required=""
+                class="form-control col-12 span12"
+                name="data[category]"
+                searchable-element="true"
+                searchable-label="product category"
+            >
+                <option value="">Select Product Category</option>
+                <option value="Software">Software</option>
+                <option value="Hardware">Hardware</option>
+                <option value="Platform">Platform</option>
+                <option value="Service">Service</option>
+                <option value="Solution">Solution</option>
+                <option value="Tool">Tool</option>
+                <option value="Training">Training</option>
+                <option value="Consulting">Consulting</option>
+                <option value="Other">Other</option>
+            </select>
+            <small class="form-text text-muted">
+                Please select the main product category
+            </small>
+        </div>
+
+        <!-- Product Type -->
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Product Type</label>
+            <select
+                class="form-control col-12 span12"
+                name="data[producttype]"
+                searchable-element="true"
+                searchable-label="product type"
+            >
+                <option value="">Select Product Type</option>
+                <option value="Physical Product">Physical Product</option>
+                <option value="Digital Product">Digital Product</option>
+                <option value="SaaS">SaaS</option>
+                <option value="Subscription">Subscription</option>
+                <option value="Marketplace Item">Marketplace Item</option>
+                <option value="Bundle">Bundle</option>
+                <option value="Other">Other</option>
+            </select>
+            <small class="form-text text-muted">
+                Please specify the product type
+            </small>
+        </div>
+
+        <!-- Tags -->
+        <div class="form-group repeatable first-repeatable collectionField">
+            <label class="kms-title-label">Tags</label>
+
+            <div>
+                <select
+                    class="form-control col-12 span12"
+                    name="data[tags]"
+                    data-live-search="true"
+                    data-actions-box="true"
+                    multiple=""
+                    searchable-multiple="true"
+                    searchable-override="data[tags]"
+                    searchable-label="tags"
+                >
+                    <option value="AI">AI</option>
+                    <option value="Automation">Automation</option>
+                    <option value="Data">Data</option>
+                    <option value="IoT">IoT</option>
+                    <option value="Cloud">Cloud</option>
+                    <option value="Cybersecurity">Cybersecurity</option>
+                    <option value="Manufacturing">Manufacturing</option>
+                    <option value="Industry 4.0">Industry 4.0</option>
+                    <option value="Digital Transformation">Digital Transformation</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <small class="form-text text-muted">
+                    Select one or more product tags
+                </small>
+            </div>
+        </div>
+
+        <!-- Price -->
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Price</label>
+            <input
+                type="text"
+                class="form-control col-12 span12"
+                dymer-model-element=""
+                name="data[price]"
+                placeholder="e.g. 99.00"
+                searchable-element="true"
+                searchable-label="price"
+            >
+            <small class="form-text text-muted">
+                Please provide the product price, if applicable
+            </small>
+        </div>
+
+        <!-- Currency -->
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Currency</label>
+            <select
+                class="form-control col-12 span12"
+                name="data[currency]"
+            >
+                <option value="">Select Currency</option>
+                <option value="EUR">EUR</option>
+                <option value="USD">USD</option>
+                <option value="GBP">GBP</option>
+            </select>
+            <small class="form-text text-muted">
+                Please select the currency
+            </small>
+        </div>
+
+        <!-- Availability -->
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Availability</label>
+            <select
+                class="form-control col-12 span12"
+                name="data[availability]"
+                searchable-element="true"
+                searchable-label="availability"
+            >
+                <option value="">Select Availability</option>
+                <option value="Available">Available</option>
+                <option value="Coming Soon">Coming Soon</option>
+                <option value="On Request">On Request</option>
+                <option value="Out of Stock">Out of Stock</option>
+                <option value="Discontinued">Discontinued</option>
+            </select>
+            <small class="form-text text-muted">
+                Please specify product availability
+            </small>
+        </div>
+
+        <!-- SKU / Product Code -->
+        <div class="form-group collectionField">
+            <label class="kms-title-label">SKU / Product Code</label>
+            <input
+                type="text"
+                class="form-control col-12 span12"
+                dymer-model-element=""
+                name="data[sku]"
+                searchable-element="true"
+                searchable-label="sku"
+            >
+            <small class="form-text text-muted">
+                Optional internal product code or SKU
+            </small>
+        </div>
+
+        <!-- Product URL -->
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Product URL</label>
+            <input
+                type="url"
+                class="form-control col-12 span12"
+                dymer-model-element=""
+                name="data[producturl]"
+                searchable-element="true"
+                searchable-label="product url"
+            >
+            <small class="form-text text-muted">
+                Optional external product page or purchase URL
+            </small>
+        </div>
+
+        <!-- Demo URL -->
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Demo URL</label>
+            <input
+                type="url"
+                class="form-control col-12 span12"
+                dymer-model-element=""
+                name="data[demourl]"
+                searchable-element="true"
+                searchable-label="demo url"
+            >
+            <small class="form-text text-muted">
+                Optional link to product demo, trial, video or preview
+            </small>
+        </div>
+
+        <!-- Key Features -->
+        <div class="form-group repeatable first-repeatable collectionField">
+            <label class="kms-title-label">Key Features</label>
+
+            <div>
+                <label>Feature Title</label>
+                <input
+                    type="text"
+                    class="form-control col-12 span12"
+                    name="data[features][0][title]"
+                >
+
+                <label>Feature Description</label>
+                <textarea
+                    class="form-control col-12 span12"
+                    name="data[features][0][description]"
+                ></textarea>
+
+                <small class="form-text text-muted">
+                    Add one or more key product features
+                </small>
+            </div>
+
+            <div class="action-br">
+                <span class="btn btn-outline-primary btn-sm" onclick="cloneRepeatable($(this))">+</span>
+                <span class="btn btn-outline-danger btn-sm act-remove" onclick="removeRepeatable($(this))">-</span>
+            </div>
+        </div>
+
+        <!-- Technical Specifications -->
+        <div class="form-group repeatable first-repeatable collectionField">
+            <label class="kms-title-label">Technical Specifications</label>
+
+            <div>
+                <label>Specification Name</label>
+                <input
+                    type="text"
+                    class="form-control col-12 span12"
+                    name="data[specifications][0][name]"
+                    placeholder="e.g. Operating System"
+                >
+
+                <label>Specification Value</label>
+                <input
+                    type="text"
+                    class="form-control col-12 span12"
+                    name="data[specifications][0][value]"
+                    placeholder="e.g. Windows, Linux, macOS"
+                >
+
+                <small class="form-text text-muted">
+                    Add technical information about the product
+                </small>
+            </div>
+
+            <div class="action-br">
+                <span class="btn btn-outline-primary btn-sm" onclick="cloneRepeatable($(this))">+</span>
+                <span class="btn btn-outline-danger btn-sm act-remove" onclick="removeRepeatable($(this))">-</span>
+            </div>
+        </div>
+
+        <!-- Benefits -->
+        <div class="form-group collectionField">
+            <label class="kms-title-label">Benefits</label>
+            <textarea
+                class="form-control col-12 span12"
+                name="data[benefits]"
+                searchable-element="true"
+                searchable-label="benefits"
+            ></textarea>
+            <small class="form-text text-muted">
+                Please describe the main product benefits
+            </small>
+        </div>
+
+        <!-- Target Audience -->
+        <div class="form-group repeatable first-repeatable collectionField">
+            <label class="kms-title-label">Target Audience</label>
+
+            <div>
+                <select
+                    class="form-control col-12 span12"
+                    name="data[target]"
+                    data-live-search="true"
+                    data-actions-box="true"
+                    multiple=""
+                    searchable-multiple="true"
+                    searchable-override="data[target]"
+                    searchable-label="target audience"
+                >
+                    <option value="Startups">Startups</option>
+                    <option value="SMEs">SMEs</option>
+                    <option value="Large Enterprises">Large Enterprises</option>
+                    <option value="Public Administration">Public Administration</option>
+                    <option value="Researchers">Researchers</option>
+                    <option value="Developers">Developers</option>
+                    <option value="Manufacturing Companies">Manufacturing Companies</option>
+                    <option value="Technology Providers">Technology Providers</option>
+                    <option value="End Users">End Users</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <small class="form-text text-muted">
+                    Select the target audience for this product
+                </small>
+            </div>
+        </div>
+
+        <!-- Related Organization relation -->
+        <div class="relationcontgrp form-group field-description collectionField">
+            <label class="kms-title-label">Provider / Vendor</label>
+
+            <small class="form-text text-muted">
+                Please select the organization, provider or vendor related to this product.
+            </small>
+
+            <div>
+                <div
+                    searchable-label="Organization"
+                    data-component-kmsrelation=""
+                    class="form-group"
+                    data-torelation="organization"
+                    data-ddddt="true"
+                    searchable-multiple="true"
+                    data-filterpos="1"
+                    contenteditable="false"
+                >
+                    <span class="inforelation" contenteditable="false">Relation</span>
+                    <i class="fa fa-code-fork rotandflip inforelation" aria-hidden="true"></i>
+                    <span class="torelation inforelation" contenteditable="true" spellcheckker="false">
+                        Organization
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Article relation -->
+        <div class="relationcontgrp form-group field-description collectionField">
+            <label class="kms-title-label">Related Articles</label>
+
+            <small class="form-text text-muted">
+                Optionally relate one or more articles to this product page.
+            </small>
+
+            <div>
+                <div
+                    searchable-label="Article"
+                    data-component-kmsrelation=""
+                    class="form-group"
+                    data-torelation="article"
+                    data-ddddt="true"
+                    searchable-multiple="true"
+                    data-filterpos="2"
+                    contenteditable="false"
+                >
+                    <span class="inforelation" contenteditable="false">Relation</span>
+                    <i class="fa fa-code-fork rotandflip inforelation" aria-hidden="true"></i>
+                    <span class="torelation inforelation" contenteditable="true" spellcheckker="false">
+                        Article
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documents / Downloads -->
+        <div class="form-group repeatable first-repeatable collectionField">
+            <label class="kms-title-label">Documents and Downloads</label>
+
+            <div>
+                <label>Label</label>
+                <input
+                    type="text"
+                    class="form-control col-12 span12"
+                    name="data[documents][0][label]"
+                >
+
+                <label>File</label>
+                <input
+                    type="file"
+                    class="form-control col-12 span12"
+                    name="data[documents][0][file]"
+                    accept="text/plain,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                >
+
+                <label>or URL</label>
+                <input
+                    class="form-control"
+                    type="url"
+                    name="data[documents][0][url]"
+                >
+
+                <small class="form-text text-muted">
+                    Upload product brochures, datasheets, manuals or provide external links
+                </small>
+            </div>
+
+            <div class="action-br">
+                <span class="btn btn-outline-primary btn-sm" onclick="cloneRepeatable($(this))">+</span>
+                <span class="btn btn-outline-danger btn-sm act-remove" onclick="removeRepeatable($(this))">-</span>
+            </div>
+        </div>
+
+        <!-- Contacts -->
+        <div class="form-group repeatable first-repeatable collectionField">
+            <label class="kms-title-label">Contacts</label>
+
+            <div>
+                <label>Name</label>
+                <input
+                    type="text"
+                    class="form-control col-12 span12"
+                    name="data[contacts][0][name]"
+                >
+
+                <label>Surname</label>
+                <input
+                    type="text"
+                    class="form-control col-12 span12"
+                    name="data[contacts][0][surname]"
+                >
+
+                <label>Email</label>
+                <input
+                    type="email"
+                    class="form-control col-12 span12"
+                    name="data[contacts][0][email]"
+                >
+
+                <label>Role</label>
+                <input
+                    type="text"
+                    class="form-control col-12 span12"
+                    name="data[contacts][0][role]"
+                    placeholder="e.g. Sales Manager, Product Owner"
+                >
+
+                <small class="form-text text-muted">
+                    Please provide a contact person for this product
+                </small>
+            </div>
+
+            <div class="action-br">
+                <span class="btn btn-outline-primary btn-sm" onclick="cloneRepeatable($(this))">+</span>
+                <span class="btn btn-outline-danger btn-sm act-remove" onclick="removeRepeatable($(this))">-</span>
+            </div>
+        </div>
+
+        <!-- SEO section -->
+        <div class="containerDRBEST" style="background: #f5f8ff; border-left: 3px solid #9dbdf5; margin: 10px 0;">
+            <h3 class="text-center">SEO / Metadata</h3>
+
+            <div class="form-group collectionField">
+                <label class="kms-title-label">SEO Title</label>
+                <input
+                    type="text"
+                    class="form-control col-12 span12"
+                    name="data[seo][title]"
+                >
+                <small class="form-text text-muted">
+                    Optional SEO title for the product page
+                </small>
+            </div>
+
+            <div class="form-group collectionField">
+                <label class="kms-title-label">SEO Description</label>
+                <textarea
+                    class="form-control col-12 span12"
+                    name="data[seo][description]"
+                ></textarea>
+                <small class="form-text text-muted">
+                    Optional SEO meta description
+                </small>
+            </div>
+
+            <div class="form-group collectionField">
+                <label class="kms-title-label">Slug</label>
+                <input
+                    type="text"
+                    class="form-control col-12 span12"
+                    name="data[seo][slug]"
+                    placeholder="product-url-slug"
+                >
+                <small class="form-text text-muted">
+                    Optional custom product URL slug
+                </small>
+            </div>
+        </div>
+
+        <!-- Author / Owner -->
+        <div class="form-group">
+            <label class="kms-title-label">Author</label>
+            <input
+                type="text"
+                class="form-control col-12 span12"
+                name="data[author]"
+                id="author"
+                readonly=""
+            >
+        </div>
+
+          <p id="newFields">{{newFields}}</p>
+
+
+           
+            <div class="form-group">
+                <label class="kms-title-label">Status</label>
+                <select class="form-control col-12 span12" name="data[properties][status]">
+                    <option value="1">Published</option>
+                    <option value="2">Not Published</option>
+                    <option value="3">Draft</option>
+                    <!--<option value="0">Deleted</option>-->
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="kms-title-label">Visibility</label>
+                <select class="form-control col-12 span12" name="data[properties][visibility]">
+
+                    <option value="0">Public</option>
+                    <option value="1">Private</option>
+                    <option value="2">Restricted</option>
+                </select>
+                <small class="form-text text-muted"><b>Restricted:</b> resource visibility restricted only to the
+                    current
+                    workspace members</small>
+                <small class="form-text text-muted"><b>Private:</b> visibility restricted to the resource owner</small>
+                <small class="form-text text-muted"><b>Public:</b> resource is visible also to other platform workspaces
+                    that are using the same resource model</small>
+            </div>
+            <div class="alert alertaction" role="alert" style="display: none;">
+                <button type="button" class="close" onclick="$(this).closest('.alert').slideUp()">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <div class="msg_title"></div>
+                <div class="msg_txt"></div>
+            </div>
+            <div class="text-right actionsAddEntity">
+                <span type="button" id="btnCloseDymerModal" class="btn btn-default" onclick="resetContainer('#entityAdd form')">Reset</span>
+                <span type="button" id="btnCloseDymerModal" class="btn btn-default" onclick="closeDymerModal('entityAdd')">Close</span>
+                <span class="btn btn-info pull-right" id="btnAddDymerModal" onclick="actionPostMultipartForm('entity/{{instance}}', $(this),undefined, undefined,undefined,undefined,true)">Submit</span>
+            </div>
+
+    </div>
+</form>

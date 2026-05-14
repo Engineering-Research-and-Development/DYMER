@@ -1,0 +1,40 @@
+<div class="webhook-test-container">
+    <h3>Test Webhook</h3>
+    <p>Test the webhook by sending a sample payload to: <strong>{{ webhook?.webhookUrl }}</strong></p>
+
+    <form [formGroup]="testForm">
+        <div class="form-group">
+            <label for="testPayload">Test Payload (JSON)</label>
+            <textarea 
+                class="form-control" 
+                id="testPayload" 
+                formControlName="testPayload"
+                rows="8">
+            </textarea>
+        </div>
+
+        <button 
+            type="button" 
+            class="btn btn-primary"
+            (click)="runTest()"
+            [disabled]="isTestRunning">
+            <span *ngIf="!isTestRunning">Run Test</span>
+            <span *ngIf="isTestRunning">
+                <span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>
+                Testing...
+            </span>
+        </button>
+        <button 
+            type="button" 
+            class="btn btn-secondary"
+            (click)="onBack()">
+            Back
+        </button>
+    </form>
+
+    <!-- Test Result -->
+    <div *ngIf="testResult" class="alert" [ngClass]="{'alert-success': testSuccess, 'alert-danger': !testSuccess}">
+        <h5>Test Result</h5>
+        <pre>{{ testResult | json }}</pre>
+    </div>
+</div>

@@ -1,0 +1,48 @@
+<div class="webhook-list-container">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Entity Index</th>
+                <th>Event Type</th>
+                <th>Webhook URL</th>
+                <th>Method</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let webhook of webhooks">
+                <td>{{ webhook._index }}</td>
+                <td>
+                    <span class="badge" [ngClass]="{'badge-success': webhook.eventType === 'entity.created', 'badge-info': webhook.eventType === 'entity.updated', 'badge-danger': webhook.eventType === 'entity.deleted'}">
+                        {{ getEventLabel(webhook.eventType) }}
+                    </span>
+                </td>
+                <td><small>{{ webhook.webhookUrl }}</small></td>
+                <td>{{ webhook.httpMethod }}</td>
+                <td>
+                    <span class="badge" [ngClass]="{'badge-success': webhook.isActive, 'badge-secondary': !webhook.isActive}">
+                        {{ webhook.isActive ? 'Active' : 'Inactive' }}
+                    </span>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-primary" (click )="onEdit(webhook)" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-info" (click)="onTest(webhook)" title="Test">
+                        <i class="fas fa-flask"></i>
+                    </button>
+                    <button class="btn btn-sm btn-warning" (click)="onLogs(webhook)" title="Logs">
+                        <i class="fas fa-history"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" (click)="onDelete(webhook._id!)" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div *ngIf="webhooks.length === 0" class="alert alert-info">
+        No webhooks configured yet. Create one to get started!
+    </div>
+</div>

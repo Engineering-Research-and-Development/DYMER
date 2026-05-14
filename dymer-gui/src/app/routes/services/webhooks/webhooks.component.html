@@ -1,0 +1,57 @@
+<div class="webhooks-container">
+    <div class="webhooks-header">
+        <h2>Webhook Management</h2>
+        <button 
+            class="btn btn-primary" 
+            (click)="showCreateForm()"
+            [disabled]="isLoading">
+            <i class="fas fa-plus"></i> Create New Webhook
+        </button>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+        {{ errorMessage }}
+    </div>
+
+    <!-- Navigation Tabs (Optional, if you want to explicitly show tabs for list/form/test/logs) -->
+    <!-- For now, we rely on button clicks to change view -->
+
+    <!-- Loading Spinner -->
+    <div *ngIf="isLoading" class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+
+    <!-- List View -->
+    <app-webhook-list 
+        *ngIf="currentView === 'list' && !isLoading"
+        [webhooks]="webhooks"
+        (edit)="showEditForm($event)"
+        (delete)="deleteWebhook($event)"
+        (test)="showTestView($event)"
+        (logs)="showLogs($event)">
+    </app-webhook-list>
+
+    <!-- Form View -->
+    <app-webhook-form 
+        *ngIf="currentView === 'form' && selectedWebhook"
+        [webhook]="selectedWebhook"
+        (saved)="onWebhookSaved()"
+        (deleted)="onWebhookDeleted()"
+        (cancelled)="showList()">
+    </app-webhook-form>
+
+    <!-- Test View -->
+    <app-webhook-test 
+        *ngIf="currentView === 'test' && selectedWebhook"
+        [webhook]="selectedWebhook"
+        (back)="showList()">
+    </app-webhook-test>
+
+    <!-- Logs View -->
+    <app-webhook-logs 
+        *ngIf="currentView === 'logs' && selectedWebhook"
+        [webhook]="selectedWebhook"
+        (back)="showList()">
+    </app-webhook-logs>
+</div>
