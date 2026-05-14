@@ -21,7 +21,16 @@ exports.getbasehUrl = function() {
     //  console.log('url1', url);
     return url;
 };
+exports.format = function(seconds){
+  function pad(s){
+    return (s < 10 ? '0' : '') + s;
+  }
+  var hours = Math.floor(seconds / (60*60));
+  var minutes = Math.floor(seconds % (60*60) / 60);
+  var seconds = Math.floor(seconds % 60);
 
+  return pad(hours) + ':' + pad(minutes) + ':' + pad(seconds);
+}
 exports.mongoUrlFiles = function(el) {
     let url = "mongodb://" + global.configService.repository.files.ip + ':' + global.configService.repository.files.port + "/" + global.configService.repository.files.index_ref;
     return url;
@@ -80,7 +89,7 @@ function isEmpty(obj) {
 }*/
 
 exports.getAllQuery = function(req) {
-    console.log('====>getAllQuery');
+    //console.log('====>getAllQuery');
     let obj = { "query": {} };
     let body = req.body;
     let params = req.params;
@@ -100,7 +109,7 @@ exports.getAllQuery = function(req) {
         Object.assign(obj, query.query); //VL MG
         //Object.assign(obj, query);//VL MG
     }
-    console.log("obj ", obj)
+    //console.log("obj ", obj)
     return obj;
 }
 
@@ -183,11 +192,11 @@ exports.checkIsPortalUser = function(req, res, next) {
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     //console.log("dymeruser", dymeruser);
     if ((dymeruser.roles.indexOf("app-admin") > -1)||(dymeruser.roles.indexOf("app-content-curator") > -1)) {
-        logger.info(nameFile + ' | checkIsAdmin | Yes permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
+        logger.info(nameFile + ' | checkIsPortalUser | Yes permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
         next();
     } else {
         //console.log('checkIsAdmin | No permission:', dymeruser.id, req.originalUrl, req.method, req.url);
-        logger.info(nameFile + ' | checkIsAdmin | No permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
+        logger.info(nameFile + ' | checkIsPortalUser | No permission, dymeruser.id :' + dymeruser.id + " " + JSON.stringify({ "originalUrl": req.originalUrl, "method": req.method, "url": req.url }));
         var ret = new jsonResponse();
         ret.setMessages("Sorry, something went wrong: you don't have permission or your authentication has expired");
         // res.status(200);
