@@ -82,15 +82,36 @@ router.post('/reload', util.checkIsAdmin, async (req, res) => {
 // GET ALL
 // TODO indagare sul perché con util.checkIsAdmin la pagina di test "dymer_list_detail_one_page.html" non funzionava
 router.get( '/', /* util.checkIsAdmin,  */async ( req, res ) => {
-	// console.log( "router-d-library -> GET all" );
-	let whatAndPath = "getAll/library/";
-	try {
-		const libraries = await DymRule.find();
-		//logger.info( `${ nameFile } | ${ whatAndPath } | Fetched all libraries: ${ JSON.stringify( libraries ) }` );
-		res.json( libraries );
-	} catch ( error ) {
-		handleError( res, 500, error, "Error retrieving library configuration: ", whatAndPath );
-	}
+	 
+	// let whatAndPath = "getAll/library/";
+	// try {
+	// 	const libraries = await DymRule.find();
+		 
+	// 	res.json( libraries );
+	// } catch ( error ) {
+	// 	handleError( res, 500, error, "Error retrieving library configuration: ", whatAndPath );
+	// }
+
+
+
+	 try {
+    const { loadtype } = req.query;
+
+    // costruzione filtro dinamico
+    let filter = {};
+    if (loadtype) {
+      filter.loadtype = loadtype;
+    }
+
+    const libraries = await DymRule.find(filter);
+
+    res.json(libraries);
+  } catch (error) {
+    handleError(res, 500, error, "Error retrieving library configuration: ", whatAndPath);
+  }
+
+
+
 } );
 
 // GET by ID

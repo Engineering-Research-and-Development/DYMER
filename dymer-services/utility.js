@@ -257,7 +257,16 @@ exports.encrypt = function (message) {
 
     return encryptedText
 }
+exports.format = function(seconds){
+  function pad(s){
+    return (s < 10 ? '0' : '') + s;
+  }
+  var hours = Math.floor(seconds / (60*60));
+  var minutes = Math.floor(seconds % (60*60) / 60);
+  var seconds = Math.floor(seconds % 60);
 
+  return pad(hours) + ':' + pad(minutes) + ':' + pad(seconds);
+}
 //exports.decrypt = function(secretKey, encryptedText) {
   exports.decrypt = function(encryptedText) {
     

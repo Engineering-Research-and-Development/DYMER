@@ -125,7 +125,7 @@ router.get('/userinfo', (req, res) => {
                 logger.info(nameFile + ' | userInfo | idsadm '+ data.idsadm);
                 */
                 var token = data.DYM;
-                console.log(nameFile + ' | userinfo | data.DYM : ', data.DYM);
+               // console.log(nameFile + ' | userinfo | data.DYM : ', data.DYM);
                 //logger.info(nameFile + ' | userinfo | data.DYM : ', data.DYM);
                 if (token != undefined && token != "null" && token != null) {
                     var decoded;

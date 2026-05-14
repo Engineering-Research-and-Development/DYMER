@@ -36,6 +36,7 @@ var routes_dymer_taxonomy = require('./routes/routes-d-taxonomy');
 var routes_dymer_import = require('./routes/routes-d-import');
 var routes_dymer_library = require('./routes/routes-d-library');
 var aiAgentRoutes = require('./routes/aiAgentRoutes');
+var paymentsRoutes = require('./routes/paymentsRoutes');
 //var routes_dymer_importsocs = require('./routes/routes-d-import_socs');
 //var routes_dymer_importhb = require('./routes/routes-d-import_hb');
 var routes_dymer_permission = require('./routes/routes-d-perm');
@@ -46,6 +47,9 @@ var routes_dymer_authconfig = require('./routes/routes-d-authconfig');
 var routes_dymer_duser = require('./routes/routes-d-users');
 var routes_dymer_stats = require('./routes/routes-d-stats');
 var routes_dymer_ollama = require('./routes/routes-d-ollama');
+
+
+
 /*MG - MAGIC AI - INIZIO*/
 var routes_dymer_magicAI = require('./routes/routes-d-magicai');
 /*MG - MAGIC AI - FINE*/
@@ -69,7 +73,7 @@ app.use('/api/v1/fwadapter', routes_dymer_fwadapter
 // #swagger.tags = ['Services']
 );
 app.use('/api/v1/ai-agents', aiAgentRoutes);
-
+app.use('/api/v1/payments', paymentsRoutes);
 app.use('/api/v1/sync', routes_dymer_sync
 // #swagger.tags = ['Services']
 );
@@ -150,7 +154,7 @@ app.post('/setlogconfig', (req, res) => {
 
 app.get('/checkservice', util.checkIsAdmin, (req, res) => {
     // #swagger.tags = ['Services']
-
+    var uptime = process.uptime();
     var ret = new jsonResponse();
     let infosize = logger.filesize("info");
     let errorsize = logger.filesize("error");
@@ -165,7 +169,8 @@ app.get('/checkservice', util.checkIsAdmin, (req, res) => {
         error: {
             size: errorsize
         },
-        infomicroservice: infomserv
+        infomicroservice: infomserv,
+         uptime: util.format(uptime)
     });
     ret.setMessages("Service is up");
     res.status(200);

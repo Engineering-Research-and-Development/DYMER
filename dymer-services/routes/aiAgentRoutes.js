@@ -1,4 +1,3 @@
- 
 const util = require('../utility');
 const jsonResponse = require('../jsonResponse');
 const mongoose = require("mongoose");
@@ -6,6 +5,8 @@ const bodyParser = require("body-parser");
 const express = require("express");
 const path = require("path");
 const logger = require('./dymerlogger');
+const fs = require('fs');
+const readline = require('readline');
 
 require("../models/agent/Agent.js");
 const aiAgentController = require('../controllers/aiAgentController');
@@ -31,6 +32,9 @@ router.use(bodyParser.urlencoded({
 // });
 
 router.get("/getAllAgents", util.checkIsDymerUser, async function (req, res) {
+
+    logger.info(`${nameFile} | getAllAgents`);
+
     let ret = new jsonResponse();
     const dymeruser = util.getDymerUser(req, res);
     if (!dymeruser || !dymeruser.email) {
@@ -49,7 +53,7 @@ router.get("/getAllAgents", util.checkIsDymerUser, async function (req, res) {
 });
 
 router.post('/createAgent', util.checkIsDymerUser, aiAgentController.createAgent);
- 
+router.delete('/:id', util.checkIsAdmin, aiAgentController.deleteAgent);
  
 /*router.post('/', util.checkIsAdmin, aiAgentController.createAgent);
 router.put('/:id', util.checkIsAdmin, aiAgentController.updateAgent);
@@ -94,5 +98,37 @@ router.post('/stream_fake', async (req, res) => {
     }
 });
 
+router.get('/tailLog/:filetype', util.checkIsAdmin, async (req, res) => {
+  const filetype = req.params.filetype;
+  if (filetype.includes('..') || filetype.includes('/') || filetype.includes('\\')) {
+    return res.status(400).send("Invalid filename");
+  }
+  const filePath = path.join(__dirname, "..", "logs", `${filetype}.log`);
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).send("Log file not found");
+  }
+  try {
+    const MAX_LINES = 50;
+    const lines = [];
+    const rl = readline.createInterface({
+      input: fs.createReadStream(filePath),
+      terminal: false
+    });
+    for await (const line of rl) {
+      lines.push(line);
+      if (lines.length > MAX_LINES) {
+        lines.shift();
+      }
+    }
+    res.json({
+      file: `${filetype}.log`,
+      lines: lines,
+      totalLines: lines.length
+    });
+  } catch (err) {
+    logger.error(`${nameFile} | /tailLog | Error: ${err.message}`);
+    res.status(500).json({ error: "Errore lettura log", details: err.message });
+  }
+});
 
 module.exports = router;

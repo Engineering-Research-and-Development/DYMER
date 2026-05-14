@@ -45,7 +45,9 @@ exports.updateAgent = async (req, res) => {
 // DELETE - Rimuove un agente
 exports.deleteAgent = async (req, res) => {
     try {
-        await AiAgent.findByIdAndDelete(req.params.id);
+        console.info("info | " + nameFile + " | deleteAgent | deleted:", req.params.id);
+        await agentModel.findByIdAndDelete(req.params.id);
+   
         res.json({ message: "Agente rimosso" });
     } catch (error) {
         res.status(500).json({ message: "Errore eliminazione", error: error.message });
