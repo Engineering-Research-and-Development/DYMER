@@ -42,6 +42,7 @@ function mainMapOnLoad() {
 function generateMapDT(conf) {
     // console.log('generateMapDT', conf);
     actualTemplateType = conf.viewtype;
+
     loadMarkers(conf).then(function(ars) {
         //  console.log("ars", ars);
         let mapElId = $(retriveTargetId('map'));
@@ -574,70 +575,329 @@ function settingMapIcon(obj) {
                     });
             }
 
+    /*MG - Implementazione legenda - Inizio*/
+    try {
+        if (kmsconf.map && kmsconf.map.assignments && obj && obj.properties) {
+            var idx = obj.properties._index;
+            var aid = obj.properties._id || obj.properties.id || (obj._id || obj.id);
+            if (idx && aid && kmsconf.map.assignments[idx] && kmsconf.map.assignments[idx][aid]) {
+                var assignedLabel = kmsconf.map.assignments[idx][aid];
+                var markerDefs = kmsconf.map.markers && kmsconf.map.markers[idx] ? kmsconf.map.markers[idx] : [];
+                for (var mi = 0; mi < markerDefs.length; mi++) {
+                    var m = markerDefs[mi];
+                    if (m.value) {
+                        if (Array.isArray(m.value) && m.value.indexOf(assignedLabel) !== -1) {
+                            confIcon = [m];
+                            break;
+                        } else if (m.value === assignedLabel) {
+                            confIcon = [m];
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    } catch (e) { console.warn('settingMapIcon assignments error', e); }
+    try {
+        if ((!confIcon || confIcon.length === 0) && companyColors && Object.keys(companyColors).length > 0) {
+            var labels = Object.keys(companyColors).filter(function(k){ return k !== 'Default'; });
+            var matchedLabel = null;
+            for (var li = 0; li < labels.length; li++) {
+                var lab = labels[li];
+                if (deepContainsString(obj.properties || obj, lab)) {
+                    matchedLabel = lab; break;
+                }
+            }
+            if (matchedLabel) {
+                var idx2 = (obj.properties && obj.properties._index) || (obj._index);
+                var defs = (kmsconf.map && kmsconf.map.markers && kmsconf.map.markers[idx2]) ? kmsconf.map.markers[idx2] : [];
+                for (var m2 = 0; m2 < defs.length; m2++) {
+                    var mm = defs[m2];
+                    if (mm.value) {
+                        if (Array.isArray(mm.value) && mm.value.indexOf(matchedLabel) !== -1) { confIcon = [mm]; break; }
+                        else if (mm.value === matchedLabel) { confIcon = [mm]; break; }
+                    }
+                }
+                if (!confIcon || confIcon.length === 0) {
+                    confIcon = [{ icon: 'fa-circle', prefix: 'fa', markerColor: companyColors[matchedLabel] }];
+                }
+            }
+        }
+    } catch (e) { console.warn('settingMapIcon deep match error', e); }
+
     if (!confIcon.length)
         confIcon[0] = {
             icon: 'fa-circle',
             prefix: 'fa',
             markerColor: 'blue'
         };
+    try {
+        var aggKey = (kmsconf && (kmsconf.legendAggregator || (kmsconf.map && kmsconf.map.legendAggregator))) || null;
+        if (aggKey && companyColors && Object.keys(companyColors).length > 0) {
+            var props = obj.properties || obj;
+            var vals = extractAggregatorValues(props, aggKey);
+            for (var vi = 0; vi < vals.length; vi++) {
+                var vv = vals[vi];
+                if (companyColors[vv]) {
+                    confIcon[0].markerColor = companyColors[vv];
+                    confIcon[0].iconColor = confIcon[0].iconColor || '#ffffff';
+                    break;
+                }
+            }
+        }
+    } catch (e) {
+        console.warn('settingMapIcon legend override error', e);
+    }
     return confIcon[0];
+    /*MG - Implementazione legenda - Fine*/
 }
+
+/*MG - Implementazione legenda - Inizio*/
+function deepContainsString(obj, needle) {
+    if (obj == null) return false;
+    var sneedle = String(needle).toLowerCase();
+    var stack = [obj];
+    while (stack.length) {
+        var cur = stack.pop();
+        if (cur == null) continue;
+        if (typeof cur === 'string' || typeof cur === 'number' || typeof cur === 'boolean') {
+            if (String(cur).toLowerCase().indexOf(sneedle) !== -1) return true;
+        } else if (Array.isArray(cur)) {
+            for (var i = 0; i < cur.length; i++) stack.push(cur[i]);
+        } else if (typeof cur === 'object') {
+            Object.keys(cur).forEach(function(k) { stack.push(cur[k]); });
+        }
+    }
+    return false;
+}
+/*MG - Implementazione legenda - Fine*/
+
+/*MG - Implementazione legenda - Inizio*/
+// ---------- Legend & color utilities ----------
+var companyColors = {}; 
+var legendControl = null;
+var inferredLegendKey = null;
+
+function extractAggregatorValues(props, key) {
+    if (!props || !key) return ["Default"];
+    var raw = undefined;
+    try {
+        if (key.indexOf('.') !== -1) {
+            var parts = key.split('.');
+            var cur = props;
+            for (var i = 0; i < parts.length; i++) {
+                if (cur == null) { cur = undefined; break; }
+                cur = cur[parts[i]];
+            }
+            raw = cur;
+        } else {
+            raw = props[key];
+        }
+    } catch (e) {
+        raw = props[key];
+    }
+    if (raw == null) {
+        try {
+            var found = [];
+            function deepSearch(obj) {
+                if (obj == null) return;
+                if (typeof obj === 'object' && !Array.isArray(obj)) {
+                    Object.keys(obj).forEach(function(k) {
+                        try {
+                            if (k && String(k).toLowerCase() === String(key).toLowerCase()) {
+                                found.push(obj[k]);
+                            }
+                        } catch (ee) {}
+                        deepSearch(obj[k]);
+                    });
+                } else if (Array.isArray(obj)) {
+                    obj.forEach(function(v) { deepSearch(v); });
+                }
+            }
+            deepSearch(props);
+            if (found.length) raw = found.length === 1 ? found[0] : found;
+        } catch (e) { /* ignore */ }
+    }
+    if (raw == null) return ["Default"];
+    var arr = [];
+    if (Array.isArray(raw)) {
+        raw.forEach(function (v) { if (v != null && String(v).trim() !== '') arr.push(String(v).trim()); });
+    } else if (typeof raw === 'string') {
+        if (raw.indexOf(',') !== -1) {
+            raw.split(',').forEach(function (s) { if (s && s.trim() !== '') arr.push(s.trim()); });
+        } else {
+            if (raw.trim() !== '') arr.push(raw.trim());
+        }
+    } else if (typeof raw === 'number' || typeof raw === 'boolean') {
+        arr.push(String(raw));
+    }
+    if (arr.length === 0) arr = ["Default"];
+    return Array.from(new Set(arr));
+}
+
+function buildCompanyColorsFromFeatures(features, aggregatorKey) {
+    companyColors = {};
+    var seen = new Set();
+    if (!features) return;
+    features.forEach(function (f) {
+        var props = f.properties || f;
+        var vals = extractAggregatorValues(props, aggregatorKey);
+        vals.forEach(function (v) { seen.add(v); });
+    });
+    try {
+        Array.from(seen).sort().forEach(function (type) {
+            if (type === 'Default' && seen.size > 1) return;
+            var color = null;
+            if (kmsconf && kmsconf.map && kmsconf.map.markers) {
+                try {
+                    Object.keys(kmsconf.map.markers).some(function (idx) {
+                        var defs = kmsconf.map.markers[idx] || [];
+                        for (var j = 0; j < defs.length; j++) {
+                            var entry = defs[j];
+                            if (!entry || entry.value == null) continue;
+                            if (Array.isArray(entry.value)) {
+                                if (entry.value.indexOf(type) !== -1) { color = entry.markerColor || entry.color || entry.iconColor || null; break; }
+                            } else {
+                                if (String(entry.value) === String(type)) { color = entry.markerColor || entry.color || entry.iconColor || null; break; }
+                            }
+                        }
+                        return !!color;
+                    });
+                } catch (e) { /* ignore marker lookup errors */ }
+            }
+            if (!color) color = '#888888';
+            companyColors[type] = color;
+        });
+    } catch (e) {
+        companyColors = { 'Default': 'grey' };
+    }
+    if (Object.keys(companyColors).length === 0) companyColors['Default'] = 'grey';
+}
+
+function buildLegendControl() {
+    if (legendControl) {
+        try { map.removeControl(legendControl); } catch (e) { }
+        legendControl = null;
+    }
+    legendControl = L.control({ position: 'bottomright' });
+    legendControl.onAdd = function () {
+        var div = L.DomUtil.create('div', 'info legend');
+        div.style.background = 'white';
+        div.style.padding = '8px';
+        div.style.borderRadius = '6px';
+        div.style.boxShadow = '0 0 6px rgba(0,0,0,0.3)';
+        div.style.fontSize = '13px';
+        div.style.lineHeight = '18px';
+        div.style.maxWidth = '220px';
+        var types = Object.keys(companyColors).sort();
+        if (types.length === 0) { div.innerHTML = '<em>Nessuna categoria</em>'; return div; }
+        types.forEach(function (t) {
+            var color = companyColors[t];
+            div.innerHTML += '<div style="margin-bottom:6px; display:flex; align-items:center; gap:8px;">'
+                + '<span style="display:inline-block; width:14px; height:14px; background:' + color + '; border:1px solid #333; border-radius:3px;"></span>'
+                + '<span style="white-space:nowrap; overflow: hidden; text-overflow: ellipsis;">' + t + '</span>'
+                + '</div>';
+        });
+        return div;
+    };
+    legendControl.addTo(map);
+}
+
+// ---------- SVG multicolor marker (divIcon) ----------
+function createMultiTypeDivIcon(types) {
+    // Map types to colors using companyColors fallback to grey
+    var colors = (types && types.length) ? types.map(function(t) { return companyColors[t] || '#888888'; }) : ['#888888'];
+
+    var W = 30, H = 46;
+    var cx = 15, cy = 15, R = 12;
+    var stripeCount = Math.max(colors.length, 1);
+    var stripeW = (2 * R) / stripeCount;
+    var startX = cx - R;
+    var clipId = 'clip-' + Math.random().toString(36).slice(2);
+
+    var stripes = '';
+    for (var i = 0; i < stripeCount; i++) {
+        var x = startX + i * stripeW;
+        stripes += '<rect x="' + x + '" y="' + (cy - R) + '" width="' + stripeW + '" height="' + (2 * R) + '" fill="' + colors[i] + '"></rect>';
+    }
+
+    var pinPath = 'M ' + cx + ' ' + (cy + R) + ' L ' + (cx - 5) + ' ' + (H - 1) + ' L ' + (cx + 5) + ' ' + (H - 1) + ' Z';
+
+    var svg = '' +
+        '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">' +
+        '<defs><clipPath id="' + clipId + '"><circle cx="' + cx + '" cy="' + cy + '" r="' + R + '" /></clipPath></defs>' +
+        '<circle cx="' + cx + '" cy="' + cy + '" r="' + R + '" fill="#ffffff" stroke="#333" stroke-width="1.5"></circle>' +
+        '<g clip-path="url(#' + clipId + ')">' + stripes + '</g>' +
+        '<circle cx="' + cx + '" cy="' + cy + '" r="' + R + '" fill="transparent" stroke="#333" stroke-width="1.5"></circle>' +
+        '<path d="' + pinPath + '" fill="#444" stroke="#333" stroke-width="1"></path>' +
+        '</svg>';
+
+    return L.divIcon({
+        html: svg,
+        className: 'multi-type-marker',
+        iconSize: [W, H],
+        iconAnchor: [W / 2, H],
+        popupAnchor: [0, -H + 10]
+    });
+}
+
+// Simple single-color SVG divIcon
+function createSingleColorDivIcon(color) {
+    var W = 22, H = 30;
+    var cx = 11, cy = 11, R = 9;
+    var pinPath = 'M ' + cx + ' ' + (cy + R) + ' L ' + (cx - 4) + ' ' + (H - 1) + ' L ' + (cx + 4) + ' ' + (H - 1) + ' Z';
+    var svg = '' +
+        '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">' +
+        '<circle cx="' + cx + '" cy="' + cy + '" r="' + R + '" fill="' + color + '" stroke="#333" stroke-width="1"></circle>' +
+        '<path d="' + pinPath + '" fill="#444" stroke="#333" stroke-width="1"></path>' +
+        '</svg>';
+    return L.divIcon({ html: svg, className: 'single-color-marker', iconSize: [W, H], iconAnchor: [W/2, H], popupAnchor: [0, -H + 8] });
+}
+/*MG - Implementazione legenda - Fine*/
 
 function populateMap(arrdata) {
     return new Promise(function(resolve, reject) {
         let groupmarkers= kmsconf.map.setting.groupmarkers;
         markers.clearLayers();
         var geoJsonLayer = L.geoJson(arrdata, {
-            /*  icon: function(feature, latlng) {
-                // return L.marker(latlng, { icon: L.AwesomeMarkers.icon({ icon: 'spinner', prefix: 'fa', markerColor: 'red', spin: true }) });
-                return L.marker(latlng, {
-                    icon: myIcon
-                });
-*/
-            //console.log(getColor(feature.id));
-            /*   return new L.circleMarker(latlng, {
-                   radius: 8,
-                   fillColor: "#ff0000",
-                   color: "#ff0000",
-                   weight: 1,
-                   opacity: 1,
-                   fillOpacity: 0.8
-
-               });*/
-
-            //    },
-            /*   style: function(feature) {
-                  // console.log('feature', feature);
-                   return { color: '#00CC00' };
-                   //   return { color: feature.properties.color };
-
-               },*/
             pointToLayer: function(feature, latlng) {
+                try {
+                    var aggKey = (kmsconf && (kmsconf.legendAggregator || (kmsconf.map && kmsconf.map.legendAggregator))) || null;
+                    if (aggKey && companyColors && Object.keys(companyColors).length > 0) {
+                        var props = feature.properties || feature;
+                        var types = extractAggregatorValues(props, aggKey);
+                        var icon = createMultiTypeDivIcon(types);
+                        return L.marker(latlng, { icon: icon });
+                    }
+                } catch (e) {
+                    console.warn('pointToLayer legend icon error', e);
+                }
 
-                return L.marker(latlng, { icon: L.AwesomeMarkers.icon(settingMapIcon(feature)) });
-                //return L.marker(latlng, { icon: L.AwesomeMarkers.icon({ icon: 'fa-circle', prefix: 'fa', markerColor: 'red' }) });
-                /*  return L.marker(latlng, {
-                      icon: new L.Icon({
-                          iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-                          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-                          iconSize: [25, 41],
-                          iconAnchor: [12, 41],
-                          popupAnchor: [1, -34],
-                          shadowSize: [41, 41]
-                      })
-                  });*/
+                var am = settingMapIcon(feature);
+                // If no aggKey but companyColors exists (derived from kmsconf.map.markers), try to infer per-feature types
+                if (!aggKey && companyColors && Object.keys(companyColors).length > 0) {
+                    try {
+                        var props = feature.properties || feature;
+                        if (inferredLegendKey) {
+                            var types = extractAggregatorValues(props, inferredLegendKey);
+                            if (types && types.length > 1) {
+                                var icon = createMultiTypeDivIcon(types);
+                                return L.marker(latlng, { icon: icon });
+                            } else if (types && types.length === 1) {
+                                var t = types[0];
+                                var color = companyColors[t] || am.markerColor || am.color || am.iconColor || '#888888';
+                                var singleIcon = createSingleColorDivIcon(color);
+                                return L.marker(latlng, { icon: singleIcon });
+                            }
+                        }
+                        // fallback: use configured markerColor from settingMapIcon
+                        var colorFallback = am.markerColor || am.color || am.iconColor || '#888888';
+                        var singleIconFallback = createSingleColorDivIcon(colorFallback);
+                        return L.marker(latlng, { icon: singleIconFallback });
+                    } catch (e) { console.warn('singleColor icon error', e); }
+                }
 
-                //console.log(getColor(feature.id));
-                /*   return new L.circleMarker(latlng, {
-                       radius: 8,
-                       fillColor: "#ff0000",
-                       color: "#ff0000",
-                       weight: 1,
-                       opacity: 1,
-                       fillOpacity: 0.8
-
-                   });*/
-
+                return L.marker(latlng, { icon: L.AwesomeMarkers.icon(am) });
             },
             onEachFeature: function(feature, layer) {
                 //		 console.log('feature', feature);
@@ -682,8 +942,117 @@ function populateMap(arrdata) {
         }else{
             map.addLayer(geoJsonLayer);
         }
-      //  
-        // console.log("aggiunti")
+
+        /*MG - Implementazione legenda - Inizio*/
+        try {
+            var showLegend = (kmsconf && (kmsconf.showLegend === true || (kmsconf.map && kmsconf.map.showLegend === true)));
+            var aggregator = (kmsconf && (kmsconf.legendAggregator || (kmsconf.map && kmsconf.map.legendAggregator))) || null;
+            if (showLegend && aggregator) {
+                // features might be FeatureCollection or array
+                var featuresArr = [];
+                if (Array.isArray(arrdata)) {
+                    featuresArr = arrdata;
+                } else if (arrdata && Array.isArray(arrdata.features)) {
+                    featuresArr = arrdata.features;
+                }
+                buildCompanyColorsFromFeatures(featuresArr, aggregator);
+                // If aggregator-based extraction produced only the Default category
+                // (i.e. features do not contain the aggregator values), fall back
+                // to building the legend from configuration markers so the full
+                // legend is always visible.
+                var keysAfterAgg = Object.keys(companyColors || {});
+                if (keysAfterAgg.length <= 1 && keysAfterAgg.indexOf('Default') !== -1) {
+                    // build derived legend from kmsconf.map.markers (same logic as fallback)
+                    try {
+                        var derived = {};
+                        Object.keys(kmsconf.map.markers).forEach(function(idx) {
+                            var arrm = kmsconf.map.markers[idx] || [];
+                            arrm.forEach(function(entry) {
+                                var color = entry.markerColor || entry.color || entry.iconColor || null;
+                                if (entry.value) {
+                                    if (Array.isArray(entry.value)) {
+                                        entry.value.forEach(function(v) { if (v != null) derived[String(v)] = color || '#888'; });
+                                    } else {
+                                        derived[String(entry.value)] = color || '#888';
+                                    }
+                                } else if (entry.default) {
+                                    derived['Default'] = color || '#888';
+                                }
+                            });
+                        });
+                        if (Object.keys(derived).length > 0) {
+                            companyColors = derived;
+                        }
+                    } catch (e) { console.warn('Legend fallback after agg error', e); }
+                }
+                buildLegendControl();
+            } else {
+                // If not explicitly requested, try to build legend from kmsconf.map.markers as a fallback
+                var built = false;
+                try {
+                    // When showLegend is true but no aggregator is provided,
+                    // build the legend from kmsconf.map.markers as a fallback.
+                    if (showLegend && !aggregator && kmsconf && kmsconf.map && kmsconf.map.markers) {
+                        var derived = {};
+                        inferredLegendKey = null;
+                        var candidateKeys = {};
+                        Object.keys(kmsconf.map.markers).forEach(function(idx) {
+                            var arr = kmsconf.map.markers[idx] || [];
+                            arr.forEach(function(entry) {
+                                var color = entry.markerColor || entry.color || entry.iconColor || null;
+                                if (entry.key) candidateKeys[entry.key] = true;
+                                if (entry.value) {
+                                    if (Array.isArray(entry.value)) {
+                                        entry.value.forEach(function(v) { if (v != null) derived[String(v)] = color || '#888'; });
+                                    } else {
+                                        derived[String(entry.value)] = color || '#888';
+                                    }
+                                } else if (entry.default) {
+                                    derived['Default'] = color || '#888';
+                                }
+                            });
+                        });
+
+                        // If multiple candidate keys exist, pick the one that best matches actual feature properties
+                        try {
+                            var featureArrForInfer = [];
+                            if (Array.isArray(arrdata)) featureArrForInfer = arrdata;
+                            else if (arrdata && Array.isArray(arrdata.features)) featureArrForInfer = arrdata.features;
+                            var bestKey = null;
+                            var bestCount = -1;
+                            Object.keys(candidateKeys).forEach(function(k) {
+                                var count = 0;
+                                featureArrForInfer.forEach(function(f) {
+                                    var p = f.properties || f;
+                                    var vals = extractAggregatorValues(p, k);
+                                    // count as match if extractor returns values other than the Default placeholder
+                                    if (vals && vals.length > 0 && !(vals.length === 1 && vals[0] === 'Default')) count++;
+                                });
+                                if (count > bestCount) { bestCount = count; bestKey = k; }
+                            });
+                            if (bestKey && bestCount > 0) {
+                                inferredLegendKey = bestKey;
+                            } else {
+                                inferredLegendKey = null;
+                            }
+                        } catch (e) { console.warn('inferredLegendKey selection error', e); }
+                        if (Object.keys(derived).length > 0) {
+                            companyColors = derived;
+                            buildLegendControl();
+                            built = true;
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Legend fallback build error', e);
+                }
+
+                if (!built) {
+                    // ensure legend removed when not requested and no fallback available
+                    if (legendControl) { try { map.removeControl(legendControl); } catch (e) {} legendControl = null; }
+                }
+            }
+        } catch (e) { console.error('Legend build error', e); }
+        /*MG - Implementazione legenda - Fine*/
         resolve('fatto');
     });
 }

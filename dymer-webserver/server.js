@@ -237,10 +237,13 @@ app.get('/checkservice', [loadUserInfo, util.checkIsPortalUser], (req, res) => {
   // Redact sensitive info
   infomserv.adminPass = "*****";
   infomserv.adminUser = "*****";
+  var uptime = process.uptime();
+
   ret.setData({
     info: { size: infosize },
     error: { size: errorsize },
     infomicroservice: infomserv,
+    uptime: util.format(uptime)
   });
   ret.setMessages("Service is up");
   ret.setSuccess(true);
@@ -402,9 +405,9 @@ function loadUserInfo(req, res, next) {
         if (util.isCrypted(dymtoken)) {
             let dymtokenDecryptedLfr = util.decryptLfr(dymtoken);
             // let dymtokenDecryptedLfr = util.decryptLfr(process.env.ENCRYPTION_SECRET_KEY, dymtoken);
-            console.log(nameFile + ' | loadUserInfo | decrypted: ', dymtokenDecryptedLfr);
+            logger.info(nameFile + ' | loadUserInfo | decrypted: ', dymtokenDecryptedLfr);
             dymtoken = new Buffer(dymtokenDecryptedLfr).toString("base64");
-            console.log(nameFile + ' | loadUserInfo | coded in base64: ', dymtoken);
+            logger.info(nameFile + ' | loadUserInfo | coded in base64: ', dymtoken);
         }
     }
 
