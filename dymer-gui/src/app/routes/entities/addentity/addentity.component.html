@@ -1,3 +1,5 @@
+ 
+
 <div class="grid grid-cols-1 md:grid-cols-12 gap-6 p-6 min-h-screen dark:bg-black text-zinc-900 dark:text-zinc-100">
   
   <aside class="md:col-span-4 flex flex-col gap-4">
@@ -30,7 +32,7 @@
           <div *ngFor="let el of (filteredModels$ | async); let i = index" 
                (click)="loadHtmlForm(el, i)"
                class="flex items-center justify-between p-3 rounded-md cursor-pointer transition-all border border-transparent"
-               [ngClass]="i === selectedIndex 
+               [ngClass]="selectedModel && selectedModel._id === el._id 
                           ? 'bg-zinc-100 dark:bg-zinc-800 text-black dark:text-white border-zinc-200 dark:border-zinc-700' 
                           : 'hover:bg-zinc-50 dark:hover:bg-zinc-900 text-zinc-600 dark:text-zinc-400'">
             <span class="text-sm font-medium">{{ el.title }}</span>
@@ -58,7 +60,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="mb-4 opacity-50">
               <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
             </svg>
-            <p class="text-sm font-medium">Nessun form selezionato</p>
+            <p class="text-sm font-medium"> {{ 'menu.entities.add.noModelSelected' | translate }}</p>
           </div>
 
           <ng-template #formContainer>
@@ -68,11 +70,19 @@
         </div>
       </div>
 
-      <footer class="px-6 py-3 bg-zinc-50/50 dark:bg-zinc-900/50 border-t border-zinc-100 dark:border-zinc-800">
-        <div class="flex justify-end gap-3 text-xs text-zinc-400 uppercase tracking-tighter">
-          <span>{{ 'KMS System' }}</span>
-        </div>
-      </footer>
+      <div *ngIf="selectedModel" class="modal-footer px-6 py-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-3">
+        <button
+          type="button"
+          class="px-4 py-2 bg-zinc-900 text-white rounded-md text-sm hover:bg-zinc-800 onputform"
+          [disabled]="!formHtml"
+          (click)="submitAddEntityForm()"
+        >
+          {{ 'menu.actions.add' | translate }}
+        </button>
+        <button type="button" class="px-4 py-2 border border-zinc-300 rounded-md text-sm hover:bg-zinc-50 closeform" (click)="closeDymerModal('addentity', true)">
+          {{ 'menu.entities.listentities.actions.closeDetails' | translate }}
+        </button>
+      </div>
     </div>
   </main>
 

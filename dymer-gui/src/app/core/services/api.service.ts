@@ -43,13 +43,13 @@ export class ApiService {
       entitiesSearch: `${this._baseUrl}/api/entities/api/v1/entity/_search`,
     },
     wizard: {
-      getModelHtml:`${this._baseUrl}/public/assets/wsbuilder/libs/builder/dymer-basetemplate-form.html`,
+      getModelHtml:`${this._baseUrl}/assets/default_pages/dymer-basetemplate-form.html`,
       createModel:`${this._baseUrl}/api/forms/api/v1/form/`,
       updateModelStructure:`${this._baseUrl}/api/forms/api/v1/form/updatestructure`,
       updateModelAsset:`${this._baseUrl}/api/forms/api/v1/form/updateAsset`,
       getModelDetail:`${this._baseUrl}/api/forms/api/v1/form/modeldetail`,
       createTemplate:`${this._baseUrl}/api/templates/api/v1/template/`,
-      getTemplateHtml:`${this._baseUrl}/public/assets/wsbuilder/libs/builder/dymer-basetemplate-template`,
+      getTemplateHtml:`${this._baseUrl}/assets/default_pages/dymer-basetemplate-template-teaserlist.html`,
       getVocabularies:`${this._baseUrl}/api/dservice/api/v1/taxonomy`,
       getRelations:`${this._baseUrl}/api/forms/api/v1/form/`
     },
@@ -119,6 +119,12 @@ export class ApiService {
       deleteStatById: (id: string) => `${this._baseUrl}/api/dservice/api/v1/stats/deletestats/${id}`,
       deleteAllStats: `${this._baseUrl}/api/dservice/api/v1/stats/deletestats/all`
     },
+    payments: {
+      getPayments: `${this._baseUrl}/api/dservice/api/v1/payments/getpayments`,
+      createPayment: `${this._baseUrl}/api/dservice/api/v1/payments/setpayments`,
+      updatePayment: (id: string) => `${this._baseUrl}/api/dservice/api/v1/payments/${id}`,
+      deletePayment: (id: string) => `${this._baseUrl}/api/dservice/api/v1/payments/${id}`,
+    },
     logs: {
       logTypes: `${this._baseUrl}/api/system/logtypes`,
       checkGeneralService: `${this._baseUrl}/checkservice`,
@@ -136,6 +142,7 @@ export class ApiService {
       setLogConfig: `${this._baseUrl}/api/system/setlogConfig`,
       multitenancyState: `${this._baseUrl}/api/entities/api/v1/entity/multitenancy`,
       webservertailogs: (type: string) => `${this._baseUrl}/tailLog/${type}`,
+      entitiestailogs: (type: string) => `${this._baseUrl}/api/entities/tailLog/${type}`,
       dservicetailogs: `${this._baseUrl}/tailLog/dservice`,
       formstailogs: `${this._baseUrl}/tailLog/forms`,
       templatetailogs: `${this._baseUrl}/api/tailLog/templates`

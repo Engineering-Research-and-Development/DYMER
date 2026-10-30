@@ -5,6 +5,8 @@ import { AiConfigComponent } from './aiconfig/ai-config.component';
 import { LibrariesComponent } from './libraries/libraries.component';
 import { SocialStatisticsComponent } from './socialStatistics/socialStatistics.component';
 import { ImportCronComponent } from './importcron/importcron.component';
+import { PaymentConfigComponent } from './payments/paymentConfig.component';
+//import { WebhooksComponent } from './webhooks/webhooks.component';
 import { ngxPermissionsGuard } from 'ngx-permissions';
 
 export const routes: Routes = [
@@ -62,6 +64,28 @@ export const routes: Routes = [
             redirectTo: '/dashboard',
           }
         }
+    },
+    {
+        path: "payment-config",
+        component: PaymentConfigComponent,
+        canActivate: [ngxPermissionsGuard],
+        data: {
+          permissions: {
+            only: "ADMIN",
+            redirectTo: '/dashboard',
+          }
+        }
     }
+    // {
+    //     path: "webhooks",
+    //     component: WebhooksComponent,
+    //     canActivate: [ngxPermissionsGuard],
+    //     data: {
+    //       permissions: {
+    //         only: "ADMIN",
+    //         redirectTo: '/dashboard',
+    //       }
+    //     }
+    // }
 ];
 

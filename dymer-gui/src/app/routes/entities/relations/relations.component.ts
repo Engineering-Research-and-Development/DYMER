@@ -1,13 +1,14 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { ToastrService } from 'ngx-toastr';
 import { RelationsService, RawEsEntity } from './relations.service';
 import { tap, switchMap, map, catchError, of, Observable } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatCardModule } from '@angular/material/card';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -26,9 +27,9 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     MatIconModule,
     MatButtonModule,
     MatTableModule,
+    MatSortModule,
     MatSelectModule,
     MatCardModule,
-    MatSnackBarModule,
     MatPaginatorModule,
     MatProgressBarModule,
     MatInputModule,
@@ -38,7 +39,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 })
 export class RelationsComponent implements OnInit, AfterViewInit {
   private relationsService = inject(RelationsService);
-  private snackBar = inject(MatSnackBar);
+  private toastr = inject(ToastrService);
   private fb = inject(FormBuilder);
   private translate = inject(TranslateService);
 
@@ -54,23 +55,36 @@ export class RelationsComponent implements OnInit, AfterViewInit {
   private allEntities: RawEsEntity[] = [];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('relationFormCardContent') relationFormCardContent?: ElementRef;
 
   ngOnInit(): void {
     this.initForm();
+    // Configurazione dell'ordinamento per le colonne personalizzate
+    this.dataSource.sortingDataAccessor = (item, property) => {
+      let value: any;
+      switch (property) {
+        case 'title1': value = item.title1; break;
+        case 'title2': value = item.title2; break;
+        default: value = item[property];
+      }
+      // Ordinamento case-insensitive per le stringhe
+      return typeof value === 'string' ? value.toLowerCase() : value;
+    };
     this.loadData();
   }
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   private initForm(): void {
     this.manageRelForm = this.fb.group({
       _id: [null],
-      _id1: ['', [Validators.required]],
+      id1: ['', [Validators.required]],
       index1: [''],
-      _id2: ['', [Validators.required]],
+      id2: ['', [Validators.required]],
       index2: [''],
       type: [''],
       directed: [false],
@@ -109,7 +123,7 @@ export class RelationsComponent implements OnInit, AfterViewInit {
       }),
       catchError(error => {
         console.error('Errore durante il caricamento dei dati delle relazioni', error);
-        this.snackBar.open(this.translate.instant('menu.entities.relations.loadError'), this.translate.instant('close'), { duration: 5000, panelClass: ['bg-red-500', 'text-white'] });
+        this.toastr.error(this.translate.instant('menu.entities.relations.loadError'), 'Error');
         this.isLoading = false;
         return of([]); // Ritorna un array vuoto per non interrompere lo stream
       })
@@ -163,22 +177,14 @@ export class RelationsComponent implements OnInit, AfterViewInit {
         next: response => {
           if (response && response.success) {
             this.dataSource.data = this.dataSource.data.filter(r => r._id !== relation._id);
-            this.snackBar.open(response.message || this.translate.instant('menu.entities.relations.deleteSuccess'), this.translate.instant('close'), {
-              duration: 3000,
-            });
+            this.toastr.success(response.message || this.translate.instant('menu.entities.relations.deleteSuccess'), 'Success');
           } else {
-            this.snackBar.open(response.message || this.translate.instant('menu.entities.relations.deleteError'), this.translate.instant('close'), {
-              duration: 5000,
-              panelClass: ['bg-red-500', 'text-white'],
-            });
+            this.toastr.error(response.message || this.translate.instant('menu.entities.relations.deleteError'), 'Error');
           }
         },
         error: err => {
           console.error('Error in relation delete !', err);
-          this.snackBar.open(this.translate.instant('menu.entities.relations.deleteError'), this.translate.instant('close'), {
-            duration: 5000,
-            panelClass: ['bg-red-500', 'text-white'],
-          });
+          this.toastr.error(this.translate.instant('menu.entities.relations.deleteError'), 'Error');
         },
       });
     }
@@ -195,9 +201,9 @@ export class RelationsComponent implements OnInit, AfterViewInit {
     this.selectedRelationForUpdate = { ...relation };
     this.manageRelForm.patchValue({
       _id: relation._id,
-      _id1: relation._source?._id1,
+      id1: relation._source?._id1,
       index1: relation._source?._index1,
-      _id2: relation._source?._id2,
+      id2: relation._source?._id2,
       index2: relation._source?._index2,
       type: relation._source?.type,
       directed: relation._source?.directed,
@@ -225,28 +231,33 @@ export class RelationsComponent implements OnInit, AfterViewInit {
    * @param selector Identificatore del selettore che ha scatenato l'evento ('sel1' o 'sel2').
    */
   onEntitySelectionChange(selector: string): void {
-    const { _id1, _id2 } = this.manageRelForm.value;
+    const { id1, id2 } = this.manageRelForm.value;
 
-    if (selector === 'sel1' && _id1) {
-      const entity1 = this.allEntities.find(e => e._id === _id1);
+    if (selector === 'sel1' && id1) {
+      const entity1 = this.allEntities.find(e => e._id === id1);
       this.manageRelForm.patchValue({ index1: entity1?._index });
     }
-    if (selector === 'sel2' && _id2) {
-      const entity2 = this.allEntities.find(e => e._id === _id2);
+    if (selector === 'sel2' && id2) {
+      const entity2 = this.allEntities.find(e => e._id === id2);
       this.manageRelForm.patchValue({ index2: entity2?._index });
     }
 
-    if (_id1 && _id1 === _id2) {
-      this.snackBar.open(this.translate.instant('menu.entities.relations.sameEntityError'), this.translate.instant('close'), {
-        duration: 3000,
-        panelClass: ['bg-orange-500', 'text-white'],
-      });
+    if (id1 && id1 === id2) {
+      this.toastr.warning(this.translate.instant('menu.entities.relations.sameEntityError'), 'Warning');
       // Resetta il campo che è stato appena modificato per forzare una nuova selezione.
-      const controlToReset = selector === 'sel1' ? '_id1' : '_id2';
+      const controlToReset = selector === 'sel1' ? 'id1' : 'id2';
       const indexControlToReset = selector === 'sel1' ? 'index1' : 'index2';
       this.manageRelForm.get(controlToReset)?.reset();
       this.manageRelForm.get(indexControlToReset)?.reset();
     }
+  }
+
+  /**
+   * Restituisce le entità appartenenti all'indice selezionato.
+   * @param indexName Nome dell'indice.
+   */
+  getFilteredEntities(indexName: string): RawEsEntity[] {
+    return this.groupedEntities.find(g => g.groupName === indexName)?.entities || [];
   }
 
   private relationExists(formValue: any, relationIdToExclude?: string): boolean {
@@ -256,14 +267,14 @@ export class RelationsComponent implements OnInit, AfterViewInit {
         return false;
       }
       const isSameDirection =
-        r._source?._id1 === formValue._id1 &&
-        r._source?._id2 === formValue._id2 &&
+        r._source?._id1 === formValue.id1 &&
+        r._source?._id2 === formValue.id2 &&
         r._source?._index1 === formValue.index1 &&
         r._source?._index2 === formValue.index2;
 
       const isOppositeDirection =
-        r._source?._id1 === formValue._id2 &&
-        r._source?._id2 === formValue._id1 &&
+        r._source?._id1 === formValue.id2 &&
+        r._source?._id2 === formValue.id1 &&
         r._source?._index1 === formValue.index2 &&
         r._source?._index2 === formValue.index1;
 
@@ -274,9 +285,7 @@ export class RelationsComponent implements OnInit, AfterViewInit {
   saveManageRel(): void {
     if (this.manageRelForm.invalid) {
       this.manageRelForm.markAllAsTouched();
-      this.snackBar.open(this.translate.instant('menu.entities.relations.fillRequiredFields'), this.translate.instant('close'), {
-        duration: 3000,
-      });
+      this.toastr.warning(this.translate.instant('menu.entities.relations.fillRequiredFields'), 'Warning');
       return;
     }
 
@@ -285,19 +294,16 @@ export class RelationsComponent implements OnInit, AfterViewInit {
 
     if (this.isUpdating && formValue._id) {
       if (this.relationExists(formValue, formValue._id)) {
-        this.snackBar.open(this.translate.instant('menu.entities.relations.alreadyExists'), this.translate.instant('close'), {
-          duration: 3000,
-          panelClass: ['bg-orange-500', 'text-white'],
-        });
+        this.toastr.warning(this.translate.instant('menu.entities.relations.alreadyExists'), 'Warning');
         this.isLoading = false;
         return;
       }
 
       const relationId = formValue._id;
       const relationData = {
-        id1: formValue._id1,
+        id1: formValue.id1,
         index1: formValue.index1,
-        id2: formValue._id2,
+        id2: formValue.id2,
         index2: formValue.index2,
         type: formValue.type,
         directed: formValue.directed,
@@ -306,36 +312,28 @@ export class RelationsComponent implements OnInit, AfterViewInit {
 
       this.relationsService.updateSingleRelation(relationId, relationData).subscribe({
         next: () => {
-          this.snackBar.open(this.translate.instant('menu.entities.relations.updateSuccess'), this.translate.instant('close'), {
-            duration: 3000,
-          });
+          this.toastr.success(this.translate.instant('menu.entities.relations.updateSuccess'), 'Success');
           this.isLoading = false;
           this.cancelUpdate();
           this.loadData();
         },
         error: err => {
           console.error("Errore durante l'aggiornamento della relazione", err);
-          this.snackBar.open(this.translate.instant('menu.entities.relations.updateError'), this.translate.instant('close'), {
-            duration: 5000,
-            panelClass: ['bg-red-500', 'text-white'],
-          });
+          this.toastr.error(this.translate.instant('menu.entities.relations.updateError'), 'Error');
           this.isLoading = false;
         },
       });
     } else {
       if (this.relationExists(formValue)) {
-        this.snackBar.open(this.translate.instant('menu.entities.relations.alreadyExists'), this.translate.instant('close'), {
-          duration: 3000,
-          panelClass: ['bg-orange-500', 'text-white'],
-        });
+        this.toastr.warning(this.translate.instant('menu.entities.relations.alreadyExists'), 'Warning');
         this.isLoading = false;
         return;
       }
 
       const relationData = {
-        id1: formValue._id1,
+        id1: formValue.id1,
         index1: formValue.index1,
-        id2: formValue._id2,
+        id2: formValue.id2,
         index2: formValue.index2,
         type: formValue.type,
         directed: formValue.directed,
@@ -345,29 +343,17 @@ export class RelationsComponent implements OnInit, AfterViewInit {
       this.relationsService.createSingleRelation(relationData).subscribe({
         next: response => {
           if (response && response.success) {
-            this.snackBar.open(response.message || this.translate.instant('menu.entities.relations.createSuccess'), this.translate.instant('close'), {
-              duration: 3000,
-            });
+            this.toastr.success(response.message || this.translate.instant('menu.entities.relations.createSuccess'), 'Success');
             this.cancelUpdate();
             this.loadData();
           } else {
-            this.snackBar.open(
-              response.message || this.translate.instant('menu.entities.relations.createError'),
-              this.translate.instant('close'),
-              {
-                duration: 5000,
-                panelClass: ['bg-red-500', 'text-white'],
-              }
-            );
+            this.toastr.error(response.message || this.translate.instant('menu.entities.relations.createError'), 'Error');
           }
           this.isLoading = false;
         },
         error: err => {
           console.error('Errore durante la creazione della relazione', err);
-          this.snackBar.open(this.translate.instant('menu.entities.relations.createError'), this.translate.instant('close'), {
-            duration: 5000,
-            panelClass: ['bg-red-500', 'text-white'],
-          });
+          this.toastr.error(this.translate.instant('menu.entities.relations.createError'), 'Error');
           this.isLoading = false;
         },
       });

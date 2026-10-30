@@ -53,6 +53,7 @@ export class ImportExportService {
 
   importFromCsv(data: any): Observable<any> {
     const url = this.apiService.endpoints.importExport.importFromCsv;
+    console.log('Importing from CSV with data:', data);
     return this.client.post(url, data, {
       withCredentials: true,
     });

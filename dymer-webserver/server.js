@@ -33,6 +33,7 @@ const dserviceRoutes = require('./routes/dservice.js');
 const templateRoutes = require('./routes/template.js');
 const formRoutes = require('./routes/form.js');
 const entityRoutes = require('./routes/entity.js');
+const federationRoutes = require('./routes/federation.js');
 const system = require('./routes/routes-v1.js');
 const publicRoutes = require('./routes/publicfiles.js');
 const appRoutes = require('./routes/appRoutes.js');
@@ -303,6 +304,7 @@ app.use("/demodownload/", publicdemoDonwlonad);
 app.use('/api/templates/', loadUserInfo, templateRoutes);
 app.use("/api/forms/", loadUserInfo, formRoutes);
 app.use("/api/entities/", loadUserInfo, entityRoutes);
+app.use("/api/v1/federation/", federationRoutes);
 app.use("/api/dservice/", loadUserInfo, dserviceRoutes);
 app.use("/api/system/", loadUserInfo, system);
 

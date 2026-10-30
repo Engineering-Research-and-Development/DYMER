@@ -80,12 +80,14 @@ export class ImportExportComponent implements OnInit {
   currentStep: number = 1;
   customSeparator: boolean = false;
 
+  csvLoaded: boolean = false;
+
   // Dati del wizard
   infoDetails: InfoDetails = {
     index: '',
     separator: '',
     fields: [],
-    relationsList: [{ enabled: false, relationTo: '', searchingField: '' }]
+    relationsList: [{ enabled: false, relationTo: '', searchingField: '', relationData: [] }] // Aggiunto relationData
   };
 
   setActiveTab(tab: string) {
@@ -217,6 +219,14 @@ export class ImportExportComponent implements OnInit {
           isSelected: false,
           isArrayField: false,
         }));
+      /**/
+            this.infoDetails.relationsList = this.infoDetails.relationsList.map(relation => ({
+        ...relation,
+        relationData: relation.relationData || []
+      }));
+
+      this.cdr.markForCheck();
+      /**/
       },
       error: (e: any) => {
         console.error('Unable to retrieve index fields due to: ', e)
@@ -271,10 +281,18 @@ export class ImportExportComponent implements OnInit {
     }
   }
 
+  // handleFile(file: File): void {
+  //   this.selectedFile = file;
+  //   this.selectedFileName = this.selectedFile.name;
+  //   this.cdr.markForCheck();
+  // }
+
   handleFile(file: File): void {
     this.selectedFile = file;
-    this.selectedFileName = this.selectedFile.name;
-    this.cdr.markForCheck();
+    this.selectedFileName = file.name;
+    this.csvLoaded = false;
+
+    this.getFieldByCSV();
   }
 
   getFileSize(bytes: number): string {
@@ -305,11 +323,16 @@ export class ImportExportComponent implements OnInit {
 
         this.CSVFields = result.meta.fields ?? [];
         this.CSVData = result.data;
+        // this.errors = result.errors;
+
+        // this.cdr.markForCheck();
         this.errors = result.errors;
+        this.csvLoaded = true;
 
         this.cdr.markForCheck();
       },
       error: (error: any) => {
+        this.csvLoaded = false;
         console.error('Error parsing CSV:', error);
         this.toast.error('Error parsing CSV')
       }
@@ -334,7 +357,8 @@ export class ImportExportComponent implements OnInit {
     this.infoDetails.relationsList.push({
       enabled: false,
       relationTo: '',
-      searchingField: ''
+      searchingField: '',
+      relationData: []
     });
   }
 
@@ -366,6 +390,17 @@ export class ImportExportComponent implements OnInit {
 
     const enabledRelations = this.infoDetails.relationsList.filter(r => r.enabled);
 
+    /**/
+      this.infoDetails.relationsList.forEach(relation => {
+    if (relation.enabled && relation.searchingField) {
+      // Estrai i valori dalla colonna CSV selezionata
+      relation.relationData = this.CSVData.map(row => row[relation.searchingField!]);
+      
+      console.log(`Relazione ${relation.relationTo}: relationData =`, relation.relationData);
+    }
+  });
+    /**/
+
     this.nextStep();
   }
 
@@ -382,7 +417,7 @@ export class ImportExportComponent implements OnInit {
           enabled: false,
           searchingField: null,
           relationTo: null,
-          relationData: new Array(133).fill(null),
+          relationData: [] //new Array(133).fill(null),
         },
       ];
     }

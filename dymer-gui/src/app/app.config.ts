@@ -70,7 +70,12 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled' }),
       withComponentInputBinding()
     ),
-    provideToastr(),
+    provideToastr({
+      timeOut: 3000,
+      positionClass: 'toast-bottom-right',
+      preventDuplicates: true,
+      toastClass: 'ngx-toastr openclaw-toast',
+    }),
     provideTranslateService({
       loader: {
         provide: TranslateLoader,

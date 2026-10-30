@@ -148,6 +148,7 @@ export class ListEntitiesComponent implements OnInit, OnDestroy, AfterViewInit {
   pagedEntities: RawEsEntity[] = [];
   loadedTemplates: ProcessedTemplate[] = [];
   String = String;
+  Math = Math;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   //@ViewChild('drawer') drawer!: MatDrawer;
   private subscriptions: Subscription = new Subscription();
@@ -168,6 +169,8 @@ export class ListEntitiesComponent implements OnInit, OnDestroy, AfterViewInit {
   relationOptionsCache: Map<string, RawEsEntity[]> = new Map();
   private currentDetailRenderType = 'fullcontent';
   private injectedFormCssLinks: HTMLLinkElement[] = [];
+  private injectedTemplateCssLinks: HTMLLinkElement[] = [];
+  private isOpeningEditModal = false;
   constructor(
     private fb: FormBuilder,
     private listEntitiesService: ListEntitiesService,
@@ -234,6 +237,7 @@ export class ListEntitiesComponent implements OnInit, OnDestroy, AfterViewInit {
           // Se l'entità eliminata era quella visualizzata nei dettagli, pulisci i dettagli
           if (this.selectedEntityDetail && this.selectedEntityDetail._id === entityId) {
             this.clearEntityDetails();
+            this.closeDrawer();
           }
         },
         error: (err) => {
@@ -294,6 +298,7 @@ export class ListEntitiesComponent implements OnInit, OnDestroy, AfterViewInit {
   
   public showEntityDetails(entity?: RawEsEntity): void {
     if (!entity) return;
+    this.clearInjectedTemplateStyles();
     this.selectedEntityDetail = entity;
     this.isDrawerOpen.set(true);
     if (!entity || !entity._id) {
@@ -362,7 +367,7 @@ export class ListEntitiesComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
     public clearEntityDetails(): void {
-    
+    this.clearInjectedTemplateStyles();
     this.loadedTemplates = [];
     this.showFullJsonView = false;
     this.fullEntityJsonToShow = null;
@@ -381,6 +386,10 @@ export class ListEntitiesComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     const templateToUse = this.loadedTemplates[0];
+
+    // Iniettiamo i CSS associati al template prima del rendering
+    this.injectTemplateStyles(templateToUse);
+
     if (!templateToUse || !templateToUse.viewtype || !templateToUse.viewtype[this.currentDetailRenderType]) {
       this.renderedDetailHtml = null;
       return;
@@ -421,10 +430,12 @@ export class ListEntitiesComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       });
     }
+    const listEntitiesServiceInstance = this.listEntitiesService; // Cattura l'istanza del servizio
     if (!Handlebars.helpers.loadfile) {
       Handlebars.registerHelper('loadfile', function(this: any, fileId: string, index: string) {
         if (!fileId || !index) return '';
-        return `/api/forms/${index}/file/${fileId}`;
+        return 
+        return listEntitiesServiceInstance.getEntityContentFileUrl(this._id, fileId);
       });
     }
     if (!Handlebars.helpers.EntityView) {
@@ -440,33 +451,47 @@ export class ListEntitiesComponent implements OnInit, OnDestroy, AfterViewInit {
     const compiled = Handlebars.compile(myTemplate);
     let html = compiled(entityData);
 
-    // Approccio "Global Override": Iniettiamo un blocco di stile CSS dedicato che forza 
-    // la visibilità di tutti i testi all'interno dell'anteprima.
-    // Questo metodo sovrascrive sia le classi CSS dei template che gli stili inline.
-    const visibilityOverrideStyle = `
-      <style>
-        .dymer-preview-wrapper { color: #212529 !important; background-color: transparent !important; }
-        .dymer-preview-wrapper p, 
-        .dymer-preview-wrapper span, 
-        .dymer-preview-wrapper div:not(.ignore-color), 
-        .dymer-preview-wrapper label, 
-        .dymer-preview-wrapper b, 
-        .dymer-preview-wrapper i,
-        .dymer-preview-wrapper h1, .dymer-preview-wrapper h2, .dymer-preview-wrapper h3, .dymer-preview-wrapper h4 { 
-          color: #212529 !important; 
-        }
-        .dymer-preview-wrapper .kms-label { color: #555 !important; font-weight: 600 !important; }
-        .dymer-preview-wrapper .kms-value { color: #000 !important; }
-        .dymer-preview-wrapper .text-white { color: #212529 !important; }
-        .dymer-preview-wrapper .lightTitle { color: #000 !important; }
-      </style>
-    `;
-
-    // Avvolgiamo il contenuto nel wrapper e aggiungiamo lo stile di override
-    html = visibilityOverrideStyle + '<div class="dymer-preview-wrapper">' + html + '</div>';
+    // Avvolgiamo il contenuto in un wrapper neutro
+    html = '<div class="dymer-preview-wrapper">' + html + '</div>';
 
     console.log('Rendered HTML for entity:', entityData._id, 'HTML length:', html.length);
     this.renderedDetailHtml = this.domSanitizer.bypassSecurityTrustHtml(html);
+  }
+
+  private injectTemplateStyles(template: ProcessedTemplate): void {
+    this.clearInjectedTemplateStyles();
+    const files = template.files[this.currentDetailRenderType] || [];
+    files.forEach(file => {
+      const isCss = file.filename.endsWith('.css') || file.domtype === 'link';
+      const isJs = file.filename.endsWith('.js') || file.domtype === 'script' || file.domtype === 'javascript';
+
+      if (isCss) {
+        const linkEl = document.createElement('link');
+        linkEl.rel = 'stylesheet';
+        linkEl.type = 'text/css';
+        linkEl.href = file.filename;
+        linkEl.setAttribute('data-dynamic-template-style', 'true');
+        document.head.appendChild(linkEl);
+        this.injectedTemplateCssLinks.push(linkEl);
+      }
+      
+      if (isJs) {
+        const scriptEl = document.createElement('script');
+        scriptEl.src = file.filename;
+        scriptEl.type = 'text/javascript';
+        scriptEl.setAttribute('data-dynamic-template-script', 'true');
+        document.head.appendChild(scriptEl);
+        // Riutilizziamo l'array per la pulizia (trattandolo come HTMLElement generico)
+        this.injectedTemplateCssLinks.push(scriptEl as any);
+      }
+    });
+  }
+
+  private clearInjectedTemplateStyles(): void {
+    this.injectedTemplateCssLinks.forEach(link => {
+      if (link.parentNode) link.parentNode.removeChild(link);
+    });
+    this.injectedTemplateCssLinks = [];
   }
 
   public toggleFullJsonView(): void {
@@ -633,6 +658,7 @@ export class ListEntitiesComponent implements OnInit, OnDestroy, AfterViewInit {
       if ((window as any).removeRepeatable) {
         delete (window as any).removeRepeatable;
       }
+      this.clearInjectedTemplateStyles();
       // Assicura la rimozione dei CSS dinamici se il componente viene distrutto con la modale aperta
       this.injectedFormCssLinks.forEach(link => {
         if (link.parentNode) {
@@ -642,6 +668,12 @@ export class ListEntitiesComponent implements OnInit, OnDestroy, AfterViewInit {
       this.injectedFormCssLinks = [];
   }
   async openEditModal(entity?: RawEsEntity): Promise<void> {
+    if (this.isOpeningEditModal) {
+      return;
+    }
+    this.isOpeningEditModal = true;
+
+    try {
     let entityToEdit = entity || this.selectedEntityDetail;
 
     // Chiudi il drawer se aperto senza crash se undefined
@@ -653,6 +685,7 @@ export class ListEntitiesComponent implements OnInit, OnDestroy, AfterViewInit {
     //   }
     // }
     this.isDrawerOpen.set(false);
+    this.clearInjectedTemplateStyles();
     const target = entity ?? this.selectedEntityDetail;
     
     console.log('Apertura modale di edit per entità:', target);
@@ -687,14 +720,12 @@ export class ListEntitiesComponent implements OnInit, OnDestroy, AfterViewInit {
       let finalHtmlString: string | null = null;
       const parser = new DOMParser();
       const allPotentialRelationTypes = new Set<string>();
+      let response: any = null;
 
       try {
-        const response = await lastValueFrom(this.listEntitiesService.getFormConfig(entityIndex));
+        response = await lastValueFrom(this.listEntitiesService.getFormConfig(entityIndex));
         if (response && response.success && response.data && response.data.length > 0) {
           const formConfig = response.data[0];
-          this.indexes.forEach((index: string) => {
-            allPotentialRelationTypes.add(index);
-          });
           const relationTypesFromStructure = new Set<string>();
           const findRelationTypesInStructure = (structure: any) => {
             if (!structure) return;
@@ -724,6 +755,9 @@ export class ListEntitiesComponent implements OnInit, OnDestroy, AfterViewInit {
             }
           };
           findRelationTypesInStructure(formConfig.structure);
+
+          // Evita il prefetch massivo di tutti gli indici: carica solo i tipi di relazione usati dal form
+          // e quelli gia presenti nell'entita per ridurre richieste concorrenti e abort lato server.
           if (entityToEdit?.relations) {
             entityToEdit.relations.forEach(rel => {
               if (rel._index) {
@@ -763,6 +797,21 @@ export class ListEntitiesComponent implements OnInit, OnDestroy, AfterViewInit {
               document.head.appendChild(linkEl);
               this.injectedFormCssLinks.push(linkEl);
             });
+
+            // Iniezione JS per il Form nella Modale
+            const jsFiles = (formConfig.files as any[]).filter(
+              (file: any) => (file.contentType === 'text/javascript' || file.contentType === 'application/javascript') && file._id
+            );
+            jsFiles.forEach((file: any) => {
+              const jsFileUrl = this.listEntitiesService.getFormContentFileUrl(file._id, entityIndex);
+              const scriptEl = document.createElement('script');
+              scriptEl.src = jsFileUrl;
+              scriptEl.type = 'text/javascript';
+              scriptEl.setAttribute('data-dynamic-form-script', 'true');
+              document.head.appendChild(scriptEl);
+              // Lo aggiungiamo agli stili per pulirlo alla chiusura
+              this.injectedFormCssLinks.push(scriptEl as any);
+            });
           }
 
           if (formConfig.files && Array.isArray(formConfig.files)) {
@@ -771,16 +820,11 @@ export class ListEntitiesComponent implements OnInit, OnDestroy, AfterViewInit {
             );
             if (htmlFile) {
               const doc = parser.parseFromString(htmlFile.data, 'text/html');
-              finalHtmlString = doc.body.innerHTML; // Prende l'HTML iniziale
             } else {
               this.toastr.warning(this.translate.instant('menu.entities.listentities.editModal.noHtmlFormContentInFormConfig'));
             }
           } else {
             this.toastr.warning(this.translate.instant('menu.entities.listentities.editModal.noFilesArrayInFormConfig'));
-          }
-
-          if (finalHtmlString) {
-            this.entitySpecificFormHtml = this.domSanitizer.bypassSecurityTrustHtml(finalHtmlString);
           }
 
         } else {
@@ -793,299 +837,309 @@ export class ListEntitiesComponent implements OnInit, OnDestroy, AfterViewInit {
         this.isLoadingDetails = false;
         // isEditModalOpen is already true from the beginning
         this.cdr.detectChanges();
-
-        const modalElement = document.getElementById('entityEdit');
-        if (modalElement) {
-            // Rimuove eventuali listener precedenti per sicurezza
+        
+        // Utilizziamo setTimeout per garantire che Angular abbia renderizzato l'elemento nel DOM
+        // e che la modale sia visibile prima di manipolare il suo contenuto.
+        setTimeout(() => {
+          const modalElement = document.getElementById('entityEdit');
+          if (modalElement) {
+            // Rimuove e aggiunge listener (Nota: bind(this) crea una nuova ref, 
+            // andrebbe usato un riferimento stabile per una rimozione efficace)
             modalElement.removeEventListener('change', this.handleRelationSelectChange.bind(this));
-            // Aggiunge un unico listener delegato
             modalElement.addEventListener('change', this.handleRelationSelectChange.bind(this));
-      
-            // Utilizziamo setTimeout per garantire che il DOM sia completamente stabile e che la modale sia visibile
-            // prima di manipolare il suo contenuto.
-            setTimeout(() => { // Inizio setTimeout
-              const modalBody = modalElement.querySelector('.modal-body');
-              if (!modalBody) return;
-              const doc: Document = parser.parseFromString(finalHtmlString || '', 'text/html');
 
-              // 1. Processa i placeholder delle relazioni e rimuove i pulsanti statici
-              doc.querySelectorAll('[data-torelation]').forEach((placeholder: Element) => {
-                const relationGroup = placeholder.closest('.relationcontgrp.repeatable');
-                if (relationGroup) {
-                  const staticActionBr = relationGroup.querySelector(':scope > .action-br');
-                  if (staticActionBr) {
-                    staticActionBr.remove();
-                  }
+            const modalBody = modalElement.querySelector('.modal-body');
+            if (!modalBody) return;
+            
+            // Ricarichiamo la configurazione originale del form nel parser
+            const formConfigHtml = (this.selectedEntityDetail?._index && response?.data?.length) ? response.data[0].files.find((f: any) => f.contentType === 'text/html')?.data : '';
+            const doc: Document = parser.parseFromString(formConfigHtml || '', 'text/html');
+
+            // 1. Processa i placeholder delle relazioni e rimuove i pulsanti statici
+            doc.querySelectorAll('[data-torelation]').forEach((placeholder: Element) => {
+              const relationGroup = placeholder.closest('.relationcontgrp.repeatable');
+              if (relationGroup) {
+                const staticActionBr = relationGroup.querySelector(':scope > .action-br');
+                if (staticActionBr) {
+                  staticActionBr.remove();
+                }
+              }
+            });
+
+            // 2. Sostituisce le select multiple con gruppi di checkbox
+            doc.querySelectorAll('select[multiple].selectpicker').forEach((selectElAsElement: Element, selectIndex: number) => {
+              const selectEl = selectElAsElement as HTMLSelectElement;
+              const options: { value: string; label: string }[] = [];
+              selectEl.querySelectorAll('option').forEach(opt => {
+                if (opt.value) {
+                  options.push({ value: opt.value, label: opt.textContent || opt.value });
                 }
               });
 
-              // 2. Sostituisce le select multiple con gruppi di checkbox
-              doc.querySelectorAll('select[multiple].selectpicker').forEach((selectElAsElement: Element, selectIndex: number) => {
-                const selectEl = selectElAsElement as HTMLSelectElement;
-                const options: { value: string; label: string }[] = [];
-                selectEl.querySelectorAll('option').forEach(opt => {
-                  if (opt.value) {
-                    options.push({ value: opt.value, label: opt.textContent || opt.value });
-                  }
-                });
+              const checkboxContainer = document.createElement('div');
+              checkboxContainer.classList.add('checkbox-group-container');
 
-                const checkboxContainer = document.createElement('div');
-                checkboxContainer.classList.add('checkbox-group-container');
+              options.forEach((opt, optIndex) => {
+                const checkboxId = `cb-${selectIndex}-${optIndex}`;
+                const checkboxWrapper = document.createElement('div');
+                checkboxWrapper.classList.add('mat-checkbox-wrapper');
 
-                options.forEach((opt, optIndex) => {
-                  const checkboxId = `cb-${selectIndex}-${optIndex}`;
-                  const checkboxWrapper = document.createElement('div');
-                  checkboxWrapper.classList.add('mat-checkbox-wrapper');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = checkboxId;
+                checkbox.value = opt.value;
+                checkbox.setAttribute('data-original-select-name', selectEl.name);
 
-                  const checkbox = document.createElement('input');
-                  checkbox.type = 'checkbox';
-                  checkbox.id = checkboxId;
-                  checkbox.value = opt.value;
-                  checkbox.setAttribute('data-original-select-name', selectEl.name);
+                const label = document.createElement('label');
+                label.setAttribute('for', checkboxId);
+                label.textContent = opt.label;
 
-                  const label = document.createElement('label');
-                  label.setAttribute('for', checkboxId);
-                  label.textContent = opt.label;
-
-                  checkboxWrapper.appendChild(checkbox);
-                  checkboxWrapper.appendChild(label);
-                  checkboxContainer.appendChild(checkboxWrapper);
-                });
-
-                selectEl.style.display = 'none';
-                selectEl.parentElement?.insertBefore(checkboxContainer, selectEl.nextSibling);
+                checkboxWrapper.appendChild(checkbox);
+                checkboxWrapper.appendChild(label);
+                checkboxContainer.appendChild(checkboxWrapper);
               });
 
-              // 3. Modifica gli attributi onclick
-              doc.querySelectorAll('[onclick*="cloneRepeatable("], [onclick*="removeRepeatable("]').forEach((button: Element) => {
-                const onclickAttr = button.getAttribute('onclick');
-                if (onclickAttr) button.setAttribute('onclick', onclickAttr.replace(/\$\(this\)/g, 'this'));
-              });
+              selectEl.style.display = 'none';
+              selectEl.parentElement?.insertBefore(checkboxContainer, selectEl.nextSibling);
+            });
 
-              // 4. Costruisce e inietta le relazioni dinamiche
-              const entityDetail = entityToEdit;
-              if (entityDetail && (entityDetail.relations || allPotentialRelationTypes.size > 0)) {
-                  doc.querySelectorAll('[data-torelation]').forEach((container: Element) => {
-                      container.innerHTML = '';
-                  });
-                  const relationsToRender: Partial<RawEsEntity>[] = entityDetail.relations ? JSON.parse(JSON.stringify(entityDetail.relations)) : [];
-                  const existingTypesInRenderList = new Set(relationsToRender.map(r => r?._index));
-                  allPotentialRelationTypes.forEach((type: string) => {
-                      if (type && !existingTypesInRenderList.has(type)) {
-                          relationsToRender.push({ _index: type, _id: '', title: '' });
-                          existingTypesInRenderList.add(type);
-                      }
-                  });
-                  relationsToRender.sort((a, b) => {
-                      if (a._index && b._index) {
-                          const typeComparison = a._index.localeCompare(b._index);
-                          if (typeComparison !== 0) {
-                              return typeComparison;
-                          }
-                          if (a._id && !b._id) return -1;
-                          if (!a._id && b._id) return 1;
-                      }
-                      return 0;
-                  });
-                  if (relationsToRender.length > 0) {
-                      const relationTypeRenderCounts: { [key: string]: number } = {};
-                      relationsToRender.forEach(r => {
-                        if (r._index) {
-                          relationTypeRenderCounts[r._index] = (relationTypeRenderCounts[r._index] || 0) + 1;
+            // 3. Modifica gli attributi onclick
+            doc.querySelectorAll('[onclick*="cloneRepeatable("], [onclick*="removeRepeatable("]').forEach((button: Element) => {
+              const onclickAttr = button.getAttribute('onclick');
+              if (onclickAttr) button.setAttribute('onclick', onclickAttr.replace(/\$\(this\)/g, 'this'));
+            });
+
+            // 4. Costruisce e inietta le relazioni dinamiche
+            const entityDetail = entityToEdit;
+            if (entityDetail && (entityDetail.relations || allPotentialRelationTypes.size > 0)) {
+                doc.querySelectorAll('[data-torelation]').forEach((container: Element) => {
+                    container.innerHTML = '';
+                });
+                const relationsToRender: Partial<RawEsEntity>[] = entityDetail.relations ? JSON.parse(JSON.stringify(entityDetail.relations)) : [];
+                const existingTypesInRenderList = new Set(relationsToRender.map(r => r?._index));
+                allPotentialRelationTypes.forEach((type: string) => {
+                    if (type && !existingTypesInRenderList.has(type)) {
+                        relationsToRender.push({ _index: type, _id: '', title: '' });
+                        existingTypesInRenderList.add(type);
+                    }
+                });
+                relationsToRender.sort((a, b) => {
+                    if (a._index && b._index) {
+                        const typeComparison = a._index.localeCompare(b._index);
+                        if (typeComparison !== 0) {
+                            return typeComparison;
                         }
-                      });
-                      const firstRepeatableAddedForType = new Set<string>();
-
-                      relationsToRender.forEach((relation, index) => {
-                          const relationType = relation._index;
-                          if (!relationType) {
-                              return null;
-                          }
-                          const specificRelationsContainer = doc.querySelector(`[data-torelation="${relationType}"]`);
-                          if (!specificRelationsContainer) {
-                              return null;
-                          }
-                          const relationIndex = Array.from(specificRelationsContainer.children).length;
-
-                          const clonedRelationElement = document.createElement('div');
-                          clonedRelationElement.setAttribute('data-torelation-generated-item', relation._index || `relation-${index}`);
-                          clonedRelationElement.setAttribute('data-relation-type', relationType);
-                          clonedRelationElement.classList.add('repeatable', 'form-group');
-
-                          if (!firstRepeatableAddedForType.has(relationType)) {
-                              clonedRelationElement.classList.add('first-repeatable');
-                              firstRepeatableAddedForType.add(relationType);
-                          }
-                          
-                          const isPlaceholder = !relation._id;
-                          const labelElement = document.createElement('label');
-                          const selectElement = document.createElement('select');
-                          const hiddenInput = document.createElement('input');
-                          hiddenInput.type = 'hidden';
-                          hiddenInput.name = `data[relation][${relationType}][${relationIndex}][to]`;
-                          hiddenInput.setAttribute('value', relation._id || '');
-                          hiddenInput.value = relation._id || ''; // Imposta entrambi per sicurezza
-
-                          if (isPlaceholder) {
-                            labelElement.textContent = this.translate.instant('menu.entities.listentities.editModal.newRelationLabel');
-                          } else {
-                            const relationTitle = relation.title || relation._id || '';
-                            labelElement.textContent = this.translate.instant('menu.entities.listentities.editModal.existingRelationLabel', { relationTitle: relationTitle });
-                          }
-                          selectElement.id = `relation_select_${relationType}_${relationIndex}`;
-                          labelElement.setAttribute('for', selectElement.id);
-
-                          const options = this.relationOptionsCache.get(relationType) || [];
-                          const placeholderOption = document.createElement('option');
-                          placeholderOption.value = '';
-                          placeholderOption.textContent = `--- ${this.translate.instant('menu.entities.listentities.editModal.selectRelationPlaceholder')} ---`;
-                          selectElement.appendChild(placeholderOption);
-
-                          options.forEach(optEntity => {
-                              const optionElement = document.createElement('option') as HTMLOptionElement;
-                              optionElement.value = optEntity._id;
-                              optionElement.textContent = `${optEntity.title || optEntity._id} `;
-                              if (optEntity._id === relation._id) {
-                                  optionElement.selected = true;
-                              }
-                              selectElement.appendChild(optionElement);
-                          });
-
-                          const actionBrDiv = document.createElement('div');
-                          actionBrDiv.classList.add('action-br');
-                          const cloneButton = document.createElement('span');
-                          cloneButton.classList.add('btn', 'btn-outline-primary', 'btn-sm');
-                          cloneButton.textContent = ' +';
-                          cloneButton.setAttribute('onclick', 'cloneRepeatable(this)');
-                          const removeButton = document.createElement('span');
-                          removeButton.classList.add('btn', 'btn-outline-danger', 'btn-sm', 'act-remove');
-                          removeButton.textContent = '-';
-                          removeButton.setAttribute('onclick', 'removeRepeatable(this)');
-                          
-                          const totalRelationsOfThisType = relationTypeRenderCounts[relationType] || 0;
-                          if (totalRelationsOfThisType === 1 && !relation._id) {
-                            removeButton.style.display = 'none';
-                          } else {
-                            removeButton.style.display = 'inline-block';
-                          }
-
-                          actionBrDiv.appendChild(cloneButton);
-                          actionBrDiv.appendChild(removeButton);
-                          
-                          clonedRelationElement.appendChild(labelElement);
-                          clonedRelationElement.appendChild(selectElement);
-                          clonedRelationElement.appendChild(hiddenInput);
-                          clonedRelationElement.appendChild(actionBrDiv);
-                          
-                          specificRelationsContainer.appendChild(clonedRelationElement);
-
-                          return null;
-                      });
-                  }
-              }
-
-              // 5. Popola i valori del form e delle checkbox
-              if (entityToEdit) {
-                const entityDataForForm = { ...entityToEdit };
-
-                const populateCheckboxes = (data: any, parentNode: Document | HTMLElement) => {
-                  parentNode.querySelectorAll('input[type="checkbox"][data-original-select-name]').forEach((el: Element) => {
-                    const checkbox = el as HTMLInputElement;
-                    const originalSelectName = checkbox.getAttribute('data-original-select-name');
-                    if (!originalSelectName) return;
-
-                    const propertyPath = originalSelectName.replace(/^data\[/g, '').replace(/\]$/g, '').replace(/\]\[/g, '.');
-                    const pathParts = propertyPath.split('.');
-                    
-                    // Cerca prima in data._source, poi fai un fallback all'oggetto data radice
-                    let selectedValues = pathParts.reduce((obj, part) => (obj && obj[part] !== undefined) ? obj[part] : undefined, data?._source);
-                    if (selectedValues === undefined) {
-                        selectedValues = pathParts.reduce((obj, part) => (obj && obj[part] !== undefined) ? obj[part] : undefined, data);
+                        if (a._id && !b._id) return -1;
+                        if (!a._id && b._id) return 1;
                     }
-                    checkbox.checked = Array.isArray(selectedValues) && selectedValues.includes(checkbox.value);
-                  });
-                };
-
-                const setElementValue = (el: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement, value: any) => {
-                  const finalValue = (value === null || value === undefined) ? '' : value;
-
-                  if (el instanceof HTMLSelectElement) {
-                    const selectElement = el;
-                    Array.from(selectElement.options).forEach(opt => {
-                      opt.selected = (opt.value == String(finalValue));
-                      if (opt.selected) {
-                        opt.setAttribute('selected', 'selected');
-                      } else {
-                        opt.removeAttribute('selected');
+                    return 0;
+                });
+                if (relationsToRender.length > 0) {
+                    const relationTypeRenderCounts: { [key: string]: number } = {};
+                    relationsToRender.forEach(r => {
+                      if (r._index) {
+                        relationTypeRenderCounts[r._index] = (relationTypeRenderCounts[r._index] || 0) + 1;
                       }
-                      selectElement.value = String(finalValue);
                     });
-                  } else if (el.type === 'checkbox' && el instanceof HTMLInputElement) {
-                    el.checked = Boolean(finalValue);
-                    if (el.checked) el.setAttribute('checked', 'checked');
-                    else el.removeAttribute('checked');
-                  } else if (el.type === 'radio' && el instanceof HTMLInputElement) {
-                    el.checked = (el.value === String(finalValue));
-                    if (el.checked) el.setAttribute('checked', 'checked');
-                    else el.removeAttribute('checked');
-                  } else if (el instanceof HTMLTextAreaElement) {
-                    el.value = String(finalValue);
-                  } else {
-                    el.setAttribute('value', String(finalValue));
-                    el.value = String(finalValue);
+                    const firstRepeatableAddedForType = new Set<string>();
+
+                    relationsToRender.forEach((relation, index) => {
+                        const relationType = relation._index;
+                        if (!relationType) {
+                            return null;
+                        }
+                        const specificRelationsContainer = doc.querySelector(`[data-torelation="${relationType}"]`);
+                        if (!specificRelationsContainer) {
+                            return null;
+                        }
+                        const relationIndex = Array.from(specificRelationsContainer.children).length;
+
+                        const clonedRelationElement = document.createElement('div');
+                        clonedRelationElement.setAttribute('data-torelation-generated-item', relation._index || `relation-${index}`);
+                        clonedRelationElement.setAttribute('data-relation-type', relationType);
+                        clonedRelationElement.classList.add('repeatable', 'form-group');
+
+                        if (!firstRepeatableAddedForType.has(relationType)) {
+                            clonedRelationElement.classList.add('first-repeatable');
+                            firstRepeatableAddedForType.add(relationType);
+                        }
+                        
+                        const isPlaceholder = !relation._id;
+                        const labelElement = document.createElement('label');
+                        const selectElement = document.createElement('select');
+                        const hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = `data[relation][${relationType}][${relationIndex}][to]`;
+                        hiddenInput.setAttribute('value', relation._id || '');
+                        hiddenInput.value = relation._id || ''; // Imposta entrambi per sicurezza
+
+                        if (isPlaceholder) {
+                          labelElement.textContent = this.translate.instant('menu.entities.listentities.editModal.newRelationLabel');
+                        } else {
+                          const relationTitle = relation.title || relation._id || '';
+                          labelElement.textContent = this.translate.instant('menu.entities.listentities.editModal.existingRelationLabel', { relationTitle: relationTitle });
+                        }
+                        selectElement.id = `relation_select_${relationType}_${relationIndex}`;
+                        labelElement.setAttribute('for', selectElement.id);
+
+                        const options = this.relationOptionsCache.get(relationType) || [];
+                        const placeholderOption = document.createElement('option');
+                        placeholderOption.value = '';
+                        placeholderOption.textContent = `--- ${this.translate.instant('menu.entities.listentities.editModal.selectRelationPlaceholder')} ---`;
+                        selectElement.appendChild(placeholderOption);
+
+                        options.forEach(optEntity => {
+                            const optionElement = document.createElement('option') as HTMLOptionElement;
+                            optionElement.value = optEntity._id;
+                            optionElement.textContent = `${optEntity.title || optEntity._id} `;
+                            if (optEntity._id === relation._id) {
+                                optionElement.selected = true;
+                            }
+                            selectElement.appendChild(optionElement);
+                        });
+
+                        const actionBrDiv = document.createElement('div');
+                        actionBrDiv.classList.add('action-br');
+                        const cloneButton = document.createElement('span');
+                        cloneButton.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+                        cloneButton.textContent = ' +';
+                        cloneButton.setAttribute('onclick', 'cloneRepeatable(this)');
+                        const removeButton = document.createElement('span');
+                        removeButton.classList.add('btn', 'btn-outline-danger', 'btn-sm', 'act-remove');
+                        removeButton.textContent = '-';
+                        removeButton.setAttribute('onclick', 'removeRepeatable(this)');
+                        
+                        const totalRelationsOfThisType = relationTypeRenderCounts[relationType] || 0;
+                        if (totalRelationsOfThisType === 1 && !relation._id) {
+                          removeButton.style.display = 'none';
+                        } else {
+                          removeButton.style.display = 'inline-block';
+                        }
+
+                        actionBrDiv.appendChild(cloneButton);
+                        actionBrDiv.appendChild(removeButton);
+                        
+                        clonedRelationElement.appendChild(labelElement);
+                        clonedRelationElement.appendChild(selectElement);
+                        clonedRelationElement.appendChild(hiddenInput);
+                        clonedRelationElement.appendChild(actionBrDiv);
+                        
+                        specificRelationsContainer.appendChild(clonedRelationElement);
+
+                        return null;
+                    });
+                }
+            }
+
+            // 5. Popola i valori del form e delle checkbox
+            if (entityToEdit) {
+              const entityDataForForm = { ...entityToEdit };
+
+              const populateCheckboxes = (data: any, parentNode: Document | HTMLElement) => {
+                parentNode.querySelectorAll('input[type="checkbox"][data-original-select-name]').forEach((el: Element) => {
+                  const checkbox = el as HTMLInputElement;
+                  const originalSelectName = checkbox.getAttribute('data-original-select-name');
+                  if (!originalSelectName) return;
+
+                  const propertyPath = originalSelectName.replace(/^data\[/g, '').replace(/\]$/g, '').replace(/\]\[/g, '.');
+                  const pathParts = propertyPath.split('.');
+                  
+                  // Cerca prima in data._source, poi fai un fallback all'oggetto data radice
+                  let selectedValues = pathParts.reduce((obj, part) => (obj && obj[part] !== undefined) ? obj[part] : undefined, data?._source);
+                  if (selectedValues === undefined) {
+                      selectedValues = pathParts.reduce((obj, part) => (obj && obj[part] !== undefined) ? obj[part] : undefined, data);
                   }
-                };
+                  checkbox.checked = Array.isArray(selectedValues) && selectedValues.includes(checkbox.value);
+                });
+              };
 
-                const populateForm = (data: any, parentNode: Document | HTMLElement) => {
-                  parentNode.querySelectorAll('input, textarea, select:not([multiple])').forEach((element: Element) => {
-                    const el = element as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
-                    const nameAttr = el.getAttribute('name');
+              const setElementValue = (el: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement, value: any) => {
+                const finalValue = (value === null || value === undefined) ? '' : value;
 
-                    if (el.tagName === 'SELECT' && el.hasAttribute('multiple')) {
-                      return;
+                if (el instanceof HTMLSelectElement) {
+                  const selectElement = el;
+                  Array.from(selectElement.options).forEach(opt => {
+                    opt.selected = (opt.value == String(finalValue));
+                    if (opt.selected) {
+                      opt.setAttribute('selected', 'selected');
+                    } else {
+                      opt.removeAttribute('selected');
                     }
-                    // Salta i campi delle relazioni: i loro valori sono iniettati manualmente e non devono essere resettati
-                    if (!nameAttr || nameAttr.includes('[relation]') || nameAttr.startsWith('data[relations]')) return;
-
-                    let propertyPath = nameAttr.replace(/^data\[/g, '').replace(/\]$/g, '').replace(/\]\[/g, '.');
-                    if (propertyPath === 'id') propertyPath = '_id';
-                    if (propertyPath === 'index') propertyPath = '_index';
-                    if (propertyPath === 'score') propertyPath = '_score';
-
-                    const pathParts = propertyPath.split('.');
-                    // Cerca prima in data.data, poi fai un fallback all'oggetto data radice
-                    let value = pathParts.reduce((obj, part) => (obj && obj[part] !== undefined) ? obj[part] : undefined, data?._source);
-                    if (value === undefined)
-                        value = pathParts.reduce((obj, part) => (obj && obj[part] !== undefined) ? obj[part] : undefined, data);
-                    setElementValue(el, value);
+                    selectElement.value = String(finalValue);
                   });
-                };
+                } else if (el.type === 'checkbox' && el instanceof HTMLInputElement) {
+                  el.checked = Boolean(finalValue);
+                  if (el.checked) el.setAttribute('checked', 'checked');
+                  else el.removeAttribute('checked');
+                } else if (el.type === 'radio' && el instanceof HTMLInputElement) {
+                  el.checked = (el.value === String(finalValue));
+                  if (el.checked) el.setAttribute('checked', 'checked');
+                  else el.removeAttribute('checked');
+                } else if (el instanceof HTMLTextAreaElement) {
+                  el.value = String(finalValue);
+                } else {
+                  el.setAttribute('value', String(finalValue));
+                  el.value = String(finalValue);
+                }
+              };
 
-                // Assegna l'HTML manipolato (ma non ancora popolato) al DOM di Angular
-                this.entitySpecificFormHtml = this.domSanitizer.bypassSecurityTrustHtml(doc.body.innerHTML);
-                this.cdr.detectChanges(); // Forza l'aggiornamento del DOM
+              const populateForm = (data: any, parentNode: Document | HTMLElement) => {
+                parentNode.querySelectorAll('input, textarea, select:not([multiple])').forEach((element: Element) => {
+                  const el = element as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+                  const nameAttr = el.getAttribute('name');
 
-                // Ora che il DOM è aggiornato, popola i valori direttamente sugli elementi renderizzati
-                populateForm(entityDataForForm, modalBody as HTMLElement);
-                populateCheckboxes(entityDataForForm, modalBody as HTMLElement);
-              }
+                  if (el.tagName === 'SELECT' && el.hasAttribute('multiple')) {
+                    return;
+                  }
+                  // Salta i campi delle relazioni: i loro valori sono iniettati manualmente e non devono essere resettati
+                  if (!nameAttr || nameAttr.includes('[relation]') || nameAttr.startsWith('data[relations]')) return;
 
-              // Inizializza i selectpicker dopo che Angular ha renderizzato l'HTML
-              const selectPickers = this._jq(modalElement).find('.selectpicker');
-              if (selectPickers.length > 0 && (this._jq.fn as any).selectpicker) {
-                // La sequenza 'destroy' -> 'init' -> 'refresh' è la più robusta per contenuti dinamici.
-                if ((selectPickers as any).data('selectpicker')) { (selectPickers as any).selectpicker('destroy'); } //
-                (selectPickers as any).selectpicker(); // Inizializza il plugin
-                (selectPickers as any).selectpicker('refresh'); // Aggiorna lo stato per riflettere i valori pre-selezionati
-              }
-            }, 500); // Aumentato il ritardo a 500ms per maggiore robustezza.
-        }
+                  let propertyPath = nameAttr.replace(/^data\[/g, '').replace(/\]$/g, '').replace(/\]\[/g, '.');
+                  if (propertyPath === 'id') propertyPath = '_id';
+                  if (propertyPath === 'index') propertyPath = '_index';
+                  if (propertyPath === 'score') propertyPath = '_score';
+
+                  const pathParts = propertyPath.split('.');
+                  // Cerca prima in data.data, poi fai un fallback all'oggetto data radice
+                  let value = pathParts.reduce((obj, part) => (obj && obj[part] !== undefined) ? obj[part] : undefined, data?._source);
+                  if (value === undefined)
+                      value = pathParts.reduce((obj, part) => (obj && obj[part] !== undefined) ? obj[part] : undefined, data);
+                  setElementValue(el, value);
+                });
+              };
+
+              // --- FIX CRITICO: Estraiamo l'HTML DOPO tutte le modifiche del doc ---
+              finalHtmlString = doc.body.innerHTML;
+              this.entitySpecificFormHtml = this.domSanitizer.bypassSecurityTrustHtml(finalHtmlString || '');
+              this.cdr.detectChanges(); 
+
+              // Usiamo un piccolo delay per attendere che [innerHTML] sia pronto nel browser
+              setTimeout(() => {
+                const renderedBody = modalElement.querySelector('#entityEditModalBody');
+                populateForm(entityDataForForm, (renderedBody || modalBody) as HTMLElement);
+                populateCheckboxes(entityDataForForm, (renderedBody || modalBody) as HTMLElement);
+              }, 50);
+            }
+
+            // Inizializza i selectpicker dopo che Angular ha renderizzato l'HTML
+            const selectPickers = this._jq(modalElement).find('.selectpicker');
+            if (selectPickers.length > 0 && (this._jq.fn as any).selectpicker) {
+              // La sequenza 'destroy' -> 'init' -> 'refresh' è la più robusta per contenuti dinamici.
+              if ((selectPickers as any).data('selectpicker')) { (selectPickers as any).selectpicker('destroy'); } //
+              (selectPickers as any).selectpicker(); // Inizializza il plugin
+              (selectPickers as any).selectpicker('refresh'); // Aggiorna lo stato per riflettere i valori pre-selezionati
+            }
+          }
+        }, 500); // Ritardo necessario per attendere il ciclo di rendering Angular.
       }
     } else {
       this.toastr.warning(this.translate.instant('menu.entities.listentities.noEntitySelectedForEdit'));
       console.warn('Nessuna entità selezionata o indice mancante per aprire la modale di modifica.');
     }
     this.isEditModalOpen = true;
+    } finally {
+      this.isOpeningEditModal = false;
+    }
   }
   
   private handleRelationSelectChange(event: Event): void {
@@ -1122,6 +1176,7 @@ export class ListEntitiesComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isEditModalOpen = false;
     this.entitySpecificFormHtml = null;
     this.closeInjectedFormStyles();
+    this.clearInjectedTemplateStyles(); // Clear template styles when closing edit modal
     console.log('Edit modal closed, dynamic form CSS removed.');
   }
   saveEntityChanges(): void {
@@ -1132,6 +1187,8 @@ export class ListEntitiesComponent implements OnInit, OnDestroy, AfterViewInit {
         return;
       }
       this.closeEditModal();
+      // Ricarica la lista dopo il salvataggio per mostrare gli aggiornamenti
+      this.loadIndexes();
     } else {
       this.toastr.error(this.translate.instant('menu.entities.listentities.errorInvalidEditForm'));
       if (this.editEntityForm) {
@@ -1232,9 +1289,9 @@ export class ListEntitiesComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this.totalSize = this.filteredEntities.length;
+    this.currentPage = 0;
     if (this.paginator) {
       this.paginator.pageIndex = 0;
-      this.currentPage = 0;
     }
     this.updatePagedEntities();
   }
@@ -1244,6 +1301,20 @@ export class ListEntitiesComponent implements OnInit, OnDestroy, AfterViewInit {
     const endIndex = startIndex + this.pageSize;
     this.pagedEntities = this.filteredEntities.slice(startIndex, endIndex);
     this.dataSource.data = this.pagedEntities;
+  }
+
+  nextPage(): void {
+    if ((this.currentPage + 1) * this.pageSize < this.totalSize) {
+      this.currentPage++;
+      this.updatePagedEntities();
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 0) {
+      this.currentPage--;
+      this.updatePagedEntities();
+    }
   }
 
   public actionPutMultipartForm(
@@ -1360,6 +1431,8 @@ export class ListEntitiesComponent implements OnInit, OnDestroy, AfterViewInit {
         next: () => {
           this.toastr.success(this.translate.instant('menu.entities.listentities.editModal.saveSuccess'));
           this.closeEditModal();
+          // Ricarica la lista per mostrare gli aggiornamenti
+          this.loadIndexes();
           if (this.selectedEntityDetail) {
             this.showEntityDetails({ _id: entityId } as RawEsEntity);
           }

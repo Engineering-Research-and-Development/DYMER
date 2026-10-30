@@ -97,6 +97,7 @@ export class LibrariesComponent implements OnInit, AfterViewInit {
     this.refresh$.pipe(
       switchMap(() => this.librariesService.getCustomLibraries()),
       tap((libs: Library[]) => {
+        console.log('Fetched libraries:', libs); // Log per verificare i dati ricevuti
         this.libraryCardsConfigs = this.processLibraries(libs);
         this.cdr.detectChanges(); // Usa detectChanges per forzare un render sincrono
       })
@@ -163,6 +164,15 @@ export class LibrariesComponent implements OnInit, AfterViewInit {
     }
   }
 
+  removeLibrary(index: number) {
+      // 1. Logica di conferma (Opzionale ma consigliata)
+      if (confirm(this.translate.instant('menu.messages.confirm_delete'))) {
+        
+         
+       
+      }
+    }
+
   openReloadModal(): void {
     const confirmation = window.confirm(
       this.translate.instant('libraries.reload_confirmation')
@@ -180,16 +190,21 @@ export class LibrariesComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onLibraryActivationChange(event: MatSlideToggleChange, library: Library): void {
-    if (!library._id) {
+  onLibraryActivationChange(event: any, rowData: any): void {
+    
+    const isChecked = event.target ? event.target.checked : event.checked;
+  
+  rowData.activated = isChecked;
+
+    if (!rowData._id) {
       console.error('Library ID is missing.');
       this.snackBar.open(this.translate.instant('errors.common.error_saving'), this.translate.instant('close'), { duration: 5000, panelClass: ['mat-warn'] });
       return;
     }
-    library.isPendingAction = true;
+    rowData.isPendingAction = true;
     this.cdr.markForCheck();
 
-    this.librariesService.updateLibraryStatus(library._id, event.checked).subscribe({
+    this.librariesService.updateLibraryStatus(rowData._id, isChecked).subscribe({
       next: (response) => {
         if (response.success) {
           this.snackBar.open(
@@ -199,14 +214,18 @@ export class LibrariesComponent implements OnInit, AfterViewInit {
           );
           this.forceRefresh(); 
         } else {
-          event.source.checked = !event.checked; // Revert checkbox on failure
+          if (event.target) {
+            event.target.checked = !isChecked;
+          }
           this.snackBar.open(response.message || this.translate.instant('errors.common.error_saving'), this.translate.instant('close'), { duration: 5000, panelClass: ['mat-warn']});
           this.forceRefresh(); // Ricarica comunque per rimuovere lo stato 'pending'
         }
       },
       error: (err: any) => {
         console.error('Error updating library status', err);
-        event.source.checked = !event.checked; // Revert checkbox on error
+        if (event.target) {
+          event.target.checked = !isChecked;
+        }
         this.forceRefresh(); // Ricarica per rimuovere lo stato 'pending'
         this.snackBar.open(this.translate.instant('errors.common.error_saving'), this.translate.instant('close'), { duration: 5000, panelClass: ['mat-warn'] });
       }

@@ -40,8 +40,7 @@ export class AiAgentsService {
     return this.http.post(`${this.testConnectionUrl}`, config);
   }
   checkStatus(id: string): Observable<{status: string}> {
-    console.log(`Controllo stato agente con ID: ${id}`);
-    console.log(this.checkStatusUrl);
     return this.http.get<{status: string}>(this.apiService.endpoints.agents.checkStatus(id), { withCredentials: true });
+  }
 }
-}
+

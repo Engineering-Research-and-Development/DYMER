@@ -1,71 +1,81 @@
-<div class="d-flex w-full h-full">
-  <mat-card class="m-auto" style="max-width: 480px">
-    <img src="images/dymer-logo.png" class="branding-logo login" alt="DYMER" />
-  <!--   <mat-card-header class="m-b-24 text-center"> -->
-         <mat-card-title class="text-center m-b-24 index">{{ 'login_title' | translate }}</mat-card-title>
-    <!-- </mat-card-header> -->
+<div class="d-flex  ">
+ <div class=" mt-8 bg-white dark:bg-zinc-950 p-6 animate-in fade-in duration-700">
+  
+  <div class="mb-8 transition-transform hover:scale-105 duration-500">
+    <img src="images/dymer-logo.png" class="h-12 w-auto object-contain branding-logo login" alt="DYMER" />
+  </div>
 
-    <mat-card-content>
-      <form class="form-field-full" [formGroup]="loginForm">
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'username' | translate }}</mat-label>
-          <input matInput placeholder="" formControlName="username" required />
-          @if (username.invalid) {
-            <mat-error>
-              @if (username.errors?.required) {
-                <span>
-                  {{ 'please_enter' | translate }}
-                  <strong>a valid username</strong>
-                </span>
-              }
-              @if (username.errors?.remote) {
-                <span>{{ username.errors?.remote }}</span>
-              }
-            </mat-error>
-          }
-        </mat-form-field>
+  <div class="w-full max-w-[400px] space-y-8">
+    
+    <div class="text-center space-y-2">
+      <h1 class="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+        {{ 'login_title' | translate }}
+      </h1>
+       
+    </div>
 
-        <mat-form-field appearance="outline">
-          <mat-label>{{ 'password' | translate }}</mat-label>
-          <input
-            matInput
-            placeholder=""
-            type="password"
-            formControlName="password"
-            required
-          />
-          @if (password.invalid) {
-            <mat-error>
-              @if (password.errors?.required) {
-                <span>
-                  {{ 'please_enter' | translate }}
-                  <strong>a valid password</strong>
-                </span>
-              }
-              @if (password.errors?.remote) {
-                <span>{{ password.errors?.remote }}</span>
-              }
-            </mat-error>
-          }
-        </mat-form-field>
+    <form [formGroup]="loginForm" class="space-y-5">
+      
+      <div class="space-y-2">
+        <label class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.2em] ml-1">
+          {{ 'username' | translate }}
+        </label>
+        <div class="relative group">
+          <input formControlName="username" type="text"
+                 class="w-full h-11 px-4 bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 focus:border-zinc-400 dark:focus:border-zinc-600 transition-all shadow-sm"
+                 [placeholder]="'username' | translate">
+        </div>
+        
+        @if (username.touched && username.invalid) {
+          <div class="flex items-center gap-1.5 px-1 text-[10px] font-bold text-red-500 uppercase tracking-tight">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            @if (username.errors?.required) { <span>{{ 'please_enter' | translate }} a valid username</span> }
+            @if (username.errors?.remote) { <span>{{ username.errors?.remote }}</span> }
+          </div>
+        }
+      </div>
 
-        <!--mat-checkbox formControlName="rememberMe">{{ 'remember_me' | translate }}</mat-checkbox-->
+      <div class="space-y-2">
+        <div class="flex justify-between items-end ml-1">
+          <label class="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.2em]">
+            {{ 'password' | translate }}
+          </label>
+          </div>
+        <div class="relative">
+          <input formControlName="password" type="password"
+                 class="w-full h-11 px-4 bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 focus:border-zinc-400 dark:focus:border-zinc-600 transition-all shadow-sm"
+                 placeholder="••••••••">
+        </div>
 
-        <button
-          class="w-full m-y-16"
-          mat-flat-button
-          [disabled]="!!loginForm.invalid"
-          [loading]="isSubmitting"
-          (click)="login()"
-        >
+        @if (password.touched && password.invalid) {
+          <div class="flex items-center gap-1.5 px-1 text-[10px] font-bold text-red-500 uppercase tracking-tight">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            @if (password.errors?.required) { <span>{{ 'please_enter' | translate }} a valid password</span> }
+            @if (password.errors?.remote) { <span>{{ password.errors?.remote }}</span> }
+          </div>
+        }
+      </div>
+
+      <button (click)="login()" [disabled]="loginForm.invalid || isSubmitting"
+              class="w-full h-11 mt-4 bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold uppercase tracking-[0.2em] rounded-xl hover:opacity-90 transition-all shadow-lg shadow-zinc-200 dark:shadow-none disabled:opacity-20 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+        @if (isSubmitting) {
+          <svg class="animate-spin h-4 w-4 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        } @else {
           {{ 'login' | translate }}
-        </button>
+        }
+      </button>
 
-        <!--div>
-          <span>{{ 'have_no_account' | translate }}?</span>
-          <a routerLink="/auth/register">{{ 'create_one_account' | translate }}</a>
-        </div-->
-      </form>
-    </mat-card-content>
-  </mat-card>
+    </form>
+
+    <footer class="pt-8 text-center">
+      <p class="text-[10px] text-zinc-400 uppercase tracking-widest font-medium">
+        &copy; 2026 Dymer Ecosystem &bull;
+         {{ 'all_rights_reserved' | translate }}
+      </p>
+    </footer>
+  </div>
+</div>
 </div>

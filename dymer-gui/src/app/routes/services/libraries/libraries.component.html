@@ -1,263 +1,287 @@
-
-
-<div class="row mt-3">
-  <div class="col-md-12 text-right">
-    <button mat-stroked-button color="warn" (click)="openReloadModal()">{{ 'libraries.reload_libraries' | translate }}</button>
-  </div>
+<div class="flex justify-end mb-6">
+  <button (click)="openReloadModal()" 
+          class="group flex items-center gap-2 px-4 py-2 border border-red-200 dark:border-red-900/30 bg-red-50/50 dark:bg-red-950/10 rounded-xl text-red-600 hover:bg-red-600 hover:text-white transition-all duration-300">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-180 transition-transform duration-500"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+    <span class="text-[11px] font-bold uppercase tracking-widest">{{ 'libraries.reload_libraries' | translate }}</span>
+  </button>
 </div>
 
-<div class="row" *ngFor="let config of libraryCardsConfigs">
-  <div class="col-md-12 mt-3">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>
+<div *ngFor="let config of libraryCardsConfigs" class="mb-4 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-3xl overflow-hidden shadow-sm transition-all duration-300">
+  
+  <button (click)="config.showConfig = !config.showConfig"
+          class="w-full flex items-center justify-between px-8 py-5 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors group">
+    <div class="flex items-center gap-4">
+      <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 flex items-center justify-center text-indigo-600">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/></svg>
+      </div>
+      <div class="text-left">
+        <h3 class="text-sm font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-widest leading-none">
           {{ config.title }}
-          <button mat-icon-button (click)="config.showConfig = !config.showConfig" class="pull-right burgherAction">
-            <i class="fa fa-bars" aria-hidden="true"></i>
-          </button>
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content *ngIf="config.showConfig">
-        <h5>{{ 'libraries.select_files_to_activate' | translate }}</h5>
-        <div class="mat-elevation-z2 table-container">
-          <table mat-table [dataSource]="config.dataSource" matSort [trackBy]="trackByLibraryId" class="w-100">
+        </h3>
+        <p class="text-[10px] text-zinc-400 font-medium uppercase tracking-tighter mt-1">
+          {{ 'libraries.select_files_to_activate' | translate }}
+        </p>
+      </div>
+    </div>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" 
+         class="text-zinc-300 transition-transform duration-300" [class.rotate-180]="config.showConfig"><path d="m6 9 6 6 6-6"/></svg>
+  </button>
 
-            <!-- Activated Column -->
-            <ng-container matColumnDef="activated">
-              <th mat-header-cell *matHeaderCellDef>{{ 'libraries.activated' | translate }}</th>
-              <td mat-cell *matCellDef="let row">
-                <ng-container *ngTemplateOutlet="activationCell; context: { rowData: row }"></ng-container>
-              </td>
-            </ng-container>
-
-            <!-- Name Column -->
-            <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'libraries.name' | translate }}</th>
-              <td mat-cell *matCellDef="let row"> {{row.name}} </td>
-            </ng-container>
-
-            <!-- Filename Column -->
-            <ng-container matColumnDef="filename">
-              <th mat-header-cell *matHeaderCellDef>{{ 'libraries.filename' | translate }}</th>
-              <td mat-cell *matCellDef="let row"> {{row.filename}} </td>
-            </ng-container>
-
-            <!-- Group Column -->
-            <ng-container matColumnDef="group">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'libraries.group' | translate }}</th>
-              <td mat-cell *matCellDef="let row"> {{row.group}} </td>
-            </ng-container>
-
-            <!-- Callback Column -->
-            <ng-container matColumnDef="callback">
-              <th mat-header-cell *matHeaderCellDef>{{ 'libraries.callback' | translate }}</th>
-              <td mat-cell *matCellDef="let row">
+  <div *ngIf="config.showConfig" class="animate-in fade-in zoom-in-95 duration-200">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-zinc-100 dark:border-zinc-900">
+            <th class="px-8 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em]">{{ 'libraries.activated' | translate }}</th>
+            <th class="px-6 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em]">{{ 'libraries.name' | translate }}</th>
+            <th class="px-6 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] hidden md:table-cell text-center">Settings</th>
+            <th class="px-8 py-4 text-right"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-zinc-50 dark:divide-zinc-900">
+          <tr *ngFor="let row of config.dataSource.data; let i = index" class="group hover:bg-zinc-50/50 dark:hover:bg-zinc-900/40 transition-all">
+            <td class="px-8 py-4">
+               <ng-container *ngTemplateOutlet="activationCell; context: { rowData: row }"></ng-container>
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex flex-col">
+                <span class="text-xs font-bold text-zinc-900 dark:text-zinc-100">{{row.name}}</span>
+                <span class="text-[10px] font-mono text-zinc-400 mt-0.5 tracking-tight">{{row.filename}}</span>
+              </div>
+            </td>
+            <td class="px-6 py-4 hidden md:table-cell">
+              <div class="flex items-center justify-center gap-6">
                 <ng-container *ngTemplateOutlet="callbackCell; context: { rowData: row }"></ng-container>
-              </td>
-            </ng-container>
-
-            <!-- UseOnLoad Column -->
-            <ng-container matColumnDef="useonload">
-              <th mat-header-cell *matHeaderCellDef>{{ 'libraries.use_onload' | translate }}</th>
-              <td mat-cell *matCellDef="let row">
                 <ng-container *ngTemplateOutlet="useOnLoadCell; context: { rowData: row }"></ng-container>
-              </td>
-            </ng-container>
-
-            <!-- Mandatory Column -->
-            <ng-container matColumnDef="mandatory">
-              <th mat-header-cell *matHeaderCellDef>{{ 'libraries.mandatory' | translate }}</th>
-              <td mat-cell *matCellDef="let row">
                 <ng-container *ngTemplateOutlet="mandatoryCell; context: { rowData: row }"></ng-container>
-              </td>
-            </ng-container>
-
-            <!-- Delete Column -->
-            <ng-container matColumnDef="delete">
-              <th mat-header-cell *matHeaderCellDef>{{ 'menu.actions.delete' | translate }}</th>
-              <td mat-cell *matCellDef="let row">
-                <ng-container *ngTemplateOutlet="deleteCell; context: { rowData: row }"></ng-container>
-              </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="config.displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; let i = index; columns: config.displayedColumns;" [ngClass]="getRowClass(row, i)"></tr>
-
-          </table>
-        </div>
-      </mat-card-content>
-    </mat-card>
+              </div>
+            </td>
+            <td class="px-8 py-4 text-right">
+              <button (click)="removeLibrary(i)" 
+                      class="p-2 text-zinc-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-all opacity-0 group-hover:opacity-100">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 
-<div class="row mt-3">
-  <div class="col-md-12">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>
+<div class="mt-8 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-3xl overflow-hidden shadow-sm transition-all duration-300">
+  
+  <button (click)="showNewLibrary = !showNewLibrary"
+          class="w-full flex items-center justify-between px-8 py-5 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors group">
+    <div class="flex items-center gap-4">
+      <div class="w-10 h-10 rounded-xl bg-zinc-900 dark:bg-white flex items-center justify-center text-white dark:text-black">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+      </div>
+      <div class="text-left">
+        <h3 class="text-sm font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-widest leading-none">
           {{ 'libraries.add_library' | translate }}
-          <button mat-icon-button (click)="showNewLibrary = !showNewLibrary" class="pull-right burgherAction">
-            <i class="fa fa-cogs" aria-hidden="true"></i>
-          </button>
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content *ngIf="showNewLibrary">
-        <form #formNewLibrary="ngForm" id="formNewLibrary">
-          <div class="row">
-            <div class="col-md-6">
-              <mat-form-field class="w-100">
-                <mat-label>{{ 'libraries.name' | translate }} *</mat-label>
-                <input matInput
-                       id="name"
-                       [(ngModel)]="library.name"
-                       name="name"
-                       (focus)="nameFocused = true"
-                       required>
-              </mat-form-field>
+        </h3>
+        <p class="text-[10px] text-zinc-400 font-medium uppercase tracking-tighter mt-1">Register a new Javascript or CSS asset</p>
+      </div>
+    </div>
+    <i class="fa fa-cogs text-zinc-300 group-hover:text-zinc-900 transition-colors" aria-hidden="true"></i>
+  </button>
+
+  <div *ngIf="showNewLibrary" class="px-8 pb-8 animate-in slide-in-from-top-2 duration-300">
+    <form #formNewLibrary="ngForm" class="space-y-8 mt-4">
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-[9px] font-bold text-zinc-400 uppercase mb-1.5 ml-1">{{ 'libraries.name' | translate }} *</label>
+          <input matInput [(ngModel)]="library.name" name="name" (focus)="nameFocused = true" required
+                 class="w-full h-11 px-4 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-sm font-medium outline-none focus:ring-2 focus:ring-zinc-100 transition-all">
+        </div>
+        <div *ngIf="nameFocused && library.name">
+          
+          <div>
+              <label class="block text-[9px] font-bold text-zinc-400 uppercase mb-1.5 ml-1">
+                {{ 'libraries.library_type' | translate }} *
+              </label>
+              <div class="relative group">
+                <select [(ngModel)]="selectedLibraryType" 
+                        name="libraryType" 
+                        (change)="showLibraryForm()"
+                        required
+                        class="w-full h-11 px-4 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-sm font-medium text-zinc-900 dark:text-zinc-100 outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all appearance-none cursor-pointer">
+                  
+                  <option value="" disabled selected hidden>{{ 'libraries.select_type' | translate }}</option>
+                  
+                  <option value="Javascript" class="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
+                    {{ 'libraries.javascript' | translate }}
+                  </option>
+                  
+                  <option value="CSS" class="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
+                    {{ 'libraries.css' | translate }}
+                  </option>
+                </select>
+
+                <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-zinc-400 group-hover:text-zinc-600 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m6 9 6 6 6-6"/>
+                  </svg>
+                </div>
+              </div>
             </div>
-            <div class="col-md-6">
-              <mat-form-field class="w-100" *ngIf="nameFocused && library.name">
-                <mat-label>{{ 'libraries.library_type' | translate }} *</mat-label>
-                <mat-select id="libraryType"
-                            [(ngModel)]="selectedLibraryType"
-                            name="libraryType"
-                            (selectionChange)="showLibraryForm()">
-                  <mat-option value="Javascript">{{ 'libraries.javascript' | translate }}</mat-option>
-                  <mat-option value="CSS">{{ 'libraries.css' | translate }}</mat-option>
-                </mat-select>
-              </mat-form-field>
+        </div>
+      </div>
+
+      <div *ngIf="selectedLibraryType" class="space-y-8 animate-in fade-in duration-500">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+          <div>
+           <div>
+              <label class="block text-[9px] font-bold text-zinc-400 uppercase mb-1.5 ml-1">{{ 'libraries.dom_type' | translate }} *</label>
+              <div class="relative">
+                <select [(ngModel)]="library.domtype" 
+                        name="domtype" 
+                        required
+                        class="appearance-none w-full h-11 px-4 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-sm font-medium text-zinc-900 dark:text-zinc-100 outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all cursor-pointer">
+                  <option value="" disabled selected>Select DOM type</option>
+                  <option value="link" class="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">{{ 'libraries.link' | translate }}</option>
+                  <option value="script" class="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">{{ 'libraries.script' | translate }}</option>
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-zinc-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </div>
+              </div>
             </div>
           </div>
+          <div class="pb-2">
+            <label class="flex items-center gap-3 cursor-pointer group/check">
+              <input type="checkbox" [(ngModel)]="library.useonload" name="useonload" class="peer appearance-none w-5 h-5 border-2 border-zinc-200 dark:border-zinc-800 rounded-md checked:bg-zinc-900 dark:checked:bg-white transition-all">
+              <span class="text-xs font-bold text-zinc-500 uppercase tracking-tight">{{ 'libraries.use_onload' | translate }}</span>
+            </label>
+          </div>
+        </div>
 
-          <div *ngIf="selectedLibraryType">
-            <div class="row">
-              <div class="col-md-6">
-                <mat-form-field class="w-100">
-                  <mat-label>{{ 'libraries.dom_type' | translate }} *</mat-label>
-                  <mat-select id="domtype" [(ngModel)]="library.domtype" name="domtype" required>
-                    <mat-option value="link">{{ 'libraries.link' | translate }}</mat-option>
-                    <mat-option value="script">{{ 'libraries.script' | translate }}</mat-option>
-                  </mat-select>
-                </mat-form-field>
+        <div class="space-y-2">
+          <label class="block text-[9px] font-bold text-zinc-400 uppercase tracking-widest ml-1">{{ 'libraries.upload_library' | translate }} *</label>
+          <div (click)="fileInput.click()" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)"
+               class="relative group cursor-pointer p-10 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-[2rem] bg-zinc-50/50 dark:bg-zinc-900/20 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all text-center">
+            <input type="file" #fileInput class="hidden" (change)="onFileSelect($event)" required>
+            <div class="flex flex-col items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl bg-white dark:bg-zinc-900 shadow-sm flex items-center justify-center text-zinc-400 group-hover:scale-110 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
               </div>
-              <div class="col-md-6 d-flex align-items-center">
-                <mat-checkbox id="useonload" [(ngModel)]="library.useonload" name="useonload">
-                  {{ 'libraries.use_onload' | translate }} <span>({{ 'libraries.change_only_if_necessary' | translate }})</span>
-                </mat-checkbox>
+              <div>
+                <p class="text-xs font-bold text-zinc-900 dark:text-white uppercase tracking-tight">{{ 'importexport.drag_drop_here' | translate }}</p>
+                <p class="text-[10px] text-zinc-400 font-medium mt-1">{{ 'importexport.or_browse_files' | translate }}</p>
+              </div>
+              <div *ngIf="fileUpload" class="mt-2 px-4 py-1.5 bg-zinc-900 text-white rounded-full text-[10px] font-mono animate-bounce">
+                {{ fileUpload.name }}
               </div>
             </div>
+          </div>
+        </div>
 
-            <div class="row mb-3">
-              <div class="col-12">
-                <label class="mat-label">{{ 'libraries.upload_library' | translate }} *</label>
-                <div class="file-upload-container"
-                     (click)="fileInput.click()"
-                     (dragover)="onDragOver($event)"
-                     (dragleave)="onDragLeave($event)"
-                     (drop)="onDrop($event)">
-                  <input type="file"
-                         #fileInput
-                         class="d-none"
-                         id="filename"
-                         (change)="onFileSelect($event)"
-                         required>
-                  <div class="text-center">
-                    <mat-icon>cloud_upload</mat-icon>
-                    <p class="mb-0">{{ 'importexport.drag_drop_here' | translate }}</p>
-                    <p class="text-muted mb-0">{{ 'importexport.or_browse_files' | translate }}</p>
-                    <p *ngIf="fileUpload" class="mt-2 file-name-display">{{ fileUpload.name }}</p>
-                  </div>
+        <div class="space-y-6">
+          <div>
+            <label class="block text-[9px] font-bold text-zinc-400 uppercase mb-1.5 ml-1">{{ 'libraries.callback' | translate }}</label>
+            <textarea matInput [(ngModel)]="library.callback" name="callback" rows="3"
+                      class="w-full p-4 bg-zinc-900 text-emerald-400 font-mono text-[11px] rounded-2xl border border-zinc-800 outline-none"></textarea>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+            <div>
+              <label class="block text-[9px] font-bold text-zinc-400 uppercase mb-1.5 ml-1">{{ 'libraries.group' | translate }} *</label>
+              <input matInput [(ngModel)]="library.group" name="group" required
+                     class="w-full h-11 px-4 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-sm outline-none">
+            </div>
+            <div>
+               
+              <div>
+               <label class="block text-[9px] font-bold text-zinc-400 uppercase mb-1.5 ml-1">{{ 'libraries.load_type' | translate }} *</label>
+              <div class="relative group">
+                <select [(ngModel)]="library.loadtype" name="loadtype"
+                         required
+                        class="w-full h-11 px-4 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-sm font-medium text-zinc-900 dark:text-zinc-100 outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all appearance-none cursor-pointer">
+                  
+                  <option value="" disabled selected hidden>{{ 'libraries.load_type' | translate }}</option>
+                  
+                  <option value="view" class="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
+                   {{ 'libraries.view' | translate }}
+                  </option>
+                  
+                  <option value="map" class="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
+                  {{ 'libraries.map' | translate }}
+                  </option>
+                  <option value="form" class="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
+                  {{ 'libraries.form' | translate }}
+                  </option>
+                </select>
+
+                <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-zinc-400 group-hover:text-zinc-600 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m6 9 6 6 6-6"/>
+                  </svg>
                 </div>
               </div>
             </div>
 
-            <div class="row">
-              <div class="col-12">
-                <mat-form-field class="w-100">
-                  <mat-label>{{ 'libraries.callback' | translate }}</mat-label>
-                  <textarea matInput
-                            id="callback"
-                            [(ngModel)]="library.callback"
-                            name="callback"></textarea>
-                </mat-form-field>
-              </div>
-            </div>
 
-            <div class="row">
-              <div class="col-12">
-                <mat-form-field class="w-100">
-                  <mat-label>{{ 'libraries.group' | translate }} *</mat-label>
-                  <input matInput id="group" [(ngModel)]="library.group" name="group" required>
-                </mat-form-field>
-              </div>
-            </div>
 
-            <div class="row">
-              <div class="col-md-6">
-                <mat-form-field class="w-100">
-                  <mat-label>{{ 'libraries.load_type' | translate }} *</mat-label>
-                  <mat-select id="loadtype" [(ngModel)]="library.loadtype" name="loadtype" required>
-                    <mat-option value="view">{{ 'libraries.view' | translate }}</mat-option>
-                    <mat-option value="map">{{ 'libraries.map' | translate }}</mat-option>
-                    <mat-option value="form">{{ 'libraries.form' | translate }}</mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </div>
-              <div class="col-md-6 d-flex align-items-center">
-                <mat-checkbox id="mandatory" [(ngModel)]="library.mandatory" name="mandatory">
-                  {{ 'libraries.mandatory' | translate }}
-                </mat-checkbox>
-              </div>
-            </div>
 
-            <div class="row text-right">
-              <div class="col-12">
-                <button mat-raised-button color="primary" (click)="addLibrary()">{{ 'menu.actions.save' | translate }}</button>
-                <button mat-stroked-button (click)="cancelAddLibrary()" class="ml-2">{{ 'menu.actions.cancel' | translate }}</button>
-              </div>
+
+
+
+
+
+
+
             </div>
           </div>
-        </form>
-      </mat-card-content>
-    </mat-card>
+        </div>
+
+        <div class="flex items-center justify-between pt-6 border-t border-zinc-100 dark:border-zinc-900">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" [(ngModel)]="library.mandatory" name="mandatory" class="peer appearance-none w-5 h-5 border-2 border-zinc-200 dark:border-zinc-800 rounded-md checked:bg-amber-500 transition-all">
+            <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{{ 'libraries.mandatory' | translate }}</span>
+          </label>
+          <div class="flex gap-3">
+            <button (click)="cancelAddLibrary()" class="px-6 py-2.5 text-[10px] font-bold text-zinc-400 uppercase tracking-widest hover:text-zinc-900 transition-colors">
+              {{ 'menu.actions.cancel' | translate }}
+            </button>
+            <button (click)="addLibrary()" 
+                    class="px-10 py-3 bg-zinc-900 dark:bg-white text-white dark:text-black text-[10px] font-bold uppercase tracking-[0.2em] rounded-2xl shadow-lg hover:opacity-90 transition-all">
+              {{ 'menu.actions.save' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
   </div>
 </div>
 
-<!-- Template for the activation checkbox cell -->
 <ng-template #activationCell let-rowData="rowData">
-  <div class="activation-cell-container">
-    <mat-slide-toggle [checked]="rowData.activated"
-                      (change)="onLibraryActivationChange($event, rowData)">
-    </mat-slide-toggle>
+  <label class="relative inline-flex items-center cursor-pointer">
+    <input type="checkbox" class="sr-only peer" [checked]="rowData.activated" (change)="onLibraryActivationChange($event, rowData)">
+    <div class="w-9 h-5 bg-zinc-200 dark:bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-zinc-900 dark:peer-checked:bg-white"></div>
+  </label>
+</ng-template>
+
+
+
+
+<ng-template #useOnLoadCell let-rowData="rowData">
+  <div class="flex items-center gap-2 px-2 py-1 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg border border-zinc-100 dark:border-zinc-800/50" 
+       [class.opacity-30]="!rowData.useonload" title="{{ 'libraries.use_onload' | translate }}">
+    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-500"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
   </div>
 </ng-template>
 
-<!-- Template for the useonload checkbox cell -->
-<ng-template #useOnLoadCell let-rowData="rowData">
-  <mat-checkbox [checked]="rowData.useonload"
-                [disabled]="true">
-  </mat-checkbox>
-</ng-template>
-
-<!-- Template for the mandatory checkbox cell -->
 <ng-template #mandatoryCell let-rowData="rowData">
-  <mat-checkbox [checked]="rowData.mandatory"
-                [disabled]="true">
-  </mat-checkbox>
+  <div class="flex items-center gap-2 px-2 py-1 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg border border-zinc-100 dark:border-zinc-800/50" 
+       [class.opacity-30]="!rowData.mandatory" title="{{ 'libraries.mandatory' | translate }}">
+    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-500"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+  </div>
 </ng-template>
 
-<!-- Template for the delete button cell -->
-<ng-template #deleteCell let-rowData="rowData">
-  <button mat-icon-button color="warn"
-          [disabled]="rowData.mandatory"
-          (click)="onDeleteLibrary(rowData)">
-    <mat-icon>delete</mat-icon>
-  </button>
-</ng-template>
-
-<!-- Template for the callback cell -->
 <ng-template #callbackCell let-rowData="rowData">
-  <span *ngIf="rowData.callback" [matTooltip]="rowData.callback" matTooltipPosition="above" class="callback-link">
-    {{ 'libraries.show_callback' | translate }}
-  </span>
+  <div class="flex items-center gap-2 px-2 py-1 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg border border-zinc-100 dark:border-zinc-800/50" 
+       [class.opacity-30]="!rowData.callback" [matTooltip]="rowData.callback" title="{{ 'libraries.callback' | translate }}">
+    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-500"><path d="M4 17h6"/><path d="M4 13h6"/><path d="M4 9h6"/><path d="M14 17h6"/><path d="M14 13h6"/><path d="M14 9h6"/></svg>
+  </div>
 </ng-template>

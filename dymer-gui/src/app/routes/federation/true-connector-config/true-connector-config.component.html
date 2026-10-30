@@ -1,0 +1,45 @@
+<div class="tc-config" [formGroup]="formGroup()">
+    <header class="tc-config__header">
+        <h4>Configurazione True Connector</h4>
+        <p>Parametri di connessione al connector IDS che espone il catalogo della fonte.</p>
+    </header>
+
+    <div class="tc-config__grid">
+        <label class="field">
+            <span class="field__label">Endpoint connector</span>
+            <input type="text" formControlName="connectorEndpoint" placeholder="https://connector.partner.example/api"
+                class="field__input" />
+        </label>
+
+        <label class="field">
+            <span class="field__label">Self-Description URL (opzionale)</span>
+            <input type="text" formControlName="selfDescriptionUrl"
+                placeholder="https://connector.partner.example/.well-known/self-description" class="field__input" />
+        </label>
+
+        <label class="field">
+            <span class="field__label">Identity Provider</span>
+            <input type="text" formControlName="identityProvider" placeholder="https://daps.partner.example"
+                class="field__input" />
+        </label>
+
+        <label class="field">
+            <span class="field__label">Client ID</span>
+            <input type="text" formControlName="clientId" class="field__input" />
+        </label>
+
+        <label class="field">
+            <span class="field__label">Alias certificato</span>
+            <input type="text" formControlName="certificateAlias" class="field__input" />
+        </label>
+
+        <label class="field">
+            <span class="field__label">Credenziali / secret</span>
+            <input type="password" formControlName="credentialsSecret" placeholder="••••••••••••"
+                class="field__input" />
+            <span class="field__hint">
+                Lasciare vuoto per non modificare il secret già configurato.
+            </span>
+        </label>
+    </div>
+</div>

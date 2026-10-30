@@ -1,75 +1,153 @@
-<page-header title="AI Management" [nav]="['Dashboard', 'AI Config']"></page-header>
+ 
+<div class="flex h-[calc(100vh-120px)] bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-sm animate-in fade-in duration-500">
+  
+  <aside class="w-60 border-r border-zinc-200 dark:border-zinc-800 bg-zinc-50/30 dark:bg-zinc-900/20 flex flex-col">
+    <header class="p-5 border-b border-zinc-100 dark:border-zinc-900 flex justify-between items-center bg-white/50 dark:bg-zinc-950/50">
+      <div class="space-y-0.5">
+        <h2 class="text-[11px] font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-[0.2em]">Agenti</h2>
+        <p class="text-[9px] text-zinc-400 font-medium uppercase tracking-tighter">{{ agents().length }} Modelli configurati</p>
+      </div>
+      <button (click)="reset()" 
+              class="p-2 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-lg hover:opacity-80 transition-all shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+      </button>
+    </header>
 
-<div class="row">
-  <div class="col-md-4">
-    <mat-card>
-      <mat-card-header class="d-flex justify-content-between">
-        <mat-card-title>Agenti</mat-card-title>
-        <button mat-icon-button color="primary" (click)="reset()"><mat-icon>add</mat-icon></button>
-      </mat-card-header>
-      <mat-progress-bar *ngIf="isLoading()" mode="indeterminate"></mat-progress-bar>
+    @if (isLoading()) {
+      <div class="h-1 bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+        <div class="h-full bg-zinc-900 dark:bg-white animate-progress-indeterminate"></div>
+      </div>
+    }
+
+<nav class="flex-1 overflow-y-auto p-3 space-y-1">
+  @for (a of agents(); track a._id) {
+    <div class="relative group">
+      <button (click)="selectAgent(a)"
+              [class]="selectedId() === a._id 
+                ? 'bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 shadow-sm ring-1 ring-zinc-900/5' 
+                : 'border-transparent hover:bg-zinc-100/50 dark:hover:bg-zinc-900/50 text-zinc-500 hover:text-zinc-900'"
+              class="w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left pr-10">
+        
+        <div [class]="selectedId() === a._id ? 'bg-zinc-900 dark:bg-white text-white dark:text-black' : 'bg-zinc-200 dark:border-zinc-800 text-zinc-500'"
+             class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors shrink-0">
+          @if (a.provider === 'openai') {
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a3.5 3.5 0 1 1-5.83-2.65 3.5 3.5 0 1 1-5.34-4.85 3.5 3.5 0 1 1 5.34-4.85 3.5 3.5 0 1 1 5.83-2.65 3.5 3.5 0 1 1 0 7 3.5 3.5 0 1 1 0 7Z"/><path d="M12 12v.01"/></svg>
+          } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="8" x="2" y="2" rx="2"/><rect width="20" height="8" x="2" y="14" rx="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></svg>
+          }
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <div class="text-[11px] font-bold uppercase tracking-tight truncate" 
+               [class.text-zinc-900]="selectedId() === a._id" [class.dark:text-zinc-100]="selectedId() === a._id">
+            {{ a.name }}
+          </div>
+          <div class="text-[10px] font-mono text-zinc-400 truncate">{{ a.model }}</div>
+        </div>
+      </button>
+
+      <button (click)="deleteAgent(a._id); $event.stopPropagation()"
+              class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
+              title="Elimina configurazione">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+      </button>
+    </div>
+  }
+</nav>
+  </aside>
+
+  <main class="flex-1 bg-white dark:bg-zinc-950 overflow-y-auto">
+    <form [formGroup]="agentForm" class="max-w-3xl mx-auto p-12 space-y-10">
       
-      <mat-nav-list>
-        <mat-list-item *ngFor="let a of agents()" (click)="selectAgent(a)" [class.bg-light]="selectedId() === a._id">
-          <mat-icon matListItemIcon>{{ a.provider === 'openai' ? 'cloud' : 'dns' }}</mat-icon>
-          <div matListItemTitle>{{ a.name }}</div>
-          <div matListItemLine>{{ a.model }}</div>
-        </mat-list-item>
-      </mat-nav-list>
-    </mat-card>
-  </div>
-
-  <div class="col-md-8">
-    <mat-card>
-      <mat-card-content>
-        <form [formGroup]="agentForm" class="m-t-16">
-          <div class="row">
-            <mat-form-field class="col-sm-6" appearance="outline">
-              <mat-label>Nome Agente</mat-label>
-              <input matInput formControlName="name">
-            </mat-form-field>
-            <mat-form-field class="col-sm-6" appearance="outline">
-              <mat-label>Provider</mat-label>
-              <mat-select formControlName="provider">
-                <mat-option value="ollama">Ollama</mat-option>
-                <mat-option value="openai">OpenAI</mat-option>
-                <mat-option value="custom">Agente Custom (API Esterna)</mat-option>
-              </mat-select>
-            </mat-form-field>
+      <div class="flex justify-between items-start border-b border-zinc-100 dark:border-zinc-900 pb-8">
+        <div class="space-y-1">
+          <h1 class="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+            {{ selectedId() ? 'Modifica Agente' : 'Nuovo Agente' }}
+          </h1>
+          <p class="text-xs text-zinc-500 uppercase tracking-widest font-medium">Configurazione LLM & Endpoint</p>
+        </div>
+        
+        <label class="flex items-center gap-3 cursor-pointer group">
+          <span class="text-[10px] font-bold text-zinc-400 group-hover:text-zinc-600 uppercase tracking-widest transition-colors">
+            {{ agentForm.get('isActive')?.value ? 'Active' : 'Disabled' }}
+          </span>
+          <div class="relative">
+            <input type="checkbox" formControlName="isActive" class="sr-only peer">
+            <div class="w-9 h-5 bg-zinc-200 dark:bg-zinc-800 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
           </div>
+        </label>
+      </div>
 
-          <div class="row" formGroupName="settings">
-             <mat-form-field appearance="outline" class="w-full" 
-                *ngIf="agentForm.get('provider')?.value !== 'openai'">
-                <mat-label>{{ agentForm.get('provider')?.value === 'custom' ? 'URL Endpoint API' : 'Ollama Base URL' }}</mat-label>
-                <input matInput formControlName="baseUrl" placeholder="https://api.tuoservizio.it/v1/chat">
-                <mat-hint>L'URL a cui Node inoltrerà le richieste di questo agente</mat-hint>
-              </mat-form-field>
-            <mat-form-field class="col-12" appearance="outline" *ngIf="agentForm.get('provider')?.value === 'openai'">
-              <mat-label>API Key OpenAI</mat-label>
-              <input matInput formControlName="apiKey" type="password">
-            </mat-form-field>
-            
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <div class="space-y-2">
+          <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">Nome Agente</label>
+          <input formControlName="name" type="text"
+                 class="w-full h-11 px-4 bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800 transition-all"
+                 placeholder="es. Support Assistant">
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">Provider</label>
+          <div class="relative">
+            <select formControlName="provider"
+                    class="w-full h-11 px-4 bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-bold uppercase tracking-wider outline-none appearance-none cursor-pointer focus:ring-2 focus:ring-zinc-100">
+              <option value="ollama">Ollama</option>
+              <option value="openai">OpenAI</option>
+              <option value="custom">Custom API</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-zinc-400">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
           </div>
+        </div>
 
-          <mat-form-field class="col-12" appearance="outline">
-            <mat-label>Model (es. llama3.1 o gpt-4o)</mat-label>
-            <input matInput formControlName="model">
-          </mat-form-field>
+        <div class="md:col-span-2 p-6 bg-zinc-50/50 dark:bg-zinc-900/20 border border-zinc-100 dark:border-zinc-900 rounded-2xl" formGroupName="settings">
+          
+          @if (agentForm.get('provider')?.value !== 'openai') {
+            <div class="space-y-2 animate-in fade-in slide-in-from-left-2">
+              <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">
+                {{ agentForm.get('provider')?.value === 'custom' ? 'URL Endpoint API' : 'Ollama Base URL' }}
+              </label>
+              <input formControlName="baseUrl" type="text"
+                     class="w-full h-11 px-4 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-mono outline-none focus:ring-2 focus:ring-zinc-100"
+                     placeholder="https://api.domain.it/v1/chat">
+              <p class="text-[10px] text-zinc-400 italic ml-1 italic">L'URL a cui Node inoltrerà le richieste di questo agente</p>
+            </div>
+          }
 
-          <mat-form-field class="col-12" appearance="outline">
-            <mat-label>System Prompt</mat-label>
-            <textarea matInput formControlName="systemPrompt" rows="5"></textarea>
-          </mat-form-field>
+          @if (agentForm.get('provider')?.value === 'openai') {
+            <div class="space-y-2 animate-in fade-in slide-in-from-left-2">
+              <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">OpenAI API Key</label>
+              <input formControlName="apiKey" type="password"
+                     class="w-full h-11 px-4 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm outline-none focus:ring-2 focus:ring-zinc-100"
+                     placeholder="sk-....">
+            </div>
+          }
+        </div>
 
-          <div class="d-flex justify-content-between align-items-center">
-            <mat-slide-toggle formControlName="isActive">Active Agent</mat-slide-toggle>
-            <button mtx-button color="primary"  (click)="save()" [disabled]="agentForm.invalid">
-              {{ selectedId() ? 'Update' : 'Save' }}
-            </button>
-          </div>
-        </form>
-      </mat-card-content>
-    </mat-card>
-  </div>
+        <div class="md:col-span-2 space-y-2">
+          <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">Model ID</label>
+          <input formControlName="model" type="text"
+                 class="w-full h-11 px-4 bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-mono outline-none focus:ring-2 focus:ring-zinc-100"
+                 placeholder="es. llama3.1:8b o gpt-4o">
+        </div>
+
+        <div class="md:col-span-2 space-y-2">
+          <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] ml-1">System Prompt</label>
+          <textarea formControlName="systemPrompt" rows="6"
+                    class="w-full p-4 bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm leading-relaxed outline-none focus:ring-2 focus:ring-zinc-100 transition-all resize-none"
+                    placeholder="Sei un assistente specializzato in..."></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-10 border-t border-zinc-100 dark:border-zinc-900">
+        <button (click)="save()" [disabled]="agentForm.invalid"
+                class="h-12 px-10 bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold uppercase tracking-[0.2em] rounded-xl hover:opacity-90 transition-all shadow-lg disabled:opacity-20 disabled:cursor-not-allowed">
+          {{ selectedId() ? 'Update Agent' : 'Create Agent' }}
+        </button>
+      </div>
+
+    </form>
+  </main>
 </div>

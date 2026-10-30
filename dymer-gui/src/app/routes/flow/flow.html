@@ -1,0 +1,108 @@
+<div class="flex h-screen w-screen overflow-hidden bg-stone-50 text-stone-900 font-sans">
+    <!-- <div class="flex h-full w-full overflow-hidden bg-stone-50 text-stone-900 font-sans h-full"> -->
+      
+      <!-- Toolbox Sidebar -->
+      <!-- <aside class="w-80 bg-white border-r border-stone-200 shadow-sm flex flex-col z-20 relative"> -->
+      <aside class="w-20 bg-white border-r border-stone-200 shadow-sm flex flex-col z-20 relative">
+        <!-- Tabs -->
+        <div class="flex border-b border-stone-200 bg-stone-50 shrink-0">
+           <button class="flex-1 py-3 text-[11px] font-bold uppercase tracking-widest transition-all"
+                   [class]="activeTab() === 'library' ? 'text-indigo-600 border-b-2 border-indigo-600 bg-white' : 'text-stone-400 hover:text-stone-600 hover:bg-stone-100'"
+                   (click)="activeTab.set('library')">
+              Library
+           </button>
+           <button class="flex-1 py-3 text-[11px] font-bold uppercase tracking-widest transition-all"
+                   [class]="activeTab() === 'templates' ? 'text-indigo-600 border-b-2 border-indigo-600 bg-white' : 'text-stone-400 hover:text-stone-600 hover:bg-stone-100'"
+                   (click)="activeTab.set('templates')">
+              Templates
+           </button>
+        </div>
+
+        <div class="p-4 flex flex-col gap-6 overflow-y-auto h-full">
+            
+            @if(activeTab() === 'library') {
+               @for (category of presetGroups; track category.group) {
+              <div class="flex flex-col gap-3">
+                <div class="flex items-center gap-2">
+                   <span class="text-[11px] font-bold text-stone-400 uppercase tracking-widest">{{ category.group }}</span>
+                   <div class="h-px bg-stone-100 flex-1"></div>
+                </div>
+                
+                @for (preset of category.items; track preset.label) {
+                    <div class="bg-white border border-stone-200 rounded-lg p-3 cursor-grab hover:shadow-md transition-shadow active:cursor-grabbing hover:border-stone-300"
+                         draggable="true" 
+                         (dragstart)="onDragStart($event, preset)">
+                        
+                        <div class="flex items-center gap-2 mb-2">
+                           <div class="w-2.5 h-2.5 rounded-full shadow-sm" [style.background-color]="preset.color"></div>
+                           <span class="font-bold text-sm text-stone-700 leading-tight">{{ preset.label }}</span>
+                        </div>
+
+                        <div class="flex flex-col gap-1.5 text-[10px] text-stone-500">
+                            <div class="flex justify-between items-center bg-stone-50 p-1 px-1.5 rounded">
+                                <span class="font-medium text-stone-400">IN:</span>
+                                <span class="font-medium text-stone-700 truncate max-w-[140px] text-right">{{ preset.dataSource }}</span>
+                            </div>
+                            <div class="flex justify-between items-center bg-stone-50 p-1 px-1.5 rounded">
+                                <span class="font-medium text-stone-400">OUT:</span>
+                                <span class="font-medium text-stone-700 truncate max-w-[140px] text-right">{{ preset.output }}</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+              </div>
+            }
+            } @else {
+               <!-- Templates UI -->
+               <div class="flex flex-col gap-3 mb-4">
+                  <span class="text-[11px] font-bold text-stone-400 uppercase tracking-widest">Database Sync</span>
+                  <div class="flex flex-col gap-2">
+                     <button class="w-full flex items-center justify-center gap-2 bg-stone-900 text-white rounded-lg px-4 py-2.5 text-sm font-semibold hover:bg-stone-800 transition-all shadow-sm active:scale-[0.98]"
+                             (click)="saveCurrentAsTemplate()">
+                        <span class="material-icons text-[16px]">cloud_upload</span>
+                        Save to MongoDB
+                     </button>
+                     <div class="grid grid-cols-2 gap-2 mt-2">
+                        <button class="flex items-center justify-center gap-2 bg-white border border-stone-200 text-stone-700 rounded-lg px-3 py-2 text-xs font-bold hover:bg-stone-50 transition-colors shadow-sm"
+                                (click)="exportJson()">
+                           <span class="material-icons text-[14px]">file_download</span>
+                           Export
+                        </button>
+                        <button class="flex items-center justify-center gap-2 bg-white border border-stone-200 text-stone-700 rounded-lg px-3 py-2 text-xs font-bold hover:bg-stone-50 transition-colors shadow-sm relative overflow-hidden">
+                           <span class="material-icons text-[14px]">file_upload</span>
+                           Import
+                           <input type="file" class="absolute inset-0 opacity-0 cursor-pointer" accept=".json" (change)="importJson($event)">
+                        </button>
+                     </div>
+                  </div>
+               </div>
+
+               <!-- Saved Templates List -->
+               <div class="flex flex-col gap-3">
+                  <div class="flex items-center gap-2">
+                     <span class="text-[11px] font-bold text-stone-400 uppercase tracking-widest">Cloud Templates</span>
+                     <div class="h-px bg-stone-100 flex-1"></div>
+                  </div>
+                  @if (savedTemplates().length === 0) {
+                     <p class="text-xs text-stone-400 text-center italic mt-4">No templates in MongoDB yet.</p>
+                  }
+                  @for (tmpl of savedTemplates(); track tmpl.id) {
+                     <div class="bg-indigo-50 border border-indigo-100 rounded-lg p-3 cursor-pointer hover:shadow-md transition-all hover:border-indigo-300 group"
+                          (click)="loadTemplate(tmpl)">
+                        <div class="flex items-center justify-between mb-1">
+                           <span class="font-bold text-sm text-indigo-900 leading-tight group-hover:text-indigo-600 transition-colors truncate">{{ tmpl.name }}</span>
+                           <span class="material-icons text-[14px] text-indigo-300 group-hover:text-indigo-500 shrink-0">restore</span>
+                        </div>
+                        <p class="text-[10px] text-indigo-500">Nodes: {{tmpl.data.nodes.length}} | Edges: {{tmpl.data.edges.length}}</p>
+                     </div>
+                  }
+               </div>
+            }
+        </div>
+      </aside>
+
+      <!-- Main Canvas Flow -->
+      <main class="flex-1 relative">
+        <xy-flow></xy-flow>
+      </main>
+    </div>

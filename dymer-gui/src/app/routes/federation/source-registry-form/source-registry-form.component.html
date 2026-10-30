@@ -1,0 +1,79 @@
+<form class="source-form" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="source-form__section">
+        <label class="field">
+            <span class="field__label">Nome fonte</span>
+            <input type="text" formControlName="name" class="field__input" placeholder="es. OEM-Acme Catalog" />
+        </label>
+
+        <label class="field">
+            <span class="field__label">Descrizione</span>
+            <input type="text" formControlName="description" class="field__input" placeholder="opzionale" />
+        </label>
+
+        <label class="field">
+            <span class="field__label">Endpoint</span>
+            <input type="text" formControlName="endpoint" class="field__input"
+                placeholder="https://nodo.partner.example/catalog" />
+        </label>
+    </div>
+
+    <div class="source-form__section">
+        <span class="field__label">Tipo adapter</span>
+        <dymer-adapter-type-selector formControlName="adapterType" />
+    </div>
+
+    @if (isTrueConnector()) {
+    <dymer-true-connector-config [formGroup]="trueConnectorGroup" />
+    }
+
+    <div class="source-form__section source-form__grid">
+        <label class="field">
+            <span class="field__label">Intervallo poll (minuti)</span>
+            <input type="number" min="1" formControlName="pollIntervalMinutes" class="field__input" />
+        </label>
+
+        <label class="field">
+            <span class="field__label">Trust level</span>
+            <select formControlName="trustLevel" class="field__select">
+                <option value="verified">Verified</option>
+                <option value="standard">Standard</option>
+                <option value="untrusted">Untrusted</option>
+            </select>
+        </label>
+
+        <label class="field">
+            <span class="field__label">Policy auto-creazione catalogo</span>
+            <select formControlName="autoCreatePolicy" class="field__select">
+                <option value="profile-only">Solo profili noti</option>
+                <option value="allow-inferred-draft">Consenti draft inferiti</option>
+                <option value="disabled">Disabilitata</option>
+            </select>
+        </label>
+
+        <label class="field field--checkbox">
+            <input type="checkbox" formControlName="pushEnabled" />
+            <span class="field__label">Abilita ricezione push</span>
+        </label>
+
+        <label class="field field--checkbox">
+            <input type="checkbox" formControlName="enabled" />
+            <span class="field__label">Fonte attiva</span>
+        </label>
+    </div>
+
+    @if (testResult(); as result) {
+    <div class="source-form__test-result" [class.source-form__test-result--ok]="result.ok">
+        {{ result.message }}
+    </div>
+    }
+
+    <div class="source-form__actions">
+        <button type="button" class="btn btn--ghost" (click)="testConnection()" [disabled]="testing()">
+            {{ testing() ? 'Test in corso…' : 'Testa connessione' }}
+        </button>
+        <button type="button" class="btn btn--ghost" (click)="cancelled.emit()">Annulla</button>
+        <button type="submit" class="btn btn--primary" [disabled]="form.invalid || saving()">
+            {{ saving() ? 'Salvataggio…' : (editingId() ? 'Salva modifiche' : 'Crea fonte') }}
+        </button>
+    </div>
+</form>

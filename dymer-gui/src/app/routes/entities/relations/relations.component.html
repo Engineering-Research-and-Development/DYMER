@@ -26,36 +26,46 @@
             <div class="space-y-4 p-4 bg-zinc-50/50 dark:bg-zinc-900/50 rounded-lg border border-zinc-100 dark:border-zinc-800">
               <h3 class="text-[10px] font-bold text-zinc-400 uppercase tracking-tight">Origine (Entità 1)</h3>
               <div class="space-y-3">
-                <select formControlName="index1" class="w-full h-9 px-3 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800">
+                <select formControlName="index1" (change)="manageRelForm.get('id1')?.setValue('')" class="w-full h-9 px-3 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800">
                   <option value="">{{ 'menu.entities.relations.index1' | translate }}</option>
-                  <option *ngFor="let index of groupedEntities" [value]="index">{{ index }}</option>
+                  <option *ngFor="let group of groupedEntities" [value]="group.groupName">{{ group.groupName }}</option>
                 </select>
-                <input formControlName="id1" [placeholder]="'menu.entities.relations.id1' | translate" 
+                <select formControlName="id1" (change)="onEntitySelectionChange('sel1')" 
                        class="w-full h-9 px-3 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800">
+                  <option value="">{{ 'menu.entities.relations.entity1' | translate }}</option>
+                  <option *ngFor="let entity of getFilteredEntities(manageRelForm.get('index1')?.value)" [value]="entity._id">
+                    {{ entity.title || entity._id }}
+                  </option>
+                </select>
               </div>
             </div>
 
             <div class="space-y-4 p-4 bg-zinc-50/50 dark:bg-zinc-900/50 rounded-lg border border-zinc-100 dark:border-zinc-800">
               <h3 class="text-[10px] font-bold text-zinc-400 uppercase tracking-tight">Destinazione (Entità 2)</h3>
               <div class="space-y-3">
-                <select formControlName="index2" class="w-full h-9 px-3 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800">
+                <select formControlName="index2" (change)="manageRelForm.get('id2')?.setValue('')" class="w-full h-9 px-3 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800">
                   <option value="">{{ 'menu.entities.relations.index2' | translate }}</option>
-                  <option *ngFor="let index of groupedEntities" [value]="index">{{ index }}</option>
+                  <option *ngFor="let group of groupedEntities" [value]="group.groupName">{{ group.groupName }}</option>
                 </select>
-                <input formControlName="id2" [placeholder]="'menu.entities.relations.id2' | translate" 
+                <select formControlName="id2" (change)="onEntitySelectionChange('sel2')" 
                        class="w-full h-9 px-3 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-md text-sm outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-800">
+                  <option value="">{{ 'menu.entities.relations.entity2' | translate }}</option>
+                  <option *ngFor="let entity of getFilteredEntities(manageRelForm.get('index2')?.value)" [value]="entity._id">
+                    {{ entity.title || entity._id }}
+                  </option>
+                </select>
               </div>
             </div>
           </div>
 
           <div class="pt-4 flex justify-end gap-3 border-t border-zinc-100 dark:border-zinc-800">
-            <button type="button" (click)="resetManageRel()" 
-                    class="h-9 px-4 text-xs font-bold uppercase text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors">
-              {{ 'cancel' | translate }}
-            </button>
             <button type="submit" [disabled]="!manageRelForm.valid"
                     class="h-9 px-6 bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold uppercase rounded-lg hover:opacity-90 transition-all disabled:opacity-30">
-              {{ 'menu.entities.relations.saveRelation' | translate }}
+              {{ (isUpdating ? 'menu.entities.relations.update' : 'menu.actions.add') | translate }}
+            </button>
+             <button type="button" (click)="cancelUpdate()" 
+                    class="h-9 px-4 text-xs font-bold uppercase text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors">
+              {{ 'cancel' | translate }}
             </button>
           </div>
         </form>
@@ -66,19 +76,19 @@
   <section class="  mx-auto">
     <div class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
+        <table matSort class="w-full text-left border-collapse">
           <thead>
             <tr class="bg-zinc-50/50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800">
-              <th class="px-6 py-4 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Origine</th>
+              <th mat-sort-header="title1" class="px-6 py-4 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Origine</th>
               <th class="px-6 py-4 text-[10px] font-bold text-zinc-500 uppercase tracking-widest text-center">
                 <svg class="w-4 h-4 mx-auto opacity-30" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
               </th>
-              <th class="px-6 py-4 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Destinazione</th>
+              <th mat-sort-header="title2" class="px-6 py-4 text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Destinazione</th>
               <th class="px-6 py-4 text-[10px] font-bold text-zinc-500 uppercase tracking-widest text-right">Azioni</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
-            <tr *ngFor="let el of dataSource.data" class="group hover:bg-zinc-50/30 dark:hover:bg-zinc-900/20 transition-colors">
+            <tr *ngFor="let el of (dataSource.connect() | async)" class="group hover:bg-zinc-50/30 dark:hover:bg-zinc-900/20 transition-colors">
               <td class="px-6 py-4">
                 <div class="flex flex-col">
                   <span class="text-xs font-bold text-zinc-400 uppercase tracking-tighter">{{ el._source?._index1 }}</span>

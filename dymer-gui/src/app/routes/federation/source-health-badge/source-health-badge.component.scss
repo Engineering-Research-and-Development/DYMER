@@ -1,0 +1,54 @@
+.health-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #c9d1d9;
+  white-space: nowrap;
+
+  &__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 6px currentColor;
+  }
+
+  &[data-status='healthy'] {
+    color: #3ddc97;
+    border-color: rgba(61, 220, 151, 0.25);
+    background: rgba(61, 220, 151, 0.08);
+  }
+
+  &[data-status='degraded'] {
+    color: #f5b942;
+    border-color: rgba(245, 185, 66, 0.25);
+    background: rgba(245, 185, 66, 0.08);
+  }
+
+  &[data-status='error'] {
+    color: #ff5d5d;
+    border-color: rgba(255, 93, 93, 0.25);
+    background: rgba(255, 93, 93, 0.08);
+  }
+
+  &[data-status='paused'] {
+    color: #8a93a3;
+    border-color: rgba(138, 147, 163, 0.25);
+    background: rgba(138, 147, 163, 0.08);
+  }
+
+  &[data-status='unknown'] {
+    color: #6e7681;
+    border-color: rgba(110, 118, 129, 0.2);
+    background: rgba(110, 118, 129, 0.06);
+  }
+}

@@ -1,3 +1,17 @@
+// ============================================================================
+// 06/10/2026 - LITE MODE RELAZIONI
+// Modifiche di questa revisione (cercare "06/10/2026" nel file):
+//  - helper parseRelationOptions / buildRelationCacheKey / applyLiteRelations
+//  - getAllEntitiesFromIDS: proiezione opzionale dei campi (_source)
+//  - mapRelationToEntity: riscritta con mappa di adiacenza (stesso risultato)
+//  - checkUnionRelationV2: terzo parametro relOpts (full | lite | none)
+//  - POST /_search: qoptions.relations = true|false|"full"|"lite"|"none",
+//                   qoptions.relfields, qoptions.rellimit, qoptions.fields
+//  - GET  /_search/:enttype/:id?relations=full|lite|none&fields=a,b&relfields=a,b&rellimit=N&size=N&from=N
+//  - GET  /_relations/:id?index=a,b&from=0&size=20&fields=a,b   (NUOVO, paginato)
+//  - chiave di cache Redis distinta per modalita' relazioni
+// Senza parametri il comportamento resta quello precedente (full).
+// ============================================================================
 var util = require('../utility');
 var jsonResponse = require('../jsonResponse');
 var express = require('express');
@@ -1686,7 +1700,99 @@ function getAllIdsRelationsById1(listIds) {
 };
 
 
-function getAllEntitiesFromIDS(listIds) {
+// ============================================================================
+// 06/10/2026 - LITE MODE RELAZIONI - INIZIO helper
+// ============================================================================
+// 06/10/2026 - campi di default restituiti per ogni item correlato in lite mode
+const DYMER_REL_DEFAULT_FIELDS = ["title"];
+// 06/10/2026 - caratteri ammessi nei nomi dei campi richiesti (es. title, properties.owner.uid, data.*)
+const DYMER_REL_FIELD_RGX = /^[A-Za-z0-9_.\-*]+$/;
+
+// 06/10/2026 - legge le opzioni sulle relazioni da qoptions (POST) o da req.query (GET)
+//   relations : true | "full" (default) -> item correlati completi (comportamento storico)
+//               "lite"                  -> item correlati con i soli campi di relfields
+//               false | "false" | "none"-> nessuna relazione
+//   relfields : "title,logo" oppure ["title","logo"] (default: title)
+//   rellimit  : numero massimo di correlati per item, 0 = nessun limite (solo lite)
+function parseRelationOptions(raw) {
+    let opts = { mode: "full", fields: DYMER_REL_DEFAULT_FIELDS.slice(), limit: 0 };
+    if (raw == undefined || typeof raw !== "object")
+        return opts;
+    let rel = raw.relations;
+    if (rel != undefined) {
+        if (rel === "none" || rel == 'false' || rel == false)
+            opts.mode = "none";
+        else if (rel === "lite")
+            opts.mode = "lite";
+    }
+    let rf = raw.relfields;
+    if (typeof rf === "string")
+        rf = rf.split(",");
+    if (Array.isArray(rf)) {
+        rf = rf.map(f => String(f).trim()).filter(f => DYMER_REL_FIELD_RGX.test(f));
+        if (rf.length > 0)
+            opts.fields = [...new Set(rf)];
+    }
+    let lim = parseInt(raw.rellimit, 10);
+    if (!isNaN(lim) && lim > 0)
+        opts.limit = lim;
+    return opts;
+}
+
+// 08/10/2026 - proiezione dei campi delle entita principali.
+// GET: ?fields=category,type,service,title
+// POST: qoptions.fields come stringa, array o legacy { include: [...] }.
+// Senza fields non viene applicata alcuna proiezione.
+function parseMainFields(raw) {
+    if (raw == undefined)
+        return [];
+    let fields = raw;
+    if (typeof fields === "object" && !Array.isArray(fields) && fields.include != undefined)
+        fields = fields.include;
+    if (typeof fields === "string")
+        fields = fields.split(",");
+    if (!Array.isArray(fields))
+        return [];
+    fields = fields.map(f => String(f).trim()).filter(f => DYMER_REL_FIELD_RGX.test(f));
+    return [...new Set(fields)];
+}
+
+// 06/10/2026 - chiave per la cache Redis: in full resta "params" (chiavi gia' in cache ancora valide),
+// in lite/none viene aggiunta la modalita', cosi' una risposta lite non viene mai servita
+// a chi chiede full e viceversa. L'oggetto restituito NON va passato a Elasticsearch.
+function buildRelationCacheKey(params, relOpts) {
+    if (relOpts == undefined || relOpts.mode === "full")
+        return params;
+    let rel = { mode: relOpts.mode };
+    if (relOpts.mode === "lite") {
+        rel.fields = relOpts.fields.slice().sort();
+        rel.limit = relOpts.limit;
+    }
+    return Object.assign({}, params, { dymerRelations: rel });
+}
+
+// 06/10/2026 - lite mode: aggiunge a ogni item "relationsCount" (totale correlati per indice,
+// calcolato PRIMA del taglio) e applica rellimit all'array relations
+function applyLiteRelations(listEntities, relOpts) {
+    listEntities.forEach(element => {
+        let rels = element['relations'] || [];
+        let counts = {};
+        rels.forEach(r => {
+            counts[r._index] = (counts[r._index] || 0) + 1;
+        });
+        element['relationsCount'] = counts;
+        if (relOpts.limit > 0 && rels.length > relOpts.limit)
+            element['relations'] = rels.slice(0, relOpts.limit);
+    });
+    return listEntities;
+}
+// ============================================================================
+// 06/10/2026 - LITE MODE RELAZIONI - FINE helper
+// ============================================================================
+
+// 06/10/2026 - aggiunto il parametro opzionale sourceFields (lite mode): se valorizzato,
+// Elasticsearch restituisce solo quei campi dell'item correlato
+function getAllEntitiesFromIDS(listIds, sourceFields) {
     // console.log('fetchSingleRelation', element);
     return new Promise(function(resolve, reject) {
         let qparams = {};
@@ -1699,6 +1805,9 @@ function getAllEntitiesFromIDS(listIds) {
         };
 
         qparams["body"].size = 10000;
+        // 06/10/2026 - lite mode: proiezione dei soli campi richiesti
+        if (Array.isArray(sourceFields) && sourceFields.length > 0)
+            qparams["_source"] = sourceFields;
         // console.log('qparams all ent re', JSON.stringify(qparams));
 
         client.search(qparams).then(function(relresp) {
@@ -1716,37 +1825,57 @@ function getAllEntitiesFromIDS(listIds) {
     });
 };
 
+// 06/10/2026 - riscritta: prima, per ogni entita', venivano scorse tutte le relazioni e tutti
+// gli item correlati (costo entita' x relazioni). Ora le relazioni vengono lette una volta sola
+// in una mappa di adiacenza. Il risultato e' identico: stessi item, stesso ordine di listEnRel.
 function mapRelationToEntity(listEntities, listmap, listEnRel) {
-    // console.log('fetchSingleRelation', element);
     return new Promise(function(resolve, reject) {
-        // logger.info('listmap' + listmap.length);
-        // logger.info('listEntities' + listEntities.length);
-        // logger.info('listEnRel' + listEnRel.length);
-        let i = 0;
+        // 06/10/2026 - id -> insieme degli id collegati (la relazione vale in entrambi i versi)
+        let adjacency = new Map();
+        let addLink = function(a, b) {
+            if (a == undefined || b == undefined)
+                return;
+            let set = adjacency.get(a);
+            if (set == undefined) {
+                set = new Set();
+                adjacency.set(a, set);
+            }
+            set.add(b);
+        };
+        listmap.forEach(a => {
+            addLink(a._source._id1, a._source._id2);
+            addLink(a._source._id2, a._source._id1);
+        });
+        // 06/10/2026 - id -> posizioni dell'item correlato in listEnRel (serve a mantenere l'ordine originale)
+        let positionsById = new Map();
+        listEnRel.forEach((o, pos) => {
+            let lst = positionsById.get(o._id);
+            if (lst == undefined) {
+                lst = [];
+                positionsById.set(o._id, lst);
+            }
+            lst.push(pos);
+        });
         listEntities.forEach(element => {
             element['relations'] = [];
-            let templisr = [...new Set(listmap.map(a => {
-                //  console.log('element._id', element._id, a._source._id1, (element._id == a._source._id1));
-                if (element._id == a._source._id1)
-                    return a._source._id2
-                if (element._id == a._source._id2)
-                    return a._source._id1
-            }).filter(o => o != undefined))];
-            //  console.log("templisr", templisr);
-            element['relations'] = listEnRel.filter(o => templisr.includes(o._id));
-            if (element['relations'] == undefined)
-                element['relations'] = []
-                // console.log('templisr ', templisr[0]);
-                // console.log('element[relations] ', i++, element['relations'].length);
-                //  console.log('element[relations]AA1 ', i++, listEntities[1]['relations'][0]);
+            let linked = adjacency.get(element._id);
+            if (linked == undefined)
+                return;
+            let positions = [];
+            linked.forEach(relId => {
+                let lst = positionsById.get(relId);
+                if (lst != undefined)
+                    positions.push(...lst);
+            });
+            positions.sort((x, y) => x - y);
+            element['relations'] = positions.map(pos => listEnRel[pos]);
         });
-        //  console.log('element[relations]AA ', i++, listEntities[0]['relations'][0]);
-        //  console.log('element[relations]AA1 ', i++, listEntities[10]['relations'][0]);
-        //  console.log('RISOLVO listEntities', listEntities.length);
         resolve(listEntities);
     });
 };
-var checkUnionRelationV2 = function(originalList, filterRelationDymer) {
+// 06/10/2026 - aggiunto il parametro opzionale relOpts (vedi parseRelationOptions).
+// Se assente o in modalita' full il comportamento e' quello precedente.
+var checkUnionRelationV2 = function(originalList, filterRelationDymer, relOpts) {
     return new Promise(async function(resolve, reject) {
         /* 
         if (redisEnabled) {
@@ -1781,7 +1910,9 @@ var checkUnionRelationV2 = function(originalList, filterRelationDymer) {
                 return a._source._id1
         }).filter(x => x != undefined && x != ''))];
         // console.log('listIdsRelations ', listIdsRelations)
-        let listEntitiesRelations = await getAllEntitiesFromIDS(listIdsRelations);
+        // 06/10/2026 - lite mode: degli item correlati vengono caricati solo i campi richiesti
+        let liteMode = (relOpts != undefined && relOpts.mode === "lite");
+        let listEntitiesRelations = await getAllEntitiesFromIDS(listIdsRelations, liteMode ? relOpts.fields : undefined);
         // console.log('listEntitiesRelations[0]', listEntitiesRelations[0])
         let listEntities = await mapRelationToEntity(originalList, listDocsRelations, listEntitiesRelations);
         // console.log('old listEntities', listEntities.length)
@@ -1804,6 +1935,10 @@ var checkUnionRelationV2 = function(originalList, filterRelationDymer) {
         }
         // console.log('NEW listEntities', listEntities)
         // console.log('NEW listEntities', listEntities.length)
+        // 06/10/2026 - lite mode: conteggi per indice e rellimit, applicati DOPO il filtro
+        // relationdymer, che deve poter vedere tutte le relazioni dell'item
+        if (liteMode)
+            listEntities = applyLiteRelations(listEntities, relOpts);
         resolve(listEntities);
         return;
     }).catch(function(err) {
@@ -2485,6 +2620,12 @@ router.post('/_search', (req, res) => {
                 sort = qoptions.sort;
             // console.log('recoverRelation', recoverRelation);
         }
+        // 06/10/2026 - Lite mode: qoptions.relations accetta anche "full" | "lite" | "none",
+        // con qoptions.relfields (campi dei correlati) e qoptions.rellimit (max correlati per item)
+        const relOpts = parseRelationOptions(qoptions);
+        const mainFields = parseMainFields(qoptions?.fields);
+        if (relOpts.mode === "none")
+            recoverRelation = false;
         let params = (instance) ? instance : {};
         var req_uid = 0;
         var req_gid = 0;
@@ -2685,17 +2826,8 @@ router.post('/_search', (req, res) => {
                 params["_source"] = source;
             if (_source != undefined)
                 params["_source"] = _source;
-            if (qoptions != undefined)
-                if (qoptions.fields != undefined) {
-                    if (source == undefined)
-                        params["_source"] = qoptions.fields.include;
-                    /* if (qoptions.fields.include != undefined) {
-                         params["_source_include"] = qoptions.fields.include;
-                     }
- 
-                     if (qoptions.fields.exclude != undefined)
-                         params["_source_excludes"] = qoptions.fields.exclude;*/
-                }
+            if (source == undefined && _source == undefined && mainFields.length > 0)
+                params["_source"] = mainFields;
 
             params["sort"] = sort;
             params["body"] = query;
@@ -2711,12 +2843,15 @@ router.post('/_search', (req, res) => {
              if (permFilterByAction) {
                  query.query.bool.must.push(permFilterByAction);
              }*/
+            // 06/10/2026 - Lite mode: chiave di cache distinta per modalita' relazioni
+            const cacheKeyParams = buildRelationCacheKey(params, relOpts);
             let cachedResponse;
             // let hash_ = await redisClient.calculateHash(params) //[2602] aggiunto
              //if (redisEnabled && (hash_ != await redisClient.getRelationKey())) {    //[2602] cambiata la condizione
              
              if (redisEnabled) {      
-                 cachedResponse = await redisClient.readCacheByKey(params, redisEnabled)
+                 // 06/10/2026 - Lite mode: lettura cache con la chiave che include la modalita' relazioni
+                 cachedResponse = await redisClient.readCacheByKey(cacheKeyParams, redisEnabled)
                  if (cachedResponse && Object.keys(cachedResponse).length != 0) {
                      console.log(nameFile + '|_search| cachedResponse ');
                      logger.info(nameFile + '|_search| cachedResponse ');
@@ -2780,7 +2915,8 @@ router.post('/_search', (req, res) => {
                         if (redisEnabled) {
                             let ids = await redisClient.extractIds(ret, redisEnabled)
                             let indexes = await redisClient.extractIndexes(ret, redisEnabled)
-                            await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                //logger.info(nameFile + '|_search| resp no relations: response cached  ');
+                            // 06/10/2026 - Lite mode: scrittura cache con la chiave che include la modalita' relazioni
+                            await redisClient.writeCacheByKey(cacheKeyParams, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                //logger.info(nameFile + '|_search| resp no relations: response cached  ');
                         }
                         return res.send(ret);
                     }).catch(function(err) {
@@ -2791,7 +2927,8 @@ router.post('/_search', (req, res) => {
                 } else {
                     // console.log("entro qui",query );
                     //marco-antonino cache
-                    checkUnionRelationV2(resp.hits.hits, filterRelationDymer).then(function(meatch) {
+                    // 06/10/2026 - Lite mode: passate le opzioni sulle relazioni
+                    checkUnionRelationV2(resp.hits.hits, filterRelationDymer, relOpts).then(function(meatch) {
                         var fileterdList = meatch; //temp
                         // console.log('meatch', meatch);
                         (meatch).map(item => item.relations).filter(
@@ -2823,7 +2960,8 @@ router.post('/_search', (req, res) => {
                                 if (redisEnabled) {
                                     let ids = await redisClient.extractIds(ret, redisEnabled)
                                     let indexes = await redisClient.extractIndexes(ret, redisEnabled)
-                                    await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                }
+                                    // 06/10/2026 - Lite mode: scrittura cache con la chiave che include la modalita' relazioni
+                                    await redisClient.writeCacheByKey(cacheKeyParams, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                }
                                
                                 logger.info(nameFile + '|_search| resp filter relations: response cached  ');
                                 return res.send(ret);
@@ -2849,7 +2987,8 @@ router.post('/_search', (req, res) => {
                                 if (redisEnabled) {
                                     let ids = await redisClient.extractIds(ret, redisEnabled)
                                     let indexes = await redisClient.extractIndexes(ret, redisEnabled)
-                                    await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                        //logger.info(nameFile + '|_search| resp no detected relations: response cached  ');
+                                    // 06/10/2026 - Lite mode: scrittura cache con la chiave che include la modalita' relazioni
+                                    await redisClient.writeCacheByKey(cacheKeyParams, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                        //logger.info(nameFile + '|_search| resp no detected relations: response cached  ');
                                 }
                                 return res.send(ret);
                             }).catch(function(err) {
@@ -2955,6 +3094,25 @@ router.get('/_search/:enttype/:id?', (req, res) => {
             if (qoptions.sort != undefined)
                 sort = qoptions.sort;
         }
+
+        // 06/10/2026 - Lite mode (INIZIO): la GET non aveva opzioni, ora le legge dalla query string
+        //   ?relations=full|lite|none  &relfields=title,logo  &rellimit=20  &size=50  &from=0
+        const relOpts = parseRelationOptions(req.query);
+        const mainFields = parseMainFields(req.query.fields);
+        if (relOpts.mode === "none")
+            recoverRelation = false;
+        let pageFrom = 0;
+        if (req.query.size != undefined) {
+            let qsize = parseInt(req.query.size, 10);
+            if (!isNaN(qsize) && qsize > 0)
+                size = Math.min(qsize, 10000);
+        }
+        if (req.query.from != undefined) {
+            let qfrom = parseInt(req.query.from, 10);
+            if (!isNaN(qfrom) && qfrom > 0)
+                pageFrom = qfrom;
+        }
+        // 06/10/2026 - Lite mode (FINE)
 
         let params = (instance) ? instance : {};
         var req_uid = 0;
@@ -3131,22 +3289,24 @@ router.get('/_search/:enttype/:id?', (req, res) => {
                 params["_source"] = source;
             if (_source != undefined)
                 params["_source"] = _source;
-            if (qoptions != undefined)
-                if (qoptions.fields != undefined) {
-                    if (source == undefined)
-                        params["_source"] = qoptions.fields.include;
-
-                }
+            if (source == undefined && _source == undefined && mainFields.length > 0)
+                params["_source"] = mainFields;
             params["sort"] = sort;
 
             params["body"] = query;
             params["body"].size = size;
 
 
+            // 06/10/2026 - paginazione da query string (?from=)
+            if (pageFrom > 0)
+                params["body"].from = pageFrom;
+            // 06/10/2026 - Lite mode: chiave di cache distinta per modalita' relazioni
+            const cacheKeyParams = buildRelationCacheKey(params, relOpts);
             let cachedResponse;
 
             if (redisEnabled) {
-                cachedResponse = await redisClient.readCacheByKey(params, redisEnabled)
+                // 06/10/2026 - Lite mode: lettura cache con la chiave che include la modalita' relazioni
+                cachedResponse = await redisClient.readCacheByKey(cacheKeyParams, redisEnabled)
                 if (cachedResponse && Object.keys(cachedResponse).length != 0) {
 
                     logger.info(nameFile + '|_search| cachedResponse ');
@@ -3209,7 +3369,8 @@ router.get('/_search/:enttype/:id?', (req, res) => {
                         if (redisEnabled) {
                             let ids = await redisClient.extractIds(ret, redisEnabled)
                             let indexes = await redisClient.extractIndexes(ret, redisEnabled)
-                            await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                //logger.info(nameFile + '|_search| resp no relations: response cached  ');
+                            // 06/10/2026 - Lite mode: scrittura cache con la chiave che include la modalita' relazioni
+                            await redisClient.writeCacheByKey(cacheKeyParams, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                //logger.info(nameFile + '|_search| resp no relations: response cached  ');
                         }
                         return res.send(ret);
                     }).catch(function (err) {
@@ -3219,7 +3380,8 @@ router.get('/_search/:enttype/:id?', (req, res) => {
 
                 } else {
 
-                    checkUnionRelationV2(resp.hits.hits, filterRelationDymer).then(function (meatch) {
+                    // 06/10/2026 - Lite mode: passate le opzioni sulle relazioni
+                    checkUnionRelationV2(resp.hits.hits, filterRelationDymer, relOpts).then(function (meatch) {
                         var fileterdList = meatch; //temp
 
                         (meatch).map(item => item.relations).filter(
@@ -3238,7 +3400,8 @@ router.get('/_search/:enttype/:id?', (req, res) => {
                                 if (redisEnabled) {
                                     let ids = await redisClient.extractIds(ret, redisEnabled)
                                     let indexes = await redisClient.extractIndexes(ret, redisEnabled)
-                                    await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)
+                                    // 06/10/2026 - Lite mode: scrittura cache con la chiave che include la modalita' relazioni
+                                    await redisClient.writeCacheByKey(cacheKeyParams, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)
                                 }
 
                                 logger.info(nameFile + '|_search| resp filter relations: response cached  ');
@@ -3258,7 +3421,8 @@ router.get('/_search/:enttype/:id?', (req, res) => {
                                 if (redisEnabled) {
                                     let ids = await redisClient.extractIds(ret, redisEnabled)
                                     let indexes = await redisClient.extractIndexes(ret, redisEnabled)
-                                    await redisClient.writeCacheByKey(params, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                        //logger.info(nameFile + '|_search| resp no detected relations: response cached  ');
+                                    // 06/10/2026 - Lite mode: scrittura cache con la chiave che include la modalita' relazioni
+                                    await redisClient.writeCacheByKey(cacheKeyParams, dymeruser, req.ip, JSON.stringify(ret), ids.toString(), indexes.toString(), global.configService.app_name, redisEnabled)                                        //logger.info(nameFile + '|_search| resp no detected relations: response cached  ');
                                 }
                                 return res.send(ret);
                             }).catch(function (err) {
@@ -3282,6 +3446,208 @@ router.get('/_search/:enttype/:id?', (req, res) => {
         }
     });
 });
+
+// ============================================================================
+// 06/10/2026 - LITE MODE RELAZIONI - INIZIO nuovo endpoint GET /_relations/:id
+// ============================================================================
+// 06/10/2026 - condizioni di visibilita' (azione "view") per un utente non admin.
+// Sono le stesse condizioni usate nelle due /_search, raccolte in una funzione
+// per non copiarle una terza volta.
+function buildViewPermissionShould(dymeruser, listind) {
+    let req_uid = dymeruser.id;
+    let req_gid = dymeruser.gid;
+    return [{
+        "bool": {
+            "must": [{
+                "match": {
+                    "properties.status": "1"
+                }
+            }, {
+                "match": {
+                    "properties.visibility": "0"
+                }
+            }, {
+                "terms": {
+                    "_index": (listind != undefined) ? listind : [""]
+                }
+            }]
+        }
+    }, {
+        "bool": {
+            "must": [{
+                "match_phrase": {
+                    "properties.owner.uid": req_uid
+                }
+            }]
+        }
+    }, {
+        "bool": {
+            "must": [{
+                "match": {
+                    "properties.owner.gid": req_gid
+                }
+            }, {
+                "match": {
+                    "properties.visibility": "2"
+                }
+            }],
+            "must_not": [{
+                "match": {
+                    "properties.status": "2"
+                }
+            }]
+        }
+    }, {
+        "bool": {
+            "should": [{
+                "match_phrase": {
+                    "properties.grant.view.uid": req_uid
+                }
+            }, {
+                "match_phrase": {
+                    "properties.grant.view.gid": req_gid
+                }
+            }]
+        }
+    }, {
+        "bool": {
+            "should": [{
+                "match_phrase": {
+                    "properties.grant.update.uid": req_uid
+                }
+            }, {
+                "match_phrase": {
+                    "properties.grant.update.gid": req_gid
+                }
+            }]
+        }
+    }, {
+        "bool": {
+            "should": [{
+                "match_phrase": {
+                    "properties.grant.delete.uid": req_uid
+                }
+            }, {
+                "match_phrase": {
+                    "properties.grant.delete.gid": req_gid
+                }
+            }]
+        }
+    }];
+}
+
+// 06/10/2026 - elenco PAGINATO degli item correlati a un item.
+//   GET /_relations/:id?index=catalogoA,catalogoB&from=0&size=20&fields=title,logo
+//     index  : (opzionale) limita ai correlati di uno o piu' indici
+//     from   : offset, default 0
+//     size   : elementi per pagina, default 20, massimo 1000
+//     fields : campi di _source da restituire, default title ("*" = item completo)
+//   Risposta: data = [{_id, _index, _source}], extraData = { total, from, size, relationsCount }
+//     total          : correlati visibili all'utente (dopo l'eventuale filtro index)
+//     relationsCount : correlati visibili per indice, senza il filtro index (utile per le tab)
+//   A differenza delle relazioni dentro /_search, qui i correlati passano dal filtro
+//   permessi dell'utente. Non usa la cache Redis.
+//   Limite: vengono lette al massimo 10000 relazioni per item (come listSingleRelation).
+router.get('/_relations/:id', async (req, res) => {
+    let ret = new jsonResponse();
+    try {
+        const entityId = req.params.id;
+        const hdymeruser = req.headers.dymeruser;
+        const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
+        const origin = req.get('origin');
+        let isadmin = false;
+        if ((dymeruser.roles.indexOf("app-admin") > -1) || (dymeruser.roles.indexOf("app-content-curator") > -1))
+            isadmin = true;
+
+        let from = parseInt(req.query.from, 10);
+        if (isNaN(from) || from < 0)
+            from = 0;
+        let size = parseInt(req.query.size, 10);
+        if (isNaN(size) || size < 1)
+            size = 20;
+        if (size > 1000)
+            size = 1000;
+        let filterIndex = [];
+        if (req.query.index != undefined)
+            filterIndex = String(req.query.index).split(",").map(s => s.trim()).filter(s => s != "");
+        const fields = parseRelationOptions({ relfields: req.query.fields }).fields;
+        let pageInfo = { "total": 0, "from": from, "size": size, "relationsCount": {} };
+
+        // id degli item collegati, in entrambi i versi della relazione
+        let relDocs = await listSingleRelation(entityId);
+        let relatedIds = new Set();
+        (relDocs || []).forEach(r => {
+            let s = r._source || {};
+            if (s._id1 == entityId && s._id2 != undefined && s._id2 !== '')
+                relatedIds.add(s._id2);
+            if (s._id2 == entityId && s._id1 != undefined && s._id1 !== '')
+                relatedIds.add(s._id1);
+        });
+        if (relatedIds.size == 0) {
+            ret.setMessages("Empty list");
+            ret.setData([]);
+            ret.setExtraData(pageInfo);
+            return res.send(ret);
+        }
+
+        let must = [{ "ids": { "values": [...relatedIds] } }];
+        if (!isadmin) {
+            let permFilterByAction = await checkPermissionByAction(dymeruser, undefined, "view");
+            must.push({ "bool": { "should": buildViewPermissionShould(dymeruser, permFilterByAction.listind) } });
+            if (multitenancyEnabled) {
+                if (!origin) {
+                    ret.setMessages("Empty list");
+                    ret.setData([]);
+                    ret.setExtraData(pageInfo);
+                    return res.send(ret);
+                }
+                must.push({ "wildcard": { "properties.ipsource.keyword": origin + "*" } });
+            }
+        }
+        let qparams = { "_source": fields };
+        qparams["body"] = {
+            "query": { "bool": { "must": must } },
+            "from": from,
+            "size": size,
+            "sort": [{ "title.keyword": { "order": "asc", "unmapped_type": "keyword" } }],
+            "aggs": { "byindex": { "terms": { "field": "_index", "size": 1000 } } }
+        };
+        // post_filter: filtra la pagina ma non i conteggi per indice
+        if (filterIndex.length > 0)
+            qparams["body"]["post_filter"] = { "terms": { "_index": filterIndex } };
+
+        let resp = await client.search(qparams);
+        let hits = resp.hits.hits;
+        let total = resp.hits.total;
+        if (total != undefined && typeof total === "object")
+            total = total.value;
+        pageInfo.total = total;
+        let buckets = _.get(resp, 'aggregations.byindex.buckets', []);
+        buckets.forEach(b => {
+            pageInfo.relationsCount[b.key] = b.doc_count;
+        });
+        if (hits.length > 0) {
+            // rimozione dei campi dymer-model-visibility=private, come nelle /_search
+            const minmodelist = [...new Set(hits.map(item => item._index))];
+            hits = await filertEntitiesFields(hits, minmodelist, hdymeruser);
+        }
+        ret.setMessages((hits.length > 0) ? "List entities" : "Empty list");
+        ret.setData(hits);
+        ret.setExtraData(pageInfo);
+        logger.info(nameFile + '|_relations| id:' + entityId + ' count:' + hits.length + ' total:' + total);
+        return res.send(ret);
+    } catch (error) {
+        console.error("ERROR | " + nameFile + '|_relations| :', error);
+        logger.error(nameFile + '|_relations| : ' + error);
+        ret.setMessages("Search Error");
+        ret.setSuccess(false);
+        ret.setExtraData({ "log": (error && error.message) ? error.message : error });
+        return res.send(ret);
+    }
+});
+// ============================================================================
+// 06/10/2026 - LITE MODE RELAZIONI - FINE nuovo endpoint GET /_relations/:id
+// ============================================================================
 
 var filertEntitiesFields = function(originalList, minmodelist, hdymeruser) {
     return new Promise(function(resolve, reject) {

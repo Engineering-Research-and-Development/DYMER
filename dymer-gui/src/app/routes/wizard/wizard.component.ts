@@ -23,7 +23,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { CommonModule } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 import { WizardService } from './wizard.service';
-import { MatRadioButton, MatRadioModule } from '@angular/material/radio';
+import {    MatRadioModule } from '@angular/material/radio';
 declare function html2json(html: string): any;
 
 (window as any).DEBUG = false;
@@ -45,7 +45,7 @@ declare function html2json(html: string): any;
     MatSelectModule,
     MatCheckboxModule,
     CommonModule,
-    MatRadioButton,
+   
     MatRadioModule,
     MatIconModule
   ],

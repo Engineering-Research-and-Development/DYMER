@@ -1,0 +1,36 @@
+<div class="federation-dashboard">
+    <header class="federation-dashboard__header">
+        <div>
+            <h2>Federation</h2>
+            <p>Gestione delle fonti federate, dei connector e dello stato di sincronizzazione del Data Space.</p>
+        </div>
+    </header>
+
+    <nav class="federation-dashboard__tabs">
+        <button type="button" class="tab" [class.tab--active]="activeTab() === 'sources'" (click)="setTab('sources')">
+            Source Registry
+        </button>
+        <button type="button" class="tab" [class.tab--active]="activeTab() === 'status'" (click)="setTab('status')">
+            Sync Status
+        </button>
+    </nav>
+
+    <section class="federation-dashboard__content">
+        @if (activeTab() === 'sources') {
+        @switch (viewMode()) {
+        @case ('list') {
+        <dymer-source-registry-list (createRequested)="openCreate()" (editRequested)="openEdit($event)" />
+        }
+        @case ('create') {
+        <dymer-source-registry-form (saved)="backToList()" (cancelled)="backToList()" />
+        }
+        @case ('edit') {
+        <dymer-source-registry-form [initialValue]="editingSource()" (saved)="backToList()"
+            (cancelled)="backToList()" />
+        }
+        }
+        } @else {
+        <dymer-sync-status-panel />
+        }
+    </section>
+</div>

@@ -233,16 +233,9 @@ export class ListEntitiesService {
     const params = new HttpParams()
       .set('query[query][instance._index]', index)
       .set('_', Date.now().toString());
-    const apiSegment = '/api/v1/template/';
-    const apiSegmentIndex = this.baseContextPath.dashboard.allTemplates.indexOf(apiSegment);
-    let constructedFileBaseUrl = '';
-    if (apiSegmentIndex !== -1) {
-       constructedFileBaseUrl = this.baseContextPath.dashboard.allTemplates.substring(0, apiSegmentIndex) + '/content/';
-    } else {
-       console.warn(`Impossibile determinare l'URL base dei file dall'endpoint: ${this.templatesEndpoint}. Utilizzo la base dell'endpoint.`);
-       constructedFileBaseUrl = this.templatesEndpoint + '/content/';
-    }
-    const finalFileBaseUrl = constructedFileBaseUrl;
+    // Costruiamo l'URL base dei file partendo direttamente dall'endpoint del servizio Template
+    const templateEndpoint = this.apiService.endpoints.dashboard.allTemplates;
+    const finalFileBaseUrl = `${templateEndpoint}${templateEndpoint.endsWith('/') ? '' : '/'}content/`;
     return this.client.get<any>(this.baseContextPath.listentities.getTemplate, {
       params: params,
       withCredentials: true,
@@ -270,7 +263,7 @@ export class ListEntitiesService {
           let domToRender: string | undefined = undefined;
           const tempFiles: ProcessedTemplateFiles[] = [];
           rawTemplate.files.forEach(file => {
-              const fileUrl = fileBaseUrl + file._id;
+              const fileUrl = this.appendAuthTokens(fileBaseUrl + file._id);
               const mimeParts = file.contentType.split('/');
               const fileType = mimeParts[1];
               if (file.contentType === 'text/html') {
@@ -410,21 +403,41 @@ export class ListEntitiesService {
    * @returns L'URL completo per accedere al file.
    */
   public getFormContentFileUrl(fileId: string, index: string): string {
-    const endpointForBaseDerivation = this.apiService.endpoints.dashboard.allForms;
-    const apiIdentifier = '/api/';
-    let baseUrlForContent = '';
-    const apiSegmentIndex = endpointForBaseDerivation.indexOf(apiIdentifier);
-    if (apiSegmentIndex !== -1) {
-      const apiRoot = endpointForBaseDerivation.substring(0, apiSegmentIndex);
-      baseUrlForContent = `${apiRoot}/content/${index}/`;
-    } else {
-      try {
-        const url = new URL(endpointForBaseDerivation);
-        baseUrlForContent = `${url.protocol}//${url.host}/content/`;
-      } catch (e) {
-        baseUrlForContent = (typeof window !== 'undefined' ? window.location.origin : '') + '/content/';
+    const formEndpoint = this.apiService.endpoints.dashboard.allForms;
+    // Per i form, il backend richiede esplicitamente l'indice nel path: /content/:entype/:fileid
+    const baseUrl = `${formEndpoint}${formEndpoint.endsWith('/') ? '' : '/'}content/${index}/`;
+    return this.appendAuthTokens(baseUrl + fileId);
+  }
+
+  /**
+   * Costruisce l'URL completo per un file di contenuto di un'entità.
+   * @param entityId L'ID dell'entità.
+   * @param fileId L'ID del file.
+   * @returns L'URL completo per accedere al file.
+   */
+  public getEntityContentFileUrl(entityId: string, fileId: string): string {
+    // Deriviamo l'URL base per i contentfile delle entità dall'endpoint di ricerca delle entità.
+    // Esempio: da "/api/entities/api/v1/entity/search" a "/api/entities/api/v1/entity/contentfile"
+    const entitiesBaseUrl = this.apiService.endpoints.dashboard.entitiesSearch.replace('/search', '/contentfile');
+    const finalUrl = `${entitiesBaseUrl}/${entityId}/${fileId}`;
+    return this.appendAuthTokens(finalUrl);
+  }
+
+  /**
+   * Appende i token di autenticazione necessari per il caricamento di asset statici.
+   */
+  private appendAuthTokens(url: string): string {
+    let finalUrl = url;
+    if (typeof window !== 'undefined') {
+      const tkdym = localStorage.getItem('tkdym');
+      const tkextra = localStorage.getItem('tkextra');
+      if (tkdym) {
+        finalUrl += (finalUrl.includes('?') ? '&' : '?') + `tkdym=${tkdym}`;
+      }
+      if (tkextra) {
+        finalUrl += (finalUrl.includes('?') ? '&' : '?') + `tkextra=${tkextra}`;
       }
     }
-    return `${baseUrlForContent}${fileId}`;
+    return finalUrl;
   }
 }

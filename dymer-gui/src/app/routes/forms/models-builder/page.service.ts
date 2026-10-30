@@ -91,11 +91,7 @@ export class PageService {
       });
 
   }
-  /**********************************/
-  // updatePage(id: string, htmlContent: string) {
-  //     this.pages.update(pages => pages.map(p => p._id === id ? { ...p, htmlContent } : p));
-  //     this.saveToStorage();
-  //   }
+
   updatePage(id: string, htmlContent: string) {
     let res_: any;
     const page = this.pages().find(p => p._id === id);
@@ -127,14 +123,13 @@ export class PageService {
       .subscribe({
         next: res => {
           console.log('HTML updated', res);
-          /**/
+
           res_ = res;
           this.updateStructure(id, htmlContent).subscribe({
             next: r => console.log('Structure updated', r),
             error: e => console.error('Structure error', e)
           });
-          /**/
-          // aggiorna stato locale
+
           this.pages.update(pages =>
             pages.map(p =>
               p._id === id
@@ -149,13 +144,12 @@ export class PageService {
                 : p
             )
           );
- 
+
         },
         error: err => console.error('Error updating HTML', err)
       });
-      return res_;
+    return res_;
   }
-  /**********************************/
 
   loadPage(id: string): string | undefined {
     const page = this.pages().find(p => p._id === id);
@@ -199,7 +193,6 @@ export class PageService {
 
     return filtered;
   }
-
 
 
   getDefaultPage(): Observable<string> {
@@ -315,11 +308,19 @@ export class PageService {
   // Sezione Structure
   generateStructure(html: string): any {
     let filteredHtml = '';
-console.log('🧪 HTML IN INGRESSO:', html);
-    $(html).find('[dymer-model-element]').each(function () {
-      filteredHtml += this.outerHTML;
+
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+
+    const elements = tempDiv.querySelectorAll('[dymer-model-element]');
+
+    elements.forEach((el) => {
+      let outer = (el as HTMLElement).outerHTML;
+
+      outer = outer.replace(/=""/g, '');
+      filteredHtml += outer;
     });
-console.log('🧪 HTML FILTRATO:', filteredHtml);
+
     return html2json(filteredHtml);
   }
 

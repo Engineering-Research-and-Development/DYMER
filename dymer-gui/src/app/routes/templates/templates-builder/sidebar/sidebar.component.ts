@@ -32,6 +32,8 @@ export class SidebarTemplatesComponent {
     if (!query) {
       return pages;
     }
+    console.log(pages);
+    
     return pages.filter(page =>
       (page.title || '').toLowerCase().includes(query) ||
       (page.instance[0]._index || '').toLowerCase().includes(query)

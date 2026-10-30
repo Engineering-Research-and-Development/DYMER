@@ -14,7 +14,7 @@
                 class="h-10 px-3 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-zinc-100 outline-none focus:ring-2 focus:ring-zinc-100 dark:focus:ring-zinc-900 focus:border-zinc-300 dark:focus:border-zinc-700 transition-all placeholder:text-zinc-400"
                 placeholder="Inserisci ruolo...">
         </div>
-        <button (click)="saveConfigRules(formData)" class="h-9 px-6 bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold uppercase rounded-lg hover:opacity-90 transition-all shadow-sm">
+        <button (click)="saveConfigRules(formData)" [disabled]="!formData.role || !formData.role.trim()" class="h-9 px-6 bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold uppercase rounded-lg hover:opacity-90 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
               {{ 'menu.actions.add' | translate }}
             </button>
 
@@ -22,31 +22,34 @@
   </div>
 
   <!-- Tabella permessi -->
-  <div class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden ng-star-inserted">
-    <div class="permissions-grid p-6 bg-[#fafafa] font-sans">
+  <div class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden">
+    <div class="permissions-grid p-6 bg-[#fafafa] font-sans" style="display: grid; grid-template-columns: 1fr repeat(4, minmax(0, 80px)); gap: 1px;">
       <!-- Intestazioni -->
-      <div class="header-cell role-header">{{ 'menu.permissions.name' | translate}}</div>
-      <div class="header-cell">{{ 'menu.actions.view' | translate}}</div>
-      <div class="header-cell">{{ 'menu.actions.create' | translate}}</div>
-      <div class="header-cell">{{ 'menu.actions.edit' | translate}}</div>
-      <div class="header-cell">{{ 'menu.actions.delete' | translate}}</div>
-      <div class="header-cell actions-header">{{ 'menu.actions' | translate}}</div>
+      <div class="header-cell role-header p-2 font-bold text-sm text-zinc-600 dark:text-zinc-300">{{ 'menu.permissions.name' | translate}}</div>
+      <div class="header-cell p-2 font-bold text-sm text-zinc-600 dark:text-zinc-300 text-center">{{ 'menu.actions.view' | translate}}</div>
+      <div class="header-cell p-2 font-bold text-sm text-zinc-600 dark:text-zinc-300 text-center">{{ 'menu.actions.create' | translate}}</div>
+      <div class="header-cell p-2 font-bold text-sm text-zinc-600 dark:text-zinc-300 text-center">{{ 'menu.actions.edit' | translate}}</div>
+      <div class="header-cell p-2 font-bold text-sm text-zinc-600 dark:text-zinc-300 text-center">{{ 'menu.actions.delete' | translate}}</div>
       <!-- Righe dati -->
       @for (role of listPerm; track role._id) {
         <!-- Nome ruolo (prima riga) -->
-        <div class="role-name-cell">
-          <div class="role-name">
-            <mat-icon>badge</mat-icon>
+        <div class="role-name-cell flex items-center justify-between w-full bg-zinc-50 dark:bg-zinc-900 px-4 py-2 border-y border-zinc-100 dark:border-zinc-800" 
+             style="grid-column: span 5;">
+          <div class="flex items-center gap-2 font-bold text-zinc-900 dark:text-zinc-100">
+            <mat-icon class="text-zinc-500">badge</mat-icon>
             <span>{{role.role}}</span>
           </div>
+          <div class="flex items-center gap-2">
+            <button mat-icon-button (click)="saveRole(role)" matTooltip="Save">
+              <mat-icon>save</mat-icon>
+            </button>
+            @if (role.role !== 'admin') {
+              <button mat-icon-button (click)="removeRole(role._id)" matTooltip="Delete">
+                <mat-icon>delete</mat-icon>
+              </button>
+            }
+          </div>
         </div>
-
-        <!-- Celle vuote sotto le intestazioni per la prima riga -->
-        <div class="empty-cell"></div>
-        <div class="empty-cell"></div>
-        <div class="empty-cell"></div>
-        <div class="empty-cell"></div>
-        <div class="empty-cell"></div>
 
         <!-- Entità e checkbox (dalla seconda riga in poi) -->
         @for (element of role.elements; track element.entity) {
@@ -55,10 +58,10 @@
           </div>
 
           <div class="perm-cell">
-            <!-- <mat-checkbox [checked]="isChecked(element, 'view')"
+             <mat-checkbox [checked]="isChecked(role, element.entity, 'view')"
                          (change)="changePermission(role, 'view', element.entity)">
-            </mat-checkbox> -->
-              <label class="relative flex items-center justify-center cursor-pointer group">
+            </mat-checkbox>  
+              <!-- <label class="relative flex items-center justify-center cursor-pointer group">
                 <input type="checkbox" 
                       class="sr-only peer"
                       [checked]="isChecked(element, 'view')"
@@ -75,7 +78,7 @@
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
                 </div>
-              </label>
+              </label> -->
 
 
 
@@ -83,37 +86,23 @@
           </div>
 
           <div class="perm-cell">
-            <mat-checkbox [checked]="isChecked(element, 'create')"
+            <mat-checkbox [checked]="isChecked(role, element.entity, 'create')"
                          (change)="changePermission(role, 'create', element.entity)">
             </mat-checkbox>
           </div>
 
           <div class="perm-cell">
-            <mat-checkbox [checked]="isChecked(element, 'edit')"
+            <mat-checkbox [checked]="isChecked(role, element.entity, 'edit')"
                          (change)="changePermission(role, 'edit', element.entity)">
             </mat-checkbox>
           </div>
 
           <div class="perm-cell">
-            <mat-checkbox [checked]="isChecked(element, 'delete')"
+            <mat-checkbox [checked]="isChecked(role, element.entity, 'delete')"
                          (change)="changePermission(role, 'delete', element.entity)">
             </mat-checkbox>
-          </div>
-
-          <div class="actions-cell">
-            @if ($first) {
-              <button mat-icon-button (click)="saveRole(role)" matTooltip="Save">
-                <mat-icon>save</mat-icon>
-              </button>
-              @if (role.role !== 'admin') {
-                <button mat-icon-button (click)="removeRole(role._id)" matTooltip="Delete">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              }
-            }
           </div>
         }
       }
     </div>
   </div>
-

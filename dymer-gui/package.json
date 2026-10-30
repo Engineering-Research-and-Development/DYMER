@@ -1,6 +1,6 @@
 {
   "name": "dymer-gui",
-  "version": "1.0.0",
+  "version": "3.0.1",
   "private": true,
   "engines": {
     "yarn": ">=1.22.0 <2"

@@ -44,9 +44,7 @@ declare global {
     MatIconModule,
     TranslateModule,
     MatCheckboxModule,
-    MatTableModule,
-    JsonPipe,
-    DatePipe,
+    MatTableModule   
   ],
 })
 export class ImportCronComponent implements OnInit, AfterViewInit {

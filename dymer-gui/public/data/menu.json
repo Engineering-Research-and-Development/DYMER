@@ -204,6 +204,13 @@
         ]
       }
     },
+        {
+      "route": "flow",
+      "name": "flow",
+      "type": "link",
+      "iconLibrary": "font-awesome",
+      "icon": "chart-diagram"
+    },
     {
       "route": "documentation",
       "name": "documentation",

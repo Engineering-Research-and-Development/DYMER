@@ -1,0 +1,76 @@
+<div class="source-list">
+    <header class="source-list__header">
+        <h3>Source Registry</h3>
+        <button type="button" class="btn btn--primary" (click)="createRequested.emit()">
+            + Nuova fonte
+        </button>
+    </header>
+
+    @if (federationService.isLoading()) {
+    <p class="source-list__empty">Caricamento fonti…</p>
+    } @else if (federationService.sources().length === 0) {
+    <p class="source-list__empty">Nessuna fonte federata configurata.</p>
+    } @else {
+    <table class="source-table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Adapter</th>
+                <th>Stato</th>
+                <th>Ultima sync</th>
+                <th>Metodo</th>
+                <th>Draft pendenti</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (source of federationService.sources(); track source.id) {
+            <tr [class.source-table__row--disabled]="!source.enabled">
+                <td>
+                    <span class="source-table__name">{{ source.name }}</span>
+                    <span class="source-table__endpoint">{{ source.endpoint }}</span>
+                </td>
+                <td>{{ adapterLabel(source) }}</td>
+                <td>
+                    <dymer-source-health-badge
+                        [status]="source.enabled ? (source.syncStatus?.health ?? 'unknown') : 'paused'" />
+                </td>
+                <td>{{ source.syncStatus?.lastSuccessAt | date: 'short' }}</td>
+                <td>{{ source.syncStatus?.lastHarvestMethod ?? '—' }}</td>
+                <td>
+                    @if (source.syncStatus?.pendingCatalogsCount; as count) {
+                    @if (count > 0) {
+                    <span class="source-table__pending">{{ count }}</span>
+                    } @else {
+                    —
+                    }
+                    } @else {
+                    —
+                    }
+                </td>
+                <td class="source-table__actions">
+                    <button type="button" class="icon-btn" title="Forza sync" (click)="sync(source.id)">
+                        ⟳
+                    </button>
+                    @if (source.enabled) {
+                    <button type="button" class="icon-btn" title="Pausa" (click)="pause(source.id)">
+                        ⏸
+                    </button>
+                    } @else {
+                    <button type="button" class="icon-btn" title="Riprendi" (click)="resume(source.id)">
+                        ▶
+                    </button>
+                    }
+                    <button type="button" class="icon-btn" title="Modifica" (click)="editRequested.emit(source)">
+                        ✎
+                    </button>
+                    <button type="button" class="icon-btn icon-btn--danger" title="Elimina" (click)="remove(source)">
+                        ✕
+                    </button>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+    }
+</div>

@@ -50,26 +50,8 @@ const barValueLabelPlugin = {
   selector: 'app-socialStatistics',
   templateUrl: './socialStatistics.component.html',
   styles: [`
-    .chart-card {
-      position: relative;
-      overflow: visible;
-    }
-    .chart-badge {
-      position: absolute;
-      top: -10px;
-      right: -10px;
-      background-color: #9c27b0;
-      color: white;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: bold;
-      z-index: 10;
-    }
+    :host ::ng-deep .mat-sort-header-arrow { color: #a1a1aa; }
+    :host ::ng-deep .mat-mdc-paginator { background: transparent; }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
@@ -93,7 +75,7 @@ const barValueLabelPlugin = {
     MatRadioModule,
     MatSortModule,
     MatPaginatorModule,
-    MtxGridModule,
+  
     BaseChartDirective,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

@@ -61,8 +61,16 @@ export class DashboardService {
 //   return this.http.get(this.logendpoints.webservertailogs, { withCredentials: true });
 // }
 
-getWebServerLogs(type: string = 'info'): Observable<any> {
+getWebServerLogs(type: string): Observable<any> {
   return this.http.get(this.logendpoints.webservertailogs(type), { withCredentials: true });
+}
+
+getEntitiesLogs(type: string): Observable<any> {
+  return this.http.get(this.logendpoints.entitiestailogs(type), { withCredentials: true });
+}
+
+getAILogs(type: string): Observable<any> {
+  return this.http.get(`${this.apiService.baseUrl}/api/dservice/api/v1/ai-agents/tailLog/${type}`, { withCredentials: true });
 }
 
 getDServiceLogs(): Observable<any> {

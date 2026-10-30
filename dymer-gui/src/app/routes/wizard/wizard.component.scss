@@ -664,3 +664,25 @@ mat-card-content {
   width: 100%;
   margin-top: 24px;
 }
+
+
+
+
+/* Nasconde l'header predefinito di Angular Material Stepper */
+::ng-deep .hide-default-header .mat-horizontal-stepper-header-container {
+  display: none !important;
+}
+
+/* Rimuove i padding predefiniti dello stepper */
+::ng-deep .mat-horizontal-content-container {
+  padding: 0 !important;
+}
+
+/* Animazione per la barra di caricamento se necessaria */
+@keyframes progress-indeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.animate-progress-indeterminate {
+  animation: progress-indeterminate 1.5s infinite linear;
+}

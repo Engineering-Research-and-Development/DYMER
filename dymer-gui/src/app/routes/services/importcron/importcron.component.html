@@ -1,181 +1,289 @@
-<div class="row">
-    <div class="col-md-12">
-        <mat-card>
-            <mat-card-header style="display: flex; justify-content: space-between; align-items: center;">
-                <mat-card-title>{{ 'importcron.config_title' | translate }}</mat-card-title>
-                <button mat-icon-button (click)="showConfigAuthentication = !showConfigAuthentication">
-                    <i class="fa fa-cogs" aria-hidden="true"></i>
-                </button>
-            </mat-card-header>
-            <mat-card-content *ngIf="showConfigAuthentication">
-                <h4>{{ 'importcron.form_subtitle' | translate }}</h4>
-                <form #formCONJOB="ngForm" id="formCONJOB">
-                    <input type="hidden" [(ngModel)]="configCONJOB._id" name="_id">
-                    <input type="hidden" [(ngModel)]="configCONJOB.authtype" name="authtype">
-                    <div class="row">
-                        <div class="col-12">
-
-                            <div class="form-group">
-                                <div class="text-info pull-right">
-                                    <mat-checkbox [(ngModel)]="configCONJOB.active" name="active">{{ 'importcron.enabled' | translate }}</mat-checkbox>
-                                </div>
-                            </div>
-
-                            <mat-form-field class="w-100">
-                                <mat-label>{{ 'importcron.title_label' | translate }} *</mat-label>
-                                <input matInput [(ngModel)]="configCONJOB.title" name="title" required>
-                            </mat-form-field>
-
-                            <mat-form-field class="w-100">
-                                <mat-label>{{ 'importcron.cron_pattern' | translate }} <a href="http://crontab.org/" target="_blank"><i class="fa fa-external-link-square" aria-hidden="true"></i></a></mat-label>
-                                <input matInput [(ngModel)]="configCONJOB.time" name="time">
-                            </mat-form-field>
-
-                            <mat-form-field class="w-100">
-                                <mat-label>{{ 'importcron.source_path' | translate }} *</mat-label>
-                                <input matInput [(ngModel)]="configCONJOB.sourcepath" name="sourcepath" required>
-                            </mat-form-field>
-
-                            <mat-form-field class="w-100">
-                                <mat-label>{{ 'importcron.source_api_search_path' | translate }} *</mat-label>
-                                <input matInput [(ngModel)]="configCONJOB.apisearchpath" name="apisearchpath" required>
-                                <mat-hint>{{ 'importcron.source_api_search_path_help' | translate }}</mat-hint>
-                            </mat-form-field>
-
-                            <mat-form-field class="w-100">
-                                <mat-label>{{ 'importcron.source_index' | translate }} *</mat-label>
-                                <input matInput [(ngModel)]="configCONJOB.sourceindex" name="sourceindex" required>
-                            </mat-form-field>
-
-                            <mat-form-field class="w-100">
-                                <mat-label>{{ 'importcron.target_index' | translate }} *</mat-label>
-                                <input matInput [(ngModel)]="configCONJOB.targetindex" name="targetindex" required>
-                            </mat-form-field>
-
-                            <mat-form-field class="w-100">
-                                <mat-label>{{ 'importcron.target_prefix' | translate }}</mat-label>
-                                <input matInput [(ngModel)]="configCONJOB.targetprefix" name="targetprefix">
-                                <mat-hint>{{ 'importcron.target_prefix_help' | translate }}</mat-hint>
-                            </mat-form-field>
-
-                            <div class="form-group">
-                                <mat-checkbox [(ngModel)]="configCONJOB.sameid" name="sameid">{{ 'importcron.same_id' | translate }}</mat-checkbox>
-                                <small style="color: #8c8985;"> {{ 'importcron.same_id_help' | translate }}</small>
-                            </div>
-
-                            <div class="form-group">
-                                <mat-checkbox [(ngModel)]="configCONJOB.importrelation" name="importrelation">{{ 'importcron.import_relations' | translate }}</mat-checkbox>
-                                <small style="color: #8c8985;"> {{ 'importcron.import_relations_help' | translate }}</small>
-                            </div>
-
-                            <mat-form-field class="w-100" *ngIf="configCONJOB.importrelation">
-                                <mat-label>{{ 'importcron.relation_indexes' | translate }}</mat-label>
-                                <input matInput [(ngModel)]="configCONJOB.typerelations" name="typerelations">
-                                <mat-hint>{{ 'importcron.relation_indexes_help' | translate }}</mat-hint>
-                            </mat-form-field>
-
-                            <div class="form-group">
-                                <mat-checkbox [(ngModel)]="configCONJOB.importentities" name="importentities">{{ 'importcron.import_entities' | translate }}</mat-checkbox>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="text-info">{{ 'importcron.condition' | translate }}</label>
-                                <p [innerHTML]="'importcron.condition_help' | translate"></p>
-                                <pre>{{ 'importcron.condition_json_structure' | translate }}</pre>
-                                <mat-form-field class="w-100">
-                                    <textarea matInput [(ngModel)]="configCONJOB.condition" name="condition" rows="5"></textarea>
-                                </mat-form-field>
-                            </div>
-
-                            <div class="form-group">
-                                <mat-checkbox [(ngModel)]="configCONJOB.importmodel" name="importmodel">{{ 'importcron.import_model' | translate }}</mat-checkbox>
-                                <small style="color: #8c8985;"> {{ 'importcron.import_model_help' | translate }}</small>
-                            </div>
-
-                            <div class="form-group" *ngIf="configCONJOB.importmodel">
-                                &nbsp;&nbsp;
-                                <mat-checkbox [(ngModel)]="configCONJOB.forceimportmodel" name="forceimportmodel">{{ 'importcron.force_import' | translate }}</mat-checkbox>
-                                <small style="color: #8c8985;"> {{ 'importcron.force_import_model_help' | translate }}</small>
-                            </div>
-
-                            <div class="form-group">
-                                <mat-checkbox [(ngModel)]="configCONJOB.importtemplates" name="importtemplates">{{ 'importcron.import_templates' | translate }}</mat-checkbox>
-                                <small style="color: #8c8985;"> {{ 'importcron.import_templates_help' | translate }}</small>
-                            </div>
-
-                            <div class="form-group" *ngIf="configCONJOB.importtemplates">
-                                &nbsp;&nbsp;
-                                <mat-checkbox [(ngModel)]="configCONJOB.forceimporttemplates" name="forceimporttemplates">{{ 'importcron.force_import' | translate }}</mat-checkbox>
-                                <small style="color: #8c8985;"> {{ 'importcron.force_import_templates_help' | translate }}</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row text-right ">
-                        <div class="col-12 ">
-                            <button mat-flat-button color="primary" *ngIf="!configCONJOB._id" [disabled]="!formCONJOB.valid" (click)="saveCRONJOB(configCONJOB)">{{ 'menu.actions.save' | translate }}</button>
-                            <button mat-flat-button color="primary" *ngIf="configCONJOB._id" [disabled]="!formCONJOB.valid" (click)="saveCRONJOB(configCONJOB)">{{ 'menu.actions.update' | translate }}</button>
-                            <button mat-button color="warn" *ngIf="configCONJOB._id" (click)="configCONJOB = {}">{{ 'menu.actions.cancel' | translate }}</button>
-                        </div>
-                    </div>
-                </form>
-            </mat-card-content>
-        </mat-card>
+<div class="mb-4 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-3xl overflow-hidden shadow-sm transition-all duration-300">
+  
+  <button (click)="showConfigAuthentication = !showConfigAuthentication"
+          class="w-full flex items-center justify-between px-8 py-5 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors group">
+    <div class="flex items-center gap-4">
+      <div class="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center text-zinc-500 group-hover:scale-110 transition-transform">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 2v4"/><path d="M16 2v4"/><rect width="12" height="4" x="6" y="14" rx="1"/></svg>
+      </div>
+      <div class="text-left">
+        <h3 class="text-sm font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-widest leading-none">
+          {{ 'importcron.config_title' | translate }}
+        </h3>
+        <p class="text-[10px] text-zinc-400 font-medium uppercase tracking-tighter mt-1">{{ 'importcron.form_subtitle' | translate }}</p>
+      </div>
     </div>
+    
+    <div class="flex items-center gap-4">
+      <span *ngIf="configCONJOB.active" class="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950/30 text-emerald-600 text-[9px] font-bold uppercase rounded-full">Active</span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" 
+           class="text-zinc-300 transition-transform duration-300" [class.rotate-180]="showConfigAuthentication"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+  </button>
+
+  <div *ngIf="showConfigAuthentication" class="px-8 pb-8 animate-in slide-in-from-top-2 duration-300">
+    <form #formCONJOB="ngForm" class="space-y-8 mt-4">
+      <input type="hidden" [(ngModel)]="configCONJOB._id" name="_id">
+      <input type="hidden" [(ngModel)]="configCONJOB.authtype" name="authtype">
+
+      <div class="flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-900/50 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+        <div class="flex items-center gap-3">
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" class="sr-only peer" [(ngModel)]="configCONJOB.active" name="active">
+            <div class="w-10 h-5 bg-zinc-200 dark:bg-zinc-800 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-zinc-900 dark:peer-checked:bg-white"></div>
+          </label>
+          <span class="text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-tight">{{ 'importcron.enabled' | translate }}</span>
+        </div>
+        <div class="text-[10px] font-mono text-zinc-400">ID: {{configCONJOB._id || 'NEW'}}</div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="md:col-span-1">
+          <label class="block text-[9px] font-bold text-zinc-400 uppercase mb-1.5 ml-1">{{ 'importcron.title_label' | translate }} *</label>
+          <input type="text" [(ngModel)]="configCONJOB.title" name="title" required
+                 class="w-full h-11 px-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-sm font-medium outline-none focus:ring-2 focus:ring-zinc-100 transition-all">
+        </div>
+        <div>
+          <label class="block text-[9px] font-bold text-zinc-400 uppercase mb-1.5 ml-1">
+            {{ 'importcron.cron_pattern' | translate }} 
+            <a href="http://crontab.org/" target="_blank" class="text-zinc-300 hover:text-zinc-900 ml-1"><i class="fa fa-external-link-square"></i></a>
+          </label>
+          <input type="text" [(ngModel)]="configCONJOB.time" name="time" placeholder="* * * * *"
+                 class="w-full h-11 px-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-sm font-mono outline-none focus:ring-2 focus:ring-zinc-100 transition-all">
+        </div>
+      </div>
+
+      <div class="space-y-6">
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em]">Source & Target Mapping</span>
+          <div class="h-px flex-1 bg-zinc-100 dark:bg-zinc-900"></div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-[9px] font-bold text-zinc-400 uppercase mb-1.5 ml-1">{{ 'importcron.source_path' | translate }} *</label>
+            <input type="text" [(ngModel)]="configCONJOB.sourcepath" name="sourcepath" required
+                   class="w-full h-11 px-4 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-sm outline-none">
+          </div>
+          <div>
+            <label class="block text-[9px] font-bold text-zinc-400 uppercase mb-1.5 ml-1">{{ 'importcron.source_api_search_path' | translate }} *</label>
+            <input type="text" [(ngModel)]="configCONJOB.apisearchpath" name="apisearchpath" required
+                   class="w-full h-11 px-4 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-sm outline-none">
+            <p class="text-[10px] text-zinc-400 mt-1.5 ml-1 italic">{{ 'importcron.source_api_search_path_help' | translate }}</p>
+          </div>
+          <div>
+            <label class="block text-[9px] font-bold text-zinc-400 uppercase mb-1.5 ml-1">{{ 'importcron.source_index' | translate }} *</label>
+            <input type="text" [(ngModel)]="configCONJOB.sourceindex" name="sourceindex" required
+                   class="w-full h-11 px-4 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-sm outline-none">
+          </div>
+          <div>
+            <label class="block text-[9px] font-bold text-zinc-400 uppercase mb-1.5 ml-1">{{ 'importcron.target_index' | translate }} *</label>
+            <input type="text" [(ngModel)]="configCONJOB.targetindex" name="targetindex" required
+                   class="w-full h-11 px-4 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-sm outline-none">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-[9px] font-bold text-zinc-400 uppercase mb-1.5 ml-1">{{ 'importcron.target_prefix' | translate }}</label>
+            <input type="text" [(ngModel)]="configCONJOB.targetprefix" name="targetprefix"
+                   class="w-full h-11 px-4 bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl text-sm outline-none">
+            <p class="text-[10px] text-zinc-400 mt-1.5 ml-1 italic">{{ 'importcron.target_prefix_help' | translate }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-6 bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-100 dark:border-zinc-800 rounded-[2rem] space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+          
+          <div class="space-y-2">
+            <label class="flex items-center gap-3 cursor-pointer group">
+              <input type="checkbox" [(ngModel)]="configCONJOB.sameid" name="sameid" class="peer appearance-none w-5 h-5 border-2 border-zinc-200 rounded-md checked:bg-zinc-900 dark:checked:bg-white transition-all">
+              <span class="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-tight">{{ 'importcron.same_id' | translate }}</span>
+            </label>
+            <p class="text-[10px] text-zinc-400 leading-relaxed pl-8">{{ 'importcron.same_id_help' | translate }}</p>
+          </div>
+
+          <div class="space-y-2">
+            <label class="flex items-center gap-3 cursor-pointer group">
+              <input type="checkbox" [(ngModel)]="configCONJOB.importrelation" name="importrelation" class="peer appearance-none w-5 h-5 border-2 border-zinc-200 rounded-md checked:bg-zinc-900 dark:checked:bg-white transition-all">
+              <span class="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-tight">{{ 'importcron.import_relations' | translate }}</span>
+            </label>
+            <p class="text-[10px] text-zinc-400 leading-relaxed pl-8">{{ 'importcron.import_relations_help' | translate }}</p>
+            <div *ngIf="configCONJOB.importrelation" class="pl-8 pt-2 animate-in fade-in slide-in-from-left-2">
+              <input type="text" [(ngModel)]="configCONJOB.typerelations" name="typerelations" [placeholder]="'importcron.relation_indexes' | translate"
+                     class="w-full h-9 px-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[11px] outline-none shadow-sm">
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="flex items-center gap-3 cursor-pointer group">
+              <input type="checkbox" [(ngModel)]="configCONJOB.importentities" name="importentities" class="peer appearance-none w-5 h-5 border-2 border-zinc-200 rounded-md checked:bg-zinc-900 dark:checked:bg-white transition-all">
+              <span class="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-tight">{{ 'importcron.import_entities' | translate }}</span>
+            </label>
+          </div>
+
+          <div class="space-y-4">
+             <div class="space-y-2">
+                <label class="flex items-center gap-3 cursor-pointer">
+                  <input type="checkbox" [(ngModel)]="configCONJOB.importmodel" name="importmodel" class="peer appearance-none w-5 h-5 border-2 border-zinc-200 rounded-md checked:bg-zinc-900 dark:checked:bg-white transition-all">
+                  <span class="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-tight">{{ 'importcron.import_model' | translate }}</span>
+                </label>
+                <p class="text-[10px] text-zinc-400 leading-relaxed pl-8">{{ 'importcron.import_model_help' | translate }}</p>
+             </div>
+             <div *ngIf="configCONJOB.importmodel" class="pl-8 flex items-center gap-3 animate-in fade-in">
+                <input type="checkbox" [(ngModel)]="configCONJOB.forceimportmodel" name="forceimportmodel" class="peer appearance-none w-4 h-4 border-2 border-zinc-200 rounded-sm checked:bg-amber-500 transition-all">
+                <span class="text-[10px] font-bold text-amber-600 uppercase">{{ 'importcron.force_import' | translate }}</span>
+             </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-widest">{{ 'importcron.condition' | translate }}</span>
+          <div class="h-px flex-1 bg-zinc-100 dark:bg-zinc-900"></div>
+        </div>
+        <div class="p-4 bg-zinc-900 rounded-2xl border border-zinc-800">
+          <div class="flex items-start gap-3 mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-500 mt-1"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            <div class="text-[10px] text-zinc-400 leading-relaxed font-mono">
+              <span [innerHTML]="'importcron.condition_help' | translate" class="block mb-2"></span>
+              <span class="text-zinc-600 italic">{{ 'importcron.condition_json_structure' | translate }}</span>
+            </div>
+          </div>
+          <textarea [(ngModel)]="configCONJOB.condition" name="condition" rows="5"
+                    class="w-full bg-transparent text-emerald-400 font-mono text-xs outline-none resize-none border-t border-zinc-800 pt-4"
+                    placeholder="{ 'field': 'value' }"></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end items-center gap-4 pt-6 border-t border-zinc-100 dark:border-zinc-900">
+        <button *ngIf="configCONJOB._id" type="button" (click)="configCONJOB = {}"
+                class="px-6 py-3 text-[10px] font-bold text-zinc-400 uppercase tracking-widest hover:text-red-500 transition-colors">
+          {{ 'menu.actions.cancel' | translate }}
+        </button>
+        
+        <button [disabled]="!formCONJOB.valid" (click)="saveCRONJOB(configCONJOB)"
+                class="h-11 px-10 bg-zinc-900 dark:bg-white text-white dark:text-black text-[10px] font-bold uppercase tracking-[0.2em] rounded-2xl hover:opacity-90 transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed">
+          {{ (configCONJOB._id ? 'menu.actions.update' : 'menu.actions.save') | translate }}
+        </button>
+      </div>
+
+    </form>
+  </div>
 </div>
 
-<div class="row mt-3">
-    <div class="col-md-12">
-        <mat-card>
-            <mat-card-header style="display: flex; justify-content: space-between; align-items: center;">
-                <mat-card-title>{{ 'importcron.rules_title' | translate }}</mat-card-title>
-                <button mat-icon-button (click)="showRules = !showRules">
-                    <i class="fa fa-bars" aria-hidden="true"></i>
-                </button>
-            </mat-card-header>
-
-            <mat-card-content *ngIf="showRules" style="overflow-x:auto;">
-                <table class="table">
-                    <thead class="text-primary">
-                        <th style="text-align: left;">{{ 'importcron.table.title' | translate }}</th>
-                        <th style="text-align: left;">{{ 'importcron.table.time' | translate }}</th>
-                        <th style="text-align: left;">{{ 'importcron.table.source_path' | translate }}</th>
-                        <th style="padding-left: 70px; text-align: center;">{{ 'importcron.table.source_target_index' | translate }}</th>
-                        <th>{{ 'importcron.table.prefix_target_id' | translate }}</th>
-                        <th style="text-align: center">{{ 'importcron.table.import_relations' | translate }}</th>
-                        <th class="text-center"></th>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let el of List; let i = index">
-                            <td style="max-width: 100px;">{{ el.title }}</td>
-                            <td style="max-width: 100px;">
-                                <i class="fa fa-power-off" [ngClass]="el.active ? 'text-success' : 'text-danger'" aria-hidden="true"></i> {{ el.time }}
-                            </td>
-                            <td style="max-width: 100px;">{{ el.sourcepath }}<br>{{ el.apisearchpath }}</td>
-                            <td style="max-width: 100px; padding-left: 70px; text-align: center;">{{ el.sourceindex }}->{{ el.targetindex }}</td>
-                            <td style="max-width: 100px; text-align: left;">{{ el.targetprefix }}</td>
-                            <td style="max-width: 100px; text-align: center;">
-                                <i class="fa" [ngClass]="el.importrelation ? 'fa-check' : 'fa-times'" aria-hidden="true"></i><br> {{ el.typerelations }}
-                            </td>
-                            <td class="text-center">
-                                <button mat-icon-button (click)="setupdateCRONJOB(i, 'clone')" [title]="'importcron.clone' | translate">
-                                    <i class="fa fa-clone cloneAction" aria-hidden="true"></i>
-                                </button>
-                                <button mat-icon-button (click)="setupdateCRONJOB(i)" [title]="'menu.actions.update' | translate">
-                                    <i class="fa fa-pencil updateAction" aria-hidden="true"></i>
-                                </button>
-                                <button mat-icon-button (click)="removeCRONJOB(i)" [title]="'menu.actions.delete' | translate">
-                                    <i class="fa fa-trash deleteAction" aria-hidden="true"></i>
-                                </button>
-                                <button mat-icon-button (click)="runCRONJOB(i)" [title]="'importcron.run' | translate">
-                                    <i class="fa fa-play deleteAction" aria-hidden="true"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </mat-card-content>
-            <mat-card-footer>
-            </mat-card-footer>
-        </mat-card>
+<div class="mt-6 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-3xl overflow-hidden shadow-sm transition-all duration-300">
+  
+  <button (click)="showRules = !showRules"
+          class="w-full flex items-center justify-between px-8 py-5 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors group">
+    <div class="flex items-center gap-4">
+      <div class="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center text-zinc-500 group-hover:scale-110 transition-transform">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      </div>
+      <div class="text-left">
+        <h3 class="text-sm font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-widest leading-none">
+          {{ 'importcron.rules_title' | translate }}
+        </h3>
+        <p class="text-[10px] text-zinc-400 font-medium uppercase tracking-tighter mt-1">Manage and execute scheduled import tasks</p>
+      </div>
     </div>
+    
+    <div class="flex items-center gap-4">
+      <span class="px-2.5 py-1 bg-zinc-100 dark:bg-zinc-900 text-zinc-500 text-[10px] font-bold rounded-lg border border-zinc-200/50 dark:border-zinc-800/50">
+        {{ List.length || 0 }} Total
+      </span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" 
+           class="text-zinc-300 transition-transform duration-300" [class.rotate-180]="showRules"><path d="m6 9 6 6 6-6"/></svg>
+    </div>
+  </button>
+
+  <div *ngIf="showRules" class="animate-in fade-in zoom-in-95 duration-200">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-zinc-100 dark:border-zinc-900">
+            <th class="px-8 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em]">{{ 'importcron.table.title' | translate }}</th>
+            <th class="px-6 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em]">{{ 'importcron.table.time' | translate }}</th>
+            <th class="px-6 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em]">{{ 'importcron.table.source_path' | translate }}</th>
+            <th class="px-6 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] text-center italic">Mapping</th>
+            <th class="px-6 py-4 text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] text-center">{{ 'importcron.table.import_relations' | translate }}</th>
+            <th class="px-8 py-4 text-right"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-zinc-50 dark:divide-zinc-900">
+          <tr *ngFor="let el of List; let i = index" class="group hover:bg-zinc-50/50 dark:hover:bg-zinc-900/40 transition-all">
+            
+            <td class="px-8 py-4">
+              <div class="flex flex-col gap-1">
+                <span class="text-xs font-bold text-zinc-900 dark:text-zinc-100">{{ el.title }}</span>
+                <div class="flex items-center gap-1.5">
+                  <span [class]="el.active ? 'bg-emerald-500' : 'bg-zinc-300'" class="w-1.5 h-1.5 rounded-full"></span>
+                  <span class="text-[9px] font-bold uppercase tracking-wider" [class]="el.active ? 'text-emerald-600' : 'text-zinc-400'">
+                    {{ (el.active ? 'importcron.enabled' : 'importcron.disabled') | translate }}
+                  </span>
+                </div>
+              </div>
+            </td>
+
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-2 text-[11px] font-mono text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-900 w-fit px-2 py-1 rounded-md">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                {{ el.time }}
+              </div>
+            </td>
+
+            <td class="px-6 py-4">
+              <div class="flex flex-col text-[10px] leading-tight font-medium">
+                <span class="text-zinc-500 truncate max-w-[150px]" [title]="el.sourcepath">{{ el.sourcepath }}</span>
+                <span class="text-zinc-400 italic truncate max-w-[150px]" [title]="el.apisearchpath">{{ el.apisearchpath }}</span>
+              </div>
+            </td>
+
+            <td class="px-6 py-4">
+              <div class="flex items-center justify-center gap-2 text-[10px] font-bold text-zinc-500 bg-zinc-50 dark:bg-zinc-900/50 p-2 rounded-xl border border-zinc-100 dark:border-zinc-800">
+                <span class="text-indigo-500">{{ el.sourceindex }}</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                <span class="text-emerald-500">{{ el.targetindex }}</span>
+              </div>
+            </td>
+
+            <td class="px-6 py-4">
+              <div class="flex flex-col items-center gap-1">
+                <div [class]="el.importrelation ? 'text-emerald-500 bg-emerald-50 dark:bg-emerald-950/20' : 'text-zinc-300 bg-zinc-50 dark:bg-zinc-900/50'" 
+                     class="w-6 h-6 rounded-full flex items-center justify-center border border-current opacity-70">
+                  <svg *ngIf="el.importrelation" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <svg *ngIf="!el.importrelation" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </div>
+                <span class="text-[9px] font-mono text-zinc-400">{{ el.typerelations || '-' }}</span>
+              </div>
+            </td>
+
+            <td class="px-8 py-4 text-right">
+              <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button (click)="runCRONJOB(i)" [title]="'importcron.run' | translate"
+                        class="p-2 text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 rounded-lg transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                </button>
+                <button (click)="setupdateCRONJOB(i, 'clone')" [title]="'importcron.clone' | translate"
+                        class="p-2 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                </button>
+                <button (click)="setupdateCRONJOB(i)" [title]="'menu.actions.update' | translate"
+                        class="p-2 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                </button>
+                <button (click)="removeCRONJOB(i)" [title]="'menu.actions.delete' | translate"
+                        class="p-2 text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div *ngIf="List?.length === 0" class="py-12 text-center">
+      <p class="text-xs font-bold text-zinc-400 uppercase tracking-widest">No rules configured yet</p>
+    </div>
+  </div>
 </div>

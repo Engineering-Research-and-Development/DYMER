@@ -34,3 +34,34 @@
     opacity: 1 !important; /* Assicura che l'icona interna sia visibile */
   }
 }
+
+
+input[type="checkbox"].openclaw-toggle {
+  appearance: none;
+  width: 32px;
+  height: 18px;
+  background: #e4e4e7; // zinc-200
+  border-radius: 999px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    background: white;
+    border-radius: 50%;
+    transition: all 0.2s;
+  }
+
+  &:checked {
+    background: #18181b; // zinc-900
+    &::after {
+      left: calc(100% - 16px);
+    }
+  }
+}

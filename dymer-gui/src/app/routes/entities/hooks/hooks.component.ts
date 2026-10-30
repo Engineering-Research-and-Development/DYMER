@@ -30,7 +30,13 @@ import { AllStatsGlobalResponse, Hook, HookServicePayload, HooksService, AllInde
   ],
 })
 export class HooksComponent implements OnInit {
-  hook: HookServicePayload = { _index: '', eventType: 'after_insert', service: 'openness_search' };
+  hook: HookServicePayload = { _index: '', eventType: 'after_insert', service: 'openness_search', webhookUrl: '',
+  httpMethod: 'POST',
+  headers: '',
+  payloadTemplate: '',
+  isActive: true,
+  expertMode: false };
+  
   listHooks: Hook[] = [];
   listEntities: string[] = [];
   listEntitiesAvailable: any[] = [];
@@ -45,6 +51,44 @@ export class HooksComponent implements OnInit {
     private snackBar: MatSnackBar,
     private translate: TranslateService
   ) {}
+  expertMode: boolean = false;
+  selectedPresetKey: string | null = null;
+  activeResourceTab: 'entities' | 'models' | null = null;
+ 
+   readonly WEBHOOK_PRESETS = {
+        n8n: {
+            label: 'n8n Workflow',
+            icon: 'assets/images/n8n1.png', // Placeholder for icon path
+            defaultUrl: 'https://n8n.your-company.com/webhook/',
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer YOUR_N8N_TOKEN' },
+            description: 'Automate workflows, integrate with ERP/CRM, send notifications.'
+        },
+        make: {
+            label: 'Make (ex Integromat)',
+            icon: 'assets/images/make.png', // Placeholder for icon path
+            defaultUrl: 'https://hook.us1.make.com/',
+            method: 'POST',
+            headers: { 'x-api-key': 'YOUR_MAKE_KEY' },
+            description: 'AI data enrichment with LLMs (OpenAI/GPT-4), content generation.'
+        },
+        pinecone: {
+            label: 'Pinecone Vector DB',
+            icon: 'assets/images/pinecone.png', // Placeholder for icon path
+            defaultUrl: 'https://your-index.svc.pinecone.io/vectors/upsert',
+            method: 'POST',
+            headers: { 'Api-Key': 'YOUR_PINECONE_KEY' },
+            description: 'Enable semantic search and similar product recommendations.'
+        },
+        custom: {
+            label: 'Custom Webhook',
+            icon: 'fas fa-code',
+            defaultUrl: 'https://',
+            method: 'POST',
+            headers: {},
+            description: 'Manual configuration for generic endpoints.'
+        }
+    };
 
   ngOnInit(): void {
     this.loadHooks();
@@ -117,6 +161,53 @@ export class HooksComponent implements OnInit {
     });
   }
 
+
+  applyPreset(key: string, preset: any) {
+  
+     if (this.selectedPresetKey === key) {
+        this.selectedPresetKey = null;
+        this.hook.webhookUrl = '';
+        // ... reset altri campi
+        return;
+    }
+  // Imposta il tasto come attivo
+  this.selectedPresetKey = key;
+
+  // Autofill dei campi del form
+  this.hook.webhookUrl = preset.defaultUrl;
+  this.hook.httpMethod = preset.method;
+  
+  // Trasforma l'oggetto headers in una stringa JSON formattata per la textarea
+  if (preset.headers && Object.keys(preset.headers).length > 0) {
+    this.hook.headers = JSON.stringify(preset.headers, null, 2);
+  } else {
+    this.hook.headers = '';
+  }
+
+  // Se è un preset specifico, possiamo anche pre-impostare un payload di esempio
+  this.generateDefaultPayload(key);
+}
+private generateDefaultPayload(key: string) {
+  const basePayload = {
+    event: "{{eventType}}",
+    entity: "{{_index}}",
+    timestamp: "{{timestamp}}",
+    data: "{{fullDocument}}"
+  };
+
+  if (key === 'pinecone') {
+    this.hook.payloadTemplate = JSON.stringify({
+      vectors: [{
+        id: "{{id}}",
+        values: "[...]", 
+        metadata: basePayload
+      }]
+    }, null, 2);
+  } else {
+    this.hook.payloadTemplate = JSON.stringify(basePayload, null, 2);
+  }
+}
+
   clearString(): void {
     // Logica da implementare se necessaria
   }
@@ -132,6 +223,7 @@ export class HooksComponent implements OnInit {
     const dataPost = { ...hook };
     dataPost.microserviceType = 'entity';
 
+    
     const modService = dataPost.service;
     const servicePaths: { [key: string]: string } = {
       openness_search: '/api/dservice/api/v1/opn/listener',
@@ -139,6 +231,7 @@ export class HooksComponent implements OnInit {
       fwadapter: '/api/dservice/api/v1/fwadapter/listener',
       sync: '/api/dservice/api/v1/sync/listener',
       workflow: '/api/dservice/api/v1/workflow/listener',
+      custom: '/api/dservice/api/v1/custom/listener',
     };
 
     if (servicePaths[modService]) {

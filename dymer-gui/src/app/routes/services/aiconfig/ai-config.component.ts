@@ -14,13 +14,13 @@ import { MatListModule } from '@angular/material/list';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MtxButtonModule } from '@ng-matero/extensions/button';
-import { PageHeaderComponent } from '@shared';
+ 
 
 @Component({
   selector: 'app-ai-config',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule, PageHeaderComponent, MtxButtonModule,
+    CommonModule, ReactiveFormsModule, MtxButtonModule,
     MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule,
     MatButtonModule, MatIconModule, MatListModule, MatSlideToggleModule, MatProgressBarModule
   ],
@@ -76,6 +76,23 @@ export class AiConfigComponent implements OnInit {
     settings?.get('apiKey')?.updateValueAndValidity();
     settings?.get('baseUrl')?.updateValueAndValidity();
   }
+
+ 
+
+
+deleteAgent(id: string | undefined) {
+  if (!id) return; // Uscita di sicurezza se l'id è mancante
+
+  if (confirm('Sei sicuro di voler eliminare questa configurazione?')) {
+    this.agentService.delete(id).subscribe({
+      next: () => {
+       this.toast.success('Deleted Agent');
+        this.loadAgents(); 
+      },
+      error: (err) => console.error("Errore eliminazione:", err)
+    });
+  }
+}
 
   selectAgent(agent: AiAgent) {
     this.selectedId.set(agent._id!);

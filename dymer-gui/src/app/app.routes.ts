@@ -8,7 +8,7 @@ import { RegisterComponent } from './routes/sessions/register/register.component
 import { WizardComponent } from './routes/wizard/wizard.component';
 import { LogsComponent } from './routes/logs/logs.component';
 import { MagicAiComponent } from './routes/magicai/magicai.component';
-import { BuilderComponent } from './routes/builder/builder.component';
+import { FlowComponent } from './routes/flow/flow';
 
 
 export const routes: Routes = [
@@ -27,13 +27,15 @@ export const routes: Routes = [
       { path: 'entities', loadChildren: () => import('./routes/entities/entities.routes').then(m => m.routes) },
       { path: 'configurations', loadChildren: () => import('./routes/configurations/configurations.routes').then(m => m.routes) },
       { path: 'services', loadChildren: () => import('./routes/services/services.routes').then(m => m.routes) },
+      { path: 'federation', loadChildren: () => import('./routes/federation/federation.routes').then(m => m.routes) },
+      { path: 'flow', component: FlowComponent },
       { path: 'documentation', loadChildren: () => import('./routes/documentation/documentation.routes').then(m => m.routes) },
       { path: 'logs', component: LogsComponent },
       { path: 'forms', loadChildren: () => import('./routes/forms/forms.routes').then(m => m.routes) },
-        {
-    path: 'builder',
-    component: BuilderComponent
-  },
+  //       {
+  //   path: 'builder',
+  //   component: BuilderComponent
+  // },
     ],
   },
   {

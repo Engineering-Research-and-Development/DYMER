@@ -22,7 +22,7 @@ import { Location } from '@angular/common';
     class: 'matero-page-header',
   },
   encapsulation: ViewEncapsulation.None,
-  imports: [BreadcrumbComponent, TranslateModule],
+  imports: [ TranslateModule],
 })
 export class PageHeaderComponent implements OnInit {
   private readonly router = inject(Router);

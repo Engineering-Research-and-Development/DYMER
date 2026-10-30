@@ -1,160 +1,158 @@
+<div class="flex flex-col h-[calc(100vh-120px)] bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-sm animate-in fade-in duration-500">
+  
+  <header class="p-6 border-b border-zinc-100 dark:border-zinc-900 bg-white/50 dark:bg-zinc-950/50 flex justify-between items-center">
+    <div class="space-y-1">
+      <h1 class="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">{{ 'socialStatistics.title' | translate }}</h1>
+      <p class="text-[10px] text-zinc-400 font-medium uppercase tracking-widest">{{ allStats.length }} Record Totali</p>
+    </div>
+    
+    <div class="flex items-center gap-3">
+      <button (click)="statsShowCharts = !statsShowCharts" 
+              [class]="statsShowCharts ? 'bg-zinc-900 text-white' : 'bg-zinc-100 text-zinc-600'"
+              class="p-2.5 rounded-xl transition-all hover:opacity-80 shadow-sm">
+        <mat-icon class="!w-5 !h-5 !text-[20px]">bar_chart</mat-icon>
+      </button>
+      <button (click)="statsShowFilters = !statsShowFilters"
+              [class]="statsShowFilters ? 'bg-zinc-900 text-white' : 'bg-zinc-100 text-zinc-600'"
+              class="p-2.5 rounded-xl transition-all hover:opacity-80 shadow-sm">
+        <mat-icon class="!w-5 !h-5 !text-[20px]">filter_list</mat-icon>
+      </button>
+    </div>
+  </header>
 
-<div class="col-md-12 mt-3">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>{{ 'socialStatistics.title' | translate }}</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <div class="actions float-right">
-        <button mat-icon-button (click)="statsShowCharts = !statsShowCharts" [attr.aria-expanded]="statsShowCharts"
-          [matTooltip]="'socialStatistics.showCharts' | translate" aria-controls="charts">
-          <mat-icon>bar_chart</mat-icon>
-        </button>
-        <button mat-icon-button (click)="statsShowFilters = !statsShowFilters" [attr.aria-expanded]="statsShowFilters"
-          [matTooltip]="'socialStatistics.filter' | translate" aria-controls="filters">
-          <mat-icon>filter_list</mat-icon>
-        </button>
-      </div>
-
-      <div class="filters-container" *ngIf="statsShowFilters" id="filters">
-        <div class="filter-group">
-          <mat-card>
-            <mat-card-header>
-              <mat-card-title>{{ 'socialStatistics.filters.type' | translate }}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <mat-radio-group class="d-flex flex-column" name="radioType" (change)="statsTypeFilter($event.value)">
-                <mat-radio-button value="all" class="all">{{ 'socialStatistics.filters.all' | translate }}</mat-radio-button>
-                <mat-radio-button *ngFor="let el of statsTypes" [value]="el[0].type">{{ el[0].type }}</mat-radio-button>
-              </mat-radio-group>
-            </mat-card-content>
-          </mat-card>
+  @if (statsShowFilters) {
+    <div class="p-4 bg-zinc-50/50 dark:bg-zinc-900/20 border-b border-zinc-100 dark:border-zinc-900 animate-in slide-in-from-top-2 duration-300">
+      <div class="flex flex-wrap items-end gap-6">
+        
+        <div class="flex flex-col gap-2 min-w-[200px]">
+          <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">Tipo Risorsa</label>
+          <select (change)="statsTypeFilter($any($event.target).value)"
+                  class="h-10 px-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-zinc-100 transition-all cursor-pointer">
+            <option value="all">{{ 'socialStatistics.filters.all' | translate }}</option>
+            <option *ngFor="let el of statsTypes" [value]="el[0].type">{{ el[0].type }}</option>
+          </select>
         </div>
-        <div class="filter-group">
-          <mat-card>
-            <mat-card-header>
-              <mat-card-title>{{ 'socialStatistics.filters.action' | translate }}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <mat-checkbox value="all" class="all" (change)="statsActionFilter('all', $event.checked)">{{ 'socialStatistics.filters.all' | translate }}</mat-checkbox>
-              <mat-checkbox value="view" (change)="statsActionFilter('view', $event.checked)">{{ 'socialStatistics.filters.views' | translate }}</mat-checkbox>
-              <mat-checkbox value="like" (change)="statsActionFilter('like', $event.checked)">{{ 'socialStatistics.filters.likes' | translate }}</mat-checkbox>
-              <mat-checkbox value="dislike" (change)="statsActionFilter('dislike', $event.checked)">{{ 'socialStatistics.filters.dislikes' | translate }}</mat-checkbox>
-            </mat-card-content>
-          </mat-card>
-        </div>
-        <div class="filter-group">
-          <mat-card>
-            <mat-card-header>
-              <mat-card-title>{{ 'socialStatistics.filters.counter' | translate }}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <mat-checkbox value="all" class="all" (change)="statsCounterFilter('all', $event.checked)">{{ 'socialStatistics.filters.all' | translate }}</mat-checkbox>
-              <mat-checkbox value="one" (change)="statsCounterFilter('one', $event.checked)">0 - 100</mat-checkbox>
-              <mat-checkbox value="two" (change)="statsCounterFilter('two', $event.checked)">101 - 300</mat-checkbox>
-              <mat-checkbox value="three" (change)="statsCounterFilter('three', $event.checked)">&gt; 300</mat-checkbox>
-            </mat-card-content>
-          </mat-card>
-        </div>
-      </div>
 
-      <div class="charts-container mt-3" *ngIf="statsShowCharts" id="charts">
-        <div class="row">
-          <div class="col-md-4">
-            <mat-card class="chart-card">
-              <div class="chart-badge">Top 10</div>
-              <mat-card-content>
-                <canvas baseChart
-                        [data]="topViewedChartData"
-                        [options]="topViewedChartOptions"
-                        [type]="'bar'">
-                </canvas>
-              </mat-card-content>
-            </mat-card>
-          </div>
-          <div class="col-md-4">
-            <mat-card class="chart-card">
-              <div class="chart-badge">Top 10</div>
-              <mat-card-content>
-                <canvas baseChart
-                        [data]="topLikedChartData"
-                        [options]="topLikedChartOptions"
-                        [type]="'bar'">
-                </canvas>
-              </mat-card-content>
-            </mat-card>
-          </div>
-          <div class="col-md-4">
-            <mat-card class="chart-card">
-              <div class="chart-badge">Type</div>
-              <mat-card-content>
-                <canvas baseChart
-                        [data]="typeDistributionChartData"
-                        [options]="typeDistributionChartOptions"
-                        [type]="'bar'">
-                </canvas>
-              </mat-card-content>
-            </mat-card>
-          </div>
-        </div>
-      </div>
-
-      <mat-form-field class="w-100 mt-3">
-        <mat-label>{{ 'search.placeholder' | translate }}</mat-label>
-        <input matInput (keyup)="applyFilters($event)" [placeholder]="'search.placeholder' | translate">
-        <mat-icon matSuffix>search</mat-icon>
-      </mat-form-field>
-
-      <div class="mat-elevation-z2 table-container mt-3">
-        <table mat-table [dataSource]="statsDataSource" matSort #statsSort="matSort" id="dtStatistics" class="w-100">
-
-          <!-- Index Column -->
-          <ng-container matColumnDef="#">
-            <th mat-header-cell *matHeaderCellDef>#</th>
-            <td mat-cell *matCellDef="let i = index"> {{i + 1}} </td>
-          </ng-container>
-
-          <!-- Altre colonne... -->
-          <ng-container *ngFor="let col of ['type', 'title', 'user', 'action']" [matColumnDef]="col">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> {{ 'socialStatistics.table.headers.' + col | translate }} </th>
-            <td mat-cell *matCellDef="let el" [ngClass]="{'text-center': col !== 'type'}"> {{el[col]}} </td>
-          </ng-container>
-
-          <!-- Counter Column -->
-          <ng-container matColumnDef="counter">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center"> {{ 'socialStatistics.table.headers.counter' | translate }} </th>
-            <td mat-cell *matCellDef="let el" class="text-center">
-              <a href="javascript:void(0)" [matTooltip]="el.timestamps.join('\n')"
-                matTooltipPosition="above">{{ el.timestamps.length }}</a>
-            </td>
-          </ng-container>
-
-          <!-- Actions Column -->
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let el" class="text-center actmodindexdash">
-              <button mat-icon-button color="warn" (click)="deleteStatistics(el._id)" [matTooltip]="'socialStatistics.table.actions.flush_one' | translate">
-                <mat-icon>delete</mat-icon>
+        <div class="flex flex-col gap-2">
+          <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">Azioni</label>
+          <div class="flex gap-2">
+            @for (act of ['view', 'like', 'dislike']; track act) {
+              <button (click)="statsActionFilter(act, !actionFilters[act])"
+                      [class]="actionFilters[act] ? 'bg-zinc-900 text-white border-zinc-900' : 'bg-white text-zinc-500 border-zinc-200'"
+                      class="px-4 py-2 border rounded-xl text-[10px] font-bold uppercase transition-all">
+                {{ act }}
               </button>
-            </td>
-          </ng-container>
+            }
+          </div>
+        </div>
 
-          <tr mat-header-row *matHeaderRowDef="statsDisplayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: statsDisplayedColumns;"></tr>
-        </table>
-        <mat-paginator #statsPaginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons
-          [attr.aria-label]="'socialStatistics.paginator_aria_label' | translate"></mat-paginator>
+        <div class="flex flex-col gap-2">
+          <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">Volume</label>
+          <div class="flex gap-2">
+            <button (click)="statsCounterFilter('one', !counterFilters['one'])"
+                    [class]="counterFilters['one'] ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white text-zinc-500'"
+                    class="px-4 py-2 border border-zinc-200 rounded-xl text-[10px] font-bold uppercase transition-all">0-100</button>
+            <button (click)="statsCounterFilter('two', !counterFilters['two'])"
+                    [class]="counterFilters['two'] ? 'bg-amber-500 text-white border-amber-500' : 'bg-white text-zinc-500'"
+                    class="px-4 py-2 border border-zinc-200 rounded-xl text-[10px] font-bold uppercase transition-all">101-300</button>
+          </div>
+        </div>
+
+        <div class="flex-1 min-w-[250px] relative">
+          <input type="text" (keyup)="applyFilters($event)" 
+                 [placeholder]="'search.placeholder' | translate"
+                 class="w-full h-10 pl-10 pr-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs outline-none focus:ring-2 focus:ring-zinc-100 transition-all">
+          <mat-icon class="absolute left-3 top-2.5 !w-5 !h-5 !text-[18px] text-zinc-400">search</mat-icon>
+        </div>
       </div>
-    </mat-card-content>
-    <mat-card-footer>
-      <hr />
-      <div class="stats"><i class="fa fa-history"></i> {{ 'socialStatistics.footer.last_updated' | translate }} 23/10/2024</div>
-      <div class="pull-right">
-        <button mat-button color="warn" (click)="deleteStatistics('all')" [matTooltip]="'socialStatistics.footer.flush_all_tooltip' | translate">
-          <span>{{ 'socialStatistics.footer.flush_all' | translate }}</span>
-          <mat-icon class="ml-1">delete_sweep</mat-icon>
-        </button>
-      </div>
-    </mat-card-footer>
-  </mat-card>
+    </div>
+  }
+
+  <main class="flex-1 overflow-y-auto p-6 space-y-8">
+    
+    @if (statsShowCharts) {
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in zoom-in-95 duration-500">
+        <div class="bg-zinc-50/50 dark:bg-zinc-900/20 border border-zinc-100 dark:border-zinc-900 p-4 rounded-2xl relative">
+          <div class="absolute -top-3 -right-3 px-3 py-1 bg-purple-500 text-white text-[10px] font-bold rounded-full shadow-lg">TOP 10</div>
+          <canvas baseChart [data]="topViewedChartData" [options]="topViewedChartOptions" [type]="'bar'"></canvas>
+        </div>
+        </div>
+    }
+
+    <div class="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm overflow-hidden">
+      <table mat-table [dataSource]="statsDataSource" matSort #statsSort="matSort" class="w-full text-left">
+        
+        <ng-container matColumnDef="#">
+          <th mat-header-cell *matHeaderCellDef class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-400">#</th>
+          <td mat-cell *matCellDef="let i = index" class="px-6 py-4 text-xs font-mono text-zinc-400">{{i + 1}}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-400">Type</th>
+          <td mat-cell *matCellDef="let el" class="px-6 py-4">
+            <span class="px-2 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded text-[10px] font-bold uppercase">{{el.type}}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-400">Resource</th>
+          <td mat-cell *matCellDef="let el" class="px-6 py-4">
+            <div class="text-xs font-bold text-zinc-900 dark:text-zinc-100">{{el.title}}</div>
+            <!-- <div class="text-[10px] text-zinc-400">{{el.user}}</div> -->
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="user">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+            User
+          </th>
+          <td mat-cell *matCellDef="let el" class="px-6 py-4 text-xs text-zinc-500">
+            {{ el.user }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-400">Action</th>
+          <td mat-cell *matCellDef="let el" class="px-6 py-4">
+            <mat-icon class="!text-[16px] !w-4 !h-4" [class.text-emerald-500]="el.action === 'like'" [class.text-blue-500]="el.action === 'view'">
+              {{ el.action === 'like' ? 'favorite' : 'visibility' }}
+            </mat-icon>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="counter">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-zinc-400 text-center">Count</th>
+          <td mat-cell *matCellDef="let el" class="px-6 py-4 text-center">
+            <button [matTooltip]="el.timestamps.join('\n')" class="w-8 h-8 rounded-full bg-zinc-50 dark:bg-zinc-900 text-[10px] font-bold border border-zinc-100 dark:border-zinc-800">
+              {{ el.timestamps.length }}
+            </button>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="px-6 py-4"></th>
+          <td mat-cell *matCellDef="let el" class="px-6 py-4 text-right">
+            <button (click)="deleteStatistics(el._id)" class="p-2 text-zinc-400 hover:text-red-500 transition-colors">
+              <mat-icon class="!text-[20px]">delete_outline</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="statsDisplayedColumns" class="bg-zinc-50/50 dark:bg-zinc-900/50"></tr>
+        <tr mat-row *matRowDef="let row; columns: statsDisplayedColumns;" class="hover:bg-zinc-50/30 dark:hover:bg-zinc-900/10 transition-colors border-b border-zinc-50 dark:border-zinc-900 last:border-0"></tr>
+      </table>
+      
+      <mat-paginator #statsPaginator [pageSizeOptions]="[10, 25, 50]" class="!bg-transparent text-[11px]"></mat-paginator>
+    </div>
+  </main>
+
+  <footer class="p-6 border-t border-zinc-100 dark:border-zinc-900 flex justify-between items-center bg-zinc-50/20">
+    <div class="text-[10px] text-zinc-400 flex items-center gap-2">
+      <mat-icon class="!text-[14px] !w-3.5 !h-3.5">history</mat-icon>
+      {{ 'socialStatistics.footer.last_updated' | translate }} 23/10/2024
+    </div>
+    <button (click)="deleteStatistics('all')" 
+            class="px-4 py-2 bg-red-50 text-white hover:bg-red-100 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all flex items-center gap-2">
+      {{ 'socialStatistics.footer.flush_all' | translate }}
+      <mat-icon class="!text-[16px] !w-4 !h-4">delete_sweep</mat-icon>
+    </button>
+  </footer>
 </div>

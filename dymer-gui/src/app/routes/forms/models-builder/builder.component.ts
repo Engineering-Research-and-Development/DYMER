@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { SidebarModelsComponent } from './sidebar/sidebar.component';
 import { CanvasModelsComponent } from './canvas/canvas.component';
-import { PropertiesModelsComponent } from './properties/properties.component';
 import { CodeModelsEditorComponent } from './code-editor/code-editor.component';
 import { AiModelsChatComponent } from './ai-chat/ai-chat.component';
 import { BuilderService } from './builder.service';
@@ -28,7 +27,6 @@ import { ToastrService } from 'ngx-toastr';
     FormsModule,
     SidebarModelsComponent,
     CanvasModelsComponent,
-    PropertiesModelsComponent,
     CodeModelsEditorComponent,
     AiModelsChatComponent,
     MatIconModule,
@@ -117,11 +115,11 @@ export class BuilderModelsComponent implements OnInit {
 
   templates = [
     { id: 'blank', name: 'Blank Page', description: 'Start from scratch with an empty canvas', icon: 'check_box_outline_blank', file: null },
-    { id: 'landing', name: 'Landing Page', description: 'A full landing page with hero, features, and CTA', icon: 'web', file: '/templates/landing.html' },
-    { id: 'teaserlist', name: 'Teaser List', description: 'A list of article teasers with images', icon: 'view_list', file: '/templates/teaserlist.html' },
-    { id: 'fullcontent', name: 'Full Content', description: 'A full article page with cover image', icon: 'article', file: '/templates/fullcontent.html' },
-    { id: 'mappreview', name: 'Map Preview', description: 'Contact page with embedded map', icon: 'map', file: '/templates/mappreview.html' },
-    { id: 'form', name: 'Contact Form', description: 'Ready-to-use contact form', icon: 'contact_mail', file: '/templates/form.html' }
+    { id: 'dih', name: 'Company Page', description: 'A full Company template page', icon: 'web', file: 'assets/templates/dih.html' },
+    { id: 'service', name: 'Service Page', description: 'A full service page with features and CTA', icon: 'web', file: 'assets/templates/service.html' },
+    { id: 'article', name: 'Article Content', description: 'A full article page with cover image', icon: 'article', file: 'assets/templates/article.html' },
+    { id: 'product', name: 'Product Page', description: 'A full product page with features and CTA', icon: 'shopping_cart', file: 'assets/templates/product.html' },
+    { id: 'form', name: 'Contact Form', description: 'Ready-to-use contact form', icon: 'contact_mail', file: 'assets/templates/form.html' }
   ];
 
   showAttachModal = false;
@@ -441,6 +439,11 @@ export class BuilderModelsComponent implements OnInit {
 
       return (attachment.data || '').trim() !== (this.attachModalData.fileContent || '').trim();
     }
+
+    else if (this.attachModalData.activeTab === 'upload') {
+    // Caricamento file: serve che un file sia stato selezionato
+    return !!this.attachModalData.selectedFile;
+  }
 
     return false;
   }

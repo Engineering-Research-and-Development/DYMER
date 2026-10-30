@@ -1,0 +1,124 @@
+.source-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    h3 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      color: #f0f3f7;
+    }
+  }
+
+  &__empty {
+    font-size: 12.5px;
+    color: #8a93a3;
+    padding: 24px 0;
+    text-align: center;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+  }
+}
+
+.source-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+
+  thead th {
+    text-align: left;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6e7681;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+  }
+
+  &__row--disabled {
+    opacity: 0.55;
+  }
+
+  td {
+    padding: 10px 12px;
+    color: #c9d1d9;
+    vertical-align: middle;
+  }
+
+  &__name {
+    display: block;
+    font-weight: 600;
+    color: #f0f3f7;
+  }
+
+  &__endpoint {
+    display: block;
+    font-size: 10.5px;
+    color: #6e7681;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__pending {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: rgba(245, 185, 66, 0.12);
+    color: #f5b942;
+    font-weight: 700;
+    font-size: 11px;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 4px;
+    white-space: nowrap;
+  }
+}
+
+.icon-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  color: #c9d1d9;
+  cursor: pointer;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  &--danger:hover {
+    background: rgba(255, 93, 93, 0.12);
+    color: #ff5d5d;
+    border-color: rgba(255, 93, 93, 0.3);
+  }
+}

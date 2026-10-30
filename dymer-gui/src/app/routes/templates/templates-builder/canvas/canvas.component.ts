@@ -492,7 +492,7 @@ export class CanvasTemplatesComponent implements AfterViewInit, OnDestroy {
       el.innerHTML = `
         <div class="flex justify-between items-center mb-6">
           <h3 class="text-lg font-bold text-gray-900 m-0">${title}</h3>
-          <span class="bg-blue-50 text-blue-700 text-sm font-medium px-3 py-1 rounded-full border border-blue-100">Total: 0</span>
+          <span class="bg-blue-200 text-blue-700 text-sm font-medium px-3 py-1 rounded-full border border-blue-100">Total: 0</span>
         </div>
         <div class="space-y-4 text-center text-gray-500 py-4">
           Please configure Data Source URL and Label Field in properties.

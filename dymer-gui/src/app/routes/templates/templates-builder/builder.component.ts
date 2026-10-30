@@ -27,7 +27,7 @@ import { CodemirrorModule } from '@ctrl/ngx-codemirror';
     FormsModule,
     SidebarTemplatesComponent,
     CanvasTemplatesComponent,
-    PropertiesTemplatesComponent,
+    
     CodeTemplatesEditorComponent,
     AiTemplatesChatComponent,
     MatIconModule,
@@ -118,12 +118,12 @@ export class BuilderTemplatesComponent implements OnInit {
   };
 
   templates = [
-    { id: 'blank', name: 'Blank Page', description: 'Start from scratch with an empty canvas', icon: 'check_box_outline_blank', file: null },
-    { id: 'landing', name: 'Landing Page', description: 'A full landing page with hero, features, and CTA', icon: 'web', file: '/templates/landing.html' },
-    { id: 'teaserlist', name: 'Teaser List', description: 'A list of article teasers with images', icon: 'view_list', file: '/templates/teaserlist.html' },
-    { id: 'fullcontent', name: 'Full Content', description: 'A full article page with cover image', icon: 'article', file: '/templates/fullcontent.html' },
-    { id: 'mappreview', name: 'Map Preview', description: 'Contact page with embedded map', icon: 'map', file: '/templates/mappreview.html' },
-    { id: 'form', name: 'Contact Form', description: 'Ready-to-use contact form', icon: 'contact_mail', file: '/templates/form.html' }
+    { id: 'blank', type: 'teaserlist', name: 'Blank Page', description: 'Start from scratch with an empty canvas', icon: 'check_box_outline_blank', file: null },
+    { id: 'landing', type: 'teaserlist', name: 'Landing Page', description: 'A full landing page with hero, features, and CTA', icon: 'web', file: '/templates/landing.html' },
+    { id: 'teaserlist', type: 'teaserlist',name: 'Teaser List', description: 'A list of article teasers with images', icon: 'view_list', file: '/templates/teaserlist.html' },
+    { id: 'fullcontent',type: 'fullcontent' ,name: 'Full Content', description: 'A full article page with cover image', icon: 'article', file: '/templates/fullcontent.html' },
+    { id: 'mappreview',type: 'mappreview', name: 'Map Preview', description: 'Contact page with embedded map', icon: 'map', file: '/templates/mappreview.html' },
+    { id: 'teaser',type: 'teaser', name: 'General Preview', description: 'teaser', icon: 'map', file: '/templates/teaserlist.html' } 
   ];
 
   showAttachModal = false;
@@ -453,6 +453,10 @@ export class BuilderTemplatesComponent implements OnInit {
 
       return (attachment.data || '').trim() !== (this.attachModalData.fileContent || '').trim();
     }
+        else if (this.attachModalData.activeTab === 'upload') {
+    // Caricamento file: serve che un file sia stato selezionato
+    return !!this.attachModalData.selectedFile;
+  }
 
     return false;
   }
@@ -621,5 +625,9 @@ export class BuilderTemplatesComponent implements OnInit {
     });
   }
   /**/
+  selectTemplate(template: any) {
+    this.newPageData.template = template.id;
+    this.newPageData.slug = template.type;
+  }
 
 }

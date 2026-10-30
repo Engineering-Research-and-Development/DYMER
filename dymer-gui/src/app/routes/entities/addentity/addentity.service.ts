@@ -46,7 +46,19 @@ export class AddEntityService {
       .pipe(
         map(response => {
           if (response && response.data) {
-            response.data = response.data.map((model: RawEsEntity) => ({ ...model, title: model.title ?? model.instance?.title ?? model._id }));
+            response.data = response.data.map((model: RawEsEntity) => {
+              // Estrazione sicura dell'indice logico (es. "prova")
+              const inst = Array.isArray(model.instance) ? model.instance[0] : model.instance;
+              const logicalIndex = inst?.index || inst?._index || model.index || model._index;
+
+              const mappedModel = {
+                ...model,
+                title: model.title ?? inst?.title ?? model._id,
+                index: logicalIndex,
+                _index: logicalIndex || model._id
+              };
+              return mappedModel;
+            });
           }
           return response;
         }),

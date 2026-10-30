@@ -57,6 +57,7 @@ export class AddEntityComponent implements OnInit, OnDestroy, AfterViewChecked, 
   filteredModels$!: Observable<RawEsEntity[]>;
 
   selectedIndex: number | null = null;
+  selectedModel: RawEsEntity | null = null;
   formtitle = '';
   formHtml: SafeHtml | null = null;
   otherFilesToLoad: any[] = [];
@@ -67,10 +68,12 @@ export class AddEntityComponent implements OnInit, OnDestroy, AfterViewChecked, 
   private _jq: JQueryStatic;
 
   constructor() {
+    console.warn('DEBUG: AddEntityComponent Constructor');
     this._jq = JQuery.default;
   }
 
   ngOnInit(): void {
+    console.warn('DEBUG: AddEntityComponent ngOnInit');
     this.isLoading = true;
     this.addEntityService
       .getModels()
@@ -86,6 +89,7 @@ export class AddEntityComponent implements OnInit, OnDestroy, AfterViewChecked, 
         })
       )
       .subscribe(response => {
+        console.warn('DEBUG: Models loaded', response.data);
         this.allModels = response.data;
         this.setupFiltering();
         this.isLoading = false;
@@ -432,7 +436,10 @@ export class AddEntityComponent implements OnInit, OnDestroy, AfterViewChecked, 
   }
 
   async loadHtmlForm(model: RawEsEntity, index: number): Promise<void> {
+    console.warn('DEBUG: loadHtmlForm', { model, index });
+    
     this.selectedIndex = index;
+    this.selectedModel = model;
     this.formtitle = model.title ?? '';
     this.formHtml = null;
     this.otherFilesToLoad = [];
@@ -715,6 +722,7 @@ export class AddEntityComponent implements OnInit, OnDestroy, AfterViewChecked, 
       const confirmed = r === undefined ? confirm(this.translate.instant('menu.entities.add.confirmClose')) : r;
       if (confirmed) {
         this.formHtml = null;
+        this.selectedModel = null;
         this.selectedIndex = null;
         this.formtitle = '';
         this.searchControl.setValue('');
@@ -722,6 +730,33 @@ export class AddEntityComponent implements OnInit, OnDestroy, AfterViewChecked, 
         this.cdr.detectChanges();
       }
     }
+  }
+
+  public submitAddEntityForm(): void {
+    if (!this.selectedModel) {
+      this.toastr.error(this.translate.instant('menu.entities.add.noModelSelected'));
+      return;
+    }
+
+    const selectedModel = this.selectedModel;
+    // Utilizziamo la proprietà 'index' mappata dal servizio che contiene "prova"
+    const modelIndex = selectedModel['index'] || selectedModel._index;
+
+    if (!modelIndex) {
+      this.toastr.error(this.translate.instant('menu.entities.add.noModelSelected'));
+      return;
+    }
+
+    this.actionPostMultipartForm(
+      `entity/${modelIndex}`,
+      undefined,
+      { instance: { index: modelIndex } },
+      '#html-torender form',
+      undefined,
+      undefined,
+      true,
+      undefined
+    );
   }
 
   private checkDymerValidForm(formElement: HTMLFormElement): boolean {
@@ -906,6 +941,7 @@ export class AddEntityComponent implements OnInit, OnDestroy, AfterViewChecked, 
             this.toastr.success(ret.message || this.translate.instant('menu.entities.add.createSuccess'));
           }
           this.formHtml = null;
+          this.selectedModel = null;
           this.selectedIndex = null;
           this.searchControl.setValue('');
         },

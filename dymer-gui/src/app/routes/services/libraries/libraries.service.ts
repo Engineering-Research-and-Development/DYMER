@@ -54,22 +54,63 @@ export class LibrariesService {
     return this.client.post<any>(this.apiService.endpoints.libraries.reloadLibraries, {}, { withCredentials: true });
   }
 
+  // addLibrary(library: Library, file: File): Observable<any> {
+  //   // Step 1: Upload the file
+  //   const fileUploadData = new FormData();
+  //   fileUploadData.append('file', file);
+  //   fileUploadData.append('path', library.filename);
+
+  //   return this.client.post<FileUploadResponse>(this.apiService.endpoints.libraries.uploadFile, fileUploadData, { withCredentials: true }).pipe(
+  //     switchMap(uploadResponse => {
+  //       if (uploadResponse && uploadResponse.data) {
+  //         // Step 2: Create the library metadata with the updated filename
+  //         const updatedLibrary = { ...library };
+  //         // updatedLibrary.filename += `/${uploadResponse.data}`;
+  //         updatedLibrary.filename = uploadResponse.data;
+  //         if (/^\s*$/.test(updatedLibrary.callback)) {
+  //           updatedLibrary.callback = '';
+  //         }
+  //         return this.client.post<any>(this.apiService.endpoints.libraries.getAllLibraries, updatedLibrary, { withCredentials: true });
+  //       } else {
+  //         throw new Error('File upload failed: invalid response from server.');
+  //       }
+  //     })
+  //   );
+  // }
+
   addLibrary(library: Library, file: File): Observable<any> {
-    // Step 1: Upload the file
+
+    const basePath = library.type === 'CSS'
+      ? 'css/lib'
+      : 'js/lib';
+
     const fileUploadData = new FormData();
     fileUploadData.append('file', file);
-    fileUploadData.append('path', library.filename);
+    fileUploadData.append('path', basePath);
 
-    return this.client.post<FileUploadResponse>(this.apiService.endpoints.libraries.uploadFile, fileUploadData, { withCredentials: true }).pipe(
+    return this.client.post<FileUploadResponse>(
+      this.apiService.endpoints.libraries.uploadFile,
+      fileUploadData,
+      { withCredentials: true }
+    ).pipe(
       switchMap(uploadResponse => {
         if (uploadResponse && uploadResponse.data) {
-          // Step 2: Create the library metadata with the updated filename
-          const updatedLibrary = { ...library };
-          updatedLibrary.filename += `/${uploadResponse.data}`;
+
+          const updatedLibrary: Library = {
+            ...library,
+            filename: `${basePath}/${uploadResponse.data}`
+          };
+
           if (/^\s*$/.test(updatedLibrary.callback)) {
             updatedLibrary.callback = '';
           }
-          return this.client.post<any>(this.apiService.endpoints.libraries.getAllLibraries, updatedLibrary, { withCredentials: true });
+
+          return this.client.post<any>(
+            this.apiService.endpoints.libraries.getAllLibraries,
+            updatedLibrary,
+            { withCredentials: true }
+          );
+
         } else {
           throw new Error('File upload failed: invalid response from server.');
         }

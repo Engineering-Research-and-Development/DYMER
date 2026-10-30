@@ -4,21 +4,267 @@ mat-card-content {
 }
 
 :host ::ng-deep {
-
   .rule-container {
+    background: #ffffff;
+    border: 1px solid #e4e4e7; // zinc-200
+    border-radius: 12px;
+    padding: 8px 12px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #a1a1aa; // zinc-400
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  }
+
+  .rule-content-wrapper {
     display: flex;
-    flex-direction: column;
-    padding-bottom: 10px; /* Aggiunge un po' di spazio sotto */
+    align-items: center;
+    gap: 12px;
   }
 
-  .rule-container .rule-actions {
-    align-self: flex-end; /* Allinea il pulsante a destra */
+  .rule-inputs-row {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 8px; // Spazio tra i 3 div
+    
+    div {
+      flex: 1; // Distribuisce i 3 div equamente
+    }
   }
 
-  /* Fa in modo che i select e gli input occupino tutta la larghezza disponibile nel loro contenitore */
-  .rule-filter-container .form-control,
-  .rule-operator-container .form-control,
-  .rule-value-container .form-control {
+  // Stile per le Select (Addio Bootstrap, Benvenuto OpenClaw)
+  select {
     width: 100%;
+    height: 36px;
+    padding: 0 10px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #18181b; // zinc-900
+    background-color: #f9f9fb;
+    border: 1px solid #f1f1f4;
+    border-radius: 8px;
+    appearance: none;
+    cursor: pointer;
+    outline: none;
+    transition: border 0.2s;
+
+    &:focus {
+      border-color: #18181b;
+      background-color: #ffffff;
+    }
+  }
+
+  .btn-delete-minimal {
+    background: transparent;
+    border: none;
+    color: #a1a1aa;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+
+    &:hover {
+      color: #ef4444; // red-500
+      background: #fef2f2;
+    }
+  }
+
+  .drag-handle {
+    cursor: grab;
+    padding: 4px;
+  }
+}
+
+// Dark Mode
+.dark .rule-container-openclaw {
+  background: #09090b; // zinc-950
+  border-color: #27272a; // zinc-800
+
+  select {
+    background-color: #18181b;
+    border-color: #27272a;
+    color: #fafafa;
+
+    &:focus {
+      border-color: #ffffff;
+    }
+  }
+  
+  .btn-delete-minimal:hover {
+    background: #450a0a;
+  }
+}
+
+
+
+
+
+}
+
+
+ 
+  
+  .query-builder-custom::ng-deep .rules-group-container {
+    background: rgba(244, 244, 245, 0.5) !important; // zinc-100
+    border: 1px solid #e4e4e7 !important; // zinc-200
+    border-radius: 16px !important;
+    padding: 20px !important;
+  }
+
+  .query-builder-custom::ng-deep .rule-container {
+    background: white !important;
+    border: 1px solid #f4f4f5 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+    padding: 10px !important;
+    margin-bottom: 10px !important;
+  }
+
+
+ .query-builder-custom::ng-deep .btn-success, .query-builder-custom::ng-deep .btn-primary {
+    background: #18181b !important; // zinc-900
+    border: none !important;
+    color: #fff;
+    padding: 4px;
+    margin: 3px;
+    border: none !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.1em !important;
+    border-radius: 8px !important;
+  }
+
+  .query-builder-custom::ng-deep .btn-danger {
+    background: #fee2e2 !important; // red-100
+    color: #ef4444 !important; // red-500
+    border: none !important;
+    border-radius: 6px !important;
+     padding: 4px;
+    margin: 3px;
+  }
+
+   
+  .query-builder-custom ::ng-deep select, .query-builder-custom ::ng-deep input {
+    border: 1px solid #e4e4e7 !important;
+    border-radius: 8px !important;
+    font-size: 12px !important;
+    padding: 4px 8px !important;
+    outline: none !important;
+    &:focus {
+      ring: 2px solid #f4f4f5 !important;
+    }
+  }
+ 
+
+ 
+ .dark .query-builder-custom::ng-deep .rules-group-container {
+    background: rgba(24, 24, 27, 0.5) !important; // zinc-900
+    border-color: #27272a !important; // zinc-800
+  }
+ .dark .query-builder-custom::ng-deep .rule-container {
+    background: #09090b !important; // zinc-950
+    border-color: #27272a !important;
+  }
+ 
+
+  .rule-container-openclaw {
+  background: #ffffff;
+  border: 1px solid #e4e4e7; // zinc-200
+  border-radius: 12px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #a1a1aa; // zinc-400
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  }
+
+  .rule-content-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .rule-inputs-row {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 8px; // Spazio tra i 3 div
+    
+    div {
+      flex: 1; // Distribuisce i 3 div equamente
+    }
+  }
+
+  // Stile per le Select (Addio Bootstrap, Benvenuto OpenClaw)
+  select {
+    width: 100%;
+    height: 36px;
+    padding: 0 10px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #18181b; // zinc-900
+    background-color: #f9f9fb;
+    border: 1px solid #f1f1f4;
+    border-radius: 8px;
+    appearance: none;
+    cursor: pointer;
+    outline: none;
+    transition: border 0.2s;
+
+    &:focus {
+      border-color: #18181b;
+      background-color: #ffffff;
+    }
+  }
+
+  .btn-delete-minimal {
+    background: transparent;
+    border: none;
+    color: #a1a1aa;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+
+    &:hover {
+      color: #ef4444; // red-500
+      background: #fef2f2;
+    }
+  }
+
+  .drag-handle {
+    cursor: grab;
+    padding: 4px;
+  }
+}
+
+// Dark Mode
+.dark .rule-container-openclaw {
+  background: #09090b; // zinc-950
+  border-color: #27272a; // zinc-800
+
+  select {
+    background-color: #18181b;
+    border-color: #27272a;
+    color: #fafafa;
+
+    &:focus {
+      border-color: #ffffff;
+    }
+  }
+  
+  .btn-delete-minimal:hover {
+    background: #450a0a;
   }
 }

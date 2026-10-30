@@ -7,14 +7,16 @@
     
         <div class="kms-form-group">
             <label class="kms-title-label">Title</label>
-            <input type="text" class="kms-input" name="data[title]" placeholder="Title" required dymer-model-element="" dymer-model-visibility="public">
+            <input type="text" class="kms-input" name="data[title]" placeholder="Title" required dymer-model-element="" dymer-model-visibility="public" data-dcat-map="dcat:title"
+  data-ids-map="ids:name">
             <small class="kms-help-text">Please provide the name of the {{titolo}}</small>
         </div>
 
 
         <div class="kms-form-group">
             <label class="kms-title-label">Description</label>
-            <textarea type="textarea" class="kms-input" dymer-model-element="" name="data[description]" required dymer-model-visibility="public"></textarea>
+            <textarea type="textarea" class="kms-input" dymer-model-element="" name="data[description]" required dymer-model-visibility="public" data-dcat-map="dcat:description"
+  data-ids-map="ids:description"></textarea>
             <small class="kms-help-text">Please provide a description</small>
         </div>
         <div class="kms-form-group">

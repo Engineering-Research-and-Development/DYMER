@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, catchError, map, switchMap, throwError } from 'rxjs';
+import { Observable, catchError, map, switchMap, throwError, timeout, retry } from 'rxjs';
 import { Permissions } from './permission.interface';
 import { ApiService } from '@core/services/api.service';
 
@@ -42,7 +42,9 @@ export class PermissionService {
       switchMap(permissions =>
         this.getAvailableEntities().pipe(
           map(availableEntities => {
-            const entities = availableEntities.data.map((value: any) => value.instance[0]._index);
+            const entities = availableEntities.data
+              .map((value: any) => value.instance?.[0]?._index)
+              .filter((index: any) => index !== undefined && index !== null);
             return permissions.data.map((perm: any) => ({
               ...perm,
               entities,
@@ -86,6 +88,18 @@ export class PermissionService {
     return this.client.post<{ message: string }>(`${this.permissionList}${role._id ?? ''}`, {
       data: role }, {withCredentials: true
     }).pipe(
+      // Retry fino a 3 volte con backoff esponenziale (500ms, 1s, 2s)
+      retry({
+        count: 3,
+        delay: (err, retryCount) => {
+          const delayMs = Math.pow(2, retryCount - 1) * 500;
+          console.log(`Retry ${retryCount}/3 dopo ${delayMs}ms`);
+          return new Observable(subscriber => {
+            setTimeout(() => subscriber.complete(), delayMs);
+          });
+        }
+      }),
+      timeout(120000), // Timeout di 120 secondi dopo i retry
       catchError(error => {
         console.error('saveRole Error:', error);
         return throwError(error);

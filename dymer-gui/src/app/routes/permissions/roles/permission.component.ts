@@ -12,7 +12,7 @@ import { MatCheckboxModule} from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PageHeaderComponent } from '@shared';
 
 @Component({
@@ -37,12 +37,12 @@ export class RolesComponent implements OnInit {
   typeRole: Permissions = structuredClone(this.baseRoleForm);
   listPerm: any[] = [];
   listRoles: Permissions[] = [];
-
-  displayedColumns: string[] = ['entity', 'view', 'create', 'edit', 'delete', 'actions'];
+  isSaving: boolean = false;
 
   constructor(
     private readonly permissionService: PermissionService,
-    private readonly toast: ToastrService
+    private readonly toast: ToastrService,
+    private readonly translate: TranslateService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -61,7 +61,8 @@ export class RolesComponent implements OnInit {
 
   private async getListRoles() {
     try {
-      return await lastValueFrom(this.permissionService.getPermissions());
+      let res = await lastValueFrom(this.permissionService.getPermissions());
+      return res.data ?? [];
     } catch (error) {
       console.error('Error loading roles:', error);
       return [];
@@ -69,28 +70,53 @@ export class RolesComponent implements OnInit {
   }
 
   saveConfigRules(formData: Permissions) {
+    const roleName = formData.role?.trim();
+
+    if (!roleName) {
+      this.toast.error(this.translate.instant('menu.permissions.roles.nameRequired'), 'ERROR');
+      console.error('Missing role name');
+      return;
+    }
+
+    // Evito nomi di ruolo duplicati
+    const exists = this.listRoles.some(
+      r => r.role.toLowerCase() === roleName.toLowerCase()
+    );
+
+
+    if (exists) {
+      this.toast.error(this.translate.instant('menu.permissions.roles.alreadyExists'), 'ERROR');
+      console.error('Role already exists');
+      return;
+    }
+
     this.permissionService.saveConfigRules(formData).subscribe({
       next: () => {
         this.getListPerm().then(listPerm => this.listPerm = listPerm);
         this.getListRoles().then(listRoles => this.listRoles = listRoles);
-        this.toast.success('New role correctly created', 'CREATE');
+        this.toast.success(this.translate.instant('menu.permissions.roles.created'), this.translate.instant('menu.actions.create'));
+        this.formData.role = ''; // Pulisce il campo di input del ruolo
       },
       error: error => console.error('Error while saving config rules:', error),
     });
   }
 
   removeRole(id: string) {
-    if (confirm('Do you want to delete this role?')) {
+    if (confirm(this.translate.instant('menu.permissions.roles.confirmDelete'))) {
       const index = this.listPerm.findIndex(obj => obj._id === id);
-      this.permissionService.removeRole(this.listPerm[index]._id).subscribe({
-        next: () => this.listPerm.splice(index, 1),
+      this.permissionService.removeRole(id).subscribe({
+        next: () => {
+          this.toast.success(this.translate.instant('menu.permissions.roles.deleted'), this.translate.instant('menu.actions.delete'));
+          this.getListPerm().then(listPerm => this.listPerm = listPerm);
+          this.getListRoles().then(listRoles => this.listRoles = listRoles);
+        },
         error: error => console.error('Error while deleting role:', error),
       });
     }
   }
 
-  changePermission(index: any, f: string, e: any): boolean {
-    const pos = this.listPerm.findIndex(x => x._id === index._id);
+  changePermission(role: any, f: string, e: any): boolean {
+    const pos = this.listPerm.findIndex(x => x._id === role._id);
 
     if (pos === -1) return false;
 
@@ -110,21 +136,29 @@ export class RolesComponent implements OnInit {
   }
 
   saveRole(formData: Permissions) {
+    this.isSaving = true;
+    console.log('Saving role:', formData);
     this.permissionService.saveRole(formData).subscribe({
-      next: () => {
+      next: (response) => {
+        console.log('Role saved successfully:', response);
+        this.isSaving = false;
         this.getListPerm().then(listPerm => this.listPerm = listPerm);
         this.getListRoles().then(listRoles => this.listRoles = listRoles);
-        this.toast.success('Permission correctly updated', 'UPDATE');
+        this.toast.success(this.translate.instant('menu.permissions.roles.updated'), this.translate.instant('menu.actions.update'));
       },
-      error: error => console.error('Error while saving config rules:', error),
+      error: (error) => {
+        console.error('Error while saving role:', error);
+        this.isSaving = false;
+        const errorMsg = error.name === 'TimeoutError' 
+          ? 'Timeout: il backend ha impiegato troppo tempo a rispondere' 
+          : 'Errore nel salvataggio del ruolo';
+        this.toast.error(errorMsg, 'ERROR');
+      },
     });
   }
 
-  isChecked(entityPermission: any, permissionKey: string): boolean {
-    const foundFunction = entityPermission.functions.find(
-      (func: any) => func.operations === permissionKey
-    );
-    return foundFunction ? foundFunction.checked : false;
+  isChecked(role: any, entity: string, permissionKey: string): boolean {
+    return role?.perms?.entities?.[permissionKey]?.includes(entity) ?? false;
   }
   protected readonly Object = Object;
 }

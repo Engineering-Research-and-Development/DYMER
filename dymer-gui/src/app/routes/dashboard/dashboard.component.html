@@ -15,10 +15,12 @@
       { label: 'Models', val: stats().models, icon: 'fa-indent', color: 'text-teal-500' },
       { label: 'Templates', val: stats().templates, icon: 'fa-table-list', color: 'text-yellow-500' },
       { label: 'Entity', val: stats().entities, icon: 'fa-globe', color: 'text-blue-500' },
-      { label: 'Relations', val: stats().relations, icon: 'fa-sitemap', color: 'text-purple-500' },
+      { label: 'Relations', val: allCountRelations(), icon: 'fa-sitemap', color: 'text-purple-500', clickable: true },
       { label: 'AI Agents', val: aiAgents().length, icon: 'fa-robot', color: 'text-orange-500' }
     ]; track kpi.label) {
-      <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm hover:border-blue-400 transition-colors">
+      <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm hover:border-blue-400 transition-colors"
+           [class.cursor-pointer]="kpi.clickable"
+           (click)="kpi.clickable ? openRelationsGraph() : null">
         <div class="flex justify-between items-start mb-2 text-[10px] font-bold uppercase text-slate-400 tracking-widest">
           {{ kpi.label }} <i [class]="'fa-solid ' + kpi.icon + ' ' + kpi.color"></i>
         </div>
@@ -45,7 +47,7 @@
                           </span>
                           <span class="text-sm font-medium text-slate-600 group-hover:text-slate-900">{{ svc.name }}</span>
                         </div>
-                        <span class="text-[10px] font-mono text-slate-400 group-hover:text-slate-600">{{ svc.latency }}</span>
+                        <span [ngClass]="getStatusClass(svc.status)" class="text-[9px] font-bold px-2 py-0.5 rounded uppercase">{{ svc.latency  }}</span>
                       </div>
                     }
                   </div>
@@ -57,10 +59,10 @@
                   @for (agent of aiAgents(); track agent.id) {
                     <div class="flex items-center justify-between">
                       <div class="flex items-center gap-3">
-                        <span class="flex h-2 w-2 rounded-full" [ngClass]="agent.status === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'"></span>
+                        <span class="flex h-2 w-2 rounded-full" [ngClass]="agent.serviceStatus === 'online' ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'"></span>
                         <span class="text-sm font-medium text-slate-700">{{ agent.name }}</span>
                       </div>
-                      <span [ngClass]="getStatusClass(agent.status)" class="text-[9px] font-bold px-2 py-0.5 rounded uppercase">{{ agent.status }}</span>
+                      <span [ngClass]="getStatusClass(agent.serviceStatus)" class="text-[9px] font-bold px-2 py-0.5 rounded uppercase">{{ agent.serviceStatus }}</span>
                     </div>
                   }
                 </div>
@@ -90,7 +92,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="m21 8-9-4-9 4 9 4 9-4Z"/><path d="M3 8v8l9 4V12"/><path d="m21 8-9 4v8"/>
         </svg>
-        <span>{{ 'menu.last_entities' | translate }}</span>
+        <span>{{ 'latest_entities_created' | translate }}</span>
       </div>
     </button>
 
@@ -134,20 +136,20 @@
       </header> -->
       
       <div class="p-8">
-        <div class="flex flex-col items-center justify-center border-2 border-dashed border-zinc-100 dark:border-zinc-900 rounded-lg">
+        <div class="flex flex-col border-2 border-dashed border-zinc-100 dark:border-zinc-900 rounded-lg w-full">
            
-         <div class="text-center text-slate-400 italic text-sm">
-                  <div class="p-6 bg-[#fafafa] font-sans">
-                  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-8">
+         <div class="text-slate-400 text-sm w-full">
+                  <div class="p-4 bg-[#fafafa] font-sans w-full">
+                  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
                     
                     <div class="lg:col-span-12 bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
                       <div class="p-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
                         
-                        <div class="flex bg-slate-100 p-1 rounded-lg gap-1">
+                        <div class="flex bg-slate-100 p-1 rounded-lg gap-1 shrink-0">
                           @for (tab of ['all', 'webserver', 'entities', 'ai-srv']; track tab) {
                               <button 
                                     (click)="fetchLogs(tab)"
-                                    [class]="currentLogFile() === tab ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'"
+                                    [class]="currentLogFile() === tab ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:bg-white/50'"
                                     class="px-4 py-1.5 text-xs font-bold rounded-md transition-all uppercase border-none cursor-pointer">
                                     {{ tab.split('-')[0] }}
                                   </button>
@@ -173,8 +175,8 @@
                         </div>
                       </div>
 
-                      <div class="bg-slate-900 p-4 font-mono text-xs h-[350px] overflow-y-auto">
-                        @for (log of filteredLogs(); track log.timestamp) {
+                      <div class="bg-slate-900 p-4 font-mono text-xs h-[350px] min-h-[350px] overflow-y-auto w-full">
+                        @for (log of filteredLogs(); track $index) {
                           <div class="flex gap-4 mb-1 font-mono text-[11px] hover:bg-slate-800/50 p-1 rounded transition-colors">
                                     <span class="text-slate-500">{{ log.timestamp }}</span>
                                     
@@ -197,15 +199,12 @@
                                     </span>
                                   </div>
                         } @empty {
-                          <div class="text-slate-600 italic">Nessun log corrispondente ai filtri selezionati...</div>
+                          <div class="h-full flex items-center justify-center text-slate-600 italic">
+                            {{ isLoadingLogs() ? 'Caricamento in corso...' : 'Nessun log corrispondente ai filtri selezionati...' }}
+                          </div>
                         }
                       </div>
                     </div>
-
-                    <div class="lg:col-span-4 bg-white border border-slate-200 rounded-xl shadow-sm">
-                        </div>
-                    <div class="lg:col-span-8 bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-                        </div>
                   </div>
                 </div>
           </div>

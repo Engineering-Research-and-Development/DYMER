@@ -131,6 +131,41 @@ router.post('/generate-code', async (req, res) => {
         res.status(500).json({ error: 'Errore interno del server.' });
     }
 });
+router.post('/pull-model', async (req, res) => {
+    const { modelName } = req.body;
+    if (!modelName) return res.status(400).json({ error: 'Nome modello mancante' });
+ 
+    try {
+        // Nota: il pull può richiedere tempo, ollama-js supporta lo streaming
+        // ma qui lo gestiamo come operazione atomica per semplicità
+        await ollama.pull({ model: modelName });
+        res.json({ success: true, message: `Modello ${modelName} scaricato con successo` });
+    } catch (error) {
+        handleError(res, 500, error, "Errore durante il download del modello", "/pull-model");
+    }
+});
+router.get('/status', async (req, res) => {
+    try {
+        console.log('Checking Ollama status on URL:', OLLAMA_URL);
+        // Usa axios invece di ollama.list() per evitare problemi con fetch
+        const response = await axios.get(`${OLLAMA_URL}/api/tags`, { timeout: 3000 });
+        console.log('Ollama status check successful');
+        res.json({ success: true, status: 'online' });
+    } catch (error) {
+        console.error('Ollama status check failed:', error.message);
+        res.status(503).json({ success: false, status: 'offline', details: error.message });
+    }
+});
+ 
+// GET: Lista modelli installati
+router.get('/models', async (req, res) => {
+    try {
+        const response = await ollama.list();
+        res.json({ success: true, models: response.models });
+    } catch (error) {
+        handleError(res, 500, error, "Errore recupero modelli", "/models");
+    }
+});
 
 // GET: Verifica se Ollama è online
 router.get('/status', async (req, res) => {
@@ -142,6 +177,7 @@ router.get('/status', async (req, res) => {
     }
 });
 
+ 
 // GET: Lista modelli installati
 router.get('/models', async (req, res) => {
     try {
@@ -152,6 +188,7 @@ router.get('/models', async (req, res) => {
     }
 });
 
+ 
 // POST: Scarica un nuovo modello (Pull)
 router.post('/pull-model', async (req, res) => {
     const { modelName } = req.body;

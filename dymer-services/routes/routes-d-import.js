@@ -29,6 +29,9 @@ router.use(bodyParser.urlencoded({ limit: '100mb', extended: true }))
 const OpnUserModel = mongoose.model("OpnUserModel");
 /* AC 0 Day - END */
 
+const cookieParser = require('cookie-parser'); //AC
+router.use(cookieParser());
+
 router.get('/cronjob', util.checkIsAdmin, (req, res) => {
     var ret = new jsonResponse();
     let callData = util.getAllQuery(req);
@@ -218,223 +221,369 @@ router.post('/test-csv', upload.single('file'), async (req, res) => {
 })
 
 // AC New Import Function START
-router.post('/fromcsv', util.checkIsAdmin, (req, res) => {
+// router.post('/fromcsv', util.checkIsAdmin, (req, res) => {
+//     let ret = new jsonResponse();
+//     let listTopost = []; // object to send to entities service
+
+//     let dymerUser =JSON.parse(Buffer.from(req.headers.dymeruser, 'base64').toString('utf-8'))    
+//     logger.info(" >>> "+nameFile +" | fromcsv | HEADERS HTTP CSV: " + JSON.stringify(req.headers))
+//     logger.info(" >>> "+nameFile +" | fromcsv | HEADERS HTTP CSV: " + JSON.stringify(req.headers.dymeruser))
+
+//     const indexToImport = req.body.index
+//     let dataToImport = req.body.data
+//     const arrayFields = req.body.arrayFields
+//     const [mainRelation, ...secondaryRelations] = req.body.relations
+
+//     const mainRelationTo = mainRelation.relationTo
+//     const mainSearchingField = mainRelation.searchingField
+//     const mainEnabledRelation = mainRelation.enabled
+
+//     logger.info(nameFile + '| post/fromcsv | indexToImport:' + indexToImport);
+//     logger.info(nameFile + '| post/fromcsv | dataToImport:' + dataToImport);
+//     logger.info(nameFile + '| post/fromcsv | mainRelation:' + JSON.stringify(mainRelation));
+//     logger.info(nameFile + '| post/fromcsv | secondaryRelations:' + JSON.stringify(secondaryRelations));
+
+//     // console.log(nameFile + '| post/fromcsv | indexToImport:' + indexToImport);
+//     // console.log(nameFile + '| post/fromcsv | dataToImport:' + dataToImport);
+//     // console.log(nameFile + '| post/fromcsv | mainRelation:' + JSON.stringify(mainRelation));
+//     // console.log(nameFile + '| post/fromcsv | secondaryRelations:' + JSON.stringify(secondaryRelations));
+
+//     let searchUrl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/_search";
+
+//     // Set query to retrieve all relationTo index entities - elastic 8.11
+//     let query = {
+//         "query": {
+//             "query": {
+//                 "bool": {
+//                     "must": [{
+//                         "term": {
+//                             "_index": mainRelationTo
+//                         }
+//                     }]
+//                 }
+//             }
+//         }
+//     };
+
+//     /* AC 0 Day - START retrieve opnSearchModel */
+//     // OpnUserModel.findOne().then((opnUser) => {
+//         // Axios call to retrieve all relationTo index entities
+//         axios.post(searchUrl, query).then(response => {
+//             //console.log(">>>>response ", response);
+//             const relIndexEntities = response.data.data;
+//             console.log("relIndexEntities", relIndexEntities)
+
+//             // for Each mapped record, build propert_ object
+//             dataToImport.forEach((element, i) => {
+//                 let propert_ = {
+//                     owner: {
+//                         uid: element["properties.owner.uid"] ? element["properties.owner.uid"] : "admin@dymer.com", // opnUser.d_uid, //element["properties.owner"],
+//                         gid: 20121 // opnUser.d_gid //20121 // AC 0 Day
+//                     },
+//                     "grant": {
+//                         "update": {
+//                             "uid": [
+//                                 ""
+//                             ],
+//                             "gid": [
+//                                 ""
+//                             ]
+//                         },
+//                         "delete": {
+//                             "uid": [
+//                                 ""
+//                             ],
+//                             "gid": [
+//                                 ""
+//                             ]
+//                         },
+//                         "managegrant": {
+//                             "uid": [
+//                                 ""
+//                             ],
+//                             "gid": [
+//                                 ""
+//                             ]
+//                         }
+//                     },
+//                     ipsource: util.getServiceUrl('webserver') + util.getContextPath('webserver')
+//                 };
+//                 propert_.status = "1";
+//                 propert_.visibility = "0";
+//                 propert_.extrainfo = {
+//                     lastupdate: {
+//                         uid: element["properties.owner.uid"] ? element["properties.owner.uid"] : "admin@dymer.com", // opnUser.d_uid, //element["properties.owner"],
+//                         origin: util.getServiceUrl('webserver') + util.getContextPath('webserver')
+//                     }
+//                 }
+//                 propert_.changed = (new Date()).toISOString(); // end propert_ building object
+
+//                 // for each entity in relIndexEntities finds the one that has the same title to the searchingField indicated
+//                 let elrel;
+//                 if (mainEnabledRelation) {
+//                     elrel = relIndexEntities.find((el) => el["_source"].title === mainRelation.relationData[i]);
+//                     //console.log("elrel: ", elrel);
+//                 }
+
+//                 let rel_id = undefined;
+//                 if (elrel != undefined) rel_id = elrel["_id"]; // if rel has an entity, get the id
+
+//                 // Start to build the single Entity
+//                 var singleEntity = {
+//                     "instance": {
+//                         "index": indexToImport
+//                         //"type": indexToImport
+//                     },
+
+//                     "data": buildNestedObj(element, arrayFields) // mapped and structured record
+//                 };
+
+//                 singleEntity.data.properties = propert_ // add propert_
+//                 // console.log(singleEntity.data.properties)
+
+//                 // Main relations
+//                 if (mainEnabledRelation) {
+//                     if (rel_id !== undefined) {
+//                         singleEntity.data.relation = {[mainRelationTo]: [{to: rel_id}]};
+//                     }
+//                 }
+
+//                 // Secondary Relations
+//                 secondaryRelations.forEach(secRel => {
+//                     if (secRel.enabled) {
+//                         if (rel_id !== undefined) {
+//                             if (!singleEntity.data.relation || typeof singleEntity.data.relation !== 'object') {
+//                                 singleEntity.data.relation = {};
+//                             }
+//                             if (!singleEntity.data.relation[secRel.relationTo]) {
+//                                 singleEntity.data.relation[secRel.relationTo] = [];
+//                             }
+//                             singleEntity.data.relation[secRel.relationTo].push({to: secRel.relationData[i]})
+//                         }
+//                     }
+//                 })
+
+
+//                 var extrainfo = {
+//                     "extrainfo": {
+//                         "companyId": "20097", // opnUser.d_cid,
+//                         "groupId": "20121", //  opnUser.d_gid,   - AC 0 Day
+//                         "cms": "lfr",
+//                         "userId": element["email"],
+//                         "virtualhost": "localhost"
+//                     }
+//                 };
+//                 let extrainfo_objJsonStr = JSON.stringify(extrainfo);
+//                 let extrainfo_objJsonB64 = Buffer.from(extrainfo_objJsonStr).toString("base64");
+
+//                 // user section
+//                 /* AC 0 Day - START */
+//                 // var userinfo = {
+//                 //     "isGravatarEnabled": false,
+//                 //     "authorization_decision": "",
+//                 //     "roles": [{
+//                 //         "role": "User",
+//                 //         "id": "20109"
+//                 //     },
+//                 //         {
+//                 //             "role": "app-admin",
+//                 //             "id": "20110"
+//                 //         }
+//                 //     ],
+//                 //     "app_azf_domain": "",
+//                 //     "id": element["email"],
+//                 //     "app_id": "",
+//                 //     "email": element["email"],
+//                 //     "username": element["email"]
+//                 // };
+//                 let userinfo = {
+//                     "roles": dymerUser.roles,
+//                     "id": element["email"],
+//                     "email": element["email"],
+//                     "username": element["email"]
+//                 };
+//                 /* AC 0 Day - END */
+//                 let userinfo_objJsonStr = JSON.stringify(userinfo);
+//                 logger.info('>>> ' + nameFile + ' fromcsv | userinfo_objJsonStr: ' + userinfo_objJsonStr)
+//                 let userinfo_objJsonB64 = Buffer.from(userinfo_objJsonStr).toString("base64");
+
+//                 // Compose object to send
+//                 var objToPost = {'data': singleEntity, 'DYM': userinfo_objJsonB64, 'DYM_EXTRA': extrainfo_objJsonB64};
+//                 // console.log(JSON.stringify(singleEntity))
+//                 listTopost.push(objToPost);
+//             });
+//             listTopost.forEach(function (obj, index) {
+//                 setTimeout(function () {
+//                     console.log(nameFile + ' | fromjcsv | sent Entity to Entities Microservice:' + index + " " + JSON.stringify(obj.data));
+//                     logger.info(nameFile + ' | fromjcsv | sent Entity to Entities Microservice :' + index + " " + JSON.stringify(obj.data));
+//                     //set app-guest permission ex tefindservice view, create, edit
+//                     //logger.info(nameFile + ' fromcsv | obj.DYM: ' + JSON.stringify(obj.DYM))
+//                     postMyData(obj.data, indexToImport, obj.DYM, obj.DYM_EXTRA, "true"); /* AC aggiunto discriminante per owner nelle entities */
+//                 }, 1000 * (index + 1));
+//             });
+//             console.log("Entitied processed and sent to Entities Microservice")
+//             return res.send(ret);
+//         })
+//         .catch(error => {
+//             console.error("ERROR | " + nameFile + " | get/fromcsv ", error);
+//             logger.error(nameFile + ' | get/fromcsv : ' + error);
+//         })
+//     // }).catch((err) => {
+//     //     if (err) {
+//     //         console.error("ERROR | " + nameFile + "| fromcsv  | find: ", err);
+//     //         logger.error('ERROR | ' +nameFile + '| fromcsv  | find: ' + err);
+//     //         ret.setMessages("find Error");
+//     //         ret.setSuccess(false);
+//     //         ret.setExtraData({"log": err.stack});
+//     //         return res.send(ret);
+//     //     }
+//     // })
+// });
+router.post('/fromcsv', util.checkIsAdmin, async (req, res) => {
     let ret = new jsonResponse();
-    let listTopost = []; // object to send to entities service
+    let listTopost = [];
+    const token = req.cookies.token || "";
+    console.group("DEGUB RELATIONS FROM CSV")
+    try {
+        let dymerUser = JSON.parse(Buffer.from(req.headers.dymeruser, 'base64').toString('utf-8'));
 
-    let dymerUser =JSON.parse(Buffer.from(req.headers.dymeruser, 'base64').toString('utf-8'))    
-    logger.info(" >>> "+nameFile +" | fromcsv | HEADERS HTTP CSV: " + JSON.stringify(req.headers))
-    logger.info(" >>> "+nameFile +" | fromcsv | HEADERS HTTP CSV: " + JSON.stringify(req.headers.dymeruser))
+        const indexToImport = req.body.index;
+        let dataToImport = req.body.data;
+        const arrayFields = req.body.arrayFields;
+        const [mainRelation, ...secondaryRelations] = req.body.relations;
 
-    const indexToImport = req.body.index
-    let dataToImport = req.body.data
-    const arrayFields = req.body.arrayFields
-    const [mainRelation, ...secondaryRelations] = req.body.relations
+        const mainRelationTo = mainRelation?.relationTo;
+        const mainEnabledRelation = mainRelation?.enabled;
 
-    const mainRelationTo = mainRelation.relationTo
-    const mainSearchingField = mainRelation.searchingField
-    const mainEnabledRelation = mainRelation.enabled
+        let relIndexEntities = [];
 
-    logger.info(nameFile + '| post/fromcsv | indexToImport:' + indexToImport);
-    logger.info(nameFile + '| post/fromcsv | dataToImport:' + dataToImport);
-    logger.info(nameFile + '| post/fromcsv | mainRelation:' + JSON.stringify(mainRelation));
-    logger.info(nameFile + '| post/fromcsv | secondaryRelations:' + JSON.stringify(secondaryRelations));
-
-    // console.log(nameFile + '| post/fromcsv | indexToImport:' + indexToImport);
-    // console.log(nameFile + '| post/fromcsv | dataToImport:' + dataToImport);
-    // console.log(nameFile + '| post/fromcsv | mainRelation:' + JSON.stringify(mainRelation));
-    // console.log(nameFile + '| post/fromcsv | secondaryRelations:' + JSON.stringify(secondaryRelations));
-
-    let searchUrl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/_search";
-
-    // Set query to retrieve all relationTo index entities - elastic 8.11
-    let query = {
-        "query": {
-            "query": {
-                "bool": {
-                    "must": [{
-                        "term": {
-                            "_index": mainRelationTo
+        // recupero relazioni SOLO se servono
+        if (mainEnabledRelation && mainRelationTo) {
+            let searchUrl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/_search";
+            console.log("entro per fare query relazioni. mainRelationTo: ", mainRelationTo)
+            let query = {
+                "query": {
+                    "query": {
+                        "bool": {
+                            "must": [{
+                                "term": {
+                                    "_index": mainRelationTo
+                                }
+                            }]
                         }
-                    }]
+                    }
                 }
-            }
+            };
+
+            const response = await axios.post(searchUrl, query);
+            relIndexEntities = response.data.data || [];
+            console.log("relIndexEntities", JSON.stringify(relIndexEntities))
         }
-    };
 
-    /* AC 0 Day - START retrieve opnSearchModel */
-    OpnUserModel.findOne().then((opnUser) => {
-        // Axios call to retrieve all relationTo index entities
-        axios.post(searchUrl, query).then(response => {
-            //console.log(">>>>response ", response);
-            const relIndexEntities = response.data.data;
-            console.log("relIndexEntities", relIndexEntities)
+        // costruzione ENTITÀ
+        dataToImport.forEach((element, i) => {
 
-            // for Each mapped record, build propert_ object
-            dataToImport.forEach((element, i) => {
-                let propert_ = {
-                    owner: {
-                        uid: element["properties.owner.uid"] ? element["properties.owner.uid"] : "admin@dymer.com", // opnUser.d_uid, //element["properties.owner"],
-                        gid: 20121 // opnUser.d_gid //20121 // AC 0 Day
-                    },
-                    "grant": {
-                        "update": {
-                            "uid": [
-                                ""
-                            ],
-                            "gid": [
-                                ""
-                            ]
-                        },
-                        "delete": {
-                            "uid": [
-                                ""
-                            ],
-                            "gid": [
-                                ""
-                            ]
-                        },
-                        "managegrant": {
-                            "uid": [
-                                ""
-                            ],
-                            "gid": [
-                                ""
-                            ]
-                        }
-                    },
-                    ipsource: util.getServiceUrl('webserver') + util.getContextPath('webserver')
-                };
-                propert_.status = "1";
-                propert_.visibility = "0";
-                propert_.extrainfo = {
+            let propert_ = {
+                owner: {
+                    uid: element["properties.owner.uid"] || "admin@dymer.com",
+                    gid: 20121
+                },
+                grant: {
+                    update: { uid: [""], gid: [""] },
+                    delete: { uid: [""], gid: [""] },
+                    managegrant: { uid: [""], gid: [""] }
+                },
+                ipsource: util.getServiceUrl('webserver') + util.getContextPath('webserver'),
+                status: "1",
+                visibility: "0",
+                extrainfo: {
                     lastupdate: {
-                        uid: element["properties.owner.uid"] ? element["properties.owner.uid"] : "admin@dymer.com", // opnUser.d_uid, //element["properties.owner"],
+                        uid: element["properties.owner.uid"] || "admin@dymer.com",
                         origin: util.getServiceUrl('webserver') + util.getContextPath('webserver')
                     }
-                }
-                propert_.changed = (new Date()).toISOString(); // end propert_ building object
+                },
+                changed: new Date().toISOString()
+            };
 
-                // for each entity in relIndexEntities finds the one that has the same title to the searchingField indicated
-                let elrel;
-                if (mainEnabledRelation) {
-                    elrel = relIndexEntities.find((el) => el["_source"].title === mainRelation.relationData[i]);
-                    //console.log("elrel: ", elrel);
-                }
+            let rel_id = undefined;
 
-                let rel_id = undefined;
-                if (elrel != undefined) rel_id = elrel["_id"]; // if rel has an entity, get the id
+            if (mainEnabledRelation && relIndexEntities.length > 0) {
+                console.log("cerco relazione per: ", mainRelation.searchingField, " con valore: ", mainRelation.relationData[i])
+                const searchValue = mainRelation.relationData[i];
+                let elrel = relIndexEntities.find(el => el["_source"].title?.toLowerCase() === searchValue?.toLowerCase());
+                console.log("relazione trovata: ", elrel);
+                if (elrel) rel_id = elrel["_id"];
+            }
 
-                // Start to build the single Entity
-                var singleEntity = {
-                    "instance": {
-                        "index": indexToImport
-                        //"type": indexToImport
-                    },
+            let singleEntity = {
+                instance: {
+                    index: indexToImport
+                },
+                data: buildNestedObj(element, arrayFields)
+            };
 
-                    "data": buildNestedObj(element, arrayFields) // mapped and structured record
+            singleEntity.data.properties = propert_;
+
+            // main relation (solo se trovata)
+            if (mainEnabledRelation && rel_id) {
+                singleEntity.data.relation = {
+                    [mainRelationTo]: [{ to: rel_id }]
                 };
-
-                singleEntity.data.properties = propert_ // add propert_
-                // console.log(singleEntity.data.properties)
-
-                // Main relations
-                if (mainEnabledRelation) {
-                    if (rel_id !== undefined) {
-                        singleEntity.data.relation = {[mainRelationTo]: [{to: rel_id}]};
+            }
+            console.log("singleEntity dopo main relation: ", JSON.stringify(singleEntity))
+            // secondary relations
+            secondaryRelations.forEach(secRel => {
+                if (secRel.enabled && singleEntity.data.relation) {
+                    if (!singleEntity.data.relation[secRel.relationTo]) {
+                        singleEntity.data.relation[secRel.relationTo] = [];
                     }
+                    singleEntity.data.relation[secRel.relationTo].push({
+                        to: secRel.relationData[i]
+                    });
                 }
-
-                // Secondary Relations
-                secondaryRelations.forEach(secRel => {
-                    if (secRel.enabled) {
-                        if (rel_id !== undefined) {
-                            if (!singleEntity.data.relation || typeof singleEntity.data.relation !== 'object') {
-                                singleEntity.data.relation = {};
-                            }
-                            if (!singleEntity.data.relation[secRel.relationTo]) {
-                                singleEntity.data.relation[secRel.relationTo] = [];
-                            }
-                            singleEntity.data.relation[secRel.relationTo].push({to: secRel.relationData[i]})
-                        }
-                    }
-                })
-
-
-                var extrainfo = {
-                    "extrainfo": {
-                        "companyId": "20097", // opnUser.d_cid,
-                        "groupId": "20121", //  opnUser.d_gid,   - AC 0 Day
-                        "cms": "lfr",
-                        "userId": element["email"],
-                        "virtualhost": "localhost"
-                    }
-                };
-                let extrainfo_objJsonStr = JSON.stringify(extrainfo);
-                let extrainfo_objJsonB64 = Buffer.from(extrainfo_objJsonStr).toString("base64");
-
-                // user section
-                /* AC 0 Day - START */
-                // var userinfo = {
-                //     "isGravatarEnabled": false,
-                //     "authorization_decision": "",
-                //     "roles": [{
-                //         "role": "User",
-                //         "id": "20109"
-                //     },
-                //         {
-                //             "role": "app-admin",
-                //             "id": "20110"
-                //         }
-                //     ],
-                //     "app_azf_domain": "",
-                //     "id": element["email"],
-                //     "app_id": "",
-                //     "email": element["email"],
-                //     "username": element["email"]
-                // };
-                let userinfo = {
-                    "roles": dymerUser.roles,
-                    "id": element["email"],
-                    "email": element["email"],
-                    "username": element["email"]
-                };
-                /* AC 0 Day - END */
-                let userinfo_objJsonStr = JSON.stringify(userinfo);
-                logger.info('>>> ' + nameFile + ' fromcsv | userinfo_objJsonStr: ' + userinfo_objJsonStr)
-                let userinfo_objJsonB64 = Buffer.from(userinfo_objJsonStr).toString("base64");
-
-                // Compose object to send
-                var objToPost = {'data': singleEntity, 'DYM': userinfo_objJsonB64, 'DYM_EXTRA': extrainfo_objJsonB64};
-                // console.log(JSON.stringify(singleEntity))
-                listTopost.push(objToPost);
             });
-            listTopost.forEach(function (obj, index) {
-                setTimeout(function () {
-                    console.log(nameFile + ' | fromjcsv | sent Entity to Entities Microservice:' + index + " " + JSON.stringify(obj.data));
-                    logger.info(nameFile + ' | fromjcsv | sent Entity to Entities Microservice :' + index + " " + JSON.stringify(obj.data));
-                    //set app-guest permission ex tefindservice view, create, edit
-                    //logger.info(nameFile + ' fromcsv | obj.DYM: ' + JSON.stringify(obj.DYM))
-                    postMyData(obj.data, indexToImport, obj.DYM, obj.DYM_EXTRA, "true"); /* AC aggiunto discriminante per owner nelle entities */
-                }, 1000 * (index + 1));
-            });
-            console.log("Entitied processed and sent to Entities Microservice")
-            return res.send(ret);
-        })
-        .catch(error => {
-            console.error("ERROR | " + nameFile + " | get/fromcsv ", error);
-            logger.error(nameFile + ' | get/fromcsv : ' + error);
-        })
-    }).catch((err) => {
-        if (err) {
-            console.error("ERROR | " + nameFile + "| fromcsv  | find: ", err);
-            logger.error('ERROR | ' +nameFile + '| fromcsv  | find: ' + err);
-            ret.setMessages("find Error");
-            ret.setSuccess(false);
-            ret.setExtraData({"log": err.stack});
-            return res.send(ret);
-        }
-    })
+
+            let extrainfo = {
+                extrainfo: {
+                    companyId: "20097",
+                    groupId: "20121",
+                    cms: "lfr",
+                    userId: element["email"],
+                    virtualhost: "localhost"
+                }
+            };
+
+            let userinfo = {
+                roles: dymerUser.roles,
+                id: element["email"],
+                email: element["email"],
+                username: element["email"]
+            };
+
+            let objToPost = {
+                data: singleEntity,
+                DYM: Buffer.from(JSON.stringify(userinfo)).toString("base64"),
+                DYM_EXTRA: Buffer.from(JSON.stringify(extrainfo)).toString("base64")
+            };
+
+            listTopost.push(objToPost);
+        });
+
+        // invio
+        listTopost.forEach((obj, index) => {
+            setTimeout(() => {
+                postMyData(obj.data, indexToImport, obj.DYM, obj.DYM_EXTRA, "true", token);
+            }, 1000 * (index + 1));
+        });
+        console.groupEnd();
+        return res.send(ret);
+
+    } catch (error) {
+        logger.error(nameFile + ' | fromcsv error: ' + error);
+        ret.setSuccess(false);
+        ret.setMessages("Errore import CSV");
+        return res.send(ret);
+    }
 });
 // AC New Import Function END
 
@@ -894,8 +1043,8 @@ function checkFilesFormdata(arr, data, name) {
     }
 }
 
-function postMyData(el, index, DYM, DYM_EXTRA, fromCsv = null) {
-
+function postMyData(el, index, DYM, DYM_EXTRA, fromCsv = null, token = null) {
+    console.log("Sei nel postMyData");
     var posturl = util.getServiceUrl('webserver') + util.getContextPath('webserver') + "/api/entities/api/v1/entity/" + index;
     /*
     console.log(">>>" + nameFile + " | postMyData, DYM "+DYM);
@@ -917,6 +1066,7 @@ function postMyData(el, index, DYM, DYM_EXTRA, fromCsv = null) {
             'Referer': 'http://localhost/',
             'Authorization': `Bearer ${DYM}`,
             'extrainfo': `${DYM_EXTRA}`,
+            'Cookie': `token=${token ? token : ""}`
         },
         data: formdata
 
@@ -927,6 +1077,7 @@ function postMyData(el, index, DYM, DYM_EXTRA, fromCsv = null) {
     }
     console.log(nameFile + " | postMyData | config: ", config);
     logger.info(nameFile + " | postMyData | config: " + JSON.stringify(config));
+    console.log("Stai per chiamare axios");
     axios(config)
         .then(function(updatedEl) {
             console.log(nameFile +" | postMyData ok ");
@@ -1892,6 +2043,8 @@ router.get('/fromdymer/:id', util.checkIsAdmin, (req, res) => {
                         'Authorization': `Bearer ${userinfo_objJsonB64_admin}`,
                         'extrainfo': `${extrainfo_objJsonB64_admin}`,
                     },
+
+                    
                     data: formdata_admin
                 };
                 console.log(nameFile + ' | /fromdymer/:id | config pt_internal: ' + JSON.stringify(config));

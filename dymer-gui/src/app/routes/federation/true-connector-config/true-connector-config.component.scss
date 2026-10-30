@@ -1,0 +1,72 @@
+.tc-config {
+  border: 1px solid rgba(110, 168, 254, 0.18);
+  background: rgba(110, 168, 254, 0.04);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-top: 8px;
+
+  &__header {
+    margin-bottom: 14px;
+
+    h4 {
+      margin: 0 0 4px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #f0f3f7;
+    }
+
+    p {
+      margin: 0;
+      font-size: 11.5px;
+      color: #8a93a3;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+
+    @media (max-width: 720px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  &__label {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #c9d1d9;
+  }
+
+  &__input,
+  &__select {
+    background: #0d0f13;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 7px;
+    padding: 8px 10px;
+    font-size: 13px;
+    color: #f0f3f7;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    outline: none;
+    transition: border-color 0.15s ease;
+
+    &:focus {
+      border-color: #6ea8fe;
+    }
+
+    &::placeholder {
+      color: #4b5260;
+    }
+  }
+
+  &__hint {
+    font-size: 10.5px;
+    color: #6e7681;
+  }
+}

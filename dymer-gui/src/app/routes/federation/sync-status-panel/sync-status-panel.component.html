@@ -1,0 +1,43 @@
+<div class="sync-panel">
+    <div class="sync-panel__summary">
+        <div class="stat-card">
+            <span class="stat-card__value">{{ federationService.sources().length }}</span>
+            <span class="stat-card__label">Fonti totali</span>
+        </div>
+        <div class="stat-card stat-card--ok">
+            <span class="stat-card__value">{{ federationService.healthySourcesCount() }}</span>
+            <span class="stat-card__label">Operative</span>
+        </div>
+        <div class="stat-card stat-card--error">
+            <span class="stat-card__value">{{ federationService.errorSourcesCount() }}</span>
+            <span class="stat-card__label">In errore</span>
+        </div>
+        <div class="stat-card stat-card--warn">
+            <span class="stat-card__value">{{ federationService.pendingCatalogsTotal() }}</span>
+            <span class="stat-card__label">Cataloghi draft</span>
+        </div>
+    </div>
+
+    <div class="sync-panel__list">
+        @for (source of federationService.sources(); track source.id) {
+        <div class="sync-row">
+            <dymer-source-health-badge
+                [status]="source.enabled ? (source.syncStatus?.health ?? 'unknown') : 'paused'" />
+            <span class="sync-row__name">{{ source.name }}</span>
+            <span class="sync-row__detail">
+                ultimo successo: {{ source.syncStatus?.lastSuccessAt | date: 'short' }}
+            </span>
+            @if (source.syncStatus?.lastError; as err) {
+            <span class="sync-row__error">{{ err }}</span>
+            }
+            @if (source.syncStatus?.pendingCatalogsCount; as count) {
+            @if (count > 0) {
+            <a class="sync-row__pending-link" href="#" (click)="$event.preventDefault()">
+                {{ count }} catalogo/hi in attesa di review →
+            </a>
+            }
+            }
+        </div>
+        }
+    </div>
+</div>

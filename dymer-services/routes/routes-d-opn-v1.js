@@ -223,7 +223,11 @@ router.get('/run/:id', util.checkIsAdmin, (req, res) => {
             let value = rest.join(`=`).trim();
             list[name] = decodeURIComponent(value);
         });
-        let dymeruser = JSON.parse(Buffer.from(list["DYM"], 'base64').toString('utf-8'));
+        //let dymeruser = JSON.parse(Buffer.from(list["DYM"], 'base64').toString('utf-8'));
+        let dymeruser = util.getDymerUser(req, res);
+
+        console.log('dymeruser ===> ', dymeruser);
+
         let ret = new jsonResponse();
         /*Id dell'indice selezionato*/
         let id = req.params.id;
