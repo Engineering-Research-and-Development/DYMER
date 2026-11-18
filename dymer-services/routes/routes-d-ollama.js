@@ -11,13 +11,19 @@ const axios = require('axios');
 
 //const ollama = new Ollama({host: 'http://0.0.0.0:7869'})//if you run from ide
 
+//due ollama_url DIFFERENTI/
+//UNO SOLO PER DOCKER COMPOSE e produzione
+const OLLAMA_URL = process.env.OLLAMA_URL || 'http://ollama:11434';
+
+//uno SOLO FOR TESTING locale e dev - if you run from ide and you have ollama running on your local machine
+//const OLLAMA_URL =   'http://0.0.0.0:7869';
+
+
+const ollama = new Ollama({
+host: OLLAMA_URL
+});
+
  
-const ollama = new Ollama({host: 'http://0.0.0.0:7869'}) 
-
-//const OLLAMA_URL = process.env.OLLAMA_URL || 'http://ollama:11434';
-
-const OLLAMA_URL =   'http://0.0.0.0:7869';
-
 function handleError( res, status, error, message, origin ) {
 	console.error( message, error );
 	logger.error( `${ nameFile } | ${ origin } | Status ${ status } | ${ error.message } : ${ JSON.stringify( error ) }` );

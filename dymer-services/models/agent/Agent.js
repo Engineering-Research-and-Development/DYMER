@@ -19,6 +19,30 @@ const AgentSchema = new mongoose.Schema({
         default: 'Sei un assistente AI utile e professionale.' 
     },
     isActive: { type: Boolean, default: true },
+    mcpAccess: {
+    type: [
+        {
+            serverId: {
+                type: String,
+                required: true,
+                trim: true
+            },
+
+            allowedTools: {
+                type: [String],
+                default: []
+            },
+
+            enabled: {
+                type: Boolean,
+                default: true
+            },
+
+            _id: false
+        }
+    ],
+    default: []
+},
     createdAt: { type: Date, default: Date.now }
 });
 

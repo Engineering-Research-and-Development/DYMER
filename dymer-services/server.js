@@ -47,6 +47,7 @@ var routes_dymer_authconfig = require('./routes/routes-d-authconfig');
 var routes_dymer_duser = require('./routes/routes-d-users');
 var routes_dymer_stats = require('./routes/routes-d-stats');
 var routes_dymer_ollama = require('./routes/routes-d-ollama');
+const mcpRoutes = require('./routes/mcpRoutes');
 
 
 
@@ -73,6 +74,7 @@ app.use('/api/v1/fwadapter', routes_dymer_fwadapter
 // #swagger.tags = ['Services']
 );
 app.use('/api/v1/ai-agents', aiAgentRoutes);
+app.use('/api/v1/mcp', mcpRoutes);
 app.use('/api/v1/payments', paymentsRoutes);
 app.use('/api/v1/sync', routes_dymer_sync
 // #swagger.tags = ['Services']

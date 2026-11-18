@@ -167,7 +167,6 @@ exports.checkIsDymerUser = function(req, res, next) {
 }
 exports.checkIsAdmin = function(req, res, next) {
     const hdymeruser = req.headers.dymeruser;
-	console.log(">>> checkIsAdmin hdymeruser:", hdymeruser);													
     const dymeruser = JSON.parse(Buffer.from(hdymeruser, 'base64').toString('utf-8'));
     //console.log("==> checkIsAdmin dymeruser:", dymeruser);
     if ((dymeruser.roles.indexOf("app-admin") > -1)) {
@@ -238,7 +237,6 @@ exports.getDymerUser = function(req, res, next) {
 //VL docker secrets
 exports.generateJWTToken = function(encryptedPayload) {
     const secretKey = secrets.get('jwt_secret_key');
-    console.log(nameFile + ' | generateJWTToken | jwt_secret_key: ' + secretKey);
     const token = jwt.sign({ data: encryptedPayload }, secretKey, { expiresIn: "2h" });
     return token;
 };
@@ -246,7 +244,6 @@ exports.generateJWTToken = function(encryptedPayload) {
 //exports.encrypt = function (secretKey, message) {//VL docker secrets
 exports.encrypt = function (message) {
     const secretKey = secrets.get('encryption_secret_key');//VL docker secrets
-    console.log(nameFile + ' | encrypt | encryption_secret_key: ' + secretKey);
     let hash = crypto.createHash('sha1')
 
     let digest = hash.update(secretKey).digest().subarray(0, 16)
@@ -285,7 +282,6 @@ exports.format = function(seconds){
 
 exports.decrypt_ = function (encryptedMessage) {
     const secretKey = secrets.get('encryption_secret_key'); // VL docker secrets
-    console.log(nameFile + ' | decrypt | encryption_secret_key: ' + secretKey);
 
     let hash = crypto.createHash('sha1');
     let digest = hash.update(secretKey).digest().subarray(0, 16);
@@ -316,7 +312,6 @@ exports.generateHexString = function generateHexString(length) {
 exports.decryptLfr = function (encryptedMessage) {
     try {
         const secret = secrets.get('encryption_secret_key');
-        console.log(nameFile + ' | decryptLfr | encryption_secret_key: ' + secret);
         const secretKey = setKey(secret);
         const decipher = crypto.createDecipheriv(ALGORITHM, secretKey, null);
         let decrypted = decipher.update(encryptedMessage, 'base64', UNICODE_FORMAT);
@@ -377,7 +372,6 @@ function setKey(secretKey) {
 exports.decryptLfr = function (encryptedMessage) {
     try {
         const secret = secrets.get('encryption_secret_key');
-        console.log(nameFile + ' | decryptLfr | encryption_secret_key: ' + secret);
         const secretKey = setKey(secret);
         const decipher = crypto.createDecipheriv(ALGORITHM, secretKey, null);
         let decrypted = decipher.update(encryptedMessage, 'base64', UNICODE_FORMAT);
@@ -385,7 +379,6 @@ exports.decryptLfr = function (encryptedMessage) {
         //console.log(nameFile + " | decryptLfr | decrypted DYM: ", decrypted)
         return decrypted;
     } catch (e) {
-        console.log(nameFile + " | decryptLfr | Unable to decrypt: ", e.toString())
         logger.info(nameFile + " | decryptLfr | Unable to decrypt: "+ e.toString())
     }
     return "";

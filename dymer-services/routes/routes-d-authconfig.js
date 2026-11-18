@@ -140,7 +140,7 @@ router.get('/userinfo', (req, res) => {
                      {
                         decoded = JSON.parse(Buffer.from(token, 'base64').toString());
                      }
-                    console.log(nameFile + ' | userinfo | decoded DYM: ', decoded);
+                   // console.log(nameFile + ' | userinfo | decoded DYM: ', decoded);
                     objuser.email = decoded.email;
                     objuser.id = decoded.email;
                     if (decoded.hasOwnProperty("extrainfo")) {
