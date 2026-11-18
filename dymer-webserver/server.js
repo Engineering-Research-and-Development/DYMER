@@ -117,8 +117,8 @@ app.options('*', cors(corsOptions));
 
 // 3. Parsers
 app.use(cookieParser());
-// app.use(bodyParser.json({ limit: '50mb' }));
-// app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
+//app.use(bodyParser.json({ limit: '50mb' }));
+//app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 
 // 4. Session (NOTE: MemoryStore is NOT for production)
 const memoryStore = new session.MemoryStore();
@@ -353,32 +353,19 @@ app.post('/api2/retriveinfo', loadUserInfo, async (req, res) => {
 });
 
 // ===========================================================================
-// SPA FALLBACK (Angular)
+// FALLBACK: 404 For Unmapped Routes (Legacy AngularJS GUI Removed)
 // ===========================================================================
+// Routes not matching API or static paths now return 404.
+// The new Angular v20 GUI is served separately from its own microservice.
 app.get('*', (req, res) => {
-  // Do not serve HTML for APIs/public static paths
-  if (req.url.startsWith('/api/') || req.url.startsWith('/public/')) {
-    return res.status(404).send('Not found');
-  }
-  const indexPath = path.join(__dirname, 'public/app/views/index.html');
-  const loginPath = path.join(__dirname, 'public/app/views/indexLogin.html');
-  let token = req.cookies.token;
-  const secretKey = process.env.JWT_SECRET_KEY;
-  let isValidToken = false;
-  if (token) {
-    try {
-      jwt.verify(token, secretKey);
-      isValidToken = true;
-    } catch (err) {
-      console.log("Invalid or Expired Token:", err.message);
-      res.clearCookie('token', { path: '/' });
-      token = "";
-    }
-  }
-  console.log(" isValidToken token", isValidToken);
-  // For now always serve index.html (legacy behaviour); switch to loginPath if needed
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  logger.warn(`Unmapped route accessed: ${req.url}`);
+  return res.status(404).json({
+    error: 'Not Found',
+    message: 'The requested resource does not exist. Please access the application via the Angular v20 frontend.',
+    path: req.url
+  });
 });
+
 app.get("/public/cdn/*", (req, res, next) => next());
 
 // ===========================================================================
@@ -407,9 +394,7 @@ function loadUserInfo(req, res, next) {
         if (util.isCrypted(dymtoken)) {
             let dymtokenDecryptedLfr = util.decryptLfr(dymtoken);
             // let dymtokenDecryptedLfr = util.decryptLfr(process.env.ENCRYPTION_SECRET_KEY, dymtoken);
-            logger.info(nameFile + ' | loadUserInfo | decrypted: ', dymtokenDecryptedLfr);
             dymtoken = new Buffer(dymtokenDecryptedLfr).toString("base64");
-            logger.info(nameFile + ' | loadUserInfo | coded in base64: ', dymtoken);
         }
     }
 
@@ -436,9 +421,7 @@ function loadUserInfo(req, res, next) {
 
         if (util.isCrypted(dymtoken)) {
             let dymtokenDecryptedLfr = util.decryptLfr(process.env.ENCRYPTION_SECRET_KEY, dymtoken);
-            //console.log(nameFile + ' | loadUserInfo | decrypted: ', dymtokenDecryptedLfr);
             dymtoken = new Buffer(dymtokenDecryptedLfr).toString("base64");
-            //console.log(nameFile + ' | loadUserInfo | coded in base64: ', dymtoken);
         }
 
     }
@@ -458,19 +441,13 @@ function loadUserInfo(req, res, next) {
                     return res.status(401).send("Admin not found");
                 }
                 const storedCsrfToken = el.csrfToken;
-                console.log(nameFile + ' | loadUserInfo | storedCsrfToken ', csrfToken);
                 if (csrfToken !== storedCsrfToken) {
-                    console.log(nameFile + ' | loadUserInfo | Invalid CSRF token ', csrfToken);
-                    logger.error(nameFile + ' | loadUserInfo | Invalid CSRF token');
                     //return res.status(403).send({ message: 'Invalid CSRF token' });
                     var ret = new jsonResponse();
                     ret.setMessages("Sorry, invalid CSRF token");
                     ret.setSuccess(false);
                     return res.send(ret);
-                } else {
-                    console.log(nameFile + ' | loadUserInfo | Valid CSRF token ', csrfToken);
-                    logger.info(nameFile + ' | loadUserInfo | Valid CSRF token ', csrfToken );
-                }
+                } 
                 next() // CAMBIATO QUESTO
             }).catch(err => {
                 console.error("ERROR " + nameFile + " | loadUserInfo | error :", err);
@@ -480,12 +457,9 @@ function loadUserInfo(req, res, next) {
         //VL new gui
     
         let jwt = req.cookies["token"];
-        //console.log(nameFile + ' | loadUserInfo | Admin jwt from cookie ', jwt);
         let dymtokenDecrypted = util.getDecryptedPayload(jwt);
-        //console.log(nameFile + ' | loadUserInfo | Payload of admin jwt decrypted ', dymtokenDecrypted);
         let dymtokenDecryptedBase64 = new Buffer(JSON.stringify(dymtokenDecrypted)).toString("base64")
         dymtoken = dymtokenDecryptedBase64;
-        //console.log(nameFile + ' |  loadUserInfo | DYM coded in base64 ', dymtoken);
         //TODO check  invoke service to check roles?
         //let dymtokenDecoded = JSON.parse(Buffer.from(jwt.split('.')[1], 'base64').toString('utf-8'));
     //let dymtokenDecoded = util.getDecryptedPayload(jwt)
@@ -516,6 +490,7 @@ function loadUserInfo(req, res, next) {
     var config = {
         method: 'get',
         url: authuserUrl,
+      timeout: 7000,
         headers: {
             'Content-Type': 'application/json'
         },
@@ -535,7 +510,6 @@ function loadUserInfo(req, res, next) {
         .then(function(response) {
             //console.log(nameFile + ' | userinfo response : ', response.data.data);
             req.headers["dymeruser"] = new Buffer(JSON.stringify(response.data.data)).toString("base64");
-            //logger.info(nameFile + ' | loadUserInfo | dymeruser: ', req.headers.dymeruser);
             if (req.headers["reqfrom"] == undefined)
                 req.headers["reqfrom"] = originalRef;
             next();
@@ -543,6 +517,15 @@ function loadUserInfo(req, res, next) {
         .catch(function(error) {
             logger.error(nameFile + ' | loadUserInfo | axios authuserUrl: ' + error);
             console.log(error);
+          if (!req.headers["dymeruser"]) {
+            const fallbackUser = {
+              id: "anonymous",
+              gid: "anonymous",
+              roles: ["app-guest"],
+              extrainfo: {}
+            };
+            req.headers["dymeruser"] = Buffer.from(JSON.stringify(fallbackUser)).toString("base64");
+          }
             next();
         });
 }
@@ -562,7 +545,6 @@ function loadUserInfo(req, res, next) {
                 if (!el) return res.status(401).send("Admin config not found");
                
                 // if (csrfToken !== el.csrfToken) {
-                //     logger.error(`${nameFile} | loadUserInfo | Invalid CSRF token: ${csrfToken}`);
                 //     let ret = new jsonResponse();
                 //     ret.setMessages("Sorry, invalid CSRF token");
                 //     ret.setSuccess(false);
@@ -656,6 +638,7 @@ function proceedWithAuth(req, res, next) {
   const config = {
     method: 'get',
     url: authuserUrl,
+    timeout: 7000,
     headers: { 'Content-Type': 'application/json' },
     data: {
       DYM: dymtoken,
@@ -679,6 +662,15 @@ console.groupEnd()
     })
     .catch(error => {
       logger.error(`${nameFile} \n loadUserInfo \n Auth Service Error: ${error.message}`);
+      if (!req.headers["dymeruser"]) {
+        const fallbackUser = {
+          id: "anonymous",
+          gid: "anonymous",
+          roles: ["app-guest"],
+          extrainfo: {}
+        };
+        req.headers["dymeruser"] = Buffer.from(JSON.stringify(fallbackUser)).toString("base64");
+      }
       next(); // keep legacy behaviour
     });
 }
