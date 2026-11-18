@@ -286,19 +286,23 @@ export class BuilderModelsComponent implements OnInit {
 
   saveTemplate() {
     const currentId = this.pageService.currentPageId();
+
     if (currentId) {
-      let res = this.pageService.updatePage(currentId, this.builderService.htmlContent());
-      this.toast.success('Page saved successfully!');
-      console.log('Save response >>>>:', res);
+      this.pageService.updatePage(currentId, this.builderService.htmlContent())?.subscribe({
+        next: () => this.toast.success('Page saved successfully!'),
+        error: () => this.toast.error('Failed to save page')
+      });
     } else {
       // Fallback if no page selected, though sidebar usually handles this
       const name = prompt('Save as new page. Enter name:', 'My New Page');
       if (name) {
-        this.pageService.savePage(name, 'new-page', 'Description', this.builderService.htmlContent());
-        const pages = this.pageService.pages();
-        const newPage = pages[pages.length - 1];
-        this.pageService.loadPage(newPage._id);
-        alert('Page created and saved!');
+        this.pageService.savePage(name, 'new-page', 'Description', this.builderService.htmlContent()).subscribe({
+          next: res => {
+            this.pageService.loadPage(res.data[0]._id);
+            this.toast.success('Page created and saved!');
+          },
+          error: () => this.toast.error('Failed to create page')
+        });
       }
     }
   }
@@ -315,7 +319,6 @@ export class BuilderModelsComponent implements OnInit {
   async saveNewPage() {
     if (this.newPageData.name && this.newPageData.slug) {
       this.isCreatingPage = true;
-      // let initialContent = '<div class="container mx-auto p-4"><h1>' + this.newPageData.name + '</h1></div>';
       let templateHtml = await firstValueFrom(this.pageService.getDefaultPage());
       let initialContent = templateHtml
         .replaceAll('{{titolo}}', this.newPageData.name)
@@ -333,12 +336,18 @@ export class BuilderModelsComponent implements OnInit {
         }
       }
 
-      this.pageService.savePage(
-        this.newPageData.name,
-        this.newPageData.slug,
-        this.newPageData.description,
-        initialContent
-      );
+      this.pageService.savePage(this.newPageData.name, this.newPageData.slug, this.newPageData.description, initialContent).subscribe({
+        next: res => {
+          this.loadPage(res.data[0]._id);
+          this.toast.success('Page created successfully');
+          this.closeNewPageModal();
+          this.isCreatingPage = false;
+        },
+        error: () => {
+          this.toast.error('Failed to create page');
+          this.isCreatingPage = false;
+        }
+      });
 
       // Load the newly created page (it's the last one)
       const pages = this.pageService.pages();

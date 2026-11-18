@@ -22,7 +22,16 @@
 </div>
 
 <ng-template #customizerPanel>
-  <div class="magicai-container">
+  <div class="magicai-container" [class.is-resizing]="isResizingChatbot">
+    <div class="chatbot-resize-handle"
+         role="separator"
+         aria-orientation="vertical"
+         aria-label="Ridimensiona il chatbot"
+         title="Trascina per ridimensionare. Doppio clic per ripristinare."
+         (mousedown)="startChatbotResize($event)"
+         (dblclick)="resetChatbotWidth($event)">
+      <span aria-hidden="true"></span>
+    </div>
     <div class="card-body">
       <form [formGroup]="zeroFormGroup">
         <header class="header">
@@ -120,7 +129,14 @@
             </div>
 
             <!-- mostra sempre la parte testuale se presente -->
-            <div class="text" *ngIf="message.text" [innerHTML]="message.text"></div>
+            <div class="text assistant-answer" *ngIf="message.text" [innerHTML]="message.formattedText || message.text"></div>
+            <div class="response-actions" *ngIf="message.from === 'bot' && message.text && !isLoading">
+              <button type="button" class="copy-response-button" (click)="copyResponse(message)"
+                      [attr.aria-label]="message.responseCopied ? 'Risposta copiata' : 'Copia risposta'">
+                <span class="material-symbols-rounded" aria-hidden="true">{{ message.responseCopied ? 'check' : 'content_copy' }}</span>
+                <span>{{ message.responseCopied ? 'COPIATA' : 'COPIA RISPOSTA' }}</span>
+              </button>
+            </div>
 
             <!-- codice evidenziato se presente -->
             <div *ngIf="message.code" class="code-block-wrapper">
@@ -153,10 +169,15 @@
         <div class="typing-area typing-form">
           <div class="prompt-main-controls">
             <div class="input-wrapper">
-              <input type="text" class="typing-input" required formControlName="userInput"
-                     [placeholder]="'magicai.askPlaceholder' | translate"
-                     (keyup.enter)="sendMessage()"
-                     [disabled]="isLoading" />
+              <textarea class="typing-input prompt-textarea"
+                        required
+                        formControlName="userInput"
+                        rows="1"
+                        [placeholder]="'magicai.askPlaceholder' | translate"
+                        (keydown)="onPromptKeydown($event)"
+                        [disabled]="isLoading"
+                        aria-label="Scrivi il prompt"
+                        title="Trascina l'angolo superiore per aumentare l'altezza. Invio per inviare, Maiusc+Invio per andare a capo."></textarea>
             </div>
 
             <!-- simple button (no mat- attribute) to avoid dependency issues -->

@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { PageService } from '../page.service';
 import { BuilderService } from '../builder.service';
 import { PropertiesTemplatesComponent } from '../properties/properties.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-templates-sidebar',
@@ -25,6 +26,8 @@ export class SidebarTemplatesComponent {
   activeTab: 'components' | 'sections' | 'properties' | 'navigator' = 'components';
 
   searchQuery = signal('');
+
+  constructor(private readonly toast: ToastrService) { }
 
   filteredPages = computed(() => {
     const query = (this.searchQuery() || '').toLowerCase().trim();
@@ -374,15 +377,19 @@ export class SidebarTemplatesComponent {
   }
 
   deletePage(event: Event, id: string) {
-    event.stopPropagation();
-    if (confirm('Are you sure you want to delete this page?')) {
-      this.pageService.deletePage(id);
-      // If we deleted the current page, clear the canvas or load another one
+  event.stopPropagation();
+  if (!confirm('Are you sure you want to delete this page?')) return;
+
+  this.pageService.deletePage(id).subscribe({
+    next: () => {
+      this.toast.success('Template deleted');
       if (this.pageService.currentPageId() === null) {
         this.builderService.updateContent('<div class="p-8 text-center text-gray-400">Select or create a page</div>');
       }
-    }
-  }
+    },
+    error: () => this.toast.error('Failed to delete template')
+  });
+}
 
   toggleCategory(name: string) {
     const category = this.categories.find(c => c.name === name);
@@ -407,7 +414,6 @@ export class SidebarTemplatesComponent {
     this.requestAttachFile.emit(pageId);
   }
 
-  //
   onEditTemplate(template: any) {
     this.requestEditTemplate.emit(template);
   }

@@ -667,3 +667,226 @@ body.hide-header .header {
 @keyframes blink {
   50% { opacity: 0.5; }
 }
+
+/* Preserva la formattazione multilinea dei messaggi MagicAI */
+.messages .message.bot,
+.messages .message.incoming,
+.messages .message.bot .text,
+.messages .message.incoming .text,
+.chat-list .message.incoming,
+.chat-list .message.outgoing,
+.chat-list .message .text,
+.chat .message .text,
+.message.bot .text,
+.message.incoming .text {
+  white-space: pre-wrap !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.5;
+}
+
+/* Risposte del chatbot: layout leggibile e azioni */
+.chat-response { background: #f7f9fc; scrollbar-gutter: stable; }
+.chat-response .message { max-width: 92%; padding: 12px 14px; border: 1px solid transparent; border-radius: 14px; }
+.chat-response .message.user { margin-left: auto; background: #e8f1ff; border-color: #d4e4ff; }
+.chat-response .message.bot { margin-right: auto; background: #fff; border-color: #e3e8ef; box-shadow: 0 4px 14px rgba(15,23,42,.05); }
+.chat-response .message .meta { margin-bottom: 10px; color: #6b7280; font-size: 11px; font-weight: 600; letter-spacing: .02em; }
+.assistant-answer { color: #1f2937; font-size: 14px; line-height: 1.62; white-space: normal !important; }
+.assistant-answer .answer-summary { display:flex; flex-direction:column; gap:4px; padding:12px 14px; margin-bottom:10px; border:1px solid #cfe0ff; border-radius:12px; background:#f3f7ff; }
+.assistant-answer .answer-eyebrow { color:#52657a; font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+.assistant-answer .answer-count { display:flex; align-items:center; gap:8px; margin:14px 0 8px; color:#52606d; font-weight:600; }
+.assistant-answer .answer-count span { min-width:28px; padding:3px 8px; border-radius:999px; background:#2563eb; color:#fff; text-align:center; }
+.assistant-answer .answer-entity-title, .assistant-answer .answer-section-title { margin:18px 0 8px; color:#111827; font-size:15px; line-height:1.35; }
+.assistant-answer .answer-section-title { padding-top:14px; border-top:1px solid #e5e7eb; color:#174ea6; }
+.assistant-answer .answer-meta { display:flex; align-items:flex-start; gap:8px; margin:4px 0; color:#667085; font-size:12px; }
+.assistant-answer .answer-meta span { min-width:72px; font-weight:600; }
+.assistant-answer .answer-meta code { padding:2px 6px; border-radius:5px; background:#f1f5f9; color:#344054; font-family:inherit; overflow-wrap:anywhere; }
+.assistant-answer .answer-meta code.is-active { background:#e8f7ee; color:#16794b; }
+.assistant-answer .answer-description, .assistant-answer .answer-paragraph { margin:9px 0 12px; color:#475467; }
+.assistant-answer .answer-related-title { margin:12px 0 7px; color:#344054; font-size:13px; }
+.assistant-answer .answer-related-item { margin:5px 0; padding:8px 10px; border-left:3px solid #bfd4ff; border-radius:0 8px 8px 0; background:#f8fafc; color:#344054; overflow-wrap:anywhere; }
+.assistant-answer .answer-notice { margin-top:14px; padding:12px; border:1px solid #f3d28b; border-radius:10px; background:#fff9e8; color:#7a5411; }
+.response-actions { display:flex; justify-content:flex-end; margin-top:14px; padding-top:10px; border-top:1px solid #edf0f4; }
+.copy-response-button { display:inline-flex; align-items:center; gap:7px; padding:7px 10px; border:1px solid #d5dce5; border-radius:8px; background:#fff; color:#44546a; font-size:11px; font-weight:700; letter-spacing:.04em; cursor:pointer; transition:background 160ms ease,border-color 160ms ease,color 160ms ease; }
+.copy-response-button:hover, .copy-response-button:focus-visible { border-color:#8db2f5; background:#f3f7ff; color:#174ea6; outline:none; }
+.copy-response-button .material-symbols-rounded { font-size:17px; }
+@media (max-width:520px) { .chat-response .message { max-width:100%; } .assistant-answer .answer-meta { flex-direction:column; gap:2px; } .assistant-answer .answer-meta span { min-width:0; } }
+
+
+/* Chatbot ridimensionabile: trascinamento del bordo sinistro */
+.magicai-container {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.chatbot-resize-handle {
+  position: absolute;
+  z-index: 50;
+  top: 0;
+  bottom: 0;
+  left: -6px;
+  width: 12px;
+  cursor: ew-resize;
+  touch-action: none;
+  user-select: none;
+}
+
+.chatbot-resize-handle::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 5px;
+  width: 2px;
+  background: transparent;
+  transition: background-color .16s ease, box-shadow .16s ease;
+}
+
+.chatbot-resize-handle span {
+  position: absolute;
+  top: 50%;
+  left: 1px;
+  width: 10px;
+  height: 48px;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: rgba(37, 99, 235, .18);
+  opacity: 0;
+  transition: opacity .16s ease, background-color .16s ease;
+}
+
+.chatbot-resize-handle:hover::before,
+.magicai-container.is-resizing .chatbot-resize-handle::before {
+  background: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, .08);
+}
+
+.chatbot-resize-handle:hover span,
+.magicai-container.is-resizing .chatbot-resize-handle span {
+  opacity: 1;
+  background: rgba(37, 99, 235, .28);
+}
+
+body.chatbot-resizing,
+body.chatbot-resizing * {
+  cursor: ew-resize !important;
+  user-select: none !important;
+}
+
+@media (max-width: 600px) {
+  .chatbot-resize-handle { display: none; }
+}
+
+
+/* Campo prompt multilinea e regolabile verticalmente */
+.typing-area .input-wrapper {
+  height: auto;
+  min-height: 56px;
+  align-items: stretch;
+}
+
+.typing-area .prompt-textarea {
+  display: block;
+  width: 100%;
+  min-height: 56px;
+  max-height: min(36vh, 320px);
+  padding: 16px 48px 16px 20px;
+  border: 1px solid #d1d5db;
+  border-radius: 28px;
+  background: #f7f7f8;
+  color: var(--text-color, #222);
+  font: inherit;
+  line-height: 1.45;
+  resize: vertical;
+  overflow-y: auto;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
+}
+
+.typing-area .prompt-textarea:hover {
+  border-color: #aeb8c4;
+}
+
+.typing-area .prompt-textarea:focus {
+  border-color: #2563eb;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+}
+
+.typing-area .prompt-textarea:disabled {
+  cursor: not-allowed;
+  opacity: .68;
+}
+
+/* Il grip nativo resta nell'angolo inferiore destro. Il campo cresce verso l'alto
+   perché la barra di composizione è ancorata nella parte bassa del drawer. */
+.typing-area,
+.prompt-main-controls {
+  align-items: flex-end;
+}
+
+@media (max-width: 768px) {
+  .typing-area .input-wrapper,
+  .typing-area .prompt-textarea {
+    min-height: 50px;
+  }
+
+  .typing-area .prompt-textarea {
+    max-height: 28vh;
+    padding: 13px 44px 13px 16px;
+  }
+}
+
+/* Il composer occupa sempre tutta la larghezza disponibile del chatbot.
+   La larghezza segue automaticamente il ridimensionamento del drawer. */
+.typing-area.typing-form {
+  left: 0;
+  right: 0;
+  width: auto;
+  box-sizing: border-box;
+  padding-inline: 24px;
+}
+
+.typing-area .prompt-main-controls {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.typing-area .input-wrapper {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 180px;
+  max-width: none;
+}
+
+.typing-area .prompt-textarea {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  resize: vertical;
+}
+
+.typing-area .send-button,
+.typing-area .icon-button {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 600px) {
+  .typing-area.typing-form {
+    padding-inline: 14px;
+  }
+
+  .typing-area .input-wrapper {
+    min-width: 120px;
+  }
+}
+
+textarea {
+  white-space: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+}

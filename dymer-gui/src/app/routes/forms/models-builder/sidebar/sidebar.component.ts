@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { PageService } from '../page.service';
 import { BuilderService } from '../builder.service';
 import { PropertiesModelsComponent } from '../properties/properties.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-models-sidebar',
@@ -24,40 +25,42 @@ export class SidebarModelsComponent {
 
   activeTab: 'components' | 'sections' | 'properties' | 'navigator' = 'components';
 
-searchQuery = signal('');
-  
+  searchQuery = signal('');
+
+  constructor(private readonly toast: ToastrService) { }
+
   filteredPages = computed(() => {
     const query = (this.searchQuery() || '').toLowerCase().trim();
     const pages = this.pageService.pages();
     if (!query) {
       return pages;
     }
-    return pages.filter(page => 
-      (page.title || '').toLowerCase().includes(query) || 
+    return pages.filter(page =>
+      (page.title || '').toLowerCase().includes(query) ||
       (page.instance[0]._index || '').toLowerCase().includes(query)
     );
   });
 
   categories = [
     {
-    name: 'Layout',
-    expanded: true,
-    items: [
-      { name: 'Container', icon: 'crop_square', html: '<div dymer-model-element="" class="container mx-auto p-4 border border-dashed border-gray-300 min-h-[100px]"></div>', category: 'Layout' },
-      { name: 'Grid Row', icon: 'view_column', html: '<div dymer-model-element="" class="grid grid-cols-2 gap-4 p-4 border border-dashed border-gray-300"><div class="p-4 border border-gray-200 bg-gray-50">Col 1</div><div class="p-4 border border-gray-200 bg-gray-50">Col 2</div></div>', category: 'Layout' },
-      { name: 'Card', icon: 'web_asset', html: '<div dymer-model-element="" class="bg-white rounded-lg shadow-md p-6 mb-4"><h3 class="text-xl font-bold mb-2">Card Title</h3><p class="text-gray-600">Card content goes here.</p></div>', category: 'Layout' }
-    ]
-  },
-  {
-    name: 'Typography',
-    expanded: false,
-    items: [
-      { name: 'Heading 1', icon: 'title', html: '<h1 data-dcat-map="" dymer-model-element="" class="text-4xl font-bold text-gray-900 mb-4">Heading 1</h1>', category: 'Typography' },
-      { name: 'Heading 2', icon: 'title', html: '<h2 data-dcat-map="" dymer-model-element="" class="text-3xl font-semibold text-gray-800 mb-3">Heading 2</h2>', category: 'Typography' },
-      { name: 'Paragraph', icon: 'short_text', html: '<p data-dcat-map="" dymer-model-element="" class="text-base text-gray-600 leading-relaxed mb-4">Lorem ipsum dolor sit amet...</p>', category: 'Typography' },
-      { name: 'Blockquote', icon: 'format_quote', html: '<blockquote data-dcat-map="" dymer-model-element="" class="border-l-4 border-blue-500 pl-4 italic text-gray-700 my-4">"This is a blockquote element."</blockquote>', category: 'Typography' }
-    ]
-  },
+      name: 'Layout',
+      expanded: true,
+      items: [
+        { name: 'Container', icon: 'crop_square', html: '<div dymer-model-element="" class="container mx-auto p-4 border border-dashed border-gray-300 min-h-[100px]"></div>', category: 'Layout' },
+        { name: 'Grid Row', icon: 'view_column', html: '<div dymer-model-element="" class="grid grid-cols-2 gap-4 p-4 border border-dashed border-gray-300"><div class="p-4 border border-gray-200 bg-gray-50">Col 1</div><div class="p-4 border border-gray-200 bg-gray-50">Col 2</div></div>', category: 'Layout' },
+        { name: 'Card', icon: 'web_asset', html: '<div dymer-model-element="" class="bg-white rounded-lg shadow-md p-6 mb-4"><h3 class="text-xl font-bold mb-2">Card Title</h3><p class="text-gray-600">Card content goes here.</p></div>', category: 'Layout' }
+      ]
+    },
+    {
+      name: 'Typography',
+      expanded: false,
+      items: [
+        { name: 'Heading 1', icon: 'title', html: '<h1 data-dcat-map="" dymer-model-element="" class="text-4xl font-bold text-gray-900 mb-4">Heading 1</h1>', category: 'Typography' },
+        { name: 'Heading 2', icon: 'title', html: '<h2 data-dcat-map="" dymer-model-element="" class="text-3xl font-semibold text-gray-800 mb-3">Heading 2</h2>', category: 'Typography' },
+        { name: 'Paragraph', icon: 'short_text', html: '<p data-dcat-map="" dymer-model-element="" class="text-base text-gray-600 leading-relaxed mb-4">Lorem ipsum dolor sit amet...</p>', category: 'Typography' },
+        { name: 'Blockquote', icon: 'format_quote', html: '<blockquote data-dcat-map="" dymer-model-element="" class="border-l-4 border-blue-500 pl-4 italic text-gray-700 my-4">"This is a blockquote element."</blockquote>', category: 'Typography' }
+      ]
+    },
     {
       name: 'Elements',
       expanded: false,
@@ -171,11 +174,11 @@ searchQuery = signal('');
       name: 'Dymer Charts',
       expanded: true,
       items: [
-        { 
-          name: 'Horizontal Bar', 
-          icon: 'horizontal_distribute', 
-          html: '<div dymer-model-element="" data-component-dymer-chart="true" data-chart-type="horizontal-bar" data-datasource="" data-label-field="" data-value-field="" class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 w-full max-w-4xl font-sans"><div class="flex justify-between items-center mb-6"><h3 class="text-lg font-bold text-gray-900 m-0">Services benchmark</h3><span class="bg-blue-50 text-blue-700 text-sm font-medium px-3 py-1 rounded-full border border-blue-100">Total: 1961</span></div><div class="space-y-4"><div class="flex items-center gap-4"><div class="w-24 text-sm font-bold text-gray-600 truncate">Data</div><div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-blue-600 rounded-full" style="width: 60%"></div></div><div class="w-12 text-right text-sm text-gray-600">308</div></div><div class="flex items-center gap-4"><div class="w-24 text-sm font-bold text-gray-600 truncate">Business</div><div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-blue-500 rounded-full" style="width: 90%"></div></div><div class="w-12 text-right text-sm text-gray-600">514</div></div><div class="flex items-center gap-4"><div class="w-24 text-sm font-bold text-gray-600 truncate">Ecosystem</div><div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-blue-400 rounded-full" style="width: 75%"></div></div><div class="w-12 text-right text-sm text-gray-600">401</div></div></div><div class="mt-6 pt-4 border-t border-gray-100 text-sm text-gray-500">Benchmark = numero servizi filtrati per macro DBEST.</div></div>', 
-          category: 'Dymer Charts' 
+        {
+          name: 'Horizontal Bar',
+          icon: 'horizontal_distribute',
+          html: '<div dymer-model-element="" data-component-dymer-chart="true" data-chart-type="horizontal-bar" data-datasource="" data-label-field="" data-value-field="" class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 w-full max-w-4xl font-sans"><div class="flex justify-between items-center mb-6"><h3 class="text-lg font-bold text-gray-900 m-0">Services benchmark</h3><span class="bg-blue-50 text-blue-700 text-sm font-medium px-3 py-1 rounded-full border border-blue-100">Total: 1961</span></div><div class="space-y-4"><div class="flex items-center gap-4"><div class="w-24 text-sm font-bold text-gray-600 truncate">Data</div><div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-blue-600 rounded-full" style="width: 60%"></div></div><div class="w-12 text-right text-sm text-gray-600">308</div></div><div class="flex items-center gap-4"><div class="w-24 text-sm font-bold text-gray-600 truncate">Business</div><div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-blue-500 rounded-full" style="width: 90%"></div></div><div class="w-12 text-right text-sm text-gray-600">514</div></div><div class="flex items-center gap-4"><div class="w-24 text-sm font-bold text-gray-600 truncate">Ecosystem</div><div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-blue-400 rounded-full" style="width: 75%"></div></div><div class="w-12 text-right text-sm text-gray-600">401</div></div></div><div class="mt-6 pt-4 border-t border-gray-100 text-sm text-gray-500">Benchmark = numero servizi filtrati per macro DBEST.</div></div>',
+          category: 'Dymer Charts'
         }
       ]
     }
@@ -186,29 +189,29 @@ searchQuery = signal('');
       name: 'Hero',
       expanded: false,
       items: [
-        { 
-          name: 'Simple Hero', 
-          icon: 'web_asset', 
-          html: '<section dymer-model-element="" class="bg-white dark:bg-gray-900 py-20"><div class="container mx-auto px-4 text-center"><h1 class="text-4xl font-bold mb-4 text-gray-900 dark:text-white">Welcome to Our Service</h1><p class="text-xl text-gray-600 dark:text-gray-300 mb-8">We create amazing experiences for our customers.</p><div class="flex justify-center gap-4"><button class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">Get Started</button><button class="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300">Learn More</button></div></div></section>', 
-          category: 'Hero' 
+        {
+          name: 'Simple Hero',
+          icon: 'web_asset',
+          html: '<section dymer-model-element="" class="bg-white dark:bg-gray-900 py-20"><div class="container mx-auto px-4 text-center"><h1 class="text-4xl font-bold mb-4 text-gray-900 dark:text-white">Welcome to Our Service</h1><p class="text-xl text-gray-600 dark:text-gray-300 mb-8">We create amazing experiences for our customers.</p><div class="flex justify-center gap-4"><button class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">Get Started</button><button class="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300">Learn More</button></div></div></section>',
+          category: 'Hero'
         },
-        { 
-          name: 'Hero with Image', 
-          icon: 'image', 
-          html: '<section dymer-model-element="" class="bg-gray-50 dark:bg-gray-800 py-16"><div class="container mx-auto px-4 flex flex-col md:flex-row items-center"><div class="md:w-1/2 mb-8 md:mb-0"><h1 class="text-4xl font-bold mb-4 text-gray-900 dark:text-white">Grow Your Business</h1><p class="text-lg text-gray-600 dark:text-gray-300 mb-6">Leverage our tools to scale your operations effectively.</p><button class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">Start Now</button></div><div class="md:w-1/2"><img src="https://picsum.photos/seed/business/600/400" alt="Hero Image" class="rounded-lg shadow-lg w-full" referrerpolicy="no-referrer"></div></div></section>', 
-          category: 'Hero' 
+        {
+          name: 'Hero with Image',
+          icon: 'image',
+          html: '<section dymer-model-element="" class="bg-gray-50 dark:bg-gray-800 py-16"><div class="container mx-auto px-4 flex flex-col md:flex-row items-center"><div class="md:w-1/2 mb-8 md:mb-0"><h1 class="text-4xl font-bold mb-4 text-gray-900 dark:text-white">Grow Your Business</h1><p class="text-lg text-gray-600 dark:text-gray-300 mb-6">Leverage our tools to scale your operations effectively.</p><button class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">Start Now</button></div><div class="md:w-1/2"><img src="https://picsum.photos/seed/business/600/400" alt="Hero Image" class="rounded-lg shadow-lg w-full" referrerpolicy="no-referrer"></div></div></section>',
+          category: 'Hero'
         },
-        { 
-          name: 'Hero Center Gradient', 
-          icon: 'gradient', 
-          html: '<section dymer-model-element="" class="bg-gradient-to-r from-blue-600 to-indigo-700 py-24"><div class="container mx-auto px-4 text-center"><h1 class="text-5xl font-extrabold mb-6 text-white tracking-tight">Build Faster, Scale Better</h1><p class="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">The ultimate platform for modern teams to collaborate and ship products at lightning speed.</p><div class="flex justify-center gap-4"><button class="bg-white text-blue-700 font-bold px-8 py-4 rounded-full shadow-lg hover:bg-gray-50 transition-colors">Start Free Trial</button><button class="bg-transparent border-2 border-white text-white font-bold px-8 py-4 rounded-full hover:bg-white/10 transition-colors">View Demo</button></div></div></section>', 
-          category: 'Hero' 
+        {
+          name: 'Hero Center Gradient',
+          icon: 'gradient',
+          html: '<section dymer-model-element="" class="bg-gradient-to-r from-blue-600 to-indigo-700 py-24"><div class="container mx-auto px-4 text-center"><h1 class="text-5xl font-extrabold mb-6 text-white tracking-tight">Build Faster, Scale Better</h1><p class="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">The ultimate platform for modern teams to collaborate and ship products at lightning speed.</p><div class="flex justify-center gap-4"><button class="bg-white text-blue-700 font-bold px-8 py-4 rounded-full shadow-lg hover:bg-gray-50 transition-colors">Start Free Trial</button><button class="bg-transparent border-2 border-white text-white font-bold px-8 py-4 rounded-full hover:bg-white/10 transition-colors">View Demo</button></div></div></section>',
+          category: 'Hero'
         },
-        { 
-          name: 'Hero Split Form', 
-          icon: 'dynamic_form', 
-          html: '<section dymer-model-element="" class="bg-white dark:bg-gray-900 py-20"><div class="container mx-auto px-4 flex flex-col lg:flex-row items-center gap-12"><div class="lg:w-1/2"><h1 class="text-4xl lg:text-5xl font-bold mb-6 text-gray-900 dark:text-white leading-tight">Transform your workflow today</h1><p class="text-lg text-gray-600 dark:text-gray-400 mb-8">Join over 10,000 companies that use our platform to streamline their operations and boost productivity.</p><ul class="space-y-4 mb-8"><li class="flex items-center text-gray-700 dark:text-gray-300"><svg class="w-6 h-6 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> No credit card required</li><li class="flex items-center text-gray-700 dark:text-gray-300"><svg class="w-6 h-6 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> 14-day free trial</li><li class="flex items-center text-gray-700 dark:text-gray-300"><svg class="w-6 h-6 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Cancel anytime</li></ul></div><div class="lg:w-1/2 w-full max-w-md"><div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700"><h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Get Started Free</h3><form class="space-y-4"><div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Work Email</label><input type="email" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="name@company.com"></div><div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label><input type="password" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="••••••••"></div><button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">Create Account</button><p class="text-xs text-center text-gray-500 mt-4">By signing up, you agree to our Terms and Privacy Policy.</p></form></div></div></div></section>', 
-          category: 'Hero' 
+        {
+          name: 'Hero Split Form',
+          icon: 'dynamic_form',
+          html: '<section dymer-model-element="" class="bg-white dark:bg-gray-900 py-20"><div class="container mx-auto px-4 flex flex-col lg:flex-row items-center gap-12"><div class="lg:w-1/2"><h1 class="text-4xl lg:text-5xl font-bold mb-6 text-gray-900 dark:text-white leading-tight">Transform your workflow today</h1><p class="text-lg text-gray-600 dark:text-gray-400 mb-8">Join over 10,000 companies that use our platform to streamline their operations and boost productivity.</p><ul class="space-y-4 mb-8"><li class="flex items-center text-gray-700 dark:text-gray-300"><svg class="w-6 h-6 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> No credit card required</li><li class="flex items-center text-gray-700 dark:text-gray-300"><svg class="w-6 h-6 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> 14-day free trial</li><li class="flex items-center text-gray-700 dark:text-gray-300"><svg class="w-6 h-6 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Cancel anytime</li></ul></div><div class="lg:w-1/2 w-full max-w-md"><div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700"><h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Get Started Free</h3><form class="space-y-4"><div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Work Email</label><input type="email" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="name@company.com"></div><div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label><input type="password" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="••••••••"></div><button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">Create Account</button><p class="text-xs text-center text-gray-500 mt-4">By signing up, you agree to our Terms and Privacy Policy.</p></form></div></div></div></section>',
+          category: 'Hero'
         }
       ]
     },
@@ -216,23 +219,23 @@ searchQuery = signal('');
       name: 'Features',
       expanded: false,
       items: [
-        { 
-          name: '3 Column Features', 
-          icon: 'view_column', 
-          html: '<section dymer-model-element="" class="py-16 bg-white dark:bg-gray-900"><div class="container mx-auto px-4"><h2 class="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">Our Features</h2><div class="grid md:grid-cols-3 gap-8"><div class="text-center p-6"><div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"><span class="text-2xl">🚀</span></div><h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Fast Performance</h3><p class="text-gray-600 dark:text-gray-400">Optimized for speed and efficiency.</p></div><div class="text-center p-6"><div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"><span class="text-2xl">🛡️</span></div><h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Secure</h3><p class="text-gray-600 dark:text-gray-400">Your data is safe with us.</p></div><div class="text-center p-6"><div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"><span class="text-2xl">⚙️</span></div><h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Customizable</h3><p class="text-gray-600 dark:text-gray-400">Tailor it to your needs.</p></div></div></div></section>', 
-          category: 'Features' 
+        {
+          name: '3 Column Features',
+          icon: 'view_column',
+          html: '<section dymer-model-element="" class="py-16 bg-white dark:bg-gray-900"><div class="container mx-auto px-4"><h2 class="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">Our Features</h2><div class="grid md:grid-cols-3 gap-8"><div class="text-center p-6"><div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"><span class="text-2xl">🚀</span></div><h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Fast Performance</h3><p class="text-gray-600 dark:text-gray-400">Optimized for speed and efficiency.</p></div><div class="text-center p-6"><div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"><span class="text-2xl">🛡️</span></div><h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Secure</h3><p class="text-gray-600 dark:text-gray-400">Your data is safe with us.</p></div><div class="text-center p-6"><div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"><span class="text-2xl">⚙️</span></div><h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">Customizable</h3><p class="text-gray-600 dark:text-gray-400">Tailor it to your needs.</p></div></div></div></section>',
+          category: 'Features'
         },
-        { 
-          name: 'Feature Grid 2x2', 
-          icon: 'grid_view', 
-          html: '<section dymer-model-element="" class="py-20 bg-gray-50 dark:bg-gray-800"><div class="container mx-auto px-4"><div class="text-center max-w-3xl mx-auto mb-16"><h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Everything you need to succeed</h2><p class="text-lg text-gray-600 dark:text-gray-400">Our platform provides all the tools necessary to build, deploy, and scale your applications with ease.</p></div><div class="grid md:grid-cols-2 gap-10"><div class="flex gap-4"><div class="flex-shrink-0 mt-1"><div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div></div><div><h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Lightning Fast</h3><p class="text-gray-600 dark:text-gray-400">Experience unparalleled speed with our globally distributed edge network and optimized infrastructure.</p></div></div><div class="flex gap-4"><div class="flex-shrink-0 mt-1"><div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg></div></div><div><h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Bank-grade Security</h3><p class="text-gray-600 dark:text-gray-400">Rest easy knowing your data is protected by industry-leading encryption and security protocols.</p></div></div><div class="flex gap-4"><div class="flex-shrink-0 mt-1"><div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg></div></div><div><h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Scalable Database</h3><p class="text-gray-600 dark:text-gray-400">Our database automatically scales to handle millions of requests without breaking a sweat.</p></div></div><div class="flex gap-4"><div class="flex-shrink-0 mt-1"><div class="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-lg flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg></div></div><div><h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">24/7 Support</h3><p class="text-gray-600 dark:text-gray-400">Our expert team is always available to help you resolve any issues and keep your business running smoothly.</p></div></div></div></div></section>', 
-          category: 'Features' 
+        {
+          name: 'Feature Grid 2x2',
+          icon: 'grid_view',
+          html: '<section dymer-model-element="" class="py-20 bg-gray-50 dark:bg-gray-800"><div class="container mx-auto px-4"><div class="text-center max-w-3xl mx-auto mb-16"><h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Everything you need to succeed</h2><p class="text-lg text-gray-600 dark:text-gray-400">Our platform provides all the tools necessary to build, deploy, and scale your applications with ease.</p></div><div class="grid md:grid-cols-2 gap-10"><div class="flex gap-4"><div class="flex-shrink-0 mt-1"><div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div></div><div><h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Lightning Fast</h3><p class="text-gray-600 dark:text-gray-400">Experience unparalleled speed with our globally distributed edge network and optimized infrastructure.</p></div></div><div class="flex gap-4"><div class="flex-shrink-0 mt-1"><div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg></div></div><div><h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Bank-grade Security</h3><p class="text-gray-600 dark:text-gray-400">Rest easy knowing your data is protected by industry-leading encryption and security protocols.</p></div></div><div class="flex gap-4"><div class="flex-shrink-0 mt-1"><div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg></div></div><div><h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Scalable Database</h3><p class="text-gray-600 dark:text-gray-400">Our database automatically scales to handle millions of requests without breaking a sweat.</p></div></div><div class="flex gap-4"><div class="flex-shrink-0 mt-1"><div class="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-lg flex items-center justify-center"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg></div></div><div><h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">24/7 Support</h3><p class="text-gray-600 dark:text-gray-400">Our expert team is always available to help you resolve any issues and keep your business running smoothly.</p></div></div></div></div></section>',
+          category: 'Features'
         },
-        { 
-          name: 'Feature Alternating', 
-          icon: 'swap_vert', 
-          html: '<section dymer-model-element="" class="py-20 bg-white dark:bg-gray-900 overflow-hidden"><div class="container mx-auto px-4"><div class="flex flex-col md:flex-row items-center gap-12 mb-24"><div class="md:w-1/2"><img src="https://picsum.photos/seed/feature1/600/400" alt="Feature 1" class="rounded-2xl shadow-xl w-full" referrerpolicy="no-referrer"></div><div class="md:w-1/2 lg:pl-10"><div class="inline-block px-3 py-1 bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 rounded-full text-sm font-semibold mb-4">Analytics</div><h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Gain deep insights into your data</h2><p class="text-lg text-gray-600 dark:text-gray-400 mb-6">Our powerful analytics engine processes millions of data points in real-time to give you actionable insights that drive growth.</p><ul class="space-y-3"><li class="flex items-center text-gray-700 dark:text-gray-300"><mat-icon class="text-blue-500 mr-2 text-sm">check_circle</mat-icon> Real-time dashboards</li><li class="flex items-center text-gray-700 dark:text-gray-300"><mat-icon class="text-blue-500 mr-2 text-sm">check_circle</mat-icon> Custom reporting</li><li class="flex items-center text-gray-700 dark:text-gray-300"><mat-icon class="text-blue-500 mr-2 text-sm">check_circle</mat-icon> Export to CSV/PDF</li></ul></div></div><div class="flex flex-col md:flex-row-reverse items-center gap-12"><div class="md:w-1/2"><img src="https://picsum.photos/seed/feature2/600/400" alt="Feature 2" class="rounded-2xl shadow-xl w-full" referrerpolicy="no-referrer"></div><div class="md:w-1/2 lg:pr-10"><div class="inline-block px-3 py-1 bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400 rounded-full text-sm font-semibold mb-4">Automation</div><h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Automate your repetitive tasks</h2><p class="text-lg text-gray-600 dark:text-gray-400 mb-6">Set up complex workflows in minutes with our drag-and-drop builder. Let our system handle the busywork while you focus on strategy.</p><a href="#" class="inline-flex items-center text-blue-600 dark:text-blue-400 font-semibold hover:underline">Learn more about automation <mat-icon class="ml-1 text-sm">arrow_forward</mat-icon></a></div></div></div></section>', 
-          category: 'Features' 
+        {
+          name: 'Feature Alternating',
+          icon: 'swap_vert',
+          html: '<section dymer-model-element="" class="py-20 bg-white dark:bg-gray-900 overflow-hidden"><div class="container mx-auto px-4"><div class="flex flex-col md:flex-row items-center gap-12 mb-24"><div class="md:w-1/2"><img src="https://picsum.photos/seed/feature1/600/400" alt="Feature 1" class="rounded-2xl shadow-xl w-full" referrerpolicy="no-referrer"></div><div class="md:w-1/2 lg:pl-10"><div class="inline-block px-3 py-1 bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 rounded-full text-sm font-semibold mb-4">Analytics</div><h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Gain deep insights into your data</h2><p class="text-lg text-gray-600 dark:text-gray-400 mb-6">Our powerful analytics engine processes millions of data points in real-time to give you actionable insights that drive growth.</p><ul class="space-y-3"><li class="flex items-center text-gray-700 dark:text-gray-300"><mat-icon class="text-blue-500 mr-2 text-sm">check_circle</mat-icon> Real-time dashboards</li><li class="flex items-center text-gray-700 dark:text-gray-300"><mat-icon class="text-blue-500 mr-2 text-sm">check_circle</mat-icon> Custom reporting</li><li class="flex items-center text-gray-700 dark:text-gray-300"><mat-icon class="text-blue-500 mr-2 text-sm">check_circle</mat-icon> Export to CSV/PDF</li></ul></div></div><div class="flex flex-col md:flex-row-reverse items-center gap-12"><div class="md:w-1/2"><img src="https://picsum.photos/seed/feature2/600/400" alt="Feature 2" class="rounded-2xl shadow-xl w-full" referrerpolicy="no-referrer"></div><div class="md:w-1/2 lg:pr-10"><div class="inline-block px-3 py-1 bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400 rounded-full text-sm font-semibold mb-4">Automation</div><h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Automate your repetitive tasks</h2><p class="text-lg text-gray-600 dark:text-gray-400 mb-6">Set up complex workflows in minutes with our drag-and-drop builder. Let our system handle the busywork while you focus on strategy.</p><a href="#" class="inline-flex items-center text-blue-600 dark:text-blue-400 font-semibold hover:underline">Learn more about automation <mat-icon class="ml-1 text-sm">arrow_forward</mat-icon></a></div></div></div></section>',
+          category: 'Features'
         }
       ]
     },
@@ -240,11 +243,11 @@ searchQuery = signal('');
       name: 'Service',
       expanded: false,
       items: [
-        { 
-          name: 'Service List', 
-          icon: 'list', 
-          html: '<section dymer-model-element="" class="py-16 bg-gray-50 dark:bg-gray-800"><div class="container mx-auto px-4"><h2 class="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">Our Services</h2><div class="grid md:grid-cols-2 gap-8"><div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-sm"><h3 class="text-xl font-bold mb-2 text-blue-600">Web Development</h3><p class="text-gray-600 dark:text-gray-300">Building responsive and modern websites.</p></div><div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-sm"><h3 class="text-xl font-bold mb-2 text-blue-600">Mobile Apps</h3><p class="text-gray-600 dark:text-gray-300">Native and cross-platform mobile solutions.</p></div><div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-sm"><h3 class="text-xl font-bold mb-2 text-blue-600">UI/UX Design</h3><p class="text-gray-600 dark:text-gray-300">Creating intuitive user interfaces.</p></div><div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-sm"><h3 class="text-xl font-bold mb-2 text-blue-600">Consulting</h3><p class="text-gray-600 dark:text-gray-300">Expert advice for your digital strategy.</p></div></div></div></section>', 
-          category: 'Service' 
+        {
+          name: 'Service List',
+          icon: 'list',
+          html: '<section dymer-model-element="" class="py-16 bg-gray-50 dark:bg-gray-800"><div class="container mx-auto px-4"><h2 class="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">Our Services</h2><div class="grid md:grid-cols-2 gap-8"><div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-sm"><h3 class="text-xl font-bold mb-2 text-blue-600">Web Development</h3><p class="text-gray-600 dark:text-gray-300">Building responsive and modern websites.</p></div><div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-sm"><h3 class="text-xl font-bold mb-2 text-blue-600">Mobile Apps</h3><p class="text-gray-600 dark:text-gray-300">Native and cross-platform mobile solutions.</p></div><div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-sm"><h3 class="text-xl font-bold mb-2 text-blue-600">UI/UX Design</h3><p class="text-gray-600 dark:text-gray-300">Creating intuitive user interfaces.</p></div><div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-sm"><h3 class="text-xl font-bold mb-2 text-blue-600">Consulting</h3><p class="text-gray-600 dark:text-gray-300">Expert advice for your digital strategy.</p></div></div></div></section>',
+          category: 'Service'
         }
       ]
     },
@@ -252,11 +255,11 @@ searchQuery = signal('');
       name: 'Clients',
       expanded: false,
       items: [
-        { 
-          name: 'Client Logos', 
-          icon: 'groups', 
-          html: '<section dymer-model-element="" class="py-12 bg-white dark:bg-gray-900"><div class="container mx-auto px-4"><p class="text-center text-gray-500 mb-8 uppercase tracking-widest text-sm">Trusted by</p><div class="flex flex-wrap justify-center items-center gap-8 opacity-60 grayscale hover:grayscale-0 transition-all"><div class="text-2xl font-bold text-gray-400">GOOGLE</div><div class="text-2xl font-bold text-gray-400">AMAZON</div><div class="text-2xl font-bold text-gray-400">MICROSOFT</div><div class="text-2xl font-bold text-gray-400">SPOTIFY</div></div></div></section>', 
-          category: 'Clients' 
+        {
+          name: 'Client Logos',
+          icon: 'groups',
+          html: '<section dymer-model-element="" class="py-12 bg-white dark:bg-gray-900"><div class="container mx-auto px-4"><p class="text-center text-gray-500 mb-8 uppercase tracking-widest text-sm">Trusted by</p><div class="flex flex-wrap justify-center items-center gap-8 opacity-60 grayscale hover:grayscale-0 transition-all"><div class="text-2xl font-bold text-gray-400">GOOGLE</div><div class="text-2xl font-bold text-gray-400">AMAZON</div><div class="text-2xl font-bold text-gray-400">MICROSOFT</div><div class="text-2xl font-bold text-gray-400">SPOTIFY</div></div></div></section>',
+          category: 'Clients'
         }
       ]
     },
@@ -264,17 +267,17 @@ searchQuery = signal('');
       name: 'Contact Form',
       expanded: false,
       items: [
-        { 
-          name: 'Simple Contact', 
-          icon: 'contact_mail', 
-          html: '<section dymer-model-element="" class="py-16 bg-white dark:bg-gray-900"><div class="container mx-auto px-4 max-w-lg"><h2 class="text-3xl font-bold text-center mb-8 text-gray-900 dark:text-white">Contact Us</h2><form class="space-y-4"><div class="flex flex-col"><label class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Name</label><input data-dcat-map="" type="text" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none dark:bg-gray-800 dark:border-gray-700 dark:text-white"></div><div class="flex flex-col"><label class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Email</label><input data-dcat-map="" type="email" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none dark:bg-gray-800 dark:border-gray-700 dark:text-white"></div><div class="flex flex-col"><label class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Message</label><textarea data-dcat-map="" rows="4" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none dark:bg-gray-800 dark:border-gray-700 dark:text-white"></textarea></div><button type="button" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 font-medium">Send Message</button></form></div></section>', 
-          category: 'Contact Form' 
+        {
+          name: 'Simple Contact',
+          icon: 'contact_mail',
+          html: '<section dymer-model-element="" class="py-16 bg-white dark:bg-gray-900"><div class="container mx-auto px-4 max-w-lg"><h2 class="text-3xl font-bold text-center mb-8 text-gray-900 dark:text-white">Contact Us</h2><form class="space-y-4"><div class="flex flex-col"><label class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Name</label><input data-dcat-map="" type="text" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none dark:bg-gray-800 dark:border-gray-700 dark:text-white"></div><div class="flex flex-col"><label class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Email</label><input data-dcat-map="" type="email" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none dark:bg-gray-800 dark:border-gray-700 dark:text-white"></div><div class="flex flex-col"><label class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Message</label><textarea data-dcat-map="" rows="4" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none dark:bg-gray-800 dark:border-gray-700 dark:text-white"></textarea></div><button type="button" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 font-medium">Send Message</button></form></div></section>',
+          category: 'Contact Form'
         },
-        { 
-          name: 'Contact Split Info', 
-          icon: 'contact_phone', 
-          html: '<section dymer-model-element="" class="py-20 bg-gray-50 dark:bg-gray-800"><div class="container mx-auto px-4"><div class="max-w-5xl mx-auto bg-white dark:bg-gray-900 rounded-2xl shadow-xl overflow-hidden"><div class="flex flex-col md:flex-row"><div class="md:w-1/3 bg-blue-600 text-white p-10"><h3 class="text-2xl font-bold mb-6">Get in touch</h3><p class="text-blue-100 mb-10">We\'d love to hear from you. Our friendly team is always here to chat.</p><div class="space-y-6"><div class="flex items-start"><mat-icon class="mr-4 mt-1">email</mat-icon><div><h4 class="font-semibold">Chat to us</h4><p class="text-blue-200 text-sm mt-1">Our friendly team is here to help.</p><p class="font-medium mt-1">hi@company.com</p></div></div><div class="flex items-start"><mat-icon class="mr-4 mt-1">location_on</mat-icon><div><h4 class="font-semibold">Visit us</h4><p class="text-blue-200 text-sm mt-1">Come say hello at our office HQ.</p><p class="font-medium mt-1">100 Smith Street<br>Collingwood VIC 3066 AU</p></div></div><div class="flex items-start"><mat-icon class="mr-4 mt-1">phone</mat-icon><div><h4 class="font-semibold">Call us</h4><p class="text-blue-200 text-sm mt-1">Mon-Fri from 8am to 5pm.</p><p class="font-medium mt-1">+1 (555) 000-0000</p></div></div></div></div><div class="md:w-2/3 p-10"><form class="space-y-6"><div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">First name</label><input data-dcat-map="" type="text" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="First name"></div><div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Last name</label><input data-dcat-map="" type="text" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Last name"></div></div><div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label><input data-dcat-map="" type="email" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="you@company.com"></div><div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Message</label><textarea data-dcat-map="" rows="4" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Leave us a message..."></textarea></div><button type="button" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">Send message</button></form></div></div></div></div></section>', 
-          category: 'Contact Form' 
+        {
+          name: 'Contact Split Info',
+          icon: 'contact_phone',
+          html: '<section dymer-model-element="" class="py-20 bg-gray-50 dark:bg-gray-800"><div class="container mx-auto px-4"><div class="max-w-5xl mx-auto bg-white dark:bg-gray-900 rounded-2xl shadow-xl overflow-hidden"><div class="flex flex-col md:flex-row"><div class="md:w-1/3 bg-blue-600 text-white p-10"><h3 class="text-2xl font-bold mb-6">Get in touch</h3><p class="text-blue-100 mb-10">We\'d love to hear from you. Our friendly team is always here to chat.</p><div class="space-y-6"><div class="flex items-start"><mat-icon class="mr-4 mt-1">email</mat-icon><div><h4 class="font-semibold">Chat to us</h4><p class="text-blue-200 text-sm mt-1">Our friendly team is here to help.</p><p class="font-medium mt-1">hi@company.com</p></div></div><div class="flex items-start"><mat-icon class="mr-4 mt-1">location_on</mat-icon><div><h4 class="font-semibold">Visit us</h4><p class="text-blue-200 text-sm mt-1">Come say hello at our office HQ.</p><p class="font-medium mt-1">100 Smith Street<br>Collingwood VIC 3066 AU</p></div></div><div class="flex items-start"><mat-icon class="mr-4 mt-1">phone</mat-icon><div><h4 class="font-semibold">Call us</h4><p class="text-blue-200 text-sm mt-1">Mon-Fri from 8am to 5pm.</p><p class="font-medium mt-1">+1 (555) 000-0000</p></div></div></div></div><div class="md:w-2/3 p-10"><form class="space-y-6"><div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">First name</label><input data-dcat-map="" type="text" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="First name"></div><div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Last name</label><input data-dcat-map="" type="text" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Last name"></div></div><div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label><input data-dcat-map="" type="email" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="you@company.com"></div><div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Message</label><textarea data-dcat-map="" rows="4" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Leave us a message..."></textarea></div><button type="button" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">Send message</button></form></div></div></div></div></section>',
+          category: 'Contact Form'
         }
       ]
     },
@@ -282,11 +285,11 @@ searchQuery = signal('');
       name: 'Counter',
       expanded: false,
       items: [
-        { 
-          name: 'Stats Counter', 
-          icon: 'numbers', 
-          html: '<section dymer-model-element="" class="py-16 bg-blue-600 text-white"><div class="container mx-auto px-4"><div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center"><div><div class="text-4xl font-bold mb-2">10k+</div><div class="text-blue-100">Users</div></div><div><div class="text-4xl font-bold mb-2">500+</div><div class="text-blue-100">Projects</div></div><div><div class="text-4xl font-bold mb-2">99%</div><div class="text-blue-100">Satisfaction</div></div><div><div class="text-4xl font-bold mb-2">24/7</div><div class="text-blue-100">Support</div></div></div></div></section>', 
-          category: 'Counter' 
+        {
+          name: 'Stats Counter',
+          icon: 'numbers',
+          html: '<section dymer-model-element="" class="py-16 bg-blue-600 text-white"><div class="container mx-auto px-4"><div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center"><div><div class="text-4xl font-bold mb-2">10k+</div><div class="text-blue-100">Users</div></div><div><div class="text-4xl font-bold mb-2">500+</div><div class="text-blue-100">Projects</div></div><div><div class="text-4xl font-bold mb-2">99%</div><div class="text-blue-100">Satisfaction</div></div><div><div class="text-4xl font-bold mb-2">24/7</div><div class="text-blue-100">Support</div></div></div></div></section>',
+          category: 'Counter'
         }
       ]
     },
@@ -294,17 +297,17 @@ searchQuery = signal('');
       name: 'CTA',
       expanded: false,
       items: [
-        { 
-          name: 'Simple CTA', 
-          icon: 'call_to_action', 
-          html: '<section dymer-model-element="" class="py-16 bg-gray-100 dark:bg-gray-800"><div class="container mx-auto px-4 text-center"><h2 class="text-3xl font-bold mb-4 text-gray-900 dark:text-white">Ready to get started?</h2><p class="text-xl text-gray-600 dark:text-gray-300 mb-8">Join thousands of satisfied customers today.</p><button class="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 shadow-lg transition-transform hover:scale-105">Sign Up Now</button></div></section>', 
-          category: 'CTA' 
+        {
+          name: 'Simple CTA',
+          icon: 'call_to_action',
+          html: '<section dymer-model-element="" class="py-16 bg-gray-100 dark:bg-gray-800"><div class="container mx-auto px-4 text-center"><h2 class="text-3xl font-bold mb-4 text-gray-900 dark:text-white">Ready to get started?</h2><p class="text-xl text-gray-600 dark:text-gray-300 mb-8">Join thousands of satisfied customers today.</p><button class="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 shadow-lg transition-transform hover:scale-105">Sign Up Now</button></div></section>',
+          category: 'CTA'
         },
-        { 
-          name: 'CTA Split', 
-          icon: 'splitscreen', 
-          html: '<section dymer-model-element="" class="py-20 bg-blue-600"><div class="container mx-auto px-4"><div class="flex flex-col md:flex-row items-center justify-between"><div class="md:w-2/3 mb-8 md:mb-0"><h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Boost your productivity today.</h2><p class="text-xl text-blue-100">Start using our platform and see the difference in your workflow immediately.</p></div><div class="md:w-1/3 flex justify-end gap-4"><button class="bg-white text-blue-600 font-bold px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors">Get Started</button><button class="bg-blue-700 text-white font-bold px-6 py-3 rounded-lg hover:bg-blue-800 transition-colors">Learn More</button></div></div></div></section>', 
-          category: 'CTA' 
+        {
+          name: 'CTA Split',
+          icon: 'splitscreen',
+          html: '<section dymer-model-element="" class="py-20 bg-blue-600"><div class="container mx-auto px-4"><div class="flex flex-col md:flex-row items-center justify-between"><div class="md:w-2/3 mb-8 md:mb-0"><h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Boost your productivity today.</h2><p class="text-xl text-blue-100">Start using our platform and see the difference in your workflow immediately.</p></div><div class="md:w-1/3 flex justify-end gap-4"><button class="bg-white text-blue-600 font-bold px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors">Get Started</button><button class="bg-blue-700 text-white font-bold px-6 py-3 rounded-lg hover:bg-blue-800 transition-colors">Learn More</button></div></div></div></section>',
+          category: 'CTA'
         }
       ]
     },
@@ -312,11 +315,11 @@ searchQuery = signal('');
       name: 'Footer',
       expanded: false,
       items: [
-        { 
-          name: 'Simple Footer', 
-          icon: 'maximize', 
-          html: '<footer dymer-model-element="" class="bg-gray-900 text-white py-8"><div class="container mx-auto px-4"><div class="flex flex-col md:flex-row justify-between items-center"><div class="mb-4 md:mb-0"><span class="text-xl font-bold">BrandName</span></div><div class="flex space-x-6"><a href="#" class="hover:text-blue-400">Home</a><a href="#" class="hover:text-blue-400">About</a><a href="#" class="hover:text-blue-400">Services</a><a href="#" class="hover:text-blue-400">Contact</a></div></div><div class="mt-8 text-center text-gray-500 text-sm">© 2024 BrandName. All rights reserved.</div></div></footer>', 
-          category: 'Footer' 
+        {
+          name: 'Simple Footer',
+          icon: 'maximize',
+          html: '<footer dymer-model-element="" class="bg-gray-900 text-white py-8"><div class="container mx-auto px-4"><div class="flex flex-col md:flex-row justify-between items-center"><div class="mb-4 md:mb-0"><span class="text-xl font-bold">BrandName</span></div><div class="flex space-x-6"><a href="#" class="hover:text-blue-400">Home</a><a href="#" class="hover:text-blue-400">About</a><a href="#" class="hover:text-blue-400">Services</a><a href="#" class="hover:text-blue-400">Contact</a></div></div><div class="mt-8 text-center text-gray-500 text-sm">© 2024 BrandName. All rights reserved.</div></div></footer>',
+          category: 'Footer'
         }
       ]
     },
@@ -324,11 +327,11 @@ searchQuery = signal('');
       name: 'Pricing',
       expanded: false,
       items: [
-        { 
-          name: '3 Tier Pricing', 
-          icon: 'request_quote', 
-          html: '<section dymer-model-element="" class="py-20 bg-gray-50 dark:bg-gray-900"><div class="container mx-auto px-4"><div class="text-center max-w-3xl mx-auto mb-16"><h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Simple, transparent pricing</h2><p class="text-lg text-gray-600 dark:text-gray-400">No hidden fees. No surprise charges. Choose the plan that best fits your needs.</p></div><div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto"><div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-8 flex flex-col"><h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Starter</h3><p class="text-gray-500 dark:text-gray-400 mb-6">Perfect for individuals and small projects.</p><div class="mb-6"><span class="text-4xl font-extrabold text-gray-900 dark:text-white">$15</span><span class="text-gray-500 dark:text-gray-400">/month</span></div><ul class="space-y-4 mb-8 flex-1"><li class="flex items-center text-gray-600 dark:text-gray-300"><mat-icon class="text-green-500 mr-2 text-sm">check</mat-icon> Up to 5 projects</li><li class="flex items-center text-gray-600 dark:text-gray-300"><mat-icon class="text-green-500 mr-2 text-sm">check</mat-icon> Basic analytics</li><li class="flex items-center text-gray-600 dark:text-gray-300"><mat-icon class="text-green-500 mr-2 text-sm">check</mat-icon> 24-hour support response time</li></ul><button class="w-full bg-blue-50 text-blue-600 dark:bg-gray-700 dark:text-white hover:bg-blue-100 dark:hover:bg-gray-600 font-semibold py-3 px-4 rounded-lg transition-colors">Get Started</button></div><div class="bg-blue-600 rounded-2xl shadow-xl p-8 flex flex-col transform md:-translate-y-4 relative"><div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-pink-500 to-purple-500 text-white px-4 py-1 rounded-full text-sm font-bold uppercase tracking-wide">Most Popular</div><h3 class="text-xl font-semibold text-white mb-2">Professional</h3><p class="text-blue-100 mb-6">Ideal for growing teams and businesses.</p><div class="mb-6"><span class="text-4xl font-extrabold text-white">$49</span><span class="text-blue-200">/month</span></div><ul class="space-y-4 mb-8 flex-1"><li class="flex items-center text-white"><mat-icon class="text-blue-200 mr-2 text-sm">check</mat-icon> Unlimited projects</li><li class="flex items-center text-white"><mat-icon class="text-blue-200 mr-2 text-sm">check</mat-icon> Advanced analytics</li><li class="flex items-center text-white"><mat-icon class="text-blue-200 mr-2 text-sm">check</mat-icon> 1-hour support response time</li><li class="flex items-center text-white"><mat-icon class="text-blue-200 mr-2 text-sm">check</mat-icon> Custom domains</li></ul><button class="w-full bg-white text-blue-600 hover:bg-gray-50 font-bold py-3 px-4 rounded-lg transition-colors shadow-md">Start Free Trial</button></div><div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-8 flex flex-col"><h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Enterprise</h3><p class="text-gray-500 dark:text-gray-400 mb-6">For large scale organizations with advanced needs.</p><div class="mb-6"><span class="text-4xl font-extrabold text-gray-900 dark:text-white">$199</span><span class="text-gray-500 dark:text-gray-400">/month</span></div><ul class="space-y-4 mb-8 flex-1"><li class="flex items-center text-gray-600 dark:text-gray-300"><mat-icon class="text-green-500 mr-2 text-sm">check</mat-icon> Everything in Professional</li><li class="flex items-center text-gray-600 dark:text-gray-300"><mat-icon class="text-green-500 mr-2 text-sm">check</mat-icon> Dedicated account manager</li><li class="flex items-center text-gray-600 dark:text-gray-300"><mat-icon class="text-green-500 mr-2 text-sm">check</mat-icon> Custom integrations</li><li class="flex items-center text-gray-600 dark:text-gray-300"><mat-icon class="text-green-500 mr-2 text-sm">check</mat-icon> SLA guarantee</li></ul><button class="w-full bg-blue-50 text-blue-600 dark:bg-gray-700 dark:text-white hover:bg-blue-100 dark:hover:bg-gray-600 font-semibold py-3 px-4 rounded-lg transition-colors">Contact Sales</button></div></div></div></section>', 
-          category: 'Pricing' 
+        {
+          name: '3 Tier Pricing',
+          icon: 'request_quote',
+          html: '<section dymer-model-element="" class="py-20 bg-gray-50 dark:bg-gray-900"><div class="container mx-auto px-4"><div class="text-center max-w-3xl mx-auto mb-16"><h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Simple, transparent pricing</h2><p class="text-lg text-gray-600 dark:text-gray-400">No hidden fees. No surprise charges. Choose the plan that best fits your needs.</p></div><div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto"><div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-8 flex flex-col"><h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Starter</h3><p class="text-gray-500 dark:text-gray-400 mb-6">Perfect for individuals and small projects.</p><div class="mb-6"><span class="text-4xl font-extrabold text-gray-900 dark:text-white">$15</span><span class="text-gray-500 dark:text-gray-400">/month</span></div><ul class="space-y-4 mb-8 flex-1"><li class="flex items-center text-gray-600 dark:text-gray-300"><mat-icon class="text-green-500 mr-2 text-sm">check</mat-icon> Up to 5 projects</li><li class="flex items-center text-gray-600 dark:text-gray-300"><mat-icon class="text-green-500 mr-2 text-sm">check</mat-icon> Basic analytics</li><li class="flex items-center text-gray-600 dark:text-gray-300"><mat-icon class="text-green-500 mr-2 text-sm">check</mat-icon> 24-hour support response time</li></ul><button class="w-full bg-blue-50 text-blue-600 dark:bg-gray-700 dark:text-white hover:bg-blue-100 dark:hover:bg-gray-600 font-semibold py-3 px-4 rounded-lg transition-colors">Get Started</button></div><div class="bg-blue-600 rounded-2xl shadow-xl p-8 flex flex-col transform md:-translate-y-4 relative"><div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-pink-500 to-purple-500 text-white px-4 py-1 rounded-full text-sm font-bold uppercase tracking-wide">Most Popular</div><h3 class="text-xl font-semibold text-white mb-2">Professional</h3><p class="text-blue-100 mb-6">Ideal for growing teams and businesses.</p><div class="mb-6"><span class="text-4xl font-extrabold text-white">$49</span><span class="text-blue-200">/month</span></div><ul class="space-y-4 mb-8 flex-1"><li class="flex items-center text-white"><mat-icon class="text-blue-200 mr-2 text-sm">check</mat-icon> Unlimited projects</li><li class="flex items-center text-white"><mat-icon class="text-blue-200 mr-2 text-sm">check</mat-icon> Advanced analytics</li><li class="flex items-center text-white"><mat-icon class="text-blue-200 mr-2 text-sm">check</mat-icon> 1-hour support response time</li><li class="flex items-center text-white"><mat-icon class="text-blue-200 mr-2 text-sm">check</mat-icon> Custom domains</li></ul><button class="w-full bg-white text-blue-600 hover:bg-gray-50 font-bold py-3 px-4 rounded-lg transition-colors shadow-md">Start Free Trial</button></div><div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-8 flex flex-col"><h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Enterprise</h3><p class="text-gray-500 dark:text-gray-400 mb-6">For large scale organizations with advanced needs.</p><div class="mb-6"><span class="text-4xl font-extrabold text-gray-900 dark:text-white">$199</span><span class="text-gray-500 dark:text-gray-400">/month</span></div><ul class="space-y-4 mb-8 flex-1"><li class="flex items-center text-gray-600 dark:text-gray-300"><mat-icon class="text-green-500 mr-2 text-sm">check</mat-icon> Everything in Professional</li><li class="flex items-center text-gray-600 dark:text-gray-300"><mat-icon class="text-green-500 mr-2 text-sm">check</mat-icon> Dedicated account manager</li><li class="flex items-center text-gray-600 dark:text-gray-300"><mat-icon class="text-green-500 mr-2 text-sm">check</mat-icon> Custom integrations</li><li class="flex items-center text-gray-600 dark:text-gray-300"><mat-icon class="text-green-500 mr-2 text-sm">check</mat-icon> SLA guarantee</li></ul><button class="w-full bg-blue-50 text-blue-600 dark:bg-gray-700 dark:text-white hover:bg-blue-100 dark:hover:bg-gray-600 font-semibold py-3 px-4 rounded-lg transition-colors">Contact Sales</button></div></div></div></section>',
+          category: 'Pricing'
         }
       ]
     },
@@ -336,11 +339,11 @@ searchQuery = signal('');
       name: 'Testimonials',
       expanded: false,
       items: [
-        { 
-          name: 'Testimonial Grid', 
-          icon: 'format_quote', 
-          html: '<section dymer-model-element="" class="py-20 bg-white dark:bg-gray-900"><div class="container mx-auto px-4"><h2 class="text-3xl font-bold text-center text-gray-900 dark:text-white mb-16">Loved by businesses worldwide</h2><div class="grid md:grid-cols-3 gap-8"><div class="bg-gray-50 dark:bg-gray-800 p-8 rounded-2xl"><div class="flex text-yellow-400 mb-4"><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon></div><p class="text-gray-700 dark:text-gray-300 mb-6">"This platform has completely transformed how our team operates. We\'re shipping features 3x faster than before."</p><div class="flex items-center"><img src="https://i.pravatar.cc/150?img=1" alt="User" class="w-12 h-12 rounded-full mr-4"><div class="flex flex-col"><span class="font-bold text-gray-900 dark:text-white">Sarah Jenkins</span><span class="text-sm text-gray-500">CTO at TechCorp</span></div></div></div><div class="bg-gray-50 dark:bg-gray-800 p-8 rounded-2xl"><div class="flex text-yellow-400 mb-4"><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon></div><p class="text-gray-700 dark:text-gray-300 mb-6">"The intuitive interface and powerful features make it a breeze to use. Highly recommended for any growing business."</p><div class="flex items-center"><img src="https://i.pravatar.cc/150?img=2" alt="User" class="w-12 h-12 rounded-full mr-4"><div class="flex flex-col"><span class="font-bold text-gray-900 dark:text-white">Michael Chen</span><span class="text-sm text-gray-500">Product Manager</span></div></div></div><div class="bg-gray-50 dark:bg-gray-800 p-8 rounded-2xl"><div class="flex text-yellow-400 mb-4"><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon></div><p class="text-gray-700 dark:text-gray-300 mb-6">"Customer support is top-notch. They helped us migrate our entire infrastructure without any downtime."</p><div class="flex items-center"><img src="https://i.pravatar.cc/150?img=3" alt="User" class="w-12 h-12 rounded-full mr-4"><div class="flex flex-col"><span class="font-bold text-gray-900 dark:text-white">Emily Rodriguez</span><span class="text-sm text-gray-500">Operations Director</span></div></div></div></div></div></section>', 
-          category: 'Testimonials' 
+        {
+          name: 'Testimonial Grid',
+          icon: 'format_quote',
+          html: '<section dymer-model-element="" class="py-20 bg-white dark:bg-gray-900"><div class="container mx-auto px-4"><h2 class="text-3xl font-bold text-center text-gray-900 dark:text-white mb-16">Loved by businesses worldwide</h2><div class="grid md:grid-cols-3 gap-8"><div class="bg-gray-50 dark:bg-gray-800 p-8 rounded-2xl"><div class="flex text-yellow-400 mb-4"><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon></div><p class="text-gray-700 dark:text-gray-300 mb-6">"This platform has completely transformed how our team operates. We\'re shipping features 3x faster than before."</p><div class="flex items-center"><img src="https://i.pravatar.cc/150?img=1" alt="User" class="w-12 h-12 rounded-full mr-4"><div class="flex flex-col"><span class="font-bold text-gray-900 dark:text-white">Sarah Jenkins</span><span class="text-sm text-gray-500">CTO at TechCorp</span></div></div></div><div class="bg-gray-50 dark:bg-gray-800 p-8 rounded-2xl"><div class="flex text-yellow-400 mb-4"><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon></div><p class="text-gray-700 dark:text-gray-300 mb-6">"The intuitive interface and powerful features make it a breeze to use. Highly recommended for any growing business."</p><div class="flex items-center"><img src="https://i.pravatar.cc/150?img=2" alt="User" class="w-12 h-12 rounded-full mr-4"><div class="flex flex-col"><span class="font-bold text-gray-900 dark:text-white">Michael Chen</span><span class="text-sm text-gray-500">Product Manager</span></div></div></div><div class="bg-gray-50 dark:bg-gray-800 p-8 rounded-2xl"><div class="flex text-yellow-400 mb-4"><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon><mat-icon class="text-sm">star</mat-icon></div><p class="text-gray-700 dark:text-gray-300 mb-6">"Customer support is top-notch. They helped us migrate our entire infrastructure without any downtime."</p><div class="flex items-center"><img src="https://i.pravatar.cc/150?img=3" alt="User" class="w-12 h-12 rounded-full mr-4"><div class="flex flex-col"><span class="font-bold text-gray-900 dark:text-white">Emily Rodriguez</span><span class="text-sm text-gray-500">Operations Director</span></div></div></div></div></div></section>',
+          category: 'Testimonials'
         }
       ]
     },
@@ -348,18 +351,18 @@ searchQuery = signal('');
       name: 'FAQ',
       expanded: false,
       items: [
-        { 
-          name: 'FAQ List', 
-          icon: 'help_outline', 
-          html: '<section dymer-model-element="" class="py-20 bg-gray-50 dark:bg-gray-800"><div class="container mx-auto px-4 max-w-4xl"><div class="text-center mb-16"><h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Frequently Asked Questions</h2><p class="text-lg text-gray-600 dark:text-gray-400">Can\'t find the answer you\'re looking for? Reach out to our customer support team.</p></div><div class="space-y-6"><div class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm"><h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">What is your refund policy?</h3><p class="text-gray-600 dark:text-gray-400">If you\'re unhappy with your purchase for any reason, email us within 90 days and we\'ll refund you in full, no questions asked.</p></div><div class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm"><h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Do you offer technical support?</h3><p class="text-gray-600 dark:text-gray-400">Yes, we offer email support for all customers. Priority support is available for Professional and Enterprise plans.</p></div><div class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm"><h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Can I upgrade my plan later?</h3><p class="text-gray-600 dark:text-gray-400">Absolutely. You can upgrade or downgrade your plan at any time from your account dashboard. Prorated charges will be applied automatically.</p></div></div></div></section>', 
-          category: 'FAQ' 
+        {
+          name: 'FAQ List',
+          icon: 'help_outline',
+          html: '<section dymer-model-element="" class="py-20 bg-gray-50 dark:bg-gray-800"><div class="container mx-auto px-4 max-w-4xl"><div class="text-center mb-16"><h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Frequently Asked Questions</h2><p class="text-lg text-gray-600 dark:text-gray-400">Can\'t find the answer you\'re looking for? Reach out to our customer support team.</p></div><div class="space-y-6"><div class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm"><h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">What is your refund policy?</h3><p class="text-gray-600 dark:text-gray-400">If you\'re unhappy with your purchase for any reason, email us within 90 days and we\'ll refund you in full, no questions asked.</p></div><div class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm"><h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Do you offer technical support?</h3><p class="text-gray-600 dark:text-gray-400">Yes, we offer email support for all customers. Priority support is available for Professional and Enterprise plans.</p></div><div class="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm"><h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Can I upgrade my plan later?</h3><p class="text-gray-600 dark:text-gray-400">Absolutely. You can upgrade or downgrade your plan at any time from your account dashboard. Prorated charges will be applied automatically.</p></div></div></div></section>',
+          category: 'FAQ'
         }
       ]
     }
   ];
 
   loadPage(id: string) {
-    const content = this.pageService.loadPage(id); 
+    const content = this.pageService.loadPage(id);
     if (content) {
       this.builderService.updateContent(content);
     }
@@ -367,13 +370,18 @@ searchQuery = signal('');
 
   deletePage(event: Event, id: string) {
     event.stopPropagation();
-    if (confirm('Are you sure you want to delete this page?')) {
-      this.pageService.deletePage(id);
-      // If we deleted the current page, clear the canvas or load another one
-      if (this.pageService.currentPageId() === null) {
-        this.builderService.updateContent('<div class="p-8 text-center text-gray-400">Select or create a page</div>');
-      }
-    }
+    if (!confirm('Are you sure you want to delete this page?')) return;
+
+    this.pageService.deletePage(id).subscribe({
+      next: () => {
+        this.toast.success('Page deleted');
+        // If we deleted the current page, clear the canvas
+        if (this.pageService.currentPageId() === null) {
+          this.builderService.updateContent('<div class="p-8 text-center text-gray-400">Select or create a page</div>');
+        }
+      },
+      error: () => this.toast.error('Failed to delete page')
+    });
   }
 
   toggleCategory(name: string) {
@@ -399,8 +407,7 @@ searchQuery = signal('');
     this.requestAttachFile.emit(pageId);
   }
 
-  /**/
   onEditModel(page: any) {
-  this.requestEditModel.emit(page);
-}
+    this.requestEditModel.emit(page);
+  }
 }

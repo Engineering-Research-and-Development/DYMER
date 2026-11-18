@@ -120,10 +120,10 @@ export class BuilderTemplatesComponent implements OnInit {
   templates = [
     { id: 'blank', type: 'teaserlist', name: 'Blank Page', description: 'Start from scratch with an empty canvas', icon: 'check_box_outline_blank', file: null },
     { id: 'landing', type: 'teaserlist', name: 'Landing Page', description: 'A full landing page with hero, features, and CTA', icon: 'web', file: '/templates/landing.html' },
-    { id: 'teaserlist', type: 'teaserlist',name: 'Teaser List', description: 'A list of article teasers with images', icon: 'view_list', file: '/templates/teaserlist.html' },
-    { id: 'fullcontent',type: 'fullcontent' ,name: 'Full Content', description: 'A full article page with cover image', icon: 'article', file: '/templates/fullcontent.html' },
-    { id: 'mappreview',type: 'mappreview', name: 'Map Preview', description: 'Contact page with embedded map', icon: 'map', file: '/templates/mappreview.html' },
-    { id: 'teaser',type: 'teaser', name: 'General Preview', description: 'teaser', icon: 'map', file: '/templates/teaserlist.html' } 
+    { id: 'teaserlist', type: 'teaserlist', name: 'Teaser List', description: 'A list of article teasers with images', icon: 'view_list', file: '/templates/teaserlist.html' },
+    { id: 'fullcontent', type: 'fullcontent', name: 'Full Content', description: 'A full article page with cover image', icon: 'article', file: '/templates/fullcontent.html' },
+    { id: 'mappreview', type: 'mappreview', name: 'Map Preview', description: 'Contact page with embedded map', icon: 'map', file: '/templates/mappreview.html' },
+    { id: 'teaser', type: 'teaser', name: 'General Preview', description: 'teaser', icon: 'map', file: '/templates/teaserlist.html' }
   ];
 
   showAttachModal = false;
@@ -286,24 +286,27 @@ export class BuilderTemplatesComponent implements OnInit {
   saveTemplate() {
     const currentId = this.pageService.currentPageId();
     if (currentId) {
-      this.pageService.updatePage(currentId, this.builderService.htmlContent());
-      alert('Page saved successfully!');
+      this.pageService.updatePage(currentId, this.builderService.htmlContent())?.subscribe({
+        next: () => this.toast.success('Page saved successfully!'),
+        error: () => this.toast.error('Failed to save page')
+      });
     } else {
-      // Fallback if no page selected, though sidebar usually handles this
       const name = prompt('Save as new page. Enter name:', 'My New Page');
       if (name) {
-        // this.pageService.savePage(name, 'new-page', 'Description', this.builderService.htmlContent());
         this.pageService.savePage(
-          this.newPageData.name,
-          this.newPageData.slug,
-          this.newPageData.description,
-          "standard",
-          this.newPageData.template,
-          this.newPageData.model);
-        const pages = this.pageService.pages();
-        const newPage = pages[pages.length - 1];
-        this.pageService.loadPage(newPage._id);
-        alert('Page created and saved!');
+          name,
+          'new-page',
+          'Description',
+          this.builderService.htmlContent(),
+          'standard',
+          this.newPageData.model
+        ).subscribe({
+          next: res => {
+            this.pageService.loadPage(res.data[0]._id);
+            this.toast.success('Page created and saved!');
+          },
+          error: () => this.toast.error('Failed to create page')
+        });
       }
     }
   }
@@ -345,14 +348,18 @@ export class BuilderTemplatesComponent implements OnInit {
       initialContent,
       this.newPageData.template,
       this.newPageData.model
-    );
-
-    const pages = this.pageService.pages();
-    const newPage = pages[pages.length - 1];
-
-    this.loadPage(newPage._id);
-    this.closeNewPageModal();
-    this.isCreatingPage = false;
+    ).subscribe({
+      next: res => {
+        this.loadPage(res.data[0]._id);
+        this.toast.success('Template created successfully');
+        this.closeNewPageModal();
+        this.isCreatingPage = false;
+      },
+      error: () => {
+        this.toast.error('Failed to create template');
+        this.isCreatingPage = false;
+      }
+    });
   }
 
   loadPage(id: string) {
@@ -429,13 +436,6 @@ export class BuilderTemplatesComponent implements OnInit {
     }
   }
 
-  // isValidAttachment(): boolean {
-  //   if (this.attachModalData.activeTab === 'create') {
-  //     return !!this.attachModalData.fileName && !!this.attachModalData.fileContent;
-  //   } else {
-  //     return !!this.attachModalData.selectedFile;
-  //   }
-  // }
   isValidAttachment(): boolean {
     if (this.attachModalData.activeTab === 'create') {
       // nuovo asset
@@ -453,30 +453,13 @@ export class BuilderTemplatesComponent implements OnInit {
 
       return (attachment.data || '').trim() !== (this.attachModalData.fileContent || '').trim();
     }
-        else if (this.attachModalData.activeTab === 'upload') {
-    // Caricamento file: serve che un file sia stato selezionato
-    return !!this.attachModalData.selectedFile;
-  }
+    else if (this.attachModalData.activeTab === 'upload') {
+      // Caricamento file: serve che un file sia stato selezionato
+      return !!this.attachModalData.selectedFile;
+    }
 
     return false;
   }
-
-  // saveAttachment() {
-  //   const { pageId, activeTab, fileType, fileName, fileContent, selectedFile } = this.attachModalData;
-
-  //   // Construct the payload
-  //   const payload = {
-  //     type: fileType,
-  //     name: activeTab === 'create' ? `${fileName}.${fileType}` : selectedFile!.name,
-  //     content: activeTab === 'create' ? fileContent : undefined,
-  //     file: activeTab === 'upload' ? selectedFile! : undefined
-  //   };
-
-  //   this.pageService.attachFile(pageId, payload).then(() => {
-  //     alert('File attached successfully!');
-  //     this.closeAttachModal();
-  //   });
-  // }
 
   saveAttachment() {
     const {
@@ -624,7 +607,7 @@ export class BuilderTemplatesComponent implements OnInit {
       }
     });
   }
-  /**/
+
   selectTemplate(template: any) {
     this.newPageData.template = template.id;
     this.newPageData.slug = template.type;

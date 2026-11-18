@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, TemplateRef, inject, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnInit, TemplateRef, ViewEncapsulation, inject, signal } from '@angular/core';
 import { 
   FormBuilder,
   FormGroup,
@@ -38,6 +38,9 @@ type Msg = {
   code?: string;
   codeLanguage?: string;
   copied?: boolean;
+  responseCopied?: boolean;
+  rawText?: string;
+  formattedText?: string;
 };
 declare function html2json(html: string): any;
 
@@ -46,6 +49,7 @@ declare function html2json(html: string): any;
   selector: 'app-customizer',
   templateUrl: './customizer.component.html',
   styleUrl: './customizer.component.scss',
+  encapsulation: ViewEncapsulation.None,
   standalone: true,
   imports: [
     MatMenuModule,
@@ -112,6 +116,20 @@ export class CustomizerComponent implements OnInit {
   agentStatus = signal<'online' | 'offline' | 'checking'>('checking');
   // Variabile per tracciare lo stato del chatbot (pannello drawer)
   public isChatbotOpen = false;
+  public isResizingChatbot = false;
+
+  private readonly chatbotDefaultWidth = 400;
+  private readonly chatbotMinWidth = 360;
+  private chatbotStartX = 0;
+  private chatbotStartWidth = this.chatbotDefaultWidth;
+  private chatbotPanelElement: HTMLElement | null = null;
+
+  private getStoredChatbotWidth(): number {
+    const storedWidth = Number(localStorage.getItem('dymer.chatbot.width'));
+    return Number.isFinite(storedWidth)
+      ? Math.max(this.chatbotMinWidth, Math.min(storedWidth, window.innerWidth * 0.8))
+      : this.chatbotDefaultWidth;
+  }
 
   constructor(
     private aiService: CustomizerService,
@@ -208,13 +226,76 @@ export class CustomizerComponent implements OnInit {
     this.isChatbotOpen = true; // Imposta lo stato su "aperto"
     this.drawerRef = this.drawer.open(templateRef, {
       position: 'right',
-      width: '400px', // Puoi aggiustare la larghezza
+      width: `${this.getStoredChatbotWidth()}px`,
     });
 
     // Ascolta l'evento di chiusura per resettare lo stato
     this.drawerRef.afterDismissed().subscribe(() => {
       this.isChatbotOpen = false;
     });
+  }
+
+  startChatbotResize(event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const container = (event.currentTarget as HTMLElement).closest('.magicai-container') as HTMLElement | null;
+    const overlayPane = container?.closest('.cdk-overlay-pane') as HTMLElement | null;
+    this.chatbotPanelElement = overlayPane || container;
+
+    if (!this.chatbotPanelElement) return;
+
+    this.isResizingChatbot = true;
+    this.chatbotStartX = event.clientX;
+    this.chatbotStartWidth = this.chatbotPanelElement.getBoundingClientRect().width;
+    document.body.classList.add('chatbot-resizing');
+  }
+
+  @HostListener('document:mousemove', ['$event'])
+  resizeChatbot(event: MouseEvent): void {
+    if (!this.isResizingChatbot || !this.chatbotPanelElement) return;
+
+    const maxWidth = Math.max(this.chatbotMinWidth, window.innerWidth * 0.8);
+    const requestedWidth = this.chatbotStartWidth + (this.chatbotStartX - event.clientX);
+    const width = Math.max(this.chatbotMinWidth, Math.min(requestedWidth, maxWidth));
+
+    this.chatbotPanelElement.style.width = `${Math.round(width)}px`;
+  }
+
+  @HostListener('document:mouseup')
+  stopChatbotResize(): void {
+    if (!this.isResizingChatbot) return;
+
+    this.isResizingChatbot = false;
+    document.body.classList.remove('chatbot-resizing');
+
+    if (this.chatbotPanelElement) {
+      const width = Math.round(this.chatbotPanelElement.getBoundingClientRect().width);
+      localStorage.setItem('dymer.chatbot.width', String(width));
+    }
+
+    this.chatbotPanelElement = null;
+  }
+
+  resetChatbotWidth(event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const container = (event.currentTarget as HTMLElement).closest('.magicai-container') as HTMLElement | null;
+    const overlayPane = container?.closest('.cdk-overlay-pane') as HTMLElement | null;
+    const panel = overlayPane || container;
+
+    if (panel) panel.style.width = `${this.chatbotDefaultWidth}px`;
+    localStorage.removeItem('dymer.chatbot.width');
+  }
+
+  onPromptKeydown(event: KeyboardEvent): void {
+    if (event.key !== 'Enter' || event.shiftKey) return;
+
+    event.preventDefault();
+    if (!this.isLoading && this.zeroFormGroup.valid) {
+      this.sendMessage();
+    }
   }
 
   clearPromptInput(): void {
@@ -271,6 +352,105 @@ export class CustomizerComponent implements OnInit {
     document.body.removeChild(ta);
   }
 
+  copyResponse(message: Msg): void {
+    const text = message.rawText || this.toPlainText(String(message.text || ''));
+    if (!text) return;
+
+    const onSuccess = () => {
+      message.responseCopied = true;
+      this.cdr.detectChanges();
+      setTimeout(() => {
+        message.responseCopied = false;
+        this.cdr.detectChanges();
+      }, 1800);
+    };
+
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text)
+        .then(onSuccess)
+        .catch(() => this.fallbackCopyResponse(text, onSuccess));
+    } else {
+      this.fallbackCopyResponse(text, onSuccess);
+    }
+  }
+
+  private fallbackCopyResponse(text: string, onSuccess: () => void): void {
+    const ta = document.createElement('textarea');
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      if (document.execCommand('copy')) onSuccess();
+    } catch (error) {
+      console.error('copy response failed', error);
+    } finally {
+      document.body.removeChild(ta);
+    }
+  }
+
+  private toPlainText(value: string): string {
+    const withBreaks = value
+      .replace(/<br\s*\/?\s*>/gi, '\n')
+      .replace(/<\/p>/gi, '\n')
+      .replace(/<\/div>/gi, '\n');
+    const container = document.createElement('div');
+    container.innerHTML = withBreaks;
+    return (container.textContent || container.innerText || '')
+      .replace(/\u00a0/g, ' ')
+      .replace(/[ \t]+\n/g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
+
+  private escapeHtml(value: string): string {
+    return value.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  }
+
+  private formatAssistantResponse(value: string): string {
+    const lines = this.toPlainText(value).split('\n');
+    const html: string[] = [];
+
+    for (const originalLine of lines) {
+      const trimmed = originalLine.trim();
+      if (!trimmed) continue;
+      const safe = this.escapeHtml(trimmed);
+
+      if (trimmed.startsWith('Criteri applicati:')) {
+        const criteria = trimmed.substring('Criteri applicati:'.length).trim();
+        html.push(`<section class="answer-summary"><span class="answer-eyebrow">Criteri applicati</span><strong>${this.escapeHtml(criteria)}</strong></section>`);
+      } else if (trimmed.startsWith('Entity sorgente trovate:')) {
+        const count = trimmed.substring('Entity sorgente trovate:'.length).trim();
+        html.push(`<div class="answer-count"><span>${this.escapeHtml(count)}</span> entity sorgente trovate</div>`);
+      } else if (/^(Dettaglio completo per|Corrispondenze per)/i.test(trimmed)) {
+        html.push(`<h3 class="answer-section-title">${safe}</h3>`);
+      } else if (/^Nessuna entity/i.test(trimmed)) {
+        html.push(`<div class="answer-notice">${safe}</div>`);
+      } else if (/^\s{2,}\d+\.\s+/.test(originalLine)) {
+        html.push(`<div class="answer-related-item">${safe.replace(/^\d+\.\s+/, '')}</div>`);
+      } else if (/^\d+\.\s+/.test(trimmed)) {
+        html.push(`<h3 class="answer-entity-title">${safe}</h3>`);
+      } else if (/^Entity collegate \(\d+\):/i.test(trimmed)) {
+        html.push(`<h4 class="answer-related-title">${safe}</h4>`);
+      } else {
+        const metadataMatch = trimmed.match(/^(Catalogo|ID|Origine corrispondenza|Stato):\s*(.*)$/i);
+        if (metadataMatch) {
+          const label = this.escapeHtml(metadataMatch[1]);
+          const metadataValue = this.escapeHtml(metadataMatch[2] || 'Non disponibile');
+          const active = metadataMatch[1].toLowerCase() === 'stato' && metadataMatch[2] === '1' ? ' is-active' : '';
+          html.push(`<div class="answer-meta"><span>${label}</span><code class="${active}">${metadataValue}</code></div>`);
+        } else if (/^Descrizione:/i.test(trimmed)) {
+          html.push(`<p class="answer-description">${this.escapeHtml(trimmed.substring(trimmed.indexOf(':') + 1).trim())}</p>`);
+        } else {
+          html.push(`<p class="answer-paragraph">${safe}</p>`);
+        }
+      }
+    }
+    return html.join('');
+  }
+
   private extractCode(response: string): { text: string, code: string, language: string } {
     const codeBlockRegex = /```(\w+)?\s*([\s\S]*?)```/;
     const match = response.match(codeBlockRegex);
@@ -314,6 +494,8 @@ sendMessage_Original() {
       const { text, code, language } = this.extractCode(fullResponse);
 
       botMessage.text = text;
+        botMessage.rawText = this.toPlainText(text);
+        botMessage.formattedText = this.formatAssistantResponse(text);
       if (code) {
         botMessage.code = code;
         botMessage.codeLanguage = language;
@@ -337,79 +519,72 @@ sendMessage_Original() {
 sendMessage() {
   const inputControl = this.zeroFormGroup.get('userInput');
   const messageToSend = inputControl?.value?.trim();
-  
-  // 1. Recuperiamo l'agente dal Signal
   const agent = this.selectedAgent();
 
-  // 2. Validazione Senior: controlliamo messaggio, stato del form e presenza dell'agente
   if (!messageToSend || this.zeroFormGroup.invalid || !agent) {
     if (!agent) this.toast.warning('Seleziona un agente AI per iniziare');
     return;
   }
 
-  // Prepariamo l'interfaccia per lo streaming
   this.isLoading = true;
   inputControl?.disable();
 
-  // Aggiungiamo il messaggio dell'utente alla lista
-  this.messages.push({ 
-    from: 'user', 
-    text: messageToSend, 
-    time: new Date().toISOString() 
-  });
+  this.messages.push({ from: 'user', text: messageToSend, time: new Date().toISOString() });
 
-  // Creiamo il segnaposto per la risposta del bot (sarà popolata dallo stream)
   const botMessageIndex = this.messages.length;
-  this.messages.push({ 
-    from: 'bot', 
-    text: '', 
+  this.messages.push({
+    from: 'bot',
+    text: '',
     time: new Date().toISOString(),
     code: '',
-    codeLanguage: '' 
+    codeLanguage: ''
   });
 
   inputControl?.reset();
   let fullResponse = '';
+  let requestFailed = false;
 
-  // Chiamata al service passando l'agente completo (ID, Provider, Prompt, etc.)
   this.aiService.streamChat(messageToSend, agent)
     .pipe(
       finalize(() => {
-        // Logica di post-processing (estrazione codice) a fine stream
         const botMessage = this.messages[botMessageIndex];
-        const { text, code, language } = this.extractCode(fullResponse);
 
-        botMessage.text = text;
-        if (code) {
-          botMessage.code = code;
-          botMessage.codeLanguage = language;
+        if (!requestFailed) {
+          const { text, code, language } = this.extractCode(fullResponse);
+          botMessage.text = text;
+
+        botMessage.rawText = this.toPlainText(text);
+        botMessage.formattedText = this.formatAssistantResponse(text);
+          if (code) {
+            botMessage.code = code;
+            botMessage.codeLanguage = language;
+          }
         }
 
         this.isLoading = false;
         inputControl?.enable();
-        this.cdr.detectChanges(); // Essenziale per aggiornare i componenti CodeMirror/UI
+        this.cdr.detectChanges();
       })
     )
     .subscribe({
-      next: (chunk) => {
-        // Accumuliamo il chunk di testo pulito che arriva da Node
+      next: chunk => {
         fullResponse += chunk;
-        // Aggiornamento real-time del testo nella bolla della chat
         this.messages[botMessageIndex].text = fullResponse;
-        this.cdr.detectChanges(); // Opzionale, ma consigliato per fluidità visiva
+        this.cdr.detectChanges();
       },
-      error: (err) => {
-        console.error('Errore durante lo streaming:', err);
-        this.messages[botMessageIndex].text = "Errore di comunicazione con l'agente.";
-        this.isLoading = false;
-        inputControl?.enable();
+      error: error => {
+        requestFailed = true;
+        const message =
+          error instanceof Error && error.message
+            ? error.message
+            : 'Non è stato possibile completare la richiesta.';
+
+        console.error('Errore durante la chat:', error);
+        this.messages[botMessageIndex].text = message;
+        this.toast.warning(message);
+        this.cdr.detectChanges();
       }
     });
 }
-
-
-
-
-
 
 }

@@ -75,21 +75,17 @@ export class PageService {
 
     const createUrl = this.apiService.endpoints.models.createModel;
 
-    this.http.post<any>(createUrl, formData, { withCredentials: true })
-      .subscribe({
-        next: res => {
-          const createdItem = res.data[0];
-          this.pages.update(pages => [...pages, createdItem]);
-          /**/
-          this.updateStructure(createdItem._id, htmlContent).subscribe({
-            next: r => console.log('Structure created', r),
-            error: e => console.error('Error creating structure', e)
-          });
-          /**/
-        },
-        error: err => console.error("Error saving page", err)
-      });
+    return this.http.post<any>(createUrl, formData, { withCredentials: true }).pipe(
+      tap(res => {
+        const createdItem = res.data[0];
+        this.pages.update(pages => [...pages, createdItem]);
 
+        this.updateStructure(createdItem._id, htmlContent).subscribe({
+          next: r => console.log('Structure created', r),
+          error: e => console.error('Error creating structure', e)
+        });
+      })
+    );
   }
 
   updatePage(id: string, htmlContent: string) {
@@ -119,36 +115,22 @@ export class PageService {
 
     const url = this.apiService.endpoints.models.updateAttachment;
 
-    this.http.post(url, formData, { withCredentials: true })
-      .subscribe({
-        next: res => {
-          console.log('HTML updated', res);
+    return this.http.post(url, formData, { withCredentials: true }).pipe(
+      tap(() => {
+        this.updateStructure(id, htmlContent).subscribe({
+          next: r => console.log('Structure updated', r),
+          error: e => console.error('Structure error', e)
+        });
 
-          res_ = res;
-          this.updateStructure(id, htmlContent).subscribe({
-            next: r => console.log('Structure updated', r),
-            error: e => console.error('Structure error', e)
-          });
-
-          this.pages.update(pages =>
-            pages.map(p =>
-              p._id === id
-                ? {
-                  ...p,
-                  files: p.files.map(f =>
-                    f._id === htmlFile._id
-                      ? { ...f, data: htmlContent }
-                      : f
-                  )
-                }
-                : p
-            )
-          );
-
-        },
-        error: err => console.error('Error updating HTML', err)
-      });
-    return res_;
+        this.pages.update(pages =>
+          pages.map(p =>
+            p._id === id
+              ? { ...p, files: p.files.map(f => f._id === htmlFile._id ? { ...f, data: htmlContent } : f) }
+              : p
+          )
+        );
+      })
+    );
   }
 
   loadPage(id: string): string | undefined {
@@ -163,18 +145,15 @@ export class PageService {
   deletePage(id: string) {
     const deleteUrl = this.apiService.endpoints.models.deleteModel(id)
 
-    this.http.delete(deleteUrl, { withCredentials: true }).subscribe({
-      next: () => {
+    return this.http.delete(deleteUrl, { withCredentials: true }).pipe(
+      tap(() => {
         this.pages.update(pages => pages.filter(p => p._id !== id));
 
         if (this.currentPageId() === id) {
           this.currentPageId.set(null);
         }
-      },
-      error: (err) => {
-        console.error("Error deleting page", err);
-      }
-    });
+      })
+    );
   }
 
 
@@ -222,7 +201,7 @@ export class PageService {
         tap((res: any) => {
 
           const newFile: ModelFile = {
-            _id: res.files,
+            _id: res.data[0].files,
             filename: fileData.name,
             contentType: fileData.type === 'css' ? 'text/css' : 'application/javascript',
             data: fileData.content || '',
@@ -377,7 +356,5 @@ export class PageService {
       })
     );
   }
-
-
 }
 

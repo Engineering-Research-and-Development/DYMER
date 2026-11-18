@@ -46,47 +46,78 @@ export class CustomizerService {
   }
 
   public streamChat(message: string, agent: AiAgent): Observable<string> {
-     return new Observable<string>(subscriber => {
-       let fullResponse = '';
-       // Usiamo fetch() perché l'HttpClient di Angular non supporta nativamente lo streaming del body delle risposte.
-       fetch(this.stream, {
-         method: 'POST',
-         headers: { 'Content-Type': 'application/json' },
-         body: JSON.stringify({ 
-              prompt: message,
-              agentId: agent._id,
-              model: agent.model,
-              systemPrompt: agent.systemPrompt
-         })
-       })
-       .then(async response => {
-         if (!response.ok || !response.body) {
-           throw new Error('API Error');
-         }
-         // Ottieni un Reader per leggere il flusso di dati
-         const reader = response.body.getReader();
-         const decoder = new TextDecoder();
- 
-         // Funzione per leggere ricorsivamente i blocchi (chunks)
-         while (true) {
-           const { done, value } = await reader.read();
-           if (done) {
-             break;
-           }
-           const chunk = decoder.decode(value, { stream: true });
-           try {
-             const jsonResponse = JSON.parse(chunk);
-             if (jsonResponse.generatedCode) {
-               subscriber.next(jsonResponse.generatedCode); // Invia il chunk
-             }
-           } catch (e) {
-             // Se il chunk non è un JSON valido, potresti voler gestire l'errore o ignorarlo
-           }
-         }
-         subscriber.complete(); // Segnala la fine dello streaming
-       })
-       .catch(err => subscriber.error(err));
-     });
+    return new Observable<string>(subscriber => {
+      fetch(this.stream, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: message,
+          agentId: agent._id
+        })
+      })
+      .then(async response => {
+        if (!response.ok) {
+          const rawBody = await response.text();
+          let errorMessage = `Errore HTTP ${response.status}`;
+
+          if (rawBody) {
+            try {
+              const errorBody = JSON.parse(rawBody);
+              errorMessage = errorBody?.message || errorBody?.error || errorMessage;
+            } catch {
+              errorMessage = rawBody;
+            }
+          }
+
+          throw new Error(errorMessage);
+        }
+
+        if (!response.body) {
+          throw new Error('La risposta dell agente non contiene dati.');
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
+          if (done) break;
+        }
+
+        const payload = buffer.trim();
+        if (!payload) throw new Error('La risposta dell agente è vuota.');
+
+        try {
+          const jsonResponse = JSON.parse(payload);
+
+          if (jsonResponse.generatedCode) {
+            subscriber.next(jsonResponse.generatedCode);
+          } else if (jsonResponse.message) {
+            throw new Error(jsonResponse.message);
+          } else {
+            throw new Error('Formato di risposta dell agente non riconosciuto.');
+          }
+        } catch (error) {
+          if (error instanceof SyntaxError) {
+            subscriber.next(payload);
+          } else {
+            throw error;
+          }
+        }
+
+        subscriber.complete();
+      })
+      .catch(error => {
+        subscriber.error(
+          error instanceof Error
+            ? error
+            : new Error('Errore durante la comunicazione con l agente.')
+        );
+      });
+    });
   }
-  
+
 }

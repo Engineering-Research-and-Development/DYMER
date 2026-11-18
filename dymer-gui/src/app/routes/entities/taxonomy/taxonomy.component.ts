@@ -416,8 +416,17 @@ export class TaxonomyComponent implements OnInit, AfterViewInit {
 
           // Parse CSV data to extract vocabulary
           const separator = ',';
-          const header = csvData[0].replace(/"/g, '').split(separator);
-          const columnIndex = header.indexOf(title);
+          const header = csvData[0].replace(/"/g, '').split(separator).map((h: string) => h.trim());
+          const columnIndex = header.indexOf(title.trim());
+
+          console.log('[Taxonomy Import Debug]', {
+            csvDataLength: csvData.length,
+            csvFirstRow: csvData[0],
+            headerAfterParse: header,
+            searchingFor: title.trim(),
+            columnIndex: columnIndex,
+            allHeaders: header
+          });
 
           if (columnIndex === -1) {
             this.snackBar.open(this.translate.instant('menu.entities.taxonomy.errors.import.csvColumnNotFound', { title }), 'Close', { duration: 5000, panelClass: ['bg-red-500', 'text-white'] });

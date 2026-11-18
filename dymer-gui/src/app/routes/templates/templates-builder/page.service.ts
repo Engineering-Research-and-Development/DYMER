@@ -68,39 +68,32 @@ export class PageService {
 
     const createUrl = this.apiService.endpoints.templates.createTemplate;
 
-    this.http.post<any>(createUrl, formData, { withCredentials: true })
-      .subscribe({
-        next: (res) => {
-          const createdTemplate: PageTemplate = res?.data?.[0];
-
-          if (!createdTemplate) {
-            console.warn("No template returned from backend");
-            return;
-          }
-          this.pages.update(pages => [...pages, createdTemplate]);
-        },
-        error: (err) => {
-          console.error("Error saving template", err);
+    return this.http.post<any>(createUrl, formData, { withCredentials: true }).pipe(
+      tap(res => {
+        const createdTemplate: PageTemplate = res?.data?.[0];
+        if (!createdTemplate) {
+          throw new Error('No template returned from backend');
         }
-      });
-
+        this.pages.update(pages => [...pages, createdTemplate]);
+      })
+    );
   }
 
-    getAttachments(pageId: string): TemplateFile[] {
-      const page = this.pages().find(p => p._id === pageId);
-      if (!page) return [];
-  
-      console.groupEnd()
-      const filtered = page.files?.filter(f =>
-        f.contentType === 'text/css' ||
-        f.contentType === 'text/javascript' ||
-        f.contentType === 'application/javascript' ||
-        f.contentType === 'css' ||
-        f.contentType === 'js'
-      ) ?? [];
-  
-      return filtered;
-    }
+  getAttachments(pageId: string): TemplateFile[] {
+    const page = this.pages().find(p => p._id === pageId);
+    if (!page) return [];
+
+    console.groupEnd()
+    const filtered = page.files?.filter(f =>
+      f.contentType === 'text/css' ||
+      f.contentType === 'text/javascript' ||
+      f.contentType === 'application/javascript' ||
+      f.contentType === 'css' ||
+      f.contentType === 'js'
+    ) ?? [];
+
+    return filtered;
+  }
 
   getViewTypeTemplate(viewtype: string, model: string, autogen: boolean = false): Observable<string> {
     const typeTemplate = (viewtype || '').trim().toLowerCase();
@@ -122,61 +115,44 @@ export class PageService {
     return this.http.get(url, { responseType: 'text' });
   }
 
-
-  // updatePage(id: string, htmlContent: string) {
-  //   this.pages.update(pages => pages.map(p => p._id === id ? { ...p, htmlContent } : p));
-  //   this.saveToStorage();
-  // }
   updatePage(id: string, htmlContent: string) {
 
-  const page = this.pages().find(p => p._id === id);
-  if (!page) return;
+    const page = this.pages().find(p => p._id === id);
+    if (!page) return;
 
-  console.log("PAGE => ", page)
-  const htmlFile = page.files.find(f => f.contentType === 'text/html');
+    const htmlFile = page.files.find(f => f.contentType === 'text/html');
 
-  if (!htmlFile) {
-    console.error('HTML file not found');
-    return;
-  }
+    if (!htmlFile) {
+      console.error('HTML file not found');
+      return;
+    }
 
-  const formData = new FormData();
+    const formData = new FormData();
 
-  const file = new File(
-    [new Blob([htmlContent])],
-    htmlFile.filename,
-    { type: htmlFile.contentType }
-  );
+    const file = new File(
+      [new Blob([htmlContent])],
+      htmlFile.filename,
+      { type: htmlFile.contentType }
+    );
 
-  formData.append('data[file]', file);
-  formData.append('data[pageId]', id);
-  formData.append('data[assetId]', htmlFile._id);
+    formData.append('data[file]', file);
+    formData.append('data[pageId]', id);
+    formData.append('data[assetId]', htmlFile._id);
 
-  const url = this.apiService.endpoints.templates.updateAttachment;
+    const url = this.apiService.endpoints.templates.updateAttachment;
 
-  this.http.post(url, formData, { withCredentials: true })
-    .subscribe({
-      next: res => {
-        console.log('Template HTML updated', res);
-
+    return this.http.post(url, formData, { withCredentials: true }).pipe(
+      tap(() => {
         this.pages.update(pages =>
           pages.map(p =>
             p._id === id
-              ? {
-                  ...p,
-                  files: p.files.map(f =>
-                    f._id === htmlFile._id
-                      ? { ...f, data: htmlContent }
-                      : f
-                  )
-                }
+              ? { ...p, files: p.files.map(f => f._id === htmlFile._id ? { ...f, data: htmlContent } : f) }
               : p
           )
         );
-      },
-      error: err => console.error('Error updating template', err)
-    });
-}
+      })
+    );
+  }
 
   loadPage(id: string): string | undefined {
     const page = this.pages().find(p => p._id === id);
@@ -191,77 +167,68 @@ export class PageService {
   deletePage(id: string) {
     const deleteUrl = this.apiService.endpoints.templates.deleteTemplate(id)
 
-    this.http.delete(deleteUrl, { withCredentials: true }).subscribe({
-      next: () => {
+    return this.http.delete(deleteUrl, { withCredentials: true }).pipe(
+      tap(() => {
         this.pages.update(pages => pages.filter(p => p._id !== id));
 
         if (this.currentPageId() === id) {
           this.currentPageId.set(null);
         }
-      },
-      error: (err) => {
-        console.error("Error deleting page", err);
-      }
-    });
+      })
+    );
     // this.saveToStorage();
   }
 
-  // attachFile(pageId: string, fileData: { type: 'js' | 'css', name: string, content?: string, file?: File }) {
-  //   console.log('Mock REST call to save file to Mongo:', { pageId, ...fileData });
-  //   // In a real app, this would be:
-  //   // return this.http.post(`/api/pages/${pageId}/assets`, fileData);
-  //   return Promise.resolve({ success: true });
-  // }
   attachFile(pageId: string, fileData: { type: 'js' | 'css', name: string, content?: string, file?: File }, actionType: 'create' | 'upload') {
-      const formData = new FormData();
-  
-      formData.append('data[pageId]', pageId);
-      formData.append('data[ctype]', fileData.type);
-      formData.append('data[filename]', fileData.name);
-  
-      if (actionType === 'upload' && fileData.file) {
-        // caso Upload
-        formData.append('data[file]', fileData.file, fileData.name);
-      } else if (actionType === 'create' && fileData.content !== undefined) {
-        // caso Create
-        const mimeType = fileData.type === 'css' ? 'text/css' : 'application/javascript';
-        const blob = new Blob([fileData.content], { type: mimeType });
-  
-        formData.append('data[file]', blob, fileData.name);
-      }
-  
-      return this.http.post(this.apiService.endpoints.templates.createAttachment, formData, { withCredentials: true })
-        .pipe(
-          tap((res: any) => {
-  
-            const newFile: TemplateFile = {
-              _id: res.files,
-              filename: fileData.name,
-              contentType: fileData.type === 'css' ? 'text/css' : 'application/javascript',
-              data: fileData.content || '',
-              md5: '',
-              length: fileData.content?.length || fileData.file?.size || 0,
-              uploadDate: new Date().toISOString()
-            };
-  
-            this.saveAttachmentToPage(pageId, newFile);
-          })
-        );
+    const formData = new FormData();
+
+    formData.append('data[pageId]', pageId);
+    formData.append('data[ctype]', fileData.type);
+    formData.append('data[filename]', fileData.name);
+
+    if (actionType === 'upload' && fileData.file) {
+      // caso Upload
+      formData.append('data[file]', fileData.file, fileData.name);
+    } else if (actionType === 'create' && fileData.content !== undefined) {
+      // caso Create
+      const mimeType = fileData.type === 'css' ? 'text/css' : 'application/javascript';
+      const blob = new Blob([fileData.content], { type: mimeType });
+
+      formData.append('data[file]', blob, fileData.name);
     }
 
-      saveAttachmentToPage(pageId: string, file: TemplateFile) {
-        this.pages.update(pages => pages.map(p => {
-          if (p._id === pageId) {
-            return {
-              ...p,
-              files: [...(p.files || []), file]
-            };
-          }
-          return p;
-        }));
-    
-        this.saveToStorage();
+    return this.http.post(this.apiService.endpoints.templates.createAttachment, formData, { withCredentials: true })
+      .pipe(
+        tap((res: any) => {
+
+          const newFile: TemplateFile = {
+            _id: res.data[0].files,
+            filename: fileData.name,
+            contentType: fileData.type === 'css' ? 'text/css' : 'application/javascript',
+            data: fileData.content || '',
+            md5: '',
+            length: fileData.content?.length || fileData.file?.size || 0,
+            uploadDate: new Date().toISOString()
+          };
+
+          this.saveAttachmentToPage(pageId, newFile);
+        })
+      );
+  }
+
+  saveAttachmentToPage(pageId: string, file: TemplateFile) {
+    this.pages.update(pages => pages.map(p => {
+      if (p._id === pageId) {
+        return {
+          ...p,
+          files: [...(p.files || []), file]
+        };
       }
+      return p;
+    }));
+
+    this.saveToStorage();
+  }
 
   getMergedModels(): Observable<string[]> {
     return this.http.get<any>(this.apiService.endpoints.models.getAllModels, {
@@ -365,26 +332,24 @@ export class PageService {
 
   /**/
   updateTemplate(modalData: any): Observable<any> {
-  const updateUrl = this.apiService.endpoints.templates.updateTemplate;
+    const updateUrl = this.apiService.endpoints.templates.updateTemplate;
 
-  const entitytype = (modalData.modelType || '')
-    .replace(/[^a-zA-Z]/g, '')
-    .toLowerCase();
+    const entitytype = (modalData.modelType || '')
+      .replace(/[^a-zA-Z]/g, '')
+      .toLowerCase();
 
-  const body = {
-    data: {
-      pageId: modalData.pageId,
-      title: modalData.title,
-      description: modalData.description,
+    const body = {
+      data: {
+        pageId: modalData.pageId,
+        title: modalData.title,
+        description: modalData.description,
 
-      // 🔥 template-specific
-      instance: [{ _index: entitytype }],
-      viewtype: [{ rendertype: modalData.viewtype }]
-    }
-  };
+        // 🔥 template-specific
+        instance: [{ _index: entitytype }],
+        viewtype: [{ rendertype: modalData.viewtype }]
+      }
+    };
 
-  return this.http.post<any>(updateUrl, body, { withCredentials: true });
-}
-  /**/
-
+    return this.http.post<any>(updateUrl, body, { withCredentials: true });
+  }
 }
