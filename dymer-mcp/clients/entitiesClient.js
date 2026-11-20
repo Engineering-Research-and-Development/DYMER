@@ -146,10 +146,17 @@ export async function searchEntities({
     );
 
     settled.forEach((result, resultIndex) => {
+      const currentIndex = currentIndexes[resultIndex];
       if (result.status === 'fulfilled') {
         batches.push(result.value);
       } else {
-        failedIndexes.push(currentIndexes[resultIndex]);
+        failedIndexes.push(currentIndex);
+        console.error('[DYMER MCP] search index failed', {
+          index: currentIndex,
+          message: result.reason?.message || String(result.reason),
+          status: result.reason?.response?.status || result.reason?.statusCode || null,
+          response: result.reason?.response?.data || null
+        });
       }
     });
   }
