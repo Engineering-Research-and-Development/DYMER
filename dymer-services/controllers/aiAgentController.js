@@ -156,53 +156,6 @@ exports.processStreamChat = async (req, res) => {
                 modelsResult?.result?.structuredContent?.models || [];
         }
 
-        if (dymerMcpIntentResolver.looksLikeDymerDataRequest(prompt)) {
-            const dymeruser = req.headers.dymeruser;
-            const discovery = await mcpClientManager.listTools({ serverId: 'dymer', dymeruser });
-            const workflows = [{
-                name: 'multi_catalog_entity_search',
-                description: 'Ricerca entity sorgente, attraversa relazioni e risolve target in più cataloghi DYMER.'
-            }];
-            const plannerResult = await dymerMcpIntentPlanner.planPrompt({
-                agent, prompt, tools: discovery.tools, workflows
-            });
-            console.log('[AI AGENT MCP] Dynamic planner', {
-                used: plannerResult.used,
-                reason: plannerResult.reason || null,
-                error: plannerResult.error || null,
-                kind: plannerResult.plan?.kind || null,
-                tool: plannerResult.plan?.tool || null,
-                workflow: plannerResult.plan?.workflow || null,
-                responseGoal: plannerResult.plan?.responseGoal || null
-            });
-            if (plannerResult.plan && plannerResult.plan.kind !== 'general_chat') {
-                try {
-                    const planned = await dymerMcpPlanExecutor.executePlan({
-                        plan: plannerResult.plan, tools: discovery.tools, agent, prompt,
-                        dymeruser, publishedModels
-                    });
-                    if (planned.executed) {
-                        return res.json({
-                            success: true,
-                            generatedCode: planned.answer,
-                            mcp: {
-                                used: true,
-                                mode: 'dynamic_planner',
-                                kind: planned.kind,
-                                plan: plannerResult.plan,
-                                executedTool: planned.result?.executedTool || null
-                            }
-                        });
-                    }
-                    console.log('[AI AGENT MCP] Dynamic plan fallback', { reason: planned.reason });
-                } catch (plannerExecutionError) {
-                    console.error('[AI AGENT MCP] Dynamic plan error, deterministic fallback', {
-                        message: plannerExecutionError.message
-                    });
-                }
-            }
-        }
-
         const multiCatalogPlan =
             dymerMultiCatalogOrchestrator.parseMultiCatalogPrompt(
                 prompt,
@@ -324,6 +277,53 @@ exports.processStreamChat = async (req, res) => {
                     }
                 }
             });
+        }
+
+        if (dymerMcpIntentResolver.looksLikeDymerDataRequest(prompt)) {
+            const dymeruser = req.headers.dymeruser;
+            const discovery = await mcpClientManager.listTools({ serverId: 'dymer', dymeruser });
+            const workflows = [{
+                name: 'multi_catalog_entity_search',
+                description: 'Ricerca entity sorgente, attraversa relazioni e risolve target in più cataloghi DYMER.'
+            }];
+            const plannerResult = await dymerMcpIntentPlanner.planPrompt({
+                agent, prompt, tools: discovery.tools, workflows
+            });
+            console.log('[AI AGENT MCP] Dynamic planner', {
+                used: plannerResult.used,
+                reason: plannerResult.reason || null,
+                error: plannerResult.error || null,
+                kind: plannerResult.plan?.kind || null,
+                tool: plannerResult.plan?.tool || null,
+                workflow: plannerResult.plan?.workflow || null,
+                responseGoal: plannerResult.plan?.responseGoal || null
+            });
+            if (plannerResult.plan && plannerResult.plan.kind !== 'general_chat') {
+                try {
+                    const planned = await dymerMcpPlanExecutor.executePlan({
+                        plan: plannerResult.plan, tools: discovery.tools, agent, prompt,
+                        dymeruser, publishedModels
+                    });
+                    if (planned.executed) {
+                        return res.json({
+                            success: true,
+                            generatedCode: planned.answer,
+                            mcp: {
+                                used: true,
+                                mode: 'dynamic_planner',
+                                kind: planned.kind,
+                                plan: plannerResult.plan,
+                                executedTool: planned.result?.executedTool || null
+                            }
+                        });
+                    }
+                    console.log('[AI AGENT MCP] Dynamic plan fallback', { reason: planned.reason });
+                } catch (plannerExecutionError) {
+                    console.error('[AI AGENT MCP] Dynamic plan error, deterministic fallback', {
+                        message: plannerExecutionError.message
+                    });
+                }
+            }
         }
 
         const mcpIntent =

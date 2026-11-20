@@ -55,17 +55,32 @@ function normalizePlan(raw, originalPrompt, tools = [], workflows = []) {
     if (!PLAN_KINDS.has(kind)) return null;
     const toolNames = new Set(normalizeTools(tools).map(item => item.name));
     const workflowNames = new Set(normalizeWorkflows(workflows).map(item => item.name));
-    const tool = String(raw.tool || '').trim() || null;
-    const workflow = String(raw.workflow || '').trim() || null;
+    const rawTool = typeof raw.tool === 'string' ? raw.tool : raw.tool?.name;
+    const rawWorkflow = typeof raw.workflow === 'string' ? raw.workflow : raw.workflow?.name;
+    const genericName = typeof raw.name === 'string' ? raw.name : raw.name?.name;
+    const tool = String(rawTool || (kind === 'tool_call' ? genericName : '') || '').trim() || null;
+    const workflow = String(rawWorkflow || (kind === 'workflow' ? genericName : '') || '').trim() || null;
     if (kind === 'tool_call' && (!tool || !toolNames.has(tool))) return null;
     if (kind === 'workflow' && (!workflow || !workflowNames.has(workflow))) return null;
+
+    const argumentsObject = raw.arguments && typeof raw.arguments === 'object' && !Array.isArray(raw.arguments)
+        ? { ...raw.arguments }
+        : {};
+    const nestedScope = argumentsObject.scope && typeof argumentsObject.scope === 'object' && !Array.isArray(argumentsObject.scope)
+        ? argumentsObject.scope
+        : null;
+    delete argumentsObject.scope;
+    const scope = raw.scope && typeof raw.scope === 'object' && !Array.isArray(raw.scope)
+        ? raw.scope
+        : (nestedScope || {});
+
     const confidenceValue = Number(raw.confidence);
     return {
         kind,
         tool: kind === 'tool_call' ? tool : null,
         workflow: kind === 'workflow' ? workflow : null,
-        arguments: raw.arguments && typeof raw.arguments === 'object' && !Array.isArray(raw.arguments) ? raw.arguments : {},
-        scope: raw.scope && typeof raw.scope === 'object' ? raw.scope : {},
+        arguments: argumentsObject,
+        scope,
         responseGoal: RESPONSE_GOALS.has(String(raw.responseGoal || '')) ? String(raw.responseGoal) : 'list',
         confidence: Number.isFinite(confidenceValue) ? Math.max(0, Math.min(1, confidenceValue)) : 0,
         reason: String(raw.reason || '').trim(),
@@ -110,23 +125,19 @@ function applyDeterministicPlanRules(plan, originalPrompt) {
 }
 
 function buildPlannerPrompt(prompt, tools, workflows) {
+    const toolNames = normalizeTools(tools).map(item => item.name);
+    const workflowNames = normalizeWorkflows(workflows).map(item => item.name);
     return [
-        'Sei il planner MCP di DYMER. Restituisci soltanto un oggetto JSON valido.',
-        'Scegli esclusivamente uno dei tool o workflow forniti. Non inventare nomi o argomenti.',
-        'kind deve essere general_chat, tool_call oppure workflow.',
-        'Per richieste sui dati DYMER usa tool_call o workflow. general_chat solo per richieste non DYMER.',
-        'Per contare le entity usa count_entities. Per contare le relazioni delle entity di un indice usa count_relations con argument index.',
-        'Distingui sempre l oggetto contato: relazioni, entity e modelli non sono equivalenti.',
-        'Per cercare globalmente senza catalogo usa search_entities e scope.type=all_published_indexes.',
-        'Per richieste con ricerca sorgente, relazioni e target usa il workflow multi_catalog_entity_search.',
-        'Gli arguments devono rispettare inputSchema. Ometti campi non disponibili invece di inventarli.',
-        'Schema output: {"kind":"tool_call|workflow|general_chat","tool":null,"workflow":null,"arguments":{},"scope":{},"responseGoal":"list|detail|count|schema|relations|analysis","confidence":0.0,"reason":""}.',
-        `Tool MCP disponibili: ${JSON.stringify(normalizeTools(tools))}`,
-        `Workflow locali disponibili: ${JSON.stringify(normalizeWorkflows(workflows))}`,
-        `Richiesta utente: ${String(prompt || '').trim()}`
+        'Sei il router MCP DYMER.',
+        'Rispondi solo con JSON valido, senza Markdown o spiegazioni.',
+        'Scegli un tool, un workflow o general_chat. Non inventare nomi.',
+        `Tool: ${JSON.stringify(toolNames)}`,
+        `Workflow: ${JSON.stringify(workflowNames)}`,
+        'Per elementi collegati usa responseGoal=relations.',
+        'Output: {"kind":"tool_call|workflow|general_chat","name":"nome|null","arguments":{},"responseGoal":"list|detail|count|schema|relations|analysis"}',
+        `Richiesta: ${String(prompt || '').trim()}`
     ].join('\n');
 }
-
 async function planPrompt({ agent, prompt, tools = [], workflows = [], timeoutMs = 60000 }) {
     const normalizedPrompt = String(prompt || '')
         .toLocaleLowerCase('it')
@@ -230,19 +241,29 @@ async function planPrompt({ agent, prompt, tools = [], workflows = [], timeoutMs
         promptLength: plannerPrompt.length
     });
     try {
-        const response = await axios.post(`${baseUrl}/api/generate`, {
+        const ollamaPayload = {
             model: agent.model,
             prompt: plannerPrompt,
             stream: false,
-            format: 'json',
             keep_alive: '10m',
-            options: { temperature: 0, num_predict: 256 }
-        }, { timeout: timeoutMs, proxy: false, headers: { 'Content-Type': 'application/json' } });
+            options: { temperature: 0, num_predict: 64 }
+        };
+        console.log('[MCP PLANNER] Ollama payload', JSON.stringify(ollamaPayload, null, 2));
+        const response = await axios.post(
+            `${baseUrl}/api/generate`,
+            ollamaPayload,
+            { timeout: timeoutMs, proxy: false, headers: { 'Content-Type': 'application/json' } }
+        );
         console.log('[MCP PLANNER] Ollama completed', {
             durationMs: Date.now() - plannerStartedAt,
             responseLength: String(response?.data?.response || '').length
         });
+        console.log(
+            '[MCP PLANNER] Raw Ollama plan',
+            response?.data?.response
+        );
         const raw = extractJson(response?.data?.response);
+        console.log('[MCP PLANNER] Extracted plan', raw ? JSON.stringify(raw, null, 2) : null);
         const normalizedPlan = normalizePlan(raw, prompt, tools, workflows);
         const plan = applyDeterministicPlanRules(normalizedPlan, prompt);
         console.log('[MCP PLANNER] Normalized plan', {

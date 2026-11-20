@@ -166,9 +166,10 @@ router.get('/status', async (req, res) => {
 // GET: Lista modelli installati
 router.get('/models', async (req, res) => {
     try {
-        const response = await ollama.list();
-        res.json({ success: true, models: response.models });
+        const response = await axios.get(`${OLLAMA_URL}/api/tags`, { timeout: 5000 });
+        res.json({ success: true, models: response.data.models || [] });
     } catch (error) {
+        console.error('Ollama models fetch failed:', error.message);
         handleError(res, 500, error, "Errore recupero modelli", "/models");
     }
 });

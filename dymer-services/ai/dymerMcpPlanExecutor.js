@@ -12,6 +12,35 @@ function publishedIndexes(models) {
     return [...new Set(values.map(value => String(value).trim()).filter(Boolean))];
 }
 
+function normalizeCatalogToken(value) {
+    return String(value || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLocaleLowerCase()
+        .replace(/[^a-z0-9]+/g, ' ')
+        .trim();
+}
+
+function resolveCatalogIndexes(catalogName, models) {
+    const wanted = normalizeCatalogToken(catalogName);
+    if (!wanted) return [];
+    const values = [];
+    const visit = (item, inheritedMatch = false) => {
+        if (!item || typeof item !== 'object') return;
+        const aliases = [
+            item.index, item.name, item.title, item.label, item.alias,
+            item.modelName, item.catalogName, item.value
+        ].map(normalizeCatalogToken).filter(Boolean);
+        const matched = inheritedMatch || aliases.some(alias =>
+            alias === wanted || alias.split(' ').includes(wanted) || wanted.split(' ').includes(alias)
+        );
+        if (matched && item.index) values.push(String(item.index).trim());
+        for (const child of Array.isArray(item.instances) ? item.instances : []) visit(child, matched);
+    };
+    for (const model of Array.isArray(models) ? models : []) visit(model, false);
+    return [...new Set(values.filter(Boolean))];
+}
+
 function validateArguments(tool, args) {
     const schema = tool?.inputSchema || {};
     const properties = schema.properties || {};
@@ -64,14 +93,42 @@ async function executePlan({ plan, tools, agent, prompt, dymeruser, publishedMod
     const tool = (Array.isArray(tools) ? tools : []).find(item => item.name === plan.tool);
     if (!tool) return { executed: false, reason: 'tool_not_published' };
     let args = { ...(plan.arguments || {}) };
-    if (plan.scope?.type === 'all_published_indexes' && plan.tool === 'search_entities') {
-        const indexes = publishedIndexes(publishedModels);
-        if (!indexes.length) return { executed: false, reason: 'published_indexes_not_available' };
-        args.indexes = indexes;
+    if (plan.tool === 'search_entities') {
+        const catalogName = args.catalog_name || args.catalogName || args.catalog || null;
+        delete args.catalog_name;
+        delete args.catalogName;
+        delete args.catalog;
+
+        const explicitIndexes = [
+            ...(Array.isArray(args.indexes) ? args.indexes : []),
+            ...(args.index ? [args.index] : [])
+        ].map(value => String(value).trim()).filter(Boolean);
+
+        let resolvedIndexes = explicitIndexes;
+        if (!resolvedIndexes.length && catalogName) {
+            resolvedIndexes = resolveCatalogIndexes(catalogName, publishedModels);
+        }
+        if (!resolvedIndexes.length || plan.scope?.type === 'all_published_indexes') {
+            resolvedIndexes = publishedIndexes(publishedModels);
+        }
+        if (!resolvedIndexes.length) {
+            return { executed: false, reason: 'published_indexes_not_available' };
+        }
+
+        args.indexes = [...new Set(resolvedIndexes)];
         delete args.index;
         if (args.query === undefined) args.query = '';
         if (args.page === undefined) args.page = 1;
-        if (args.limit === undefined) args.limit = 1;
+        if (args.limit === undefined) args.limit = 20;
+
+        console.log('[MCP PLAN EXECUTOR] search_entities scope resolved', {
+            catalogName,
+            scopeType: plan.scope?.type || null,
+            indexes: args.indexes,
+            query: args.query,
+            page: args.page,
+            limit: args.limit
+        });
     }
     args = validateArguments(tool, args);
     const result = await ollamaMcpDeterministic.runDeterministicToolPrompt({
@@ -81,4 +138,4 @@ async function executePlan({ plan, tools, agent, prompt, dymeruser, publishedMod
     return { executed: true, kind: 'tool_call', answer: result.answer, result };
 }
 
-module.exports = { executePlan, publishedIndexes, validateArguments };
+module.exports = { executePlan, publishedIndexes, resolveCatalogIndexes, validateArguments };
