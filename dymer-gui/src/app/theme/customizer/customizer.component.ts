@@ -223,6 +223,9 @@ export class CustomizerComponent implements OnInit {
       return;
     }
 
+    // Ricarica gli agenti quando si apre il panel per avere i dati sempre aggiornati
+    this.loadAgents();
+
     this.isChatbotOpen = true; // Imposta lo stato su "aperto"
     this.drawerRef = this.drawer.open(templateRef, {
       position: 'right',

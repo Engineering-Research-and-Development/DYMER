@@ -54,6 +54,9 @@ export class AiConfigComponent implements OnInit {
   isSaving = signal(false);
   selectedId = signal<string | null>(null);
 
+  availableModels = signal<string[]>([]);
+  loadingModels = signal(false);
+
   mcpEnabled = signal(false);
   mcpLoading = signal(false);
   mcpError = signal<string | null>(null);
@@ -81,9 +84,13 @@ export class AiConfigComponent implements OnInit {
   ngOnInit() {
     this.loadAgents();
     this.loadMcpTools();
+    this.loadModels();
 
     this.agentForm.get('provider')?.valueChanges.subscribe(value => {
       this.adjustValidators(value as AiProvider);
+      if (value === 'ollama') {
+        this.loadModels();
+      }
     });
 
     this.adjustValidators(this.agentForm.get('provider')?.value as AiProvider);
@@ -120,6 +127,25 @@ export class AiConfigComponent implements OnInit {
         this.mcpLoading.set(false);
       },
       complete: () => this.mcpLoading.set(false)
+    });
+  }
+
+  loadModels() {
+    this.loadingModels.set(true);
+
+    this.agentService.getModels().subscribe({
+      next: response => {
+        const modelNames = response.models.map(model => 
+          typeof model === 'string' ? model : model.name
+        );
+        this.availableModels.set(modelNames);
+      },
+      error: error => {
+        console.error('Errore caricamento modelli:', error);
+        this.availableModels.set([]);
+        this.loadingModels.set(false);
+      },
+      complete: () => this.loadingModels.set(false)
     });
   }
 

@@ -79,4 +79,11 @@ export class AiAgentsService {
       withCredentials: true
     });
   }
+
+  getModels(): Observable<{ success: boolean; models: Array<{ name: string; details?: unknown }> }> {
+    return this.http.get<{ success: boolean; models: Array<{ name: string; details?: unknown }> }>(
+      this.apiService.endpoints.ollama.listModels,
+      { withCredentials: true }
+    );
+  }
 }
