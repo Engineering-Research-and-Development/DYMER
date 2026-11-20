@@ -2236,7 +2236,8 @@ router.get('/', (req, res) => {
             ret.setMessages("Entity " + err.displayName);
             return res.send(ret);
         }
-        let msg = (resp.hits.total > 0) ? "List entities" : "Empty list";
+        // let msg = (resp.hits.total > 0) ? "List entities" : "Empty list";
+        let msg = (resp.hits.hits.length > 0) ? "List entities" : "Empty list";
         ret.setMessages(msg);
         ret.setData(resp.hits.hits);
         return res.send(ret);
@@ -2893,11 +2894,13 @@ router.post('/_search', (req, res) => {
                     return res.send(ret);
 
                 } else {
-                    let msg = (resp.hits.total > 0) ? "List entities" : "Empty list";
+                    // let msg = (resp.hits.total > 0) ? "List entities" : "Empty list";
+                    let msg = (resp.hits.hits.length > 0) ? "List entities" : "Empty list";
                     // console.log("SSSSSSSS | " + nameFile + '|resp:', resp);
                     ret.setMessages(msg);
                 }
-                if (resp.hits.total == 0) {
+                // if (resp.hits.total == 0) {
+                if (resp.hits.hits.length == 0) {
                     logger.info(nameFile + '|_search| resp:count 0');
                     return res.send(ret);
                 }
@@ -3347,10 +3350,12 @@ router.get('/_search/:enttype/:id?', (req, res) => {
                     return res.send(ret);
 
                 } else {
-                    let msg = (resp.hits.total > 0) ? "List entities" : "Empty list";
+                    // let msg = (resp.hits.total > 0) ? "List entities" : "Empty list";
+                    let msg = (resp.hits.hits.length > 0) ? "List entities" : "Empty list";
                     ret.setMessages(msg);
                 }
-                if (resp.hits.total == 0) {
+                // if (resp.hits.total == 0) {
+                if (resp.hits.hits.length == 0) {
                     logger.info(nameFile + '|_search| resp:count 0');
                     return res.send(ret);
                 }
@@ -3618,7 +3623,8 @@ router.get('/_relations/:id', async (req, res) => {
 
         let resp = await client.search(qparams);
         let hits = resp.hits.hits;
-        let total = resp.hits.total;
+        // let total = resp.hits.total;
+        let total = resp.hits.hits.length;
         if (total != undefined && typeof total === "object")
             total = total.value;
         pageInfo.total = total;
@@ -6241,7 +6247,8 @@ router.get('/deleteAllEntityByIndex/', util.checkIsAdmin, (req, res) => {
     logger.info(nameFile + '| deleteAllEntityByIndex | dymeruser.id, index :' + dymeruser.id + ' , ' + index);
     console.log(nameFile + '| deleteAllEntityByIndex | dymeruser.id, index :', dymeruser.id, index);
     client.search(params_).then(async function(resp) {
-        if (resp.hits.total == 0) {
+        // if (resp.hits.total == 0) {
+        if (resp.hits.hits.length == 0) {
             ret.setSuccess(true);
             ret.setMessages("No entity founded");
             return res.send(ret);
