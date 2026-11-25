@@ -88,6 +88,7 @@ graph TB
 | `dymer-templates` | Template storage & rendering | 4545 | Node.js + Handlebars |
 | `dymer-gui` | Admin interface | 4200 | TypeScript + Modern Framework |
 | `dymer-services` | Auxiliary services | 5050 | Node.js |
+| `dymer-mcp` | MCP services for DYMER services | 3010 | Node.js |
 | `mongodb` | Db store for settings   | 27017 |   |
 | `elasticsearch` | Index store   | 9200/9300 |   |
 | `Ollama` | AI code agent  | 7869 |   |
@@ -162,7 +163,7 @@ curl http://localhost:8080/api/v1/health
 | [Node.js][1]                                    | JavaScript  | 20.19.6         |
 | [Express][2]                                    | JavaScript  | 4.16.4           |
 | [Docker][3]                                     |             | 19.03.8          |
-| [AngularJS][4]                                  | JavaScript  | 20          |
+| [Angular20][4]                                  | JavaScript  | 20          |
 | [JQuery][5]                                     |             | 3.7              |
 | [Bootstrap][6]                                  |             | 4/5              |
 | [Handlebars][7]                                 |             |                  |
@@ -174,7 +175,7 @@ curl http://localhost:8080/api/v1/health
 [1]:  https://nodejs.org/en/
 [2]:  https://expressjs.com/en/4x/api.html
 [3]:  https://docs.docker.com/get-docker/
-[4]:  https://angularjs.org/
+[4]:  https://v20.angular.dev/
 [5]:  https://jquery.com/
 [6]:  https://getbootstrap.com/
 [7]:  https://handlebarsjs.com/
